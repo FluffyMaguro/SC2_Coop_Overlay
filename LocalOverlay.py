@@ -12,10 +12,14 @@ version_download = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 
 def new_version():
     """ checks for a new version of the app """
-    data = json.loads(requests.get(version_link).text)
-    if data['version'] > APPVERSION:
-        return True
-    else:
+    try:
+        data = json.loads(requests.get(version_link).text)
+        if data['version'] > APPVERSION:
+            return True
+        else:
+            return False
+    except:
+        print('Failed to check for the new version')
         return False
 
 

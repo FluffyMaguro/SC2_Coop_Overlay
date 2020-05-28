@@ -35,35 +35,31 @@ OverlayMessages = []
 
 
 def check_replays():
-    """ Checks every 2s for new replays  """
+    """ Checks every 4s for new replays  """
     global OverlayMessages
 
-    already_opened_replays = []
+    already_checked_replays = set()
     while True:   
+        current_time = time.time()
         for root, directories, files in os.walk(ACCOUNTDIR):
             for file in files:
-                if file.endswith('.SC2Replay') and not(file in already_opened_replays):
-                    file_path = os.path.join(root,file)
-                    try:
-                        if (time.time() - os.stat(file_path).st_mtime < 60):                            
-                            replay_message, replay_dict = analyse_replay(file_path,PLAYER_NAMES)
-                            if replay_message != '':
-                                already_opened_replays.append(file)
-                                if len(replay_dict) > 0 :
+                file_path = os.path.join(root,file)
+                if file.endswith('.SC2Replay') and not(file_path in already_checked_replays):
+                    already_checked_replays.add(file_path)
 
-                                    print(f'Appending: {replay_dict}')
-                                    OverlayMessages.append(replay_dict) #save in queue to send
+                    if current_time - os.path.getmtime(file_path) < 60:    
+                        replay_message, replay_dict = analyse_replay(file_path,PLAYER_NAMES)
+                        if replay_message != '':                           
+                            if len(replay_dict) > 0 :
+                                OverlayMessages.append(replay_dict) #save in queue to send
 
-                                    with open('ReplayAnalysisLog.txt', 'ab') as file: #save into a text file
-                                        file.write(('\n\n'+str(replay_dict)).encode('utf-8'))
-                            else:
-                                print(f'ERROR: No output from replay analysis ({file})') 
-                            break
-                    except Exception as e:
-                        exc_type, exc_value, exc_tb = sys.exc_info()
-                        traceback.print_exception(exc_type, exc_value, exc_tb)
+                                with open('ReplayAnalysisLog.txt', 'ab') as file: #save into a text file
+                                    file.write(('\n\n'+str(replay_dict)).encode('utf-8'))
+                        else:
+                            print(f'ERROR: No output from replay analysis ({file})') 
+                        break
 
-        time.sleep(2)   
+        time.sleep(4)   
 
 
 
