@@ -1,0 +1,20 @@
+-------------------------
+----SC2 Co-op overlay----
+-------------------------
+
+
+1.Config file:
+- You don't need to change anything in the config file for normal usage.
+- PLAYER_NAMES
+  Adding a list of player names shows those players on top preferably. (e.g., PLAYER_NAMES = Maguro,SeaMaguro)
+- SHOWOVERLAY
+  if set to 'False' disables overlay show on screen. Use this if you want to show overlay
+  only in OBS for example.
+- ACCOUNTDIR
+  You can specify different location of your StarCraft II account, where replays are stored.
+  But the app should find the your documents automatically.
+
+
+2. Other notes:
+- You can use the overlay in OBS. Just drag it over the scene and set dimensions to max.
+- You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
