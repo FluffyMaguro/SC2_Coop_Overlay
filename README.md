@@ -1,1 +1,1 @@
-# SC2_Coop_overlay
+# SC2 Coop overlay
