@@ -13,9 +13,12 @@ Download links:
 * Or run the script with Python
 
 # How to use
-* Extract the archive
-* Run the executable
-* The app will show in the system tray after few seconds.
+1. Extract the archive
+2. Run the executable
+3. The app will show in the system tray after few seconds.
+4. Play StarCraft II Co-op
+
+![system tray](/screenshots/systray.png)
 
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 
