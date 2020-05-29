@@ -23,6 +23,10 @@ Download links:
 
 # Config file
 * You don't need to change anything in the config file for normal usage.
+* If you want to change how long the overlay is shown, set the duration to a different number of seconds.
+
+  **DURATION = 30**
+  
 * If you don't want to see overlay on your screen, you can disable it. You might be using it only as OBS overlay.
 
   **SHOWOVERLAY = False**
