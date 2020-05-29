@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import time
+import keyboard
 import traceback
 import asyncio
 import websockets
@@ -24,17 +25,21 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES):
                 if file.endswith('.SC2Replay') and not(file_path in already_checked_replays):
                     already_checked_replays.add(file_path)
 
-                    if current_time - os.path.getmtime(file_path) < 60:    
-                        replay_message, replay_dict = analyse_replay(file_path,PLAYER_NAMES)
-                        if replay_message != '':                           
-                            if len(replay_dict) > 0 :
-                                OverlayMessages.append(replay_dict) #save in queue to send
+                    if current_time - os.path.getmtime(file_path) < 60: 
+                        try:   
+                            replay_message, replay_dict = analyse_replay(file_path,PLAYER_NAMES)
+                            if replay_message != '':                           
+                                if len(replay_dict) > 0 :
+                                    OverlayMessages.append(replay_dict) #save in queue to send
 
-                                with open('ReplayAnalysisLog.txt', 'ab') as file: #save into a text file
-                                    file.write(('\n\n'+str(replay_dict)).encode('utf-8'))
-                        else:
-                            print(f'ERROR: No output from replay analysis ({file})') 
-                        break
+                                    with open('ReplayAnalysisLog.txt', 'ab') as file: #save into a text file
+                                        file.write(('\n\n'+str(replay_dict)).encode('utf-8'))
+                            else:
+                                print(f'ERROR: No output from replay analysis ({file})') 
+                            break
+                        except Exception as e:
+                            exc_type, exc_value, exc_tb = sys.exc_info()
+                            traceback.print_exception(exc_type, exc_value, exc_tb)
 
         time.sleep(4)   
 
@@ -70,3 +75,16 @@ def server_thread(PORT):
         exc_type, exc_value, exc_tb = sys.exc_info()
         traceback.print_exception(exc_type, exc_value, exc_tb)
 
+
+def keyboard_thread_HIDE(HIDE):
+    print('Starting keyboard HIDE thread')
+    while True:
+        keyboard.wait(HIDE)
+        OverlayMessages.append({'hideEvent': True})
+
+
+def keyboard_thread_SHOW(SHOW):
+    print('Starting keyboard SHOW thread')
+    while True:
+        keyboard.wait(SHOW)
+        OverlayMessages.append({'showEvent': True})

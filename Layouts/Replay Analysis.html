@@ -41,6 +41,15 @@
         margin-bottom: 4.2px;
     }
 
+    #nodata {
+        color: red;
+        font-size:3vh;
+        position: absolute;
+        top: 20vh;
+        right: 15vh;
+        font-weight: bold
+    }
+
     #name1,
     #CMname1 {
         color: #0080F8;
@@ -84,6 +93,7 @@
         position: relative;
         text-shadow: 1px 1px 1px black;
         font-size: 2.2vh;
+        display: none;
     }
 
     #killbar1 {
@@ -92,7 +102,7 @@
         width: 50%;
         position: absolute;
         left: 0px;
-        transition: width 4s;
+        transition: width 2s;
     }
 
     #killbar2 {
@@ -102,7 +112,7 @@
         position: absolute;
         right: 0px;
         text-align: right;
-        transition: width 4s;
+        transition: width 2s;
     }
 
     #killbar2 span {
@@ -135,6 +145,11 @@
         position: absolute;
         top: 10vh;
         left: 0px;
+    }
+
+    #brutal {
+        position: absolute;
+        left: 22.2vh;
     }
 
     #com2 {
@@ -178,14 +193,14 @@
 
     .unitkills {
         position: absolute;
-        left: 18.23vh;
+        left: 22vh;
         opacity: 0.9;
     }
 
     .unitcreated {
         color: #2FFF00;
         position: absolute;
-        right: 3.65vh;
+        right: 6vh;
         opacity: 0.6
     }
 
@@ -197,10 +212,10 @@
     }
 
     .killpadding {
-        margin-left: 0.57vh;
+        margin-left: 0.9vh;
     }
     .nokillpadding {
-        margin-left: -0.57vh;
+        margin-left: -0.9vh;
     }
 
     #mutatorinfo {
@@ -261,6 +276,7 @@
     <div id="bgdiv"></div>
     <div id="stats">
         <div id="topstats">
+            <div id="nodata">NO DATA</div>
             <span id="name1"></span>
             <span id="result"></span>
             <span id="name2"></span>
@@ -276,6 +292,7 @@
             <div>
                 <span id="com1"></span>
                 <span id="com2"></span>
+                <span id="brutal"></span>
                 <span id="apm1"></span>
                 <span id="apm2"></span>
             </div>
@@ -291,7 +308,7 @@
             <div id="CMunits2" class="units"></div>
         </div>
         <div class="commstats" id="amon">
-            <div id="CMname3">Amon</div>
+            <div id="CMname3"></div>
             <div id="CMunits3" class="units"></div>
         </div>
     </div>
@@ -453,6 +470,8 @@ var masteryNames = {
 var showmutators = true;
 var function_is_running = false;
 var PORT = 7305;
+var DURATION = 60;
+var manuallyShown = false;
 connect_to_socket();
 
 
@@ -468,8 +487,12 @@ function connect_to_socket() {
         console.log(data);
         if (data['replaydata'] != null) {
             postGameStats(JSON.parse(event.data))
-        } else if  (data['mutatordata'] != null){
+        } else if (data['mutatordata'] != null){
             mutatorInfo(data['data'])
+        } else if (data['hideEvent'] != null){
+            hidestats()
+        } else if (data['showEvent'] != null){      
+            showstats()                                                                        
         } else {
             console.log('unidentified message')
         }
@@ -521,6 +544,17 @@ function mutatorInfo(data) {
 };
 
 function postGameStats(data) {
+    manuallyShown = false;
+    //initial change
+    document.getElementById('killbar').style.display = 'block';
+    document.getElementById('nodata').style.display = 'none';
+    //reset
+    document.getElementById('killbar1').style.transition = 'width 0s';
+    document.getElementById('killbar2').style.transition = 'width 0s';
+    document.getElementById('killbar1').style.width = '50%';
+    document.getElementById('killbar2').style.width = '50%';
+    document.getElementById('killbar1').style.transition = 'width 2s';
+    document.getElementById('killbar2').style.transition = 'width 2s';    
     // fill 
     fill('name1', data['main']);
     fill('result', data['result'] + '!');
@@ -529,6 +563,10 @@ function postGameStats(data) {
     fill('com2', data['allyCommander']);
     fill('apm1', data['mainAPM'] + ' APM');
     fill('apm2', data['allyAPM'] + ' APM');
+
+    if (data['B+']>0){
+        fill('brutal', 'Brutal+' + data['B+']);
+          };
     // kill counts 
     var killbarW = document.getElementById('killbar').offsetWidth;
     var totalkills = data['mainkills'] + data['allykills']
@@ -544,18 +582,26 @@ function postGameStats(data) {
     fill('CMname2', data['ally']);
     fillmasteries('CMmastery2', data['allyMasteries'], data['allyCommander']);
     fillunits('CMunits2', data['allyUnits']);
+    fill('CMname3', 'Amon');
     fillunits('CMunits3', data['amonUnits']);
     //show 
-    document.getElementById('stats').style.right = '30px';
-    document.getElementById('bgdiv').style.opacity = '1';
-    setTimeout(hidestats, 60*1000); //60s duration
+    showstats();
+    setTimeout(hidestats_auto, DURATION*1000);
+};
+
+function hidestats_auto() {
+    if (manuallyShown==false) {hidestats()}
 };
 
 function hidestats() {
     document.getElementById('stats').style.right = '-600px';
     document.getElementById('bgdiv').style.opacity = '0';
-    document.getElementById('killbar1').style.width = '50%';
-    document.getElementById('killbar2').style.width = '50%';
+};
+
+function showstats() {
+    manuallyShown = true;                      
+    document.getElementById('stats').style.right = '30px';
+    document.getElementById('bgdiv').style.opacity = '1';
 };
 
 function fill(el, dat) {
@@ -600,6 +646,7 @@ function fillunits(el, dat) {
     }
     document.getElementById(el).innerHTML = text;
 };
+
 </script>
 
 </html>

@@ -5,11 +5,11 @@ import threading
 import configparser
 
 import requests
-from SCOFunctions import check_replays, server_thread
+from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 
-APPVERSION = 1
+APPVERSION = 2
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 version_download = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
@@ -38,6 +38,20 @@ if 'PLAYER_NAMES' in config['CONFIG']:
     for player in config['CONFIG']['PLAYER_NAMES'].split(','):
         PLAYER_NAMES.append(player.strip())
 
+DURATION = 60
+if 'DURATION' in config['CONFIG'] and int(config['CONFIG']['DURATION']) != 0:
+    DURATION = int(config['CONFIG']['DURATION'])
+
+KEY_SHOW = None
+if 'KEY_SHOW' in config['CONFIG'] and config['CONFIG']['KEY_SHOW'] != '':
+    KEY_SHOW = config['CONFIG']['KEY_SHOW']
+
+KEY_HIDE = None
+if 'KEY_HIDE' in config['CONFIG'] and config['CONFIG']['KEY_HIDE'] != '':
+    KEY_HIDE = config['CONFIG']['KEY_HIDE']
+
+
+print(f'{KEY_SHOW=}\n{KEY_HIDE=}')
 
 def new_version():
     """ checks for a new version of the app """
@@ -58,10 +72,11 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
 
+
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = true; PORT = {PORT}")      
+            self.page().runJavaScript(f"showmutators = true; PORT = {PORT}; DURATION = {DURATION}")      
             pass
 
 
@@ -86,7 +101,7 @@ def main():
     if os.path.isfile('OverlayIcon.ico'):
         tray.setIcon(QtGui.QIcon("OverlayIcon.ico"))
     else:
-        # tray.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_FileDialogListView')))
+        #if packaged file
         tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
         
         
@@ -98,6 +113,16 @@ def main():
     SCO.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(version_download)))
     menu.addAction(SCO)
     menu.addSeparator()
+
+
+    ### Config
+    config_file = QtWidgets.QAction(f"Config file")
+    config_file.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DirIcon')))
+    config_file_path = os.path.join(os.getcwd(),"OverlayConfig.ini")
+    config_file.triggered.connect(lambda: os.startfile(config_file_path,'open'))
+    menu.addAction(config_file)
+    menu.addSeparator()
+
     
     ### Check for updates
     if new_version():
@@ -110,6 +135,7 @@ def main():
     menu.addAction(update)
     menu.addSeparator()
 
+
     ### Quit
     quit = QtWidgets.QAction("Quit")
     quit.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DialogCancelButton')))
@@ -117,13 +143,14 @@ def main():
     menu.addAction(quit)
     tray.setContextMenu(menu)
 
+
     if SHOWOVERLAY:
         webpage = view.page()
         webpage.setBackgroundColor(QtCore.Qt.transparent)
         # view.setStyleSheet("background:transparent; background-color:rgba(0,0,0,0)") #unnecessary
 
         ### Set correct size and width for the widget; Setting it to full shows black screen on my machine, works fine on notebook
-        sg = QtWidgets.QDesktopWidget().screenGeometry()
+        sg = QtWidgets.QDesktopWidget().availableGeometry()
         view.setFixedSize(sg.width()-1, sg.height())
         view.move(1,0)
 
@@ -146,6 +173,15 @@ def main():
     t1.start()
     t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
     t2.start()
+
+    if KEY_SHOW != None:
+        t3 = threading.Thread(target = keyboard_thread_SHOW, daemon=True, args=(KEY_SHOW,))
+        t3.start()
+
+    if KEY_HIDE != None:
+        t4 = threading.Thread(target = keyboard_thread_HIDE, daemon=True, args=(KEY_HIDE,))
+        t4.start()
+
 
     sys.exit(app.exec_())
 
