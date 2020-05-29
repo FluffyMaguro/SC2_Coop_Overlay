@@ -6,8 +6,8 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 
 # 
 Download links: 
-* [Google-drive](https://drive.google.com/file/d/11Jgk8qFB0x0RAWNoYhKd08nH0U7wlQMC/view?usp=sharing)
 * [Mega](https://mega.nz/file/QpFjDSRJ#DvHCKvK4gI72JoVwTfhI2p2VeL-CAymNnkhY0QJ-WpU)
+* [Google-drive](https://drive.google.com/file/d/11Jgk8qFB0x0RAWNoYhKd08nH0U7wlQMC/view?usp=sharing)
 * Or run the script with Python
 
 # How to use
