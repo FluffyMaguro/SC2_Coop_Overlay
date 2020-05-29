@@ -13,7 +13,7 @@ Download links:
 # How to use
 1. Extract the archive
 2. Run the executable
-3. The app will show in the system tray after few seconds.
+3. The app will show in the system tray after few seconds
 4. Play StarCraft II Co-op
 
 ![system tray](/Screenshots/systray.png)
