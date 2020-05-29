@@ -23,7 +23,12 @@ Download links:
 
 # Config file
 * You don't need to change anything in the config file for normal usage.
-* If you want to change how long the overlay is shown, set the duration to a different number of seconds.
+* Hotkeys for manually showing the overlay can be changed here. The overlay will automatically show after the game.
+
+  **KEY_SHOW = Ctrl+/**
+  **KEY_HIDE = Ctrl+***
+
+* If you want to change how long the overlay is visible when shown automatically, set the duration to a different number of seconds.
 
   **DURATION = 30**
   
