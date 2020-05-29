@@ -26,6 +26,7 @@ Download links:
 * Hotkeys for manually showing the overlay can be changed here. The overlay will automatically show after the game.
 
   **KEY_SHOW = Ctrl+/**
+  
   **KEY_HIDE = Ctrl+***
 
 * If you want to change how long the overlay is visible when shown automatically, set the duration to a different number of seconds.
