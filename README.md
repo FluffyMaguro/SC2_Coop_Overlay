@@ -1,8 +1,8 @@
 # StarCraft II Coop Overlay (SCO)
 
-![Screenshot](/Screenshots/scr1.png)
-
 This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. Or it can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications.
+
+![Screenshot](/Screenshots/scr1.png)
 
 # 
 Download links: 
