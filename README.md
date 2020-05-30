@@ -22,7 +22,7 @@ Download links:
 
 
 # Config file
-**Changes take effect when you start the app next time!**
+**Changes take effect the next time you start the app!**
 
 You don't need to change anything in the config file for normal usage.
 
