@@ -23,7 +23,7 @@ Download links:
 
 # Config file
 * You don't need to change anything in the config file for normal usage.
-* Hotkeys for manually showing the overlay can be changed here. The overlay will automatically show after the game.
+* Hotkeys for manually showing the overlay can be changed here. Althought overlay will automatically show after the game.
 
   **KEY_SHOW = Ctrl+/**
   
