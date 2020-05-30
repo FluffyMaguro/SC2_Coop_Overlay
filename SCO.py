@@ -9,10 +9,10 @@ from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, key
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 
-APPVERSION = 2
+APPVERSION = 3
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
-version_download = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
+github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 
 
 ### Config setup
@@ -57,8 +57,9 @@ def new_version():
     """ checks for a new version of the app """
     try:
         data = json.loads(requests.get(version_link).text)
-        if data['version'] > APPVERSION:
-            return True
+        print(f'Most current version: {data["version"]}. This version: {APPVERSION}')
+        if data['version'] > APPVERSION:        
+            return data['download_link_1']
         else:
             return False
     except:
@@ -76,7 +77,7 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = true; PORT = {PORT}; DURATION = {DURATION}")      
+            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}")      
             pass
 
 
@@ -110,7 +111,7 @@ def main():
 
     SCO = QtWidgets.QAction("StarCraft II Co-op Overlay")
     SCO.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_ToolBarHorizontalExtensionButton')))
-    SCO.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(version_download)))
+    SCO.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(github_link)))
     menu.addAction(SCO)
     menu.addSeparator()
 
@@ -125,9 +126,10 @@ def main():
 
     
     ### Check for updates
-    if new_version():
+    download_link = new_version()
+    if download_link:
         update = QtWidgets.QAction("New version available!")
-        update.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(version_download)))
+        update.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(download_link)))
         update.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_ArrowUp')))
     else:
         update = QtWidgets.QAction("Up-to-date")
@@ -150,13 +152,13 @@ def main():
         # view.setStyleSheet("background:transparent; background-color:rgba(0,0,0,0)") #unnecessary
 
         ### Set correct size and width for the widget; Setting it to full shows black screen on my machine, works fine on notebook
-        sg = QtWidgets.QDesktopWidget().availableGeometry()
+        sg = QtWidgets.QDesktopWidget().screenGeometry()
         view.setFixedSize(sg.width()-1, sg.height())
         view.move(1,0)
 
         ### Load webpage
-        if os.path.isfile('Layouts/Replay Analysis.html'):
-            path = os.path.join(os.getcwd(),'Layouts/Replay Analysis.html')
+        if os.path.isfile('Layouts/Layout.html'):
+            path = os.path.join(os.getcwd(),'Layouts/Layout.html')
             view.load(QtCore.QUrl().fromLocalFile(path))
             view.show()
         else:
