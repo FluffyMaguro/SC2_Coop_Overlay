@@ -2,7 +2,7 @@
 
 This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. Or it can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications.
 
-The overlay is fully customizable through editing the HTML file by any user. Its style can be changed, and new functions or elements can be added to the visible overlay (images, text, etc.).
+The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 ![Screenshot](/Screenshots/scr1.jpg)
 
