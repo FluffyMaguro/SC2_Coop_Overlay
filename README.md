@@ -28,27 +28,35 @@ Download links:
 
 You don't need to change anything in the config file for normal usage.
 
-* Hotkeys for manually showing the overlay can be changed here. Althought overlay will automatically show after the game.
+* **Changing hotkeys for manual overlay display**
 
-  **KEY_SHOW = Ctrl+/**
+  KEY_SHOW = Ctrl+/
   
-  **KEY_HIDE = Ctrl+***
+  KEY_HIDE = Ctrl+
 
-* If you want to change how long the overlay is visible when shown automatically, set the duration to a different number of seconds.
+* **Choosing players that will be preferably shown on top**
 
-  **DURATION = 30**
+  PLAYER_NAMES = Maguro,SeaMaguro
   
-* If you don't want to see overlay on your screen, you can disable it. You might be using it only as OBS overlay.
-
-  **SHOWOVERLAY = False**
+* **Changing the duration for how long the overlay is visible when shown automatically (in seconds)**
   
-* If you want your name to be always on the top, list your in-game player names in the config file. For example:
+  DURATION = 30
+  
+* **Hiding overlay. This can be useful if you only want the overlay to be shown in OBS or browser**  
 
-  **PLAYER_NAMES = Maguro,SeaMaguro**
+  SHOWOVERLAY = False
+  
+* **If you want to change the folder where it looks for replays. But it should fine them alone.**
 
-* If the app won't find your replays correctly, you can set the folder path manually. All file and subfolders will be searched for new replays. For example:
+  ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+  
+* **Other for debugging purposes**
+How old replays it looks for (in seconds).
+REPLAYTIME = 60
 
-  **ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts**
+Enables logging.
+LOGGING = True
+
 
 # Other notes
 * It works with both borderless and fullscreen mode in StarCraft II.
