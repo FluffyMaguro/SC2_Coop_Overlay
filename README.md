@@ -42,7 +42,7 @@ You don't need to change anything in the config file for normal usage.
   
   DURATION = 30
   
-* **Hiding overlay. This can be useful if you only want the overlay to be shown in OBS or browser**  
+* **Hiding overlay. This can be useful if you want the overlay to be shown only in OBS or browser**  
 
   SHOWOVERLAY = False
   
@@ -63,6 +63,5 @@ LOGGING = True
 
 # Other notes
 * It works with both borderless and fullscreen mode in StarCraft II.
-* I haven't tested it with non-English versions of the game.
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
