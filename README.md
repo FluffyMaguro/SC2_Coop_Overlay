@@ -30,33 +30,33 @@ You don't need to change anything in the config file for normal usage.
 
 * **Changing hotkeys for manual overlay display**
 
-KEY_SHOW = Ctrl+/
+   KEY_SHOW = Ctrl+/
   
-KEY_HIDE = Ctrl+
+   KEY_HIDE = Ctrl+
 
 * **Choosing players that will be preferably shown on top**
 
-PLAYER_NAMES = Maguro,SeaMaguro
+   PLAYER_NAMES = Maguro,SeaMaguro
   
 * **Changing the duration for how long the overlay is visible when shown automatically (in seconds)**
   
-DURATION = 30
+   DURATION = 30
   
 * **Hiding overlay. This can be useful if you want the overlay to be shown only in OBS or browser**  
 
-SHOWOVERLAY = False
+   SHOWOVERLAY = False
   
 * **If you want to change the folder where it looks for replays. But it should fine them alone.**
 
-ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
   
 * **How old replays it looks for (in seconds).**
 
-REPLAYTIME = 60
+   REPLAYTIME = 60
 
 * **Enables logging.**
 
-LOGGING = True
+   LOGGING = True
 
 
 # Other notes
