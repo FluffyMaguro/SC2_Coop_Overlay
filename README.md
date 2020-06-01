@@ -51,6 +51,7 @@ You don't need to change anything in the config file for normal usage.
   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
   
 * **Other for debugging purposes**
+
 How old replays it looks for (in seconds).
 
 REPLAYTIME = 60
