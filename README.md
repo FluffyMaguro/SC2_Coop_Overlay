@@ -52,9 +52,11 @@ You don't need to change anything in the config file for normal usage.
   
 * **Other for debugging purposes**
 How old replays it looks for (in seconds).
+
 REPLAYTIME = 60
 
 Enables logging.
+
 LOGGING = True
 
 
