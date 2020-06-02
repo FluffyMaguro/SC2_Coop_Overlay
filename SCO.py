@@ -11,20 +11,20 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 
 
-APPVERSION = 4
+APPVERSION = 5
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
-logclass.FILE = "SCO_Logging.txt"
+logclass.FILE = "SCO_log.txt"
 
 ### CONFIG SETUP
-if not(os.path.isfile('SCO_Config.ini')):
-    with open('SCO_Config.ini','w') as file:
+if not(os.path.isfile('SCO_config.ini')):
+    with open('SCO_config.ini','w') as file:
         file.write("""[CONFIG]\nSHOWOVERLAY = True""")
 
 config = configparser.ConfigParser()
-config.read('SCO_Config.ini')
+config.read('SCO_config.ini')
 
 ACCOUNTDIR = config['CONFIG'].get('ACCOUNTDIR',os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts'))
 
@@ -70,7 +70,7 @@ if 'KEY_HIDE' in config['CONFIG'] and config['CONFIG']['KEY_HIDE'] != '':
     KEY_HIDE = config['CONFIG']['KEY_HIDE']
 
 
-logger.info(f'\n{REPLAYTIME=}\n{DURATION=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{LOGGING=}\n{PLAYER_NAMES=}\n{ACCOUNTDIR=}\n--------')
+logger.info(f'\n{REPLAYTIME=}\n{DURATION=}\n{KEY_SHOW=}\n{SHOWOVERLAY=}\n{KEY_HIDE=}\n{LOGGING=}\n{PLAYER_NAMES=}\n{ACCOUNTDIR=}\n--------')
 
 def new_version():
     """ checks for a new version of the app """
@@ -101,17 +101,32 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
 
 
 def getIconFile(file):
+    """ get path to file when it's packaged with pyinstaller """
     if hasattr(sys, '_MEIPASS'):
         return os.path.normpath(os.path.join(sys._MEIPASS, 'src', file))
 
 
-def main():
+def startThreads():
+    """ threading moved to this function so I can import main function without threading """
+    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,))
+    t1.start()
+    t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
+    t2.start()
+
+    if KEY_SHOW != None:
+        t3 = threading.Thread(target = keyboard_thread_SHOW, daemon=True, args=(KEY_SHOW,))
+        t3.start()
+
+    if KEY_HIDE != None:
+        t4 = threading.Thread(target = keyboard_thread_HIDE, daemon=True, args=(KEY_HIDE,))
+        t4.start()
+
+
+def main(startthreads=True):
     app = QtWidgets.QApplication(sys.argv)
     view = WWW()
 
-    view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow) #This works
-    #Tool - hides from taskbar, but loses initial autofocus. Cover window works with autofocus.
-
+    view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
     
     ### Create the tray
@@ -126,12 +141,12 @@ def main():
     tray.setVisible(True)
     menu = QtWidgets.QMenu()
 
+    ### Link to github
     SCO = QtWidgets.QAction("StarCraft II Co-op Overlay")
     SCO.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_ToolBarHorizontalExtensionButton')))
     SCO.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(github_link)))
     menu.addAction(SCO)
     menu.addSeparator()
-
 
     ### Config
     config_file = QtWidgets.QAction(f"Config file")
@@ -141,7 +156,6 @@ def main():
     menu.addAction(config_file)
     menu.addSeparator()
 
-    
     ### Check for updates
     download_link = new_version()
     if download_link:
@@ -154,7 +168,6 @@ def main():
     menu.addAction(update)
     menu.addSeparator()
 
-
     ### Quit
     quit = QtWidgets.QAction("Quit")
     quit.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DialogCancelButton')))
@@ -166,7 +179,6 @@ def main():
     if SHOWOVERLAY:
         webpage = view.page()
         webpage.setBackgroundColor(QtCore.Qt.transparent)
-        # view.setStyleSheet("background:transparent; background-color:rgba(0,0,0,0)") #unnecessary
 
         ### Set correct size and width for the widget; Setting it to full shows black screen on my machine, works fine on notebook
         sg = QtWidgets.QDesktopWidget().screenGeometry()
@@ -187,19 +199,8 @@ def main():
             error.triggered.connect(app.quit)
             menu.addAction(error)
 
-
-    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,))
-    t1.start()
-    t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
-    t2.start()
-
-    if KEY_SHOW != None:
-        t3 = threading.Thread(target = keyboard_thread_SHOW, daemon=True, args=(KEY_SHOW,))
-        t3.start()
-
-    if KEY_HIDE != None:
-        t4 = threading.Thread(target = keyboard_thread_HIDE, daemon=True, args=(KEY_HIDE,))
-        t4.start()
+    if startthreads:        
+        startThreads()            
 
     sys.exit(app.exec_())
 

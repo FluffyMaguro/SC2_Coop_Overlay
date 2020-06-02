@@ -15,6 +15,12 @@ OverlayMessages = []
 lock = threading.Lock()
 logger = logclass('SCOF','DEBUG')
 
+def get_OverlayMessages():
+    return OverlayMessages
+
+def get_lock():
+    return lock
+
 def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
     """ Checks every 4s for new replays  """
     already_checked_replays = set()
@@ -30,15 +36,14 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
                     if current_time - os.path.getmtime(file_path) < REPLAYTIME: 
                         logger.debug(f'New replay: {file_path}')
                         try:   
-                            replay_message, replay_dict = analyse_replay(file_path,PLAYER_NAMES)
-                            if replay_message != '':                           
-                                if len(replay_dict) > 0 :
-                                    logger.debug('Appending replay analysis results')
-                                    lock.acquire()
-                                    OverlayMessages.append(replay_dict) #save in queue to send
-                                    lock.release()    
-                                    with open('ReplayAnalysisLog.txt', 'ab') as file: #save into a text file
-                                        file.write(('\n'+str(replay_dict)).encode('utf-8'))
+                            replay_dict = analyse_replay(file_path,PLAYER_NAMES)
+                            if len(replay_dict) > 0 :
+                                logger.debug('Replay analysis result looks good, appending...')
+                                lock.acquire()
+                                OverlayMessages.append(replay_dict) #save in queue to send
+                                lock.release()    
+                                with open('SCO_analysis_log.txt', 'ab') as file: #save into a text file
+                                    file.write((str(replay_dict)).encode('utf-8')+'\n')
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})') 
                             break
@@ -46,7 +51,7 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
                             exc_type, exc_value, exc_tb = sys.exc_info()
                             logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
 
-        time.sleep(4)   
+        time.sleep(3)   
 
 
 async def manager(websocket, path):
@@ -85,8 +90,8 @@ def keyboard_thread_HIDE(HIDE):
     logger.info('Starting keyboard hide thread')
     while True:
         keyboard.wait(HIDE)
-        lock.acquire()
         logger.info('Hide event')
+        lock.acquire()
         OverlayMessages.append({'hideEvent': True})
         lock.release()
 
@@ -95,7 +100,7 @@ def keyboard_thread_SHOW(SHOW):
     logger.info('Starting keyboard show thread')
     while True:
         keyboard.wait(SHOW)
-        lock.acquire()
         logger.info('Show event')
+        lock.acquire()
         OverlayMessages.append({'showEvent': True})
         lock.release()

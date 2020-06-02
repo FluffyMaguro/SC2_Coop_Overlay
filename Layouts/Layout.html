@@ -241,14 +241,14 @@
     #mutatorinfo {
         margin: auto;
         margin-top: 8.33vh;
-        width: 41.67vh;
-        height: 41.67vh;
+        width: 65vh;
+        height: 65vh;
         text-align: center;
     }
 
     #mutatorinfo div {
-        width: 31.25vh;
-        height: 5.21vh;
+        width: 60vh;
+        height: 10vh;
         border: 2px solid #444;
         margin: 0px 4px 10px 4px;
         color: white;
@@ -266,28 +266,29 @@
     }
 
     #mutatorinfo div p {
-        margin-left: 5.47vh;
-        margin-top: -5.21vh;
+        margin-left: 11vh;
+        margin-top: -10vh;
         margin-right: 0.52vh;
-        height: 0.73vh;
+        height: 2vh;
     }
 
     .muttop {
         color: orange;
         text-transform: uppercase;
-        font-size: 1.04vh;
+        font-size: 2vh;
     }
 
     .mutvalue {
         font-size: 1.04vh;
         color: #777;
+        font-size: 2vh;
     }
 
     .mutdesc {
         display: block;
-        height: 3.313vh;
+        height: 7vh;
         overflow: hidden;
-        font-size: 0.83vh;
+        font-size: 1.7vh;
     }
     </style>
 </head>
@@ -544,7 +545,7 @@ function reconnect_to_socket(message) {
 
 function mutatorInfo(data) {
     if (!(showmutators)) {return};                            
-    var duration = 20 * 1000;
+    var mduration = 15 * 1000;
     if(data.length > 6) {
         document.getElementById('mutatorinfo').style.width = '133vh';
     }
@@ -553,15 +554,9 @@ function mutatorInfo(data) {
         divelement.getElementsByTagName("img")[0].src = '../HQ Mutator Icons/' + data[i][0] + '.png';
         divelement.getElementsByTagName("p")[0].innerHTML = '<span class="muttop">' + data[i][0] + '</span><span class="mutvalue"> ' + data[i][1] + '</span><br><span class="mutdesc">' + mutatorDescriptions[data[i][0]] + '</span>';
         divelement.style.display = 'inline-block';
-        setTimeout(function(el) {
-            el.style.opacity = '1'
-        }, i * 400, divelement);
-        setTimeout(function(el) {
-            el.style.opacity = '0'
-        }, duration, divelement);
-        setTimeout(function(el) {
-            el.style.display = 'none'
-        }, duration + 1500, divelement);
+        setTimeout(function(el) {el.style.opacity = '1'}, i * 400, divelement);
+        setTimeout(function(el) {el.style.opacity = '0'}, mduration, divelement);
+        setTimeout(function(el) {el.style.display = 'none'}, mduration + 5000, divelement);
     }
 };
 function postGameStatsTimed(data) {

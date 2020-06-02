@@ -38,9 +38,7 @@ def switch_names(pdict):
     """ Changes names to that in unit dictionary, sums duplicates"""
     temp_dict = {}
 
-       
     for key in pdict:
-
         #for locusts, broodlings, interceptors, add kills to the main unit. Don't add unit created/lost
         if key in UnitAddKillsTo:
             name = UnitAddKillsTo[key]
@@ -52,12 +50,13 @@ def switch_names(pdict):
         else:
             #translate names & sum up those with the same names
             name = UnitNameDict.get(key,key)
-
             if name in temp_dict:
-                for a in range(0,len(temp_dict[name])):
+                for a in range(len(temp_dict[name])):
                     temp_dict[name][a] += pdict[key][a]
             else:
-                temp_dict[name] = pdict[key]
+                temp_dict[name] = list()
+                for a in range(len(pdict[key])):
+                    temp_dict[name].append(pdict[key][a])
 
     return temp_dict
 
@@ -82,7 +81,7 @@ def analyse_replay(filepath, playernames=['']):
         replay = sc2reader.load_replay(filepath,load_level=3)
     except:
         logger.error(f'ERROR: sc2reader failed to load replay ({filepath})')
-        return '',{}
+        return {}
 
     
     ### find Amon players
@@ -258,19 +257,19 @@ def analyse_replay(filepath, playernames=['']):
                         if killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_main[killing_unit_type] = [1,0,1,0]
+                            unit_type_dict_main[killing_unit_type] = [0,0,1,0]
 
                     if ally_player == event.killing_player_id:
                         if killing_unit_type in unit_type_dict_ally:
                             unit_type_dict_ally[killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_ally[killing_unit_type] = [1,0,1,0]
+                            unit_type_dict_ally[killing_unit_type] = [0,0,1,0]
 
                     if event.killing_player_id in amon_players:  
                         if killing_unit_type in unit_type_dict_amon:
                             unit_type_dict_amon[killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_amon[killing_unit_type] = [1,0,1,0]
+                            unit_type_dict_amon[killing_unit_type] = [0,0,1,0]
                
                 ### Update unit deaths
 
@@ -316,7 +315,7 @@ def analyse_replay(filepath, playernames=['']):
 
     #Get messages
     total_kills = killcounts[1] + killcounts[2]
-    replay_report = f"{game_result} on {replay.map_name}!" 
+    replay_report = ""
 
     replay_report_dict = dict()
     replay_report_dict['replaydata'] = True
@@ -343,20 +342,15 @@ def analyse_replay(filepath, playernames=['']):
     else:
         logger.error('No ally player')
 
-
     if total_kills == 0:
-        return '', {}
+        return {}
 
-    replay_report = f"{replay_report} {main_player_name} ({100*killcounts[main_player]/total_kills:.0f}% kills, {map_data[main_player]:.0f} APM) & {ally_player_name} ({100*killcounts[ally_player]/total_kills:.0f}% kills, {map_data.get(ally_player,0):.0f} APM)."        
     percent_cutoff = 0.00
     player_max_units = 100 #max units sent. Javascript then sets its own limit.
 
-    def playermessage(playername,player,pdict):
-
-        #Player kills
+    def playercalc(playername,player,pdict):
         new_dict = switch_names(pdict)
         sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse = True, key=lambda item: item[1][2])} #sorts by number of create (0), lost (1), kills (2), K/D (3)
-        temp_string = f" {playername}'s best  units: "
         message_count = 0
 
         #save data
@@ -370,57 +364,9 @@ def analyse_replay(filepath, playernames=['']):
                 replay_report_dict[unitkey][unit] = sorted_dict[unit]
                 replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2]/player_kill_count,2)
 
-        #generate text
-        maxUnits = 0
-        for key in sorted_dict:
-            if sorted_dict[key][2] > 0:
-                maxUnits +=1
 
-        maxUnits = min(maxUnits, 3)
-
-        for key in sorted_dict:
-            if message_count < maxUnits and sorted_dict[key][2]/player_kill_count > 0.1: #short and for units with > 10% kills
-                message_count +=1
-                if message_count == 1 and player == main_player:
-                    temp_string = f'{temp_string} {key}: {sorted_dict[key][2]} | {100*sorted_dict[key][2]/player_kill_count:.0f}% player-kills ({sorted_dict[key][0]} created, {sorted_dict[key][1]} lost),' 
-                elif message_count == maxUnits:
-                    temp_string = f'{temp_string} and {key}: {sorted_dict[key][2]} | {100*sorted_dict[key][2]/player_kill_count:.0f}% pkills ({sorted_dict[key][0]}/{sorted_dict[key][1]}).'
-                    break
-                else:
-                    temp_string = f'{temp_string} {key}: {sorted_dict[key][2]} | {100*sorted_dict[key][2]/player_kill_count:.0f}% pkills ({sorted_dict[key][0]}/{sorted_dict[key][1]}),' 
-
-        #add comma
-        if temp_string != '':
-            temp_string = temp_string[:-1]+'.'
-
-        if message_count == 0:
-            return ''
-
-        return temp_string  
-
-    replay_report = replay_report + playermessage(main_player_name, main_player, unit_type_dict_main) + playermessage(ally_player_name, ally_player, unit_type_dict_ally)
-
-
-    #Amon lost
-    sorted_amon = switch_names(unit_type_dict_amon)
-    sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][1])}
-    message_count = 0
-    temp_string_init = " Amon has lost"
-    temp_string = ''
-
-    #generate text
-    for key in sorted_amon:  
-        if sorted_amon[key][1] > 0 and not('droppod' in key.lower()) and not('larva' in key.lower()):
-            message_count += 1
-            if message_count > 2:
-                temp_string = f'{temp_string} and {sorted_amon[key][1]} {key}s.' 
-                break
-            else:   
-                temp_string = f'{temp_string} {sorted_amon[key][1]} {key}s,' 
-
-    if temp_string != '':
-        temp_string = temp_string[:-1]+'.'
-        replay_report = replay_report + temp_string_init + temp_string
+    playercalc(main_player_name, main_player, unit_type_dict_main)
+    playercalc(ally_player_name, ally_player, unit_type_dict_ally)
 
 
     #Amon kills
@@ -428,14 +374,14 @@ def analyse_replay(filepath, playernames=['']):
     sorted_amon = switch_names(unit_type_dict_amon)
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][0])}
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][2])}
-    temp_string_init = " Amon's best units were"
-    temp_string = ''
 
+    # get total amount of kills from Amon
     total_amon_kills = 0
     for player in amon_players:
         total_amon_kills += killcounts[player]
     total_amon_kills = total_amon_kills if total_amon_kills != 0 else 1
 
+    #calculate Amon unit percentages and fill data
     replay_report_dict['amonUnits'] = dict()
     idx = 0
     for unit in sorted_amon:
@@ -444,50 +390,15 @@ def analyse_replay(filepath, playernames=['']):
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
-    for key in sorted_amon:  
-        if sorted_amon[key][2] > 0:
-            message_count += 1
-            if message_count > 1:
-                temp_string = f'{temp_string} and {key} with {sorted_amon[key][2]} kills.' 
-                break
-            else:   
-                temp_string = f'{temp_string} {key} with {sorted_amon[key][2]} kills,' 
-
-    if temp_string != '':
-        temp_string = temp_string[:-1]+'.'
-        replay_report = replay_report + temp_string_init + temp_string
-
-    return replay_report, replay_report_dict
+    return replay_report_dict
 
 
 ### FOR DEBUGGING PURPOSES
-# if __name__ == "__main__":
-#     from pprint import pprint
-    # from multiprocessing import Pool
+if __name__ == "__main__":
+    from pprint import pprint
 
-    # replays = list()
-    # ACCOUNTDIR = r'C:\Users\Maguro\Documents\StarCraft II\Accounts'
-    # for root, directories, files in os.walk(ACCOUNTDIR):
-    #     for file in files:
-    #         if file.endswith('.SC2Replay'):
-    #             file_path = os.path.join(root,file)
-    #             replays.append(file_path)
-
-
-    # with Pool() as pool:
-    #     output = pool.map(analyse_replay,replays)
-
-    # output = [res[1].get('amonUnits',None) for res in output]
-    # output = [li for li in output if li != None]
-    # output = [ul for li in output for ul in li]
-    # output = {unit:output.count(unit) for unit in output}
-    # output = {k:v for k,v in sorted(output.items(), key=lambda x:x[1], reverse=True)}
-    # print()
-    # pprint(output,sort_dicts=False)
-
-
-    # file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Malwarfare (270).SC2Replay'
-    # replay_message, replay_dict = analyse_replay(file_path,['Maguro'])
-    # pprint(replay_dict, sort_dicts=False)
+    file_path = 'VP.SC2Replay'
+    replay_dict = analyse_replay(file_path,['Maguro'])
+    pprint(replay_dict, sort_dicts=False)
 
     
