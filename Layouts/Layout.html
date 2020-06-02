@@ -38,10 +38,10 @@
     #stats {
         color: white;
         position: absolute;
-        top: 6.3vh;
+        top: 5.3vh;
         right: -50vh;
         width: 50vh;
-        transition: right 1.5s;
+        transition: right 1.5s, opacity 1s;
     }
 
     #topstats {
@@ -87,10 +87,13 @@
     }
 
     #result {
+        position: absolute;
+        top: 0vh;
+        width: 100%;
         font-size: 2.5vh;
         opacity: 0.9;
-        position: absolute;
-        left: 42%;
+        text-align: center;
+        
     }
 
     #killbar {
@@ -138,7 +141,7 @@
     #kills {
         position: absolute;
         top: 1vh;
-        left: 45%;
+        width: 100%;
         text-align: center;
         opacity: 0.7;
     }
@@ -157,7 +160,9 @@
 
     #brutal {
         position: absolute;
-        left: 22.2vh;
+        top: 7.8vh;
+        width: 100%;
+        text-align: center;
     }
 
     #com2 {
@@ -293,7 +298,7 @@
         <div id="topstats">
             <div id="nodata">NO DATA</div>
             <span id="name1"></span>
-            <span id="result"></span>
+            <div id="result"></div>
             <span id="name2"></span>
             <div id="killbar">
                 <div id="killbar1">
@@ -302,12 +307,12 @@
                 <div id="killbar2">
                     <span id="percent2"></span>
                 </div>
-                <span id="kills">KILLS</span>
+                <div id="kills">KILLS</div>
             </div>
             <div>
                 <span id="com1"></span>
                 <span id="com2"></span>
-                <span id="brutal"></span>
+                <div id="brutal"></div>
                 <span id="apm1"></span>
                 <span id="apm2"></span>
             </div>
@@ -487,6 +492,7 @@ var function_is_running = false;
 var PORT = 7305;
 var DURATION = 60;
 var manuallyShown = false;
+var maxUnits = 5;
 connect_to_socket();
 
 
@@ -501,7 +507,7 @@ function connect_to_socket() {
         var data = JSON.parse(event.data)
         console.log(data);
         if (data['replaydata'] != null) {
-            postGameStats(JSON.parse(event.data))
+            postGameStatsTimed(JSON.parse(event.data))
         } else if (data['mutatordata'] != null){
             mutatorInfo(data['data'])
         } else if (data['hideEvent'] != null){
@@ -558,6 +564,17 @@ function mutatorInfo(data) {
         }, duration + 1500, divelement);
     }
 };
+function postGameStatsTimed(data) {
+    //This is a wrapper for postGameStats
+    //The goal is to nicely update the data if it's already showing                                    
+    if (document.getElementById('stats').style.right != '-50vh') {
+        document.getElementById('stats').style.opacity = '0';
+        setTimeout(function(){document.getElementById('stats').style.opacity = '1'},1000);
+        setTimeout(postGameStats,1000,data)
+    } else {
+        postGameStats(data);
+    }              
+   };
 
 function postGameStats(data) {
     manuallyShown = false;
@@ -614,7 +631,7 @@ function hidestats() {
     document.getElementById('bgdiv').style.opacity = '0';
 };
 
-function showstats() {                     
+function showstats() {                            
     document.getElementById('stats').style.right = '2.5vh';
     document.getElementById('bgdiv').style.opacity = '1';
 };
@@ -626,6 +643,7 @@ function fill(el, dat) {
 function fillmasteries(el, dat, commander) {
     var text = '';
     if((dat == null) || (commander==null) || (commander=='')){
+        document.getElementById(el).innerHTML = '';
         return
     };
     for(i = 0; i < dat.length; i++) {
@@ -645,10 +663,13 @@ function fillunits(el, dat) {
     var text = '<span class="unitkills">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kills</span><span class="unitcreated">created</span><span class="unitdied">lost</span><br>';
     var percent = 0
     var spacer = ''
+    var idx = 0
     if(dat == null) {
         return
     };
     for(let [key, value] of Object.entries(dat)) {
+        idx += 1;
+        if (idx === (maxUnits+1)) { break };
         spacer = ''
         percent = Math.round(100 * value[3])
         if(percent < 10) {

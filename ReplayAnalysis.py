@@ -6,41 +6,15 @@ import traceback
 
 import sc2reader
 from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo
+from MLogging import logclass
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit "]
 duplicating_units = ['HotSRaptor']
-skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod']
+skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","Warp Conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
 
 
-
-class logclass:
-    """ custom class for logging purposes """
-    def __init__(self,name,showtype,level):
-        self.name = name
-        self.showtype = showtype
-        self.level = level
-
-    def debug(self,message):
-        if self.level > 0:
-            return
-        mtype = ' (D)' if self.showtype else ''
-        print(f'{self.name}{mtype}: {message}')
-
-    def info(self,message):
-        if self.level > 1:
-            return
-        mtype = ' (I)' if self.showtype else ''
-        print(f'{self.name}{mtype}: {message}')
-
-    def error(self,message):
-        if self.level > 2:
-            return
-        mtype = ' (E)' if self.showtype else ''
-        print(f'{self.name}{mtype}: {message}')
-
-
-logger = logclass('RA',False,1)
+logger = logclass('REPA','INFO')
 
 
 def contains_skip_strings(pname):
@@ -89,7 +63,7 @@ def switch_names(pdict):
 
 
 
-def analyse_replay(filepath, playernames):
+def analyse_replay(filepath, playernames=['']):
     """ Analyses the replay and returns message into the chat"""
     
     ### Structure: {unitType : [#created, #died, #kills, #killfraction]}
@@ -112,10 +86,12 @@ def analyse_replay(filepath, playernames):
 
     
     ### find Amon players
-    amon_players = []
+    amon_players = set()
+    amon_players.add(3)
+    amon_players.add(4)
     for per in replay.person:
-        if check_amon_forces(amon_forces,str(replay.person[per])) and per > 2:
-            amon_players.append(per)
+        if check_amon_forces(amon_forces,str(replay.person[per])) and per > 4:
+            amon_players.add(per)
 
 
     ### Find player names and numbers
@@ -134,7 +110,6 @@ def analyse_replay(filepath, playernames):
     #in case the name wasn't found            
     if main_player_name == '':
         main_player_name = str(replay.person[main_player]).split(' - ')[1].replace(' (Zerg)', '').replace(' (Terran)', '').replace(' (Protoss)', '')
-     
    
     #ally
     ally_player = 1 if main_player == 2 else 2
@@ -144,14 +119,14 @@ def analyse_replay(filepath, playernames):
     else:
         ally_player_name = str(replay.person[ally_player]).split(' - ')[1].replace(' (Zerg)', '').replace(' (Terran)', '').replace(' (Protoss)', '')
 
-
-
     logger.debug(f'Main player: {main_player_name} | {main_player} | Ally player: {ally_player_name} | {ally_player} | {amon_players}')
 
 
     ### get APM & Game result
     game_result = 'Defeat'
     map_data = dict()
+    map_data[main_player] = 0
+    map_data[ally_player] = 0
 
     for player in metadata["Players"]:
         if player["PlayerID"] == main_player:
@@ -333,7 +308,7 @@ def analyse_replay(filepath, playernames):
                                
             except Exception as e:
                 exc_type, exc_value, exc_tb = sys.exc_info()
-                traceback.print_exception(exc_type, exc_value, exc_tb)
+                logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
 
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
@@ -366,20 +341,21 @@ def analyse_replay(filepath, playernames):
         replay_report_dict['allyCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_level']
         replay_report_dict['allyMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_mastery_talents']
     else:
-        logger.info('No ally player')
+        logger.error('No ally player')
 
 
     if total_kills == 0:
         return '', {}
 
     replay_report = f"{replay_report} {main_player_name} ({100*killcounts[main_player]/total_kills:.0f}% kills, {map_data[main_player]:.0f} APM) & {ally_player_name} ({100*killcounts[ally_player]/total_kills:.0f}% kills, {map_data.get(ally_player,0):.0f} APM)."        
-
+    percent_cutoff = 0.00
+    player_max_units = 100 #max units sent. Javascript then sets its own limit.
 
     def playermessage(playername,player,pdict):
 
         #Player kills
-        sorted_dict = {k:v for k,v in sorted(pdict.items(), reverse = True, key=lambda item: item[1][2])} #sorts by number of create (0), lost (1), kills (2), K/D (3)
-        sorted_dict = switch_names(sorted_dict)
+        new_dict = switch_names(pdict)
+        sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse = True, key=lambda item: item[1][2])} #sorts by number of create (0), lost (1), kills (2), K/D (3)
         temp_string = f" {playername}'s best  units: "
         message_count = 0
 
@@ -390,7 +366,7 @@ def analyse_replay(filepath, playernames):
         idx = 0
         for unit in sorted_dict:
             idx += 1
-            if (sorted_dict[unit][2]/player_kill_count > 0.05) and idx < 6:
+            if (sorted_dict[unit][2]/player_kill_count > percent_cutoff) and idx < (player_max_units+1):
                 replay_report_dict[unitkey][unit] = sorted_dict[unit]
                 replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2]/player_kill_count,2)
 
@@ -426,8 +402,8 @@ def analyse_replay(filepath, playernames):
 
 
     #Amon lost
-    sorted_amon = {k:v for k,v in sorted(unit_type_dict_amon.items(), reverse = True, key=lambda item: item[1][1])}
-    sorted_amon = switch_names(sorted_amon)
+    sorted_amon = switch_names(unit_type_dict_amon)
+    sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][1])}
     message_count = 0
     temp_string_init = " Amon has lost"
     temp_string = ''
@@ -449,9 +425,9 @@ def analyse_replay(filepath, playernames):
 
     #Amon kills
     message_count = 0
-    sorted_amon = {k:v for k,v in sorted(unit_type_dict_amon.items(), reverse = True, key=lambda item: item[1][0])}
+    sorted_amon = switch_names(unit_type_dict_amon)
+    sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][0])}
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][2])}
-    sorted_amon = switch_names(sorted_amon)
     temp_string_init = " Amon's best units were"
     temp_string = ''
 
@@ -464,7 +440,7 @@ def analyse_replay(filepath, playernames):
     idx = 0
     for unit in sorted_amon:
         idx += 1
-        if (contains_skip_strings(unit)==False) and idx < 6:
+        if (contains_skip_strings(unit)==False) and idx < (player_max_units+1) and sorted_amon[unit][2] > 0:
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
@@ -484,13 +460,34 @@ def analyse_replay(filepath, playernames):
     return replay_report, replay_report_dict
 
 
-### DEBUG
-if __name__ == "__main__":
-    from pprint import pprint
-    file_path = r'C:\Users\Maguro\Downloads\Transtarsonische_Eisenbahn_907.SC2Replay' #Punisher's replay
-    # file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Mist Opportunities (295).SC2Replay')
-    replay_message, replay_dict = analyse_replay(file_path,['Maguro'])
-    # logger.info(f'report: "{replay_message}"')
-    pprint(replay_dict, sort_dicts=False)
+### FOR DEBUGGING PURPOSES
+# if __name__ == "__main__":
+#     from pprint import pprint
+    # from multiprocessing import Pool
+
+    # replays = list()
+    # ACCOUNTDIR = r'C:\Users\Maguro\Documents\StarCraft II\Accounts'
+    # for root, directories, files in os.walk(ACCOUNTDIR):
+    #     for file in files:
+    #         if file.endswith('.SC2Replay'):
+    #             file_path = os.path.join(root,file)
+    #             replays.append(file_path)
+
+
+    # with Pool() as pool:
+    #     output = pool.map(analyse_replay,replays)
+
+    # output = [res[1].get('amonUnits',None) for res in output]
+    # output = [li for li in output if li != None]
+    # output = [ul for li in output for ul in li]
+    # output = {unit:output.count(unit) for unit in output}
+    # output = {k:v for k,v in sorted(output.items(), key=lambda x:x[1], reverse=True)}
+    # print()
+    # pprint(output,sort_dicts=False)
+
+
+    # file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Malwarfare (270).SC2Replay'
+    # replay_message, replay_dict = analyse_replay(file_path,['Maguro'])
+    # pprint(replay_dict, sort_dicts=False)
 
     
