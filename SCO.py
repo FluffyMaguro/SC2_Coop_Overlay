@@ -5,32 +5,48 @@ import threading
 import configparser
 
 import requests
-from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
+from MLogging import logclass
+from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 
-APPVERSION = 3
+
+APPVERSION = 4
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
+logger = logclass('SCO','INFO')
+logclass.FILE = "SCO_Logging.txt"
 
-
-### Config setup
-if not(os.path.isfile('OverlayConfig.ini')):
-    with open('OverlayConfig.ini','w') as file:
+### CONFIG SETUP
+if not(os.path.isfile('SCO_Config.ini')):
+    with open('SCO_Config.ini','w') as file:
         file.write("""[CONFIG]\nSHOWOVERLAY = True""")
 
 config = configparser.ConfigParser()
-config.read('OverlayConfig.ini')
+config.read('SCO_Config.ini')
 
-ACCOUNTDIR = os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts')
-if 'ACCOUNTDIR' in config['CONFIG']:
-    ACCOUNTDIR = config['CONFIG']['ACCOUNTDIR']
+ACCOUNTDIR = config['CONFIG'].get('ACCOUNTDIR',os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts'))
+
+
+LOGGING = config['CONFIG'].get('LOGGING','')
+if LOGGING.lower() in ['false','0','no','']:
+    LOGGING = False
+else:
+    LOGGING = True
+
+logclass.LOGGING = True
+
+REPLAYTIME = config['CONFIG'].get('REPLAYTIME','60')
+try:
+    REPLAYTIME = int(REPLAYTIME)
+except:
+    REPLAYTIME = 60
 
 SHOWOVERLAY = True
 if 'SHOWOVERLAY' in config['CONFIG']:
-    SHOWOVERLAY = config['CONFIG']['SHOWOVERLAY']
-    if SHOWOVERLAY.lower() in ['false','0','no']:
+    SHOWOVERLAY_value = config['CONFIG']['SHOWOVERLAY']
+    if SHOWOVERLAY_value.lower() in ['false','0','no']:
         SHOWOVERLAY = False
 
 PLAYER_NAMES = []
@@ -39,8 +55,11 @@ if 'PLAYER_NAMES' in config['CONFIG']:
         PLAYER_NAMES.append(player.strip())
 
 DURATION = 60
-if 'DURATION' in config['CONFIG'] and int(config['CONFIG']['DURATION']) != 0:
-    DURATION = int(config['CONFIG']['DURATION'])
+if 'DURATION' in config['CONFIG']:
+    try:
+        DURATION = int(config['CONFIG']['DURATION'])
+    except:
+        pass
 
 KEY_SHOW = None
 if 'KEY_SHOW' in config['CONFIG'] and config['CONFIG']['KEY_SHOW'] != '':
@@ -51,19 +70,19 @@ if 'KEY_HIDE' in config['CONFIG'] and config['CONFIG']['KEY_HIDE'] != '':
     KEY_HIDE = config['CONFIG']['KEY_HIDE']
 
 
-print(f'{KEY_SHOW=}\n{KEY_HIDE=}')
+logger.info(f'\n{REPLAYTIME=}\n{DURATION=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{LOGGING=}\n{PLAYER_NAMES=}\n{ACCOUNTDIR=}\n--------')
 
 def new_version():
     """ checks for a new version of the app """
     try:
         data = json.loads(requests.get(version_link).text)
-        print(f'Most current version: {data["version"]}. This version: {APPVERSION}')
+        logger.info(f'Most current version: {data["version"]}. This version: {APPVERSION}')
         if data['version'] > APPVERSION:        
             return data['download_link_1']
         else:
             return False
     except:
-        print('Failed to check for the new version')
+        logger.error('Failed to check for the new version')
         return False
 
 
@@ -90,10 +109,8 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     view = WWW()
 
-    view.setWindowFlags(QtCore.Qt.FramelessWindowHint|\
-                        QtCore.Qt.WindowTransparentForInput|\
-                        QtCore.Qt.WindowStaysOnTopHint|\
-                        QtCore.Qt.CoverWindow) #Tool - hides from taskbar, but loses initial autofocus. Cover window works with autofocus.
+    view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow) #This works
+    #Tool - hides from taskbar, but loses initial autofocus. Cover window works with autofocus.
 
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
     
@@ -162,7 +179,7 @@ def main():
             view.load(QtCore.QUrl().fromLocalFile(path))
             view.show()
         else:
-            print("Error! Failed to locate the html file")
+            logger.error("Error! Failed to locate the html file")
             menu.addSeparator()
             error = QtWidgets.QAction("Error! Failed to locate the html file")
             error.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
@@ -171,7 +188,7 @@ def main():
             menu.addAction(error)
 
 
-    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,))
+    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,))
     t1.start()
     t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
     t2.start()
@@ -183,7 +200,6 @@ def main():
     if KEY_HIDE != None:
         t4 = threading.Thread(target = keyboard_thread_HIDE, daemon=True, args=(KEY_HIDE,))
         t4.start()
-
 
     sys.exit(app.exec_())
 
