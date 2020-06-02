@@ -8,7 +8,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 # 
 Download links: 
-* [Mega](https://mega.nz/file/QpFjDSRJ#DvHCKvK4gI72JoVwTfhI2p2VeL-CAymNnkhY0QJ-WpU)
+* [Mega](https://mega.nz/file/t1VCCYAI#5pt7Cz-93zmgSsat3xqBsZTDeYoB5Zo9DBOGJf_8UjY)
 * [Google-drive](https://drive.google.com/file/d/1gbsPGCzPZSZlXW88H7wfDZmMwjUZByIS/view)
 * Or run the script with Python
 
