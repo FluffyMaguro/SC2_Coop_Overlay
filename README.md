@@ -60,9 +60,19 @@ You don't need to change anything in the config file for normal usage.
 * **Enables logging.**
 
    LOGGING = True
+   
+* **Added an option for automactic upload of analysed replays to https://starcraft2coop.com/**
 
+   AOM_NAME = Maguro (account name)
+
+   AOM_SECRETKEY = .... (secret key generated on the site)
 
 # Other notes
 * The overlay works with the borderless mode (windowed fullscreen) in StarCraft II. In the fullscreen mode, the overlay often loses focus and won't show over the game. 
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
+
+# Change log
+* 1.6 Added support for https://starcraft2coop.com & small tweaks
+
+* 1.0 – 1.5 Initial versions
