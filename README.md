@@ -18,9 +18,10 @@ Download links:
 3. The app will show in the system tray after few seconds
 
 ![system tray](/Screenshots/systray1.png)
+
 4. Set in-game display mode to Windowed fullscreen (borderless)
 
-![Screenshot](/Screenshots/DisplayMode.jpg)
+![Screenshot](/Screenshots/Display.jpg)
 
 
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
