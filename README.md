@@ -16,10 +16,9 @@ Download links:
 1. Extract the archive
 2. Run the executable
 3. The app will show in the system tray after few seconds
+4. Set in-game display mode to Windowed fullscreen (borderless)
 
 ![system tray](/Screenshots/systray.jpg)
-
-4. Set in-game display mode to Windowed fullscreen (borderless)
 
 ![Screenshot](/Screenshots/Display.jpg)
 
