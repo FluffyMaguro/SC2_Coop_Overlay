@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import time
+import requests
 import threading
 import traceback
 import asyncio
@@ -13,7 +14,7 @@ from MLogging import logclass
 ### Storage for all messages
 OverlayMessages = []
 lock = threading.Lock()
-logger = logclass('SCOF','DEBUG')
+logger = logclass('SCOF','INFO')
 
 def get_OverlayMessages():
     return OverlayMessages
@@ -21,7 +22,7 @@ def get_OverlayMessages():
 def get_lock():
     return lock
 
-def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
+def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
     """ Checks every 4s for new replays  """
     already_checked_replays = set()
     while True:   
@@ -41,9 +42,11 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
                                 logger.debug('Replay analysis result looks good, appending...')
                                 lock.acquire()
                                 OverlayMessages.append(replay_dict) #save in queue to send
-                                lock.release()    
+                                lock.release()
+                                if not(replay_dict['mainCommander'] in [None,'']):
+                                    upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY)    
                                 with open('SCO_analysis_log.txt', 'ab') as file: #save into a text file
-                                    file.write((str(replay_dict)).encode('utf-8')+'\n')
+                                    file.write((str(replay_dict)+'\n').encode('utf-8'))                              
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})') 
                             break
@@ -52,6 +55,30 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME):
                             logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
 
         time.sleep(3)   
+
+
+def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY):
+    """ function handling uploading the replay on the Aommaster's server"""
+    if AOM_NAME == None or AOM_SECRETKEY==None:
+        return
+
+    url = f'http://starcraft2coop.com/scripts/assistant/replay.php?username={AOM_NAME}&secretkey={AOM_SECRETKEY}'
+    try:
+        with open(file_path, 'rb') as file:
+            response = requests.post(url, files={'file': file})
+        logger.info(f'Replay upload reponse: {response.text}')
+     
+        if 'Success' in response.text or 'Error' in response.text:
+            lock.acquire()
+            OverlayMessages.append({'uploadEvent':True,'response':response.text})
+            lock.release()
+    
+    except Exception as e:
+        lock.acquire()
+        OverlayMessages.append({'uploadEvent':True,'response':'Error'})
+        lock.release()
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
 
 
 async def manager(websocket, path):

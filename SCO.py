@@ -11,7 +11,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 
 
-APPVERSION = 5
+APPVERSION = 6
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
@@ -26,57 +26,51 @@ if not(os.path.isfile('SCO_config.ini')):
 config = configparser.ConfigParser()
 config.read('SCO_config.ini')
 
-ACCOUNTDIR = config['CONFIG'].get('ACCOUNTDIR',os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts'))
+def get_configvalue(name,default,section='CONFIG'):
+    """ function to get values out of the config file in the correct type"""
+    if name in config[section]:
+        if config[section][name].strip() != '':
+            #integers
+            if isinstance(default, int):
+                try:
+                    return int(config[section][name].strip())
+                except:
+                    return default
+            #lists        
+            elif isinstance(default, list):
+                return [i.strip() for i in config[section][name].split(',')]
+            #bools    
+            elif isinstance(default, bool):
+                if config[section][name].strip().lower() in ['false','0','no']:
+                    return False
+                else:
+                    return True
+            #return as string
+            else:
+                return config[section][name].strip()
+    return default
 
 
-LOGGING = config['CONFIG'].get('LOGGING','')
-if LOGGING.lower() in ['false','0','no','']:
-    LOGGING = False
-else:
-    LOGGING = True
-
+ACCOUNTDIR = get_configvalue('ACCOUNTDIR', os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts'))
+REPLAYTIME = get_configvalue('REPLAYTIME', 60)
+SHOWOVERLAY = get_configvalue('SHOWOVERLAY', True)
+PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
+DURATION = get_configvalue('DURATION', 60)
+KEY_SHOW = get_configvalue('KEY_SHOW', None)
+KEY_HIDE = get_configvalue('KEY_HIDE', None)
+AOM_NAME = get_configvalue('AOM_NAME', None)
+AOM_SECRETKEY = get_configvalue('AOM_SECRETKEY', None)
+LOGGING = get_configvalue('LOGGING', False)
 logclass.LOGGING = True
 
-REPLAYTIME = config['CONFIG'].get('REPLAYTIME','60')
-try:
-    REPLAYTIME = int(REPLAYTIME)
-except:
-    REPLAYTIME = 60
+logger.info(f'\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{DURATION=}\n{REPLAYTIME=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
 
-SHOWOVERLAY = True
-if 'SHOWOVERLAY' in config['CONFIG']:
-    SHOWOVERLAY_value = config['CONFIG']['SHOWOVERLAY']
-    if SHOWOVERLAY_value.lower() in ['false','0','no']:
-        SHOWOVERLAY = False
-
-PLAYER_NAMES = []
-if 'PLAYER_NAMES' in config['CONFIG']:
-    for player in config['CONFIG']['PLAYER_NAMES'].split(','):
-        PLAYER_NAMES.append(player.strip())
-
-DURATION = 60
-if 'DURATION' in config['CONFIG']:
-    try:
-        DURATION = int(config['CONFIG']['DURATION'])
-    except:
-        pass
-
-KEY_SHOW = None
-if 'KEY_SHOW' in config['CONFIG'] and config['CONFIG']['KEY_SHOW'] != '':
-    KEY_SHOW = config['CONFIG']['KEY_SHOW']
-
-KEY_HIDE = None
-if 'KEY_HIDE' in config['CONFIG'] and config['CONFIG']['KEY_HIDE'] != '':
-    KEY_HIDE = config['CONFIG']['KEY_HIDE']
-
-
-logger.info(f'\n{REPLAYTIME=}\n{DURATION=}\n{KEY_SHOW=}\n{SHOWOVERLAY=}\n{KEY_HIDE=}\n{LOGGING=}\n{PLAYER_NAMES=}\n{ACCOUNTDIR=}\n--------')
 
 def new_version():
     """ checks for a new version of the app """
     try:
         data = json.loads(requests.get(version_link).text)
-        logger.info(f'Most current version: {data["version"]}. This version: {APPVERSION}')
+        logger.info(f'This version: 1.{APPVERSION}. Most current live version: 1.{data["version"]}. ')
         if data['version'] > APPVERSION:        
             return data['download_link_1']
         else:
@@ -108,7 +102,7 @@ def getIconFile(file):
 
 def startThreads():
     """ threading moved to this function so I can import main function without threading """
-    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,))
+    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY))
     t1.start()
     t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
     t2.start()
@@ -151,7 +145,7 @@ def main(startthreads=True):
     ### Config
     config_file = QtWidgets.QAction(f"Config file")
     config_file.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DirIcon')))
-    config_file_path = os.path.join(os.getcwd(),"OverlayConfig.ini")
+    config_file_path = os.path.join(os.getcwd(),"SCO_config.ini")
     config_file.triggered.connect(lambda: os.startfile(config_file_path,'open'))
     menu.addAction(config_file)
     menu.addSeparator()
@@ -163,7 +157,7 @@ def main(startthreads=True):
         update.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(download_link)))
         update.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_ArrowUp')))
     else:
-        update = QtWidgets.QAction("Up-to-date")
+        update = QtWidgets.QAction(f"Up-to-date (1.{APPVERSION})")
         update.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DialogApplyButton')))
     menu.addAction(update)
     menu.addSeparator()

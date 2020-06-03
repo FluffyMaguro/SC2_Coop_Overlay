@@ -233,8 +233,9 @@ def analyse_replay(filepath, playernames=['']):
         #count kills for players
         if event.name == 'UnitDiedEvent':
             try:
+                killed_unit_type = unit_dict[str(event.unit_id)][0]
                 losing_player = int(unit_dict[str(event.unit_id)][1])
-                if losing_player != event.killing_player_id and not(event.killing_player_id in [1,2] and losing_player in [1,2]): #don't count team kills
+                if losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit' and not(event.killing_player_id in [1,2] and losing_player in [1,2]): #don't count team kills
                     killcounts[event.killing_player_id] += 1
             except:
                 pass
@@ -251,8 +252,7 @@ def analyse_replay(filepath, playernames=['']):
                     killing_unit_type = 'NoUnit'
            
                 ### Update kills
-                if (killing_unit_id in unit_dict) and (killing_unit_id != str(event.unit_id)) and losing_player != event.killing_player_id:
-                  
+                if (killing_unit_id in unit_dict) and (killing_unit_id != str(event.unit_id)) and losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit':
                     if main_player == event.killing_player_id:
                         if killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[killing_unit_type][2] += 1
@@ -397,7 +397,7 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = 'VP.SC2Replay'
+    file_path = 'VP2.SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
 

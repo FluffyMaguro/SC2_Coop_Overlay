@@ -38,7 +38,7 @@
     #stats {
         color: white;
         position: absolute;
-        top: 5.3vh;
+        top: 4vh;
         right: -50vh;
         width: 50vh;
         transition: right 1.5s, opacity 1s;
@@ -83,7 +83,7 @@
 
     #name2 {
         position: absolute;
-        right: 0px;
+        right: 0vh;
     }
 
     #result {
@@ -185,11 +185,11 @@
     }
 
     #commstats2 {
-        margin-top: 3vh;
+        margin-top: 1.5vh;
     }
 
     #amon {
-        margin-top: 3vh;
+        margin-top: 1.5vh;
     }
 
     .mastery {
@@ -290,6 +290,17 @@
         overflow: hidden;
         font-size: 1.7vh;
     }
+
+    #loader {
+        width: 100%;
+        margin-top: 2vh;
+        height: 3vh;
+        opacity: 0;
+        text-align: center;
+        transition: opacity 1s;
+        font-size: 1.7vh;
+    }
+
     </style>
 </head>
 
@@ -332,6 +343,7 @@
             <div id="CMname3"></div>
             <div id="CMunits3" class="units"></div>
         </div>
+        <div id="loader"></div>
     </div>
     <div id="mutatorinfo">
         <div id="mut0"><img src="">
@@ -497,6 +509,18 @@ var maxUnits = 5;
 connect_to_socket();
 
 
+// debug();
+
+function debug() {
+    DURATION = 99999;                  
+    var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Chain of Ascension', 'main': 'Maguro', 'mainAPM': 118.0, 'mainkills': 565, 'ally': 'ArmyXtreme', 'B+': '', 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'allyAPM': 45.0, 'allykills': 295, 'allyCommander': 'Abathur', 'allyCommanderLevel': 15, 'allyMasteries': [0, 30, 0, 30, 30, 0], 'mainUnits': {'Kerrigan': [1, 0, 259, 0.46], 'Hydralisk': [56, 10, 173, 0.31], 'Ultralisk': [16, 0, 133, 0.24]}, 'allyUnits': {'Brutalisk': [3, 0, 108, 0.37], 'Toxic Nest': [89, 36, 58, 0.2], 'Mutalisk': [19, 6, 52, 0.18], 'Leviathan': [3, 0, 35, 0.12], 'Locust': [201, 201, 26, 0.09], 'Roach': [11, 3, 15, 0.05]}, 'amonUnits': {'Roach': [150, 154, 21, 0.19], 'Spine Crawler': [46, 46, 18, 0.16], 'Hydralisk': [115, 115, 16, 0.14], 'Ultralisk': [52, 54, 12, 0.11], 'Hybrid Behemoth': [7, 7, 11, 0.1], 'Spore Crawler': [17, 17, 9, 0.08], 'Lurker': [29, 27, 6, 0.05], 'Hybrid Destroyer': [17, 17, 5, 0.04], 'Aberration': [16, 16, 5, 0.04], 'Ravager': [41, 41, 3, 0.03]}};              
+    postGameStats(dummydata);
+
+    // uploadStatus(true);
+    setTimeout(uploadStatus,1500,'Success - Replay added successfully');
+}
+
+
 function connect_to_socket() {
     if(function_is_running) {
         return
@@ -508,14 +532,16 @@ function connect_to_socket() {
         var data = JSON.parse(event.data)
         console.log(data);
         if (data['replaydata'] != null) {
-            postGameStatsTimed(JSON.parse(event.data))
+            postGameStatsTimed(data)
         } else if (data['mutatordata'] != null){
             mutatorInfo(data['data'])
         } else if (data['hideEvent'] != null){
             hidestats()
         } else if (data['showEvent'] != null){ 
             manuallyShown = true;                                        
-            showstats()                                                                        
+            showstats()                                                            
+        } else if (data['uploadEvent'] != null){ 
+            setTimeout(uploadStatus,1500,data['response'])                                                                                        
         } else {
             console.log('unidentified message')
         }
@@ -542,6 +568,27 @@ function reconnect_to_socket(message) {
         connect_to_socket();
     }, 1000);
 };
+
+
+function uploadStatus(result) {
+    var loader = document.getElementById('loader');
+    var tshowing = DURATION*1000;
+
+    loader.style.transition = 'opacity 0s';
+    loader.style.opacity = '0'
+    loader.style.transition = 'opacity 1s';
+    loader.innerHTML = ''
+    loader.style.opacity = '1';
+    
+    if (result.includes('Success')) { 
+        loader.style.color = 'rgba(0, 150, 0, 1)';
+        loader.innerHTML = 'Replay uploaded successfully!';                          
+    } else {
+        loader.style.color = 'rgba(225, 0, 0, 1)';
+        loader.innerHTML = 'Failed to upload the replay!<br>'+result;              
+    };
+}
+
 
 function mutatorInfo(data) {
     if (!(showmutators)) {return};                            
