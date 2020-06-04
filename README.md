@@ -53,7 +53,7 @@ You don't need to change anything in the config file for normal usage.
 
    ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
    
-* **Added an option for automactic upload of analysed replays to https://starcraft2coop.com/**
+* **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
    AOM_NAME = Maguro (account name)
 
