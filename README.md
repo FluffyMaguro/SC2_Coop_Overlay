@@ -52,20 +52,22 @@ You don't need to change anything in the config file for normal usage.
 * **If you want to change the folder where it looks for replays. But it should fine them alone.**
 
    ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
-  
-* **How old replays it looks for (in seconds).**
-
-   REPLAYTIME = 60
-
-* **Enables logging.**
-
-   LOGGING = True
    
 * **Added an option for automactic upload of analysed replays to https://starcraft2coop.com/**
 
    AOM_NAME = Maguro (account name)
 
    AOM_SECRETKEY = .... (secret key generated on the site)
+
+* **For debugging - how old replays it looks for in seconds.**
+
+   REPLAYTIME = 60
+
+* **For debugging - enables logging.**
+
+   LOGGING = True
+
+
 
 # Other notes
 * The overlay works with the borderless mode (windowed fullscreen) in StarCraft II. In the fullscreen mode, the overlay often loses focus and won't show over the game. 
