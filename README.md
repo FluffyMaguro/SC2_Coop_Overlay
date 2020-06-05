@@ -58,6 +58,16 @@ You don't need to change anything in the config file for normal usage.
    AOM_NAME = Maguro (account name)
 
    AOM_SECRETKEY = .... (secret key generated on the site)
+   
+* **Some color customization directly via config file (deleting values resets to default)**
+
+   P1COLOR = #0080F8
+   
+   P2COLOR = #00D532
+   
+   AMONCOLOR = #FF0000
+   
+   MASTERYCOLOR = #FFDC87
 
 * **For debugging - how old replays it looks for in seconds.**
 
