@@ -59,7 +59,6 @@
 
     #name1,
     #CMname1 {
-        color: #0080F8;
         font-size: 2.5vh;
         text-shadow: 1px 1px 1px black;
         font-weight: bold;
@@ -67,14 +66,12 @@
 
     #name2,
     #CMname2 {
-        color: #00D532;
         font-size: 2.5vh;
         text-shadow: 1px 1px 1px black;
         font-weight: bold;
     }
 
     #CMname3 {
-        color: #FF0000;
         font-size: 2.5vh;
         text-shadow: 1px 1px 1px black;
         font-weight: bold;
@@ -108,7 +105,6 @@
     }
 
     #killbar1 {
-        background-color: #0080F8;
         height: 100%;
         width: 50%;
         position: absolute;
@@ -119,7 +115,6 @@
     #killbar2 {
         height: 100%;
         width: 50%;
-        background-color: #00C02D;
         position: absolute;
         right: 0px;
         text-align: right;
@@ -143,7 +138,7 @@
         top: 1vh;
         width: 100%;
         text-align: center;
-        opacity: 0.7;
+        opacity: 0.9;
     }
 
     #topstats div:nth-child(6) {
@@ -193,7 +188,6 @@
     }
 
     .mastery {
-        color: #FFDC87;
         font-size: 1.5vh;
         text-shadow: 1px 1px 2px black;
         margin-top: 0.26vh;
@@ -506,17 +500,57 @@ var PORT = 7305;
 var DURATION = 60;
 var manuallyShown = false;
 var maxUnits = 5;
+
+//main functionality
 connect_to_socket();
 
+//just debug for testing
+// debug()
 
-// debug();
+
+function setColors(P1color,P2color,P3color,MasteryColor) {
+    //this function is executed by the app on page load                                                         
+    //Player 1
+    var color = '#0080F8';
+    if (P1color != null) {
+        color = P1color
+    };                                                   
+    document.getElementById('name1').style.color = color;
+    document.getElementById('CMname1').style.color = color;
+    document.getElementById('killbar1').style.backgroundColor = color;
+
+    //Player 2
+    color = '#00D532';
+    if (P2color != null) {
+        color = P2color
+    };
+
+    document.getElementById('name2').style.color = color;
+    document.getElementById('CMname2').style.color = color;
+    document.getElementById('killbar2').style.backgroundColor = color;
+
+    //Player 3
+    color = '#FF0000';
+    if (P3color != null) {
+        color = P3color
+    };
+    document.getElementById('CMname3').style.color = color;
+
+    //Mastery
+    color = '#FFDC87';
+    if (MasteryColor != null) { 
+       color = MasteryColor
+    };
+    document.getElementById('CMmastery1').style.color = color;
+    document.getElementById('CMmastery2').style.color = color;
+
+}
+
 
 function debug() {
     DURATION = 99999;                  
     var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Chain of Ascension', 'main': 'Maguro', 'mainAPM': 118.0, 'mainkills': 565, 'ally': 'ArmyXtreme', 'B+': '', 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'allyAPM': 45.0, 'allykills': 295, 'allyCommander': 'Abathur', 'allyCommanderLevel': 15, 'allyMasteries': [0, 30, 0, 30, 30, 0], 'mainUnits': {'Kerrigan': [1, 0, 259, 0.46], 'Hydralisk': [56, 10, 173, 0.31], 'Ultralisk': [16, 0, 133, 0.24]}, 'allyUnits': {'Brutalisk': [3, 0, 108, 0.37], 'Toxic Nest': [89, 36, 58, 0.2], 'Mutalisk': [19, 6, 52, 0.18], 'Leviathan': [3, 0, 35, 0.12], 'Locust': [201, 201, 26, 0.09], 'Roach': [11, 3, 15, 0.05]}, 'amonUnits': {'Roach': [150, 154, 21, 0.19], 'Spine Crawler': [46, 46, 18, 0.16], 'Hydralisk': [115, 115, 16, 0.14], 'Ultralisk': [52, 54, 12, 0.11], 'Hybrid Behemoth': [7, 7, 11, 0.1], 'Spore Crawler': [17, 17, 9, 0.08], 'Lurker': [29, 27, 6, 0.05], 'Hybrid Destroyer': [17, 17, 5, 0.04], 'Aberration': [16, 16, 5, 0.04], 'Ravager': [41, 41, 3, 0.03]}};              
     postGameStats(dummydata);
-
-    // uploadStatus(true);
     setTimeout(uploadStatus,1500,'Success - Replay added successfully');
 }
 

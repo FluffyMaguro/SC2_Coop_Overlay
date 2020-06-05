@@ -9,7 +9,7 @@ from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKil
 from MLogging import logclass
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit "]
-duplicating_units = ['HotSRaptor']
+duplicating_units = ['HotSRaptor','MutatorAmonArtanis']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","Warp Conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
 
@@ -282,6 +282,11 @@ def analyse_replay(filepath, playernames=['']):
                     unit_type_dict_ally[killed_unit_type][0] -= 1
                     continue
 
+                if event.killing_player_id in amon_players and event.second > 0 and killed_unit_type in duplicating_units and killed_unit_type == killing_unit_type and losing_player == event.killing_player_id:
+                    unit_type_dict_amon[killed_unit_type][0] -= 1
+                    continue
+
+                    
                 # in case of death caused by Archon merge, ignore these kills
                 if (killed_unit_type == 'HighTemplar' or killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[losing_player] > 0:
                     DT_HT_Ignore[losing_player] -= 1
@@ -397,7 +402,7 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = 'VP2.SC2Replay'
+    file_path = 'VP.SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
 

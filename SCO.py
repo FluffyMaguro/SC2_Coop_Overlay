@@ -11,7 +11,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 
 
-APPVERSION = 6
+APPVERSION = 7
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
@@ -25,6 +25,7 @@ if not(os.path.isfile('SCO_config.ini')):
 
 config = configparser.ConfigParser()
 config.read('SCO_config.ini')
+
 
 def get_configvalue(name,default,section='CONFIG'):
     """ function to get values out of the config file in the correct type"""
@@ -58,12 +59,27 @@ PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
 DURATION = get_configvalue('DURATION', 60)
 KEY_SHOW = get_configvalue('KEY_SHOW', None)
 KEY_HIDE = get_configvalue('KEY_HIDE', None)
+P1COLOR = get_configvalue('P1COLOR', None)
+P2COLOR = get_configvalue('P2COLOR', None)
+AMONCOLOR = get_configvalue('AMONCOLOR', None)
+MASTERYCOLOR = get_configvalue('MASTERYCOLOR', None)
 AOM_NAME = get_configvalue('AOM_NAME', None)
 AOM_SECRETKEY = get_configvalue('AOM_SECRETKEY', None)
 LOGGING = get_configvalue('LOGGING', False)
-logclass.LOGGING = True
 
+logclass.LOGGING = LOGGING
 logger.info(f'\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{DURATION=}\n{REPLAYTIME=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
+
+
+def getColorCommands():
+    """ prepares javascript function for setting colors """
+    command = 'setColors('
+    command += f"'{P1COLOR}'," if P1COLOR != None else 'null,'
+    command += f"'{P2COLOR}'," if P2COLOR != None else 'null,'
+    command += f"'{AMONCOLOR}'," if AMONCOLOR != None else 'null,'
+    command += f"'{MASTERYCOLOR}'" if MASTERYCOLOR != None else 'null'
+    command += ');'
+    return command
 
 
 def new_version():
@@ -90,14 +106,14 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}")      
-            pass
+            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}; {getColorCommands()}")
 
 
 def getIconFile(file):
     """ get path to file when it's packaged with pyinstaller """
     if hasattr(sys, '_MEIPASS'):
         return os.path.normpath(os.path.join(sys._MEIPASS, 'src', file))
+    return f'src/{file}'
 
 
 def startThreads():
