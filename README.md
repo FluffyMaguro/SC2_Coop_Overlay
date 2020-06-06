@@ -9,7 +9,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 # 
 Download links: 
 * [Mega](https://mega.nz/file/MlVkQIIQ#3nb35zdRYthMbH3U4c5cCCe90TzneWKEf54rO1y_FEo)
-* [Google-drive](https://drive.google.com/file/d/1ZqFk2NsKivpeV0Ef05KLsUg20lBdRuUs/view)
+* [Google-drive](https://drive.google.com/file/d/1YSmG_aU69hG9O9SCBOaxC2yukiLVczsV/view)
 * Or run the script with Python
 
 # How to use
