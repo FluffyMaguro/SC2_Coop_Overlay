@@ -1,5 +1,5 @@
 {
 "version" : 7, 
-"download_link_1" : "https://mega.nz/file/JhE0nCDQ#7LDNy5lQPLSnrZh6NtUex16w-Q7jpqIBYWmf15Zdtk8", 
+"download_link_1" : "https://mega.nz/file/MlVkQIIQ#3nb35zdRYthMbH3U4c5cCCe90TzneWKEf54rO1y_FEo", 
 "download_link_2": "https://drive.google.com/file/d/1ZqFk2NsKivpeV0Ef05KLsUg20lBdRuUs/view"
 }
