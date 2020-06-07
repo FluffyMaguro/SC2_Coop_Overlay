@@ -11,7 +11,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
 
 
-APPVERSION = 7
+APPVERSION = 8
 PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
@@ -31,8 +31,15 @@ def get_configvalue(name,default,section='CONFIG'):
     """ function to get values out of the config file in the correct type"""
     if name in config[section]:
         if config[section][name].strip() != '':
+            #bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
+            if isinstance(default, bool):
+                print(f'\n{name} is of type bool!!!!\n')
+                if config[section][name].strip().lower() in ['false','0','no']:
+                    return False
+                else:
+                    return True
             #integers
-            if isinstance(default, int):
+            elif isinstance(default, int):
                 try:
                     return int(config[section][name].strip())
                 except:
@@ -40,12 +47,7 @@ def get_configvalue(name,default,section='CONFIG'):
             #lists        
             elif isinstance(default, list):
                 return [i.strip() for i in config[section][name].split(',')]
-            #bools    
-            elif isinstance(default, bool):
-                if config[section][name].strip().lower() in ['false','0','no']:
-                    return False
-                else:
-                    return True
+                
             #return as string
             else:
                 return config[section][name].strip()
@@ -106,7 +108,7 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}; {getColorCommands()}")
+            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}; showNotification(); {getColorCommands()}")
 
 
 def getIconFile(file):

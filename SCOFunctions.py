@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import time
 import requests
@@ -16,11 +15,20 @@ OverlayMessages = []
 lock = threading.Lock()
 logger = logclass('SCOF','INFO')
 
+
 def get_OverlayMessages():
     return OverlayMessages
 
+
 def get_lock():
     return lock
+
+
+def sendEvent(event):
+    lock.acquire()
+    OverlayMessages.append(event) 
+    lock.release()
+
 
 def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
     """ Checks every 4s for new replays  """
@@ -40,26 +48,29 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
                             replay_dict = analyse_replay(file_path,PLAYER_NAMES)
                             if len(replay_dict) > 0 :
                                 logger.debug('Replay analysis result looks good, appending...')
-                                lock.acquire()
-                                OverlayMessages.append(replay_dict) #save in queue to send
-                                lock.release()
-                                if not(replay_dict['mainCommander'] in [None,'']):
-                                    upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY)    
+                                sendEvent(replay_dict)
+                                upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict)    
                                 with open('SCO_analysis_log.txt', 'ab') as file: #save into a text file
                                     file.write((str(replay_dict)+'\n').encode('utf-8'))                              
                             else:
-                                logger.error(f'ERROR: No output from replay analysis ({file})') 
+                                logger.error(f'ERROR: No output from replay analysis ({file})\n{traceback.format_exc()}') 
                             break
                         except Exception as e:
-                            exc_type, exc_value, exc_tb = sys.exc_info()
-                            logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
+                            logger.error(f'{traceback.format_exc()}')
 
         time.sleep(3)   
 
 
-def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY):
+def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     """ function handling uploading the replay on the Aommaster's server"""
-    if AOM_NAME == None or AOM_SECRETKEY==None:
+    if AOM_NAME == None or AOM_SECRETKEY == None:
+        return
+
+    if (time.time() - os.path.getmtime(file_path)) > 60:
+        return
+
+    if replay_dict['mainCommander'] in [None,'']:
+        sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
 
     url = f'http://starcraft2coop.com/scripts/assistant/replay.php?username={AOM_NAME}&secretkey={AOM_SECRETKEY}'
@@ -69,16 +80,11 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY):
         logger.info(f'Replay upload reponse: {response.text}')
      
         if 'Success' in response.text or 'Error' in response.text:
-            lock.acquire()
-            OverlayMessages.append({'uploadEvent':True,'response':response.text})
-            lock.release()
+            sendEvent({'uploadEvent':True,'response':response.text})
     
     except Exception as e:
-        lock.acquire()
-        OverlayMessages.append({'uploadEvent':True,'response':'Error'})
-        lock.release()
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
+        sendEvent({'uploadEvent':True,'response':'Error'})
+        logger.error(f'{traceback.format_exc()}')
 
 
 async def manager(websocket, path):
@@ -93,8 +99,7 @@ async def manager(websocket, path):
                 overlayMessagesSent += 1
                 await websocket.send(message)
         except Exception as e:
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
+            logger.error(f'{traceback.format_exc()}')
         finally:
             await asyncio.sleep(0.1)
 
@@ -109,8 +114,7 @@ def server_thread(PORT):
         loop.run_until_complete(start_server)
         loop.run_forever()
     except Exception as e:
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        logger.error(f'{exc_type}\n{exc_value}\n{exc_tb}')
+        logger.error(f'{traceback.format_exc()}')
 
 
 def keyboard_thread_HIDE(HIDE):
@@ -118,9 +122,7 @@ def keyboard_thread_HIDE(HIDE):
     while True:
         keyboard.wait(HIDE)
         logger.info('Hide event')
-        lock.acquire()
-        OverlayMessages.append({'hideEvent': True})
-        lock.release()
+        sendEvent({'hideEvent': True})
 
 
 def keyboard_thread_SHOW(SHOW):
@@ -128,6 +130,4 @@ def keyboard_thread_SHOW(SHOW):
     while True:
         keyboard.wait(SHOW)
         logger.info('Show event')
-        lock.acquire()
-        OverlayMessages.append({'showEvent': True})
-        lock.release()
+        sendEvent({'showEvent': True})
