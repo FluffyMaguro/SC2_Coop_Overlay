@@ -68,12 +68,14 @@ You don't need to change anything in the config file for normal usage.
    AMONCOLOR = #FF0000
    
    MASTERYCOLOR = #FFDC87
+   
+   ---
 
 * **For debugging - how old replays it looks for in seconds.**
 
    REPLAYTIME = 60
    
-* **For debugging - changes used port. The port also needs to be changed in the html layout. **
+* **For debugging - changes used port. The port also needs to be changed in the html layout.**
 
    PORT = 7305
 
