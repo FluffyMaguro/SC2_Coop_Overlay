@@ -85,6 +85,8 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
+* 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.
+
 * 1.7 Colors can be changed via the config file. Bug fixes.
 
 * 1.6 Added support for https://starcraft2coop.com
