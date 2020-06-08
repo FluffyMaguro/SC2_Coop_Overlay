@@ -327,8 +327,8 @@ def analyse_replay(filepath, playernames=['']):
                     else:
                         unit_type_dict_amon[killing_unit_type] = [1,1,0,0]  
                                
-            except Exception as e:
-                logger.error(f'{traceback.format_exc()}')
+            except:
+                logger.error(traceback.format_exc())
 
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')

@@ -308,6 +308,7 @@
         opacity: 0;
         border: 1px solid rgba(255,255,255,0.2);
         transition: opacity 1s;
+        box-shadow: 0.3vh 0.3vh 0.5vh rgba(0,0,0,0.6);
 }
 
     #notification div:first-child {
@@ -560,18 +561,17 @@ var manuallyShown = false;
 var maxUnits = 5;
 
 //main functionality
+setColors(null,null,null,null);
 connect_to_socket();
 
 //just debug for testing
 // debug()
 
 
-
 function debug() {
     DURATION = 99999;                  
     var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Void Thrashing', 'main': 'Maguro', 'mainAPM': 118.0, 'mainkills': 342, 'ally': 'Poosausage', 'mainIcons': {'MULE': 22}, 'allyIcons': {}, 'B+': 0, 'mainCommander': 'Raynor', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 0, 30, 30, 0], 'allyAPM': 27.0, 'allykills': 144, 'allyCommander': 'Horner', 'allyCommanderLevel': 15, 'allyMasteries': [15, 0, 14, 0, 0, 13], 'mainUnits': {'Marine': [139, 86, 158, 0.46], 'Dusk Wings': [25, 25, 66, 0.19], 'Marauder': [25, 10, 59, 0.17], 'Hyperion': [2, 2, 46, 0.13], "Raynor's Top Bar": [1, 0, 9, 0.03]}, 'allyUnits': {"Han and Horner's Top Bar": [1, 0, 40, 0.28], 'Strike Fighter': [33, 25, 27, 0.19], 'Assault Galleon': [5, 1, 19, 0.13], 'Hellbat': [16, 16, 5, 0.03], 'Widow Mine': [6, 5, 1, 0.01]}, 'amonUnits': {'Marine': [218, 211, 32, 0.17], 'Siege Tank': [26, 24, 27, 0.15], 'Hybrid Dominator': [2, 2, 24, 0.13], 'Banshee': [21, 16, 16, 0.09], 'Thor': [11, 11, 12, 0.06], 'Raven': [6, 4, 11, 0.06], 'Battlecruiser': [6, 6, 11, 0.06], 'Viking': [9, 8, 10, 0.05], 'Missile Turret': [32, 19, 9, 0.05], 'Void Thrasher': [10, 10, 8, 0.04], 'Marauder': [36, 30, 7, 0.04], 'Hybrid Reaver': [2, 2, 5, 0.03], 'Reaper': [12, 12, 3, 0.02], 'Goliath': [17, 17, 2, 0.01], 'Auto-Turret': [5, 5, 1, 0.01], 'Hybrid Destroyer': [3, 3, 1, 0.01]}}
-;   
-    setColors(null,null,null,null);           
+;           
     postGameStats(dummydata);
     setTimeout(uploadStatus,1500,'Success - Replay added successfully');
 }
@@ -598,6 +598,8 @@ function connect_to_socket() {
             showstats()                                                            
         } else if (data['uploadEvent'] != null){ 
             setTimeout(uploadStatus,1500,data['response'])                                                                                        
+        } else if (data['initEvent'] != null){ 
+            initColorsDuration(data)   
         } else {
             console.log('unidentified message')
         }
@@ -628,6 +630,11 @@ function reconnect_to_socket(message) {
 function showNotification(){
     document.getElementById('notification').style.opacity = '1';
     setTimeout(function(){document.getElementById('notification').style.opacity = '0';},6000)                    
+}
+
+function initColorsDuration(data) {
+     setColors(data['colors'][0],data['colors'][1],data['colors'][2],data['colors'][3]);
+     DURATION = data['duration']                       
 }
 
 

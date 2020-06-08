@@ -14,6 +14,14 @@ from MLogging import logclass
 OverlayMessages = []
 lock = threading.Lock()
 logger = logclass('SCOF','INFO')
+initMessage = {'initEvent':True,'colors':['null','null','null','null'],'duration':60}
+
+
+def set_initMessage(colors,duration):
+    """ modify init message that's sent to new websockets """
+    global initMessage
+    initMessage['colors'] = colors
+    initMessage['duration'] = duration
 
 
 def get_OverlayMessages():
@@ -31,7 +39,7 @@ def sendEvent(event):
 
 
 def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
-    """ Checks every 4s for new replays  """
+    """ Checks every few seconds for new replays  """
     already_checked_replays = set()
     while True:   
         current_time = time.time()
@@ -41,7 +49,6 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
                 if file.endswith('.SC2Replay') and not(file_path in already_checked_replays):
                     
                     already_checked_replays.add(file_path)
-
                     if current_time - os.path.getmtime(file_path) < REPLAYTIME: 
                         logger.debug(f'New replay: {file_path}')
                         try:   
@@ -55,8 +62,8 @@ def check_replays(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY):
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})\n{traceback.format_exc()}') 
                             break
-                        except Exception as e:
-                            logger.error(f'{traceback.format_exc()}')
+                        except:
+                            logger.error(traceback.format_exc())
 
         time.sleep(3)   
 
@@ -82,15 +89,17 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
         if 'Success' in response.text or 'Error' in response.text:
             sendEvent({'uploadEvent':True,'response':response.text})
     
-    except Exception as e:
+    except:
         sendEvent({'uploadEvent':True,'response':'Error'})
-        logger.error(f'{traceback.format_exc()}')
+        logger.error(traceback.format_exc())
 
 
 async def manager(websocket, path):
     """ manages websocket connection for each client """
     overlayMessagesSent = 0
     logger.info(f"STARTING WEBSOCKET: {websocket}")
+    await websocket.send(json.dumps(initMessage))
+    logger.info(f"Sending init message: {initMessage}")
     while True:
         try:
             if len(OverlayMessages) > overlayMessagesSent:
@@ -98,8 +107,8 @@ async def manager(websocket, path):
                 logger.info(f'Sending message #{overlayMessagesSent} through {websocket}')
                 overlayMessagesSent += 1
                 await websocket.send(message)
-        except Exception as e:
-            logger.error(f'{traceback.format_exc()}')
+        except:
+            logger.error(traceback.format_exc())
         finally:
             await asyncio.sleep(0.1)
 
@@ -113,11 +122,12 @@ def server_thread(PORT):
         logger.info('Starting websocket server')
         loop.run_until_complete(start_server)
         loop.run_forever()
-    except Exception as e:
-        logger.error(f'{traceback.format_exc()}')
+    except:
+        logger.error(traceback.format_exc())
 
 
 def keyboard_thread_HIDE(HIDE):
+    """ thread waiting for hide hotkey """
     logger.info('Starting keyboard hide thread')
     while True:
         keyboard.wait(HIDE)
@@ -126,6 +136,7 @@ def keyboard_thread_HIDE(HIDE):
 
 
 def keyboard_thread_SHOW(SHOW):
+    """ thread waiting for show hotkey """
     logger.info('Starting keyboard show thread')
     while True:
         keyboard.wait(SHOW)

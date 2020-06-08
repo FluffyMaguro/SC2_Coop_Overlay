@@ -8,11 +8,10 @@ import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 from MLogging import logclass
-from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE
+from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage
 
 
 APPVERSION = 8
-PORT = 7305
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -33,7 +32,6 @@ def get_configvalue(name,default,section='CONFIG'):
         if config[section][name].strip() != '':
             #bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
             if isinstance(default, bool):
-                print(f'\n{name} is of type bool!!!!\n')
                 if config[section][name].strip().lower() in ['false','0','no']:
                     return False
                 else:
@@ -41,7 +39,7 @@ def get_configvalue(name,default,section='CONFIG'):
             #integers
             elif isinstance(default, int):
                 try:
-                    return int(config[section][name].strip())
+                    return int(config[section][name].strip(),10)
                 except:
                     return default
             #lists        
@@ -61,27 +59,17 @@ PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
 DURATION = get_configvalue('DURATION', 60)
 KEY_SHOW = get_configvalue('KEY_SHOW', None)
 KEY_HIDE = get_configvalue('KEY_HIDE', None)
-P1COLOR = get_configvalue('P1COLOR', None)
-P2COLOR = get_configvalue('P2COLOR', None)
-AMONCOLOR = get_configvalue('AMONCOLOR', None)
-MASTERYCOLOR = get_configvalue('MASTERYCOLOR', None)
+P1COLOR = get_configvalue('P1COLOR', 'null')
+P2COLOR = get_configvalue('P2COLOR', 'null')
+AMONCOLOR = get_configvalue('AMONCOLOR', 'null')
+MASTERYCOLOR = get_configvalue('MASTERYCOLOR', 'null')
 AOM_NAME = get_configvalue('AOM_NAME', None)
 AOM_SECRETKEY = get_configvalue('AOM_SECRETKEY', None)
 LOGGING = get_configvalue('LOGGING', False)
+PORT = get_configvalue('PORT', 7305)
 
 logclass.LOGGING = LOGGING
-logger.info(f'\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{DURATION=}\n{REPLAYTIME=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
-
-
-def getColorCommands():
-    """ prepares javascript function for setting colors """
-    command = 'setColors('
-    command += f"'{P1COLOR}'," if P1COLOR != None else 'null,'
-    command += f"'{P2COLOR}'," if P2COLOR != None else 'null,'
-    command += f"'{AMONCOLOR}'," if AMONCOLOR != None else 'null,'
-    command += f"'{MASTERYCOLOR}'" if MASTERYCOLOR != None else 'null'
-    command += ');'
-    return command
+logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{DURATION=}\n{REPLAYTIME=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
 
 
 def new_version():
@@ -99,7 +87,7 @@ def new_version():
 
 
 class WWW(QtWebEngineWidgets.QWebEngineView):
-    """ expanding this class to add JS after page is loaded"""
+    """ expanding this class to add JS after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
     def __init__(self,parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
@@ -108,7 +96,7 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; PORT = {PORT}; DURATION = {DURATION}; showNotification(); {getColorCommands()}")
+            self.page().runJavaScript(f"showmutators = false; showNotification();")
 
 
 def getIconFile(file):
@@ -210,6 +198,8 @@ def main(startthreads=True):
             tray.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
             error.triggered.connect(app.quit)
             menu.addAction(error)
+
+    set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION)
 
     if startthreads:        
         startThreads()            
