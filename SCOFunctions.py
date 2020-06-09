@@ -24,14 +24,6 @@ def set_initMessage(colors,duration):
     initMessage['duration'] = duration
 
 
-def get_OverlayMessages():
-    return OverlayMessages
-
-
-def get_lock():
-    return lock
-
-
 def sendEvent(event):
     lock.acquire()
     OverlayMessages.append(event) 
@@ -107,6 +99,9 @@ async def manager(websocket, path):
                 logger.info(f'Sending message #{overlayMessagesSent} through {websocket}')
                 overlayMessagesSent += 1
                 await websocket.send(message)
+        except websockets.exceptions.ConnectionClosedOK:
+            logger.info('Websocket connection closed OK!')
+            break
         except:
             logger.error(traceback.format_exc())
         finally:
