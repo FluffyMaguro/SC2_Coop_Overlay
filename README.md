@@ -86,7 +86,6 @@ You don't need to change anything in the config file for normal usage.
 
 
 # Other notes
-* The overlay works with the borderless mode (windowed fullscreen) in StarCraft II. In the fullscreen mode, the overlay often loses focus and won't show over the game. 
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
