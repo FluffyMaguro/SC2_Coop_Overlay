@@ -31,6 +31,10 @@ Download links:
 
 You don't need to change anything in the config file for normal usage.
 
+* **If it has trouble finding replays, specify the folder directly.**
+
+   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+
 * **Changing hotkeys for manual overlay display**
 
    KEY_SHOW = Ctrl+/
@@ -48,10 +52,7 @@ You don't need to change anything in the config file for normal usage.
 * **Hiding overlay. This can be useful if you want the overlay to be shown only in OBS or browser**  
 
    SHOWOVERLAY = False
-  
-* **If you want to change the folder where it looks for replays. But it should fine them alone.**
-
-   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+ 
    
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
