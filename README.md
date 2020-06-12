@@ -1,10 +1,10 @@
+# StarCraft II Coop Overlay (SCO)
+
 Download links: 
 * [Mega](https://mega.nz/file/I4c3lAgA#YsF9dn9ORNXkBEQhabWN6jlSrrlkUy3ceLKDS6paQeM)
 * [Google-drive](https://drive.google.com/file/d/1KPUrlmjnr1azPUGIXCMWM0337RLdJneI/view)
 * Or run the script with Python
 #
-
-# StarCraft II Coop Overlay (SCO)
 
 This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. Or it can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications.
 
