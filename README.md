@@ -71,11 +71,7 @@ You don't need to change anything in the config file for normal usage.
    MASTERYCOLOR = #FFDC87
    
    ---
-
-* **For debugging - how old replays it looks for in seconds.**
-
-   REPLAYTIME = 60
-   
+  
 * **For debugging - changes used port. The port also needs to be changed in the html layout.**
 
    PORT = 7305
@@ -96,7 +92,8 @@ You don't need to change anything in the config file for normal usage.
       - It's now possible to view analysis of older replays and switch between them freely
       - Fixed the issue when the replay folder weren't located automatically on certain systems
       - Replay analysis tweaked for more accurate stats
-      - Overlay shows map played
+      - Overlay shows map played & winrate in the current session
+      - Minor graphical tweaks
 
 * 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.<br>
 * 1.7 Colors can be changed via the config file. Bug fixes.<br>
