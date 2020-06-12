@@ -92,7 +92,7 @@ You don't need to change anything in the config file for normal usage.
 * 1.9 version
 
       - It's now possible to view analysis of older replays and switch between them freely
-      - Fixed the issue when the replay folder weren't located automatically on certain systems
+      - Fixed the issue where the replay folder wasn't located correctly on certain systems
       - Replay analysis tweaked for more accurate stats
       - Overlay shows map played & winrate in the current session
       - Minor graphical tweaks
