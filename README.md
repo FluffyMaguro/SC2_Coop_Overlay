@@ -91,6 +91,12 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
+* 1.9 - It's now possible to view analysis of older replays and switch between them freely
+
+      - Fixed the issue when the replay folder weren't located automatically on certain systems
+      
+      - Replay analysis tweaked for more accurate stats
+
 * 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.
 
 * 1.7 Colors can be changed via the config file. Bug fixes.
