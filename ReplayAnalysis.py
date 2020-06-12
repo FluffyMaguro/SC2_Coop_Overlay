@@ -119,7 +119,7 @@ def analyse_replay(filepath, playernames=['']):
     else:
         ally_player_name = str(replay.person[ally_player]).split(' - ')[1].replace(' (Zerg)', '').replace(' (Terran)', '').replace(' (Protoss)', '')
 
-    logger.debug(f'Main player: {main_player_name} | {main_player} | Ally player: {ally_player_name} | {ally_player} | {amon_players}')
+    logger.debug(f'Main player: {main_player_name} | {main_player} | Ally player: {ally_player_name} | {ally_player} | Amon players: {amon_players}')
 
 
     ### get APM & Game result
@@ -224,13 +224,13 @@ def analyse_replay(filepath, playernames=['']):
                                 unit_type_dict_amon[unit_type] = [1,0,0,0]
                     else:
                         if main_player == event.control_pid and not(unit_type in unit_type_dict_main):
-                            unit_type_dict_main[unit_type] = [1,0,0,0]
+                            unit_type_dict_main[unit_type] = [0,0,0,0]
 
                         if ally_player == event.control_pid and not(unit_type in unit_type_dict_ally):
-                            unit_type_dict_ally[unit_type] = [1,0,0,0]
+                            unit_type_dict_ally[unit_type] = [0,0,0,0]
 
                         if event.control_pid in amon_players and not(unit_type in unit_type_dict_amon):
-                            unit_type_dict_amon[unit_type] = [1,0,0,0]
+                            unit_type_dict_amon[unit_type] = [0,0,0,0]
 
 
         #update ownership
@@ -254,11 +254,24 @@ def analyse_replay(filepath, playernames=['']):
                 killed_unit_type = unit_dict[str(event.unit_id)][0]
                 losing_player = int(unit_dict[str(event.unit_id)][1])
 
+
                 if killing_unit_id in unit_dict:
                     killing_unit_type = unit_dict[killing_unit_id][0]
                 else:
                     killing_unit_type = 'NoUnit'
-           
+
+
+                #fix kills for some enemy area-of-effect units that kills player units after they are dead. This is the best guess. Other aoe units will mix in.
+                if killing_unit_type == 'NoUnit' and event.killing_unit_id == None and event.killer_pid in amon_players and losing_player != event.killing_player_id:
+                    race = replay.players[event.killer_pid-1].play_race
+                    if race == 'Zerg' and "Viper" in unit_type_dict_amon:
+                        unit_type_dict_amon["Viper"][2] += 1
+                    elif race == 'Terran' and "ScienceVessel" in unit_type_dict_amon:
+                        unit_type_dict_amon["ScienceVessel"][2] += 1
+                    elif race == 'Protoss' and "HighTemplar" in unit_type_dict_amon:
+                        unit_type_dict_amon["HighTemplar"][2] += 1
+
+
                 ### Update kills
                 if (killing_unit_id in unit_dict) and (killing_unit_id != str(event.unit_id)) and losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit':
                     if main_player == event.killing_player_id:
@@ -282,7 +295,7 @@ def analyse_replay(filepath, playernames=['']):
                
                 ### Update unit deaths
 
-                #don't count self kills like Fenix switching suits
+                # Don't count self kills like Fenix switching suits
                 if killed_unit_type in self_killing_units and event.killer == None:
                     if main_player == losing_player:
                         unit_type_dict_main[killed_unit_type][0] -= 1
@@ -291,7 +304,7 @@ def analyse_replay(filepath, playernames=['']):
                     continue
 
 
-                #fix for raptors that are counted each time they jump (as death and birth)
+                # Fix for raptors that are counted each time they jump (as death and birth)
                 if event.second > 0 and killed_unit_type in duplicating_units and killed_unit_type == killing_unit_type and losing_player == event.killing_player_id:
                     if main_player == losing_player:
                         unit_type_dict_main[killed_unit_type][0] -= 1
@@ -304,34 +317,36 @@ def analyse_replay(filepath, playernames=['']):
                         continue
                    
                     
-                # in case of death caused by Archon merge, ignore these kills
+                # In case of death caused by Archon merge, ignore these kills
                 if (killed_unit_type == 'HighTemplar' or killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[losing_player] > 0:
                     DT_HT_Ignore[losing_player] -= 1
                     continue
 
+                # Add deaths
                 if main_player == losing_player and event.second > 0: #don't count deaths on game init
                     if killed_unit_type in unit_type_dict_main:
                         unit_type_dict_main[killed_unit_type][1] += 1
                     else:
-                        unit_type_dict_main[killed_unit_type] = [1,1,0,0]
+                        unit_type_dict_main[killed_unit_type] = [0,1,0,0]
 
                 if ally_player == losing_player and event.second > 0: #don't count deaths on game init
                     if killed_unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[killed_unit_type][1] += 1
                     else:
-                        unit_type_dict_ally[killed_unit_type] = [1,1,0,0]
+                        unit_type_dict_ally[killed_unit_type] = [0,1,0,0]
 
                 if losing_player in amon_players and event.second > 0:
                     if killed_unit_type in unit_type_dict_amon:
                         unit_type_dict_amon[killed_unit_type][1] += 1  
                     else:
-                        unit_type_dict_amon[killing_unit_type] = [1,1,0,0]  
+                        unit_type_dict_amon[killing_unit_type] = [0,1,0,0]  
                                
             except:
                 logger.error(traceback.format_exc())
 
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
+    logger.debug(f'Unit type dict amon: {unit_type_dict_amon}')
     logger.debug(f'Kill counts: {killcounts}')
 
     #Get messages
@@ -342,6 +357,9 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['replaydata'] = True
     replay_report_dict['result'] = game_result
     replay_report_dict['map'] = replay.map_name
+    replay_report_dict['filepath'] = filepath
+    replay_report_dict['date'] = str(replay.date)
+    replay_report_dict['length'] = replay.game_length.seconds
     replay_report_dict['main'] = main_player_name
     replay_report_dict['mainAPM'] = map_data[main_player]
     replay_report_dict['mainkills'] = killcounts[main_player]
@@ -368,7 +386,7 @@ def analyse_replay(filepath, playernames=['']):
 
     if total_kills == 0:
         logger.info('Zero total kills')
-        return {}
+        return {'CO':replay_report_dict['mainCommander']}
 
     percent_cutoff = 0.00
     player_max_units = 100 #max units sent. Javascript then sets its own limit.
@@ -440,7 +458,7 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = '[MM] D.SC2Replay'
+    file_path = r'C:\Users\Maguro\Downloads\The Vermillion Problem (67).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
 

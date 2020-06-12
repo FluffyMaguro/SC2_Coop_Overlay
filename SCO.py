@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import traceback
 import threading
 import configparser
 
@@ -8,10 +9,10 @@ import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 from MLogging import logclass
-from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage
+from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 8
+APPVERSION = 9
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -23,42 +24,83 @@ if not(os.path.isfile('SCO_config.ini')):
         file.write("""[CONFIG]\nSHOWOVERLAY = True""")
 
 config = configparser.ConfigParser()
-config.read('SCO_config.ini')
+try:
+    config.read('SCO_config.ini')
+except:
+    logger.error(traceback.format_exc())
 
 
 def get_configvalue(name,default,section='CONFIG'):
     """ function to get values out of the config file in the correct type"""
-    if name in config[section]:
-        if config[section][name].strip() != '':
-            #bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
-            if isinstance(default, bool):
-                if config[section][name].strip().lower() in ['false','0','no']:
-                    return False
+    try:
+        if name in config[section]:
+            if config[section][name].strip() != '':
+                #bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
+                if isinstance(default, bool):
+                    if config[section][name].strip().lower() in ['false','0','no']:
+                        return False
+                    else:
+                        return True
+                #integers
+                elif isinstance(default, int):
+                    try:
+                        return int(config[section][name].strip(),10)
+                    except:
+                        return default
+                #lists        
+                elif isinstance(default, list):
+                    return [i.strip() for i in config[section][name].split(',')]
+                    
+                #return as string
                 else:
-                    return True
-            #integers
-            elif isinstance(default, int):
-                try:
-                    return int(config[section][name].strip(),10)
-                except:
-                    return default
-            #lists        
-            elif isinstance(default, list):
-                return [i.strip() for i in config[section][name].split(',')]
-                
-            #return as string
-            else:
-                return config[section][name].strip()
+                    return config[section][name].strip()
+    except:
+        pass
     return default
 
 
-ACCOUNTDIR = get_configvalue('ACCOUNTDIR', os.path.join(os.path.expanduser('~'),'Documents\\StarCraft II\\Accounts'))
-REPLAYTIME = get_configvalue('REPLAYTIME', 60)
+def get_account_dir(path):
+    """ function that locates StarCraft account directory """
+
+    #if one is specified, use that
+    if path != None and os.path.isdir(path):
+        return path
+
+    user_folder = os.path.expanduser('~')
+
+    #typical folder location
+    account_path = os.path.join(user_folder,'Documents\\StarCraft II\\Accounts')
+    if os.path.isdir(account_path):
+        return account_path
+
+    #one drive location
+    account_path = os.path.join(user_folder,'OneDrive\\Documents\\StarCraft II\\Accounts')
+    if os.path.isdir(account_path):
+        return account_path
+
+    #check in all user folders
+    for root, directories, files in os.walk(user_folder):
+        for file in files:
+            if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
+                account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
+                account_path += 'StarCraft II\\Accounts'
+                with open('SCO_config.ini','a') as f:
+                    f.write(f'\nACCOUNTDIR = {account_path}')
+
+                return account_path
+
+    logger.error('Failed to find any StarCraft II account directory')
+    return account_path
+
+
+ACCOUNTDIR = get_account_dir(get_configvalue('ACCOUNTDIR', None))
 SHOWOVERLAY = get_configvalue('SHOWOVERLAY', True)
 PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
 DURATION = get_configvalue('DURATION', 60)
 KEY_SHOW = get_configvalue('KEY_SHOW', None)
 KEY_HIDE = get_configvalue('KEY_HIDE', None)
+KEY_OLDER = get_configvalue('KEY_OLDER', None)
+KEY_NEWER = get_configvalue('KEY_NEWER', None)
 P1COLOR = get_configvalue('P1COLOR', 'null')
 P2COLOR = get_configvalue('P2COLOR', 'null')
 AMONCOLOR = get_configvalue('AMONCOLOR', 'null')
@@ -69,7 +111,8 @@ LOGGING = get_configvalue('LOGGING', False)
 PORT = get_configvalue('PORT', 7305)
 
 logclass.LOGGING = LOGGING
-logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{DURATION=}\n{REPLAYTIME=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
+logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
+set_PLAYER_NAMES(PLAYER_NAMES)
 
 
 def new_version():
@@ -108,7 +151,7 @@ def getIconFile(file):
 
 def startThreads():
     """ threading moved to this function so I can import main function without threading """
-    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,PLAYER_NAMES,REPLAYTIME,AOM_NAME,AOM_SECRETKEY))
+    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY))
     t1.start()
     t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
     t2.start()
@@ -120,6 +163,15 @@ def startThreads():
     if KEY_HIDE != None:
         t4 = threading.Thread(target = keyboard_thread_HIDE, daemon=True, args=(KEY_HIDE,))
         t4.start()
+
+    if KEY_NEWER != None:
+        t5 = threading.Thread(target = keyboard_thread_NEWER, daemon=True, args=(KEY_NEWER,))
+        t5.start()
+
+    if KEY_OLDER != None:
+        t6 = threading.Thread(target = keyboard_thread_OLDER, daemon=True, args=(KEY_OLDER,))
+        t6.start()
+
 
 
 def main(startthreads=True):
