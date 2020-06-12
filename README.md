@@ -30,9 +30,9 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 You don't need to change anything in the config file for normal usage.
 
-* **If it has trouble finding replays, specify the folder directly.**
+* **Choosing players that will be preferably shown on top**
 
-   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+   PLAYER_NAMES = Maguro,SeaMaguro
 
 * **Changing hotkeys for manual overlay display**
 
@@ -40,19 +40,24 @@ You don't need to change anything in the config file for normal usage.
   
    KEY_HIDE = Ctrl+
 
-* **Choosing players that will be preferably shown on top**
+* **Changing hotkeys for moving between replays**
 
-   PLAYER_NAMES = Maguro,SeaMaguro
+   KEY_NEWER = Alt+/
   
+   KEY_OLDER = Alt+*
+
 * **Changing the duration for how long the overlay is visible when shown automatically (in seconds)**
   
    DURATION = 30
-  
-* **Hiding overlay. This can be useful if you want the overlay to be shown only in OBS or browser**  
+
+* **If it has trouble finding replays, specify the folder directly.**
+
+   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+
+* **Prevents the from showing. You can still add it to OBS, or open in an internet browser.**  
 
    SHOWOVERLAY = False
  
-   
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
    AOM_NAME = Maguro (account name)
