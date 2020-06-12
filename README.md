@@ -96,7 +96,7 @@ You don't need to change anything in the config file for normal usage.
       - It's now possible to view analysis of older replays and switch between them freely
       - Fixed the issue when the replay folder weren't located automatically on certain systems
       - Replay analysis tweaked for more accurate stats
-      - Overlay shows map player
+      - Overlay shows map played
 
 * 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.<br>
 * 1.7 Colors can be changed via the config file. Bug fixes.<br>
