@@ -85,6 +85,7 @@ You don't need to change anything in the config file for normal usage.
 
 
 # Other notes
+* Kills are shown for top 5 units only
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
