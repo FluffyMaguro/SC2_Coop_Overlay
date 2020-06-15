@@ -12,7 +12,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 9
+APPVERSION = 10
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -21,7 +21,7 @@ logclass.FILE = "SCO_log.txt"
 ### CONFIG SETUP
 if not(os.path.isfile('SCO_config.ini')):
     with open('SCO_config.ini','w') as file:
-        file.write("""[CONFIG]\nSHOWOVERLAY = True""")
+        file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nPLAYER_NAMES = Maguro,BigMaguro\nDURATION = 60\nMONITOR = 1\n\nKEY_SHOW = Ctrl+/\nKEY_HIDE = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nSHOWOVERLAY = True\nLOGGING = False""")
 
 config = configparser.ConfigParser()
 try:
@@ -97,10 +97,10 @@ ACCOUNTDIR = get_account_dir(get_configvalue('ACCOUNTDIR', None))
 SHOWOVERLAY = get_configvalue('SHOWOVERLAY', True)
 PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
 DURATION = get_configvalue('DURATION', 60)
-KEY_SHOW = get_configvalue('KEY_SHOW', None)
-KEY_HIDE = get_configvalue('KEY_HIDE', None)
-KEY_OLDER = get_configvalue('KEY_OLDER', None)
-KEY_NEWER = get_configvalue('KEY_NEWER', None)
+KEY_SHOW = get_configvalue('KEY_SHOW', 'Ctrl+/')
+KEY_HIDE = get_configvalue('KEY_HIDE', 'Ctrl+*')
+KEY_OLDER = get_configvalue('KEY_OLDER', 'Alt+/')
+KEY_NEWER = get_configvalue('KEY_NEWER', 'Alt+*')
 P1COLOR = get_configvalue('P1COLOR', 'null')
 P2COLOR = get_configvalue('P2COLOR', 'null')
 AMONCOLOR = get_configvalue('AMONCOLOR', 'null')
@@ -109,6 +109,7 @@ AOM_NAME = get_configvalue('AOM_NAME', None)
 AOM_SECRETKEY = get_configvalue('AOM_SECRETKEY', None)
 LOGGING = get_configvalue('LOGGING', False)
 PORT = get_configvalue('PORT', 7305)
+MONITOR = get_configvalue('MONITOR', 1)
 
 logclass.LOGGING = LOGGING
 logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
@@ -131,15 +132,16 @@ def new_version():
 
 class WWW(QtWebEngineWidgets.QWebEngineView):
     """ expanding this class to add JS after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
-    def __init__(self,parent=None):
+    def __init__(self, dll, parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
+        self.dll = dll
 
 
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; showNotification();")
+            self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{KEY_SHOW}','{KEY_HIDE}','{KEY_NEWER}','{KEY_OLDER}',{'true' if self.dll else 'false'});")
 
 
 def getIconFile(file):
@@ -175,8 +177,9 @@ def startThreads():
 
 
 def main(startthreads=True):
+    download_link = new_version()
     app = QtWidgets.QApplication(sys.argv)
-    view = WWW()
+    view = WWW(download_link)
 
     view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
@@ -209,7 +212,6 @@ def main(startthreads=True):
     menu.addSeparator()
 
     ### Check for updates
-    download_link = new_version()
     if download_link:
         update = QtWidgets.QAction("New version available!")
         update.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(download_link)))
@@ -233,9 +235,10 @@ def main(startthreads=True):
         webpage.setBackgroundColor(QtCore.Qt.transparent)
 
         ### Set correct size and width for the widget; Setting it to full shows black screen on my machine, works fine on notebook
-        sg = QtWidgets.QDesktopWidget().screenGeometry()
+        sg = QtWidgets.QDesktopWidget().screenGeometry(MONITOR-1)
+        logger.info(f'Using monitor {MONITOR} ({sg.width()}x{sg.height()})')
         view.setFixedSize(sg.width()-1, sg.height())
-        view.move(1,0)
+        view.move(sg.left(),sg.top())
 
         ### Load webpage
         if os.path.isfile('Layouts/Layout.html'):

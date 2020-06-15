@@ -69,13 +69,12 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
     """ Checks every few seconds for new replays  """
     global AllReplays
     global ReplayPosition
-
     session_games = {'Victory':0,'Defeat':0}
 
     with lock:
         AllReplays = initialize_AllReplays(ACCOUNTDIR)
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
-        ReplayPosition = len(AllReplays)
+        ReplayPosition = len(AllReplays) - 1
 
     while True:   
         current_time = time.time()
@@ -88,53 +87,47 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
 
                     if current_time - os.path.getmtime(file_path) < 60: 
                         logger.info(f'New replay: {file_path}')
+                        replay_dict = dict()
                         try:   
                             replay_dict = analyse_replay(file_path,PLAYER_NAMES)
 
-                            #for games with no kills, increase defeat if there was a commander
-                            if 'CO' in replay_dict:
-                                if not(replay_dict['CO'] in [None,'']):
-                                    session_games['Defeat'] += 1 
-                                    logger.debug('No kills, but valid co-op replay')
-                                else:
-                                    logger.debug('No kills, and not valid co-op replay')
-                                replay_dict = None
-
                             #good output
-                            elif len(replay_dict) > 1:
+                            if len(replay_dict) > 1:
                                 logger.debug('Replay analysis result looks good, appending...')
                                 session_games[replay_dict['result']] += 1                                    
                                     
                                 sendEvent({**replay_dict,**session_games})
-                                upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict)    
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
                                     file.write((str(replay_dict)+'\n').encode('utf-8'))     
 
                             #no output                         
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
-                                replay_dict = None
 
                             with lock:
                                 AllReplays[file_path]['replay_dict'] = replay_dict
-                                ReplayPosition = len(AllReplays)
-
-                            break
+                                ReplayPosition = len(AllReplays)-1
+                
                         except:
                             logger.error(traceback.format_exc())
+
+                        finally:
+                            upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict)
+                            break
 
         time.sleep(3)   
 
 
 def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     """ function handling uploading the replay on the Aommaster's server"""
+
     if AOM_NAME == None or AOM_SECRETKEY == None:
         return
 
     if (time.time() - os.path.getmtime(file_path)) > 60:
         return
 
-    if replay_dict['mainCommander'] in [None,'']:
+    if replay_dict.get('mainCommander',None) in [None,'']:
         sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
 
@@ -149,7 +142,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     
     except:
         sendEvent({'uploadEvent':True,'response':'Error'})
-        logger.error(traceback.format_exc())
+        logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
 
 async def manager(websocket, path):
@@ -171,6 +164,9 @@ async def manager(websocket, path):
         except websockets.exceptions.ConnectionClosedError:
             logger.error('Websocket connection closed ERROR!')
             break            
+        except websockets.exceptions.ConnectionClosed:
+            logger.error('Websocket connection closed!')
+            break 
         except:
             logger.error(traceback.format_exc())
         finally:

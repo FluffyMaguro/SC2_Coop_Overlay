@@ -36,6 +36,10 @@ UnitAddKillsTo = {
              "HotSSplitterlingMedium":"Baneling",
              "MutatorAmonKaraxServitorWeaponA": "Karax",
              "CoopCasterDehaka": "Dakrun",
+             "FenixAdeptShade":"Adept",
+             "CoopCasterRaynor":"Dusk Wings",
+             "CoopCasterStukov":"Apocalisk",
+             "FenixTalisAdeptPhaseShift":"Talis"
              }
 
              

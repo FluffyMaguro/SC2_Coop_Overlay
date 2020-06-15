@@ -8,12 +8,15 @@ from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKil
 from MLogging import logclass
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit "]
-duplicating_units = ['HotSRaptor','MutatorAmonArtanis']
+duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
 icon_units = {'MULE','Omega Worm'}
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {'Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
+aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
+tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
+
 
 logger = logclass('REPA','INFO')
 
@@ -81,7 +84,7 @@ def analyse_replay(filepath, playernames=['']):
     try:
         replay = sc2reader.load_replay(filepath,load_level=3)
     except:
-        logger.error(f'ERROR: sc2reader failed to load replay ({filepath})')
+        logger.error(f'ERROR: sc2reader failed to load replay ({filepath})\n{traceback.format_exc()}')
         return {}
 
     
@@ -145,6 +148,12 @@ def analyse_replay(filepath, playernames=['']):
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] #ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     START_TIME = 99999999 if '[MM]' in filepath else 0
+    outlaw_order = []
+
+    last_aoe_unit_killed = [0]*17
+    for player in range(1,16):
+        last_aoe_unit_killed[player] = [None, 0] if player in amon_players else None
+
 
     ### Go through game events
     for event in replay.events:  
@@ -186,6 +195,10 @@ def analyse_replay(filepath, playernames=['']):
                     unit_type_dict_amon[unit_type][0] += 1
                 else:
                     unit_type_dict_amon[unit_type] = [1,0,0,0]
+
+            #outlaw order
+            if unit_type in tychus_outlaws and event.control_pid in [1,2]:
+                outlaw_order.append(unit_type)
 
 
         #ignore some DT/HT deaths caused by Archon merge
@@ -238,15 +251,22 @@ def analyse_replay(filepath, playernames=['']):
             unit_dict[str(event.unit_id)][1] = str(event.control_pid)
 
 
-        #count kills for players
+       
         if event.name == 'UnitDiedEvent':
             try:
                 killed_unit_type = unit_dict[str(event.unit_id)][0]
                 losing_player = int(unit_dict[str(event.unit_id)][1])
+
+                #count kills for players
                 if losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit' and not(event.killing_player_id in [1,2] and losing_player in [1,2]): #don't count team kills
                     killcounts[event.killing_player_id] += 1
+
+                #get last_aoe_unit_killed
+                if killed_unit_type in aoe_units and event.killing_player_id in [1,2] and losing_player in amon_players:
+                    last_aoe_unit_killed[losing_player] = [killed_unit_type,event.second]
             except:
                 pass
+
 
         if event.name == 'UnitDiedEvent' and str(event.unit_id) in unit_dict:    
             try:
@@ -261,15 +281,12 @@ def analyse_replay(filepath, playernames=['']):
                     killing_unit_type = 'NoUnit'
 
 
-                #fix kills for some enemy area-of-effect units that kills player units after they are dead. This is the best guess. Other aoe units will mix in.
+                """Fix kills for some enemy area-of-effect units that kills player units after they are dead. 
+                   This is the best guess, if one of aoe_units died recently, it was likely that one. """
                 if killing_unit_type == 'NoUnit' and event.killing_unit_id == None and event.killer_pid in amon_players and losing_player != event.killing_player_id:
-                    race = replay.players[event.killer_pid-1].play_race
-                    if race == 'Zerg' and "Viper" in unit_type_dict_amon:
-                        unit_type_dict_amon["Viper"][2] += 1
-                    elif race == 'Terran' and "ScienceVessel" in unit_type_dict_amon:
-                        unit_type_dict_amon["ScienceVessel"][2] += 1
-                    elif race == 'Protoss' and "HighTemplar" in unit_type_dict_amon:
-                        unit_type_dict_amon["HighTemplar"][2] += 1
+                    if event.second - last_aoe_unit_killed[event.killer_pid][1] < 9 and last_aoe_unit_killed[event.killer_pid][0] != None:
+                        unit_type_dict_amon[last_aoe_unit_killed[event.killer_pid][0]][2] += 1
+                        logger.debug(f'{last_aoe_unit_killed[event.killer_pid][0]}({event.killer_pid}) killed {killed_unit_type} | {event.second}s')
 
 
                 ### Update kills
@@ -364,6 +381,7 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['mainAPM'] = map_data[main_player]
     replay_report_dict['mainkills'] = killcounts[main_player]
     replay_report_dict['ally'] = ally_player_name
+    replay_report_dict['extension'] = replay.raw_data['replay.initData']['game_description']['has_extension_mod']
 
     replay_report_dict['mainIcons'] = dict()
     replay_report_dict['allyIcons'] = dict()
@@ -384,9 +402,11 @@ def analyse_replay(filepath, playernames=['']):
     else:
         logger.error('No ally player')
 
-    if total_kills == 0:
-        logger.info('Zero total kills')
-        return {'CO':replay_report_dict['mainCommander']}
+
+    if replay_report_dict.get('mainCommander',None) == 'Tychus':
+        replay_report_dict['mainIcons']['outlaws'] = outlaw_order
+    elif replay_report_dict.get('allyCommander',None) == 'Tychus':
+        replay_report_dict['allyIcons']['outlaws'] = outlaw_order
 
     percent_cutoff = 0.00
     player_max_units = 100 #max units sent. Javascript then sets its own limit.
@@ -458,7 +478,9 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = r'C:\Users\Maguro\Downloads\The Vermillion Problem (67).SC2Replay'
+    file_path = r'LnL.SC2Replay' #no kills replay
+    # file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Evacuación minera.SC2Replay' #DON
+
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
 
