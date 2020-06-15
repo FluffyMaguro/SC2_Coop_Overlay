@@ -97,7 +97,7 @@ You don't need to change anything in the config file for normal usage.
 * 1.10 version
 
       - Multimonitor support
-      - Outlaw order shown
+      - Showing Outlaw order for Tychus
       - Start up notification shows hotkeys and if an update is available
       - Shows games even without any kills
 
