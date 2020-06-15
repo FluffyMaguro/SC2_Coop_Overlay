@@ -90,6 +90,12 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
+* 1.10 version
+
+      - Outlaw order shown
+      - Start up notification shows hotkeys and if an update is available
+      - Shows games even without any kills
+
 * 1.9 version
 
       - It's now possible to view analysis of older replays and switch between them freely
@@ -98,7 +104,6 @@ You don't need to change anything in the config file for normal usage.
       - Overlay shows map played & winrate in the current session
       - Minor graphical tweaks
       - Small tweaks to sc2reader module to prevent load fails
-      - Start up notification shows hotkeys and if an update is available
 
 * 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.<br>
 * 1.7 Colors can be changed via the config file. Bug fixes.<br>
