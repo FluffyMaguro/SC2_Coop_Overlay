@@ -50,6 +50,10 @@ You don't need to change anything in the config file for normal usage.
   
    DURATION = 30
 
+* **Choose which monitor to show the overlay on (for multi-monitor setups).**
+  
+   MONITOR = 1
+   
 * **If it has trouble finding replays, specify the folder directly.**
 
    ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
