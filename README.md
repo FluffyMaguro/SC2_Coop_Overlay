@@ -6,7 +6,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 **Download links:** 
 * [Mega](https://mega.nz/file/lhsRxKDQ#u6jn6s1SjSFQWnjQHPmlFqA_nsHwe_JzuyFbIqQ9H-E)
-* [Google-drive](https://drive.google.com/file/d/1Rmhp7JRm6LQ3WVTj0NaoZYy7PZ0oMIBZ/view)
+* [Google-drive](https://drive.google.com/file/d/1nOuI5Xcy8l8RDBRmwXpFKLKGDQvDtAli/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/scr1.jpg)
