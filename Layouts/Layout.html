@@ -816,12 +816,16 @@ function postGameStats(data,showing=false) {
     fill('map', data['map']);
     fill('name2', data['ally']);
     fill('com1', data['mainCommander']);
-    fill('com2', data['allyCommander']);
+    if (data['allyCommander'] != null) {
+        fill('com2', data['allyCommander'])
+    } else {
+        fill('com2', '');        
+    }
     fill('apm1', data['mainAPM'] + ' APM');
     fill('apm2', data['allyAPM'] + ' APM');
 
     if (data['Victory'] != null) {                           
-        fill('session', 'Current session: ' + data['Victory']+' wins/'+(data['Victory']+data['Defeat']) + ' games (' + Math.round(100*data['Victory']/(data['Victory']+data['Defeat']))+'%)');
+        fill('session', 'Session: ' + data['Victory']+' wins/'+(data['Victory']+data['Defeat']) + ' games');
     } else {
         fill('session','');
     };
@@ -894,7 +898,6 @@ function hidestats() {
     document.getElementById('loader').style.opacity = '0';
     setTimeout(function(){ 
                           document.getElementById('session').innerHTML = '';
-                          document.getElementById('map').innerHTML = '';
                           document.getElementById('loader').innerHTML = ''}
                           ,1000)
 }
