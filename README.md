@@ -102,6 +102,7 @@ You don't need to change anything in the config file for normal usage.
 
       - Identifying enemy unit composition (best guess)
       - By default there is a single key to show/hide overlay (possible to change by user)
+      - Minor graphical tweaks
 
 * 1.10 version
 
