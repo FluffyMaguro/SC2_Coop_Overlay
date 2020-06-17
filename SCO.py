@@ -12,7 +12,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 10
+APPVERSION = 11
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -97,10 +97,10 @@ ACCOUNTDIR = get_account_dir(get_configvalue('ACCOUNTDIR', None))
 SHOWOVERLAY = get_configvalue('SHOWOVERLAY', True)
 PLAYER_NAMES = get_configvalue('PLAYER_NAMES', [])
 DURATION = get_configvalue('DURATION', 60)
-KEY_SHOW = get_configvalue('KEY_SHOW', 'Ctrl+/')
-KEY_HIDE = get_configvalue('KEY_HIDE', 'Ctrl+*')
-KEY_OLDER = get_configvalue('KEY_OLDER', 'Alt+/')
-KEY_NEWER = get_configvalue('KEY_NEWER', 'Alt+*')
+KEY_SHOW = get_configvalue('KEY_SHOW', None)
+KEY_HIDE = get_configvalue('KEY_HIDE', None)
+KEY_OLDER = get_configvalue('KEY_OLDER', None)
+KEY_NEWER = get_configvalue('KEY_NEWER', None)
 P1COLOR = get_configvalue('P1COLOR', 'null')
 P2COLOR = get_configvalue('P2COLOR', 'null')
 AMONCOLOR = get_configvalue('AMONCOLOR', 'null')
@@ -110,9 +110,10 @@ AOM_SECRETKEY = get_configvalue('AOM_SECRETKEY', None)
 LOGGING = get_configvalue('LOGGING', False)
 PORT = get_configvalue('PORT', 7305)
 MONITOR = get_configvalue('MONITOR', 1)
+UNIFIEDHOTKEY = get_configvalue('UNIFIEDHOTKEY', True)
 
 logclass.LOGGING = LOGGING
-logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
+logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
 set_PLAYER_NAMES(PLAYER_NAMES)
 
 
@@ -132,16 +133,17 @@ def new_version():
 
 class WWW(QtWebEngineWidgets.QWebEngineView):
     """ expanding this class to add JS after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
-    def __init__(self, dll, parent=None):
+    def __init__(self, unified, dll, parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
+        self.unified = unified
         self.dll = dll
 
 
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{KEY_SHOW}','{KEY_HIDE}','{KEY_NEWER}','{KEY_OLDER}',{'true' if self.dll else 'false'});")
+            self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{KEY_SHOW}','{KEY_HIDE}','{KEY_NEWER}','{KEY_OLDER}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
 
 
 def getIconFile(file):
@@ -179,7 +181,7 @@ def startThreads():
 def main(startthreads=True):
     download_link = new_version()
     app = QtWidgets.QApplication(sys.argv)
-    view = WWW(download_link)
+    view = WWW(UNIFIEDHOTKEY,download_link)
 
     view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
@@ -254,7 +256,7 @@ def main(startthreads=True):
             error.triggered.connect(app.quit)
             menu.addAction(error)
 
-    set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION)
+    set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION, UNIFIEDHOTKEY)
 
     if startthreads:        
         startThreads()            

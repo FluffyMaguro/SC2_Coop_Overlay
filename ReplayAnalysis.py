@@ -4,7 +4,7 @@ import json
 import traceback
 
 import sc2reader
-from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo
+from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict
 from MLogging import logclass
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit "]
@@ -16,7 +16,8 @@ self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {'Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
-
+commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
+non_wave_units = {'LurkerMPBurrowed','HybridDominatorCoopBoss','Nuke','Bunker','HybridDestroyer','Larva','InfestedTerransEgg','MutatorStormCloud','MoebiusSeeker','PnPHybridVoidRift','InfestedColonistTransportNova','NovaInfestedBansheeBurrowed','InfestedAbominationBurrowed','InfestedExploder','SCV','Probe','Drone','InfestedCivilianBurrowed','InfestedTerranCampaignBurrowed','InfestedExploderBurrowed','InfestedTerranCampaignBurrowed','InfestedTerranCampaign','ZergDropPodCreep','ParasiticBombDummy','InfestedCivilian','HybridDominatorVoid','HybridReaver','HybridNemesis','HybridBehemoth','Observer','Overlord','Overseer','WarpPrism','LocustMP','Medivac','Broodling','BroodlingEscort','CreepTumor', 'TerranDropPod','ZergDropPod','MutatorPurifierBeam'}
 
 logger = logclass('REPA','INFO')
 
@@ -64,6 +65,45 @@ def switch_names(pdict):
 
     return temp_dict
 
+
+def get_enemy_comp(identified_waves):
+    """ this function takes indentified waves and tries to match them with known enemy AI comps.
+        Waves are identified as events where 6+ units were created at the same second. """
+
+    #each AI gets one point for each matching wave
+    results = dict()
+    for AI in UnitCompDict:
+        results[AI] = 0
+
+    #lets go through our waves, substract some units and compare them to known AI unit waves
+    for wave in identified_waves:
+        types = set(identified_waves[wave])
+        types.difference_update(non_wave_units)
+        if len(types) == 0:
+            continue
+
+        logger.debug(f'{"-"*40}\nChecking this wave type: {types}\n')
+        for AI in UnitCompDict:
+            for idx,wave in enumerate(UnitCompDict[AI]):
+                wave.difference_update(non_wave_units)
+                #identical wave
+                if types == wave:
+                    logger.debug(f'"{AI}" wave {idx+1} is the same: {wave}')
+                    results[AI] += 1*len(wave)
+                    continue
+                #in case of alternate units or some noise
+                if types.issubset(wave) and len(wave) - len(types) == 1: 
+                    logger.debug(f'"{AI}" wave {idx+1} is a close subset: {types} | {wave}')
+                    results[AI] += 0.25*len(wave)
+
+    results = {k:v for k,v in sorted(results.items(), key=lambda x:x[1],reverse=True) if v!=0}            
+    logger.debug(f'{"-"*40}\nAnd results are: {results}')
+
+    #return the comp with the most points
+    if len(results) > 0:
+        logger.debug(f'Most likely AI: "{list(results.keys())[0]}" with {100*list(results.values())[0]/sum(results.values()):.1f}% points\n\n\n')
+        return list(results.keys())[0]
+    return 'unidentified AI'
 
 
 def analyse_replay(filepath, playernames=['']):
@@ -148,7 +188,10 @@ def analyse_replay(filepath, playernames=['']):
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] #ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     START_TIME = 99999999 if '[MM]' in filepath else 0
+    commander_fallback = dict()
     outlaw_order = []
+    wave_units = {'second':0,'units':[]}
+    identified_waves = dict()
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -161,7 +204,10 @@ def analyse_replay(filepath, playernames=['']):
         #get actual start time for arcade maps
         if event.name == 'UpgradeCompleteEvent':
             if event.upgrade_type_name == 'CommanderLevel':
-                MM_START_TIME = event.second
+                START_TIME = event.second
+
+            if event.pid in [1,2] and event.upgrade_type_name in commander_upgrades:
+                commander_fallback[event.pid] = commander_upgrades[event.upgrade_type_name]
 
         if event.name == 'UnitBornEvent' or event.name == 'UnitInitEvent':
             unit_type = event.unit_type_name
@@ -197,9 +243,19 @@ def analyse_replay(filepath, playernames=['']):
                     unit_type_dict_amon[unit_type] = [1,0,0,0]
 
             #outlaw order
-            if unit_type in tychus_outlaws and event.control_pid in [1,2]:
+            if unit_type in tychus_outlaws and event.control_pid in [1,2] and not(unit_type in outlaw_order):
                 outlaw_order.append(unit_type)
 
+            #identifying waves
+            if event.control_pid in [3,4,5,6] and not event.second in [0,START_TIME] and event.second > 60 and not unit_type in non_wave_units:
+                if wave_units['second'] == event.second:
+                    wave_units['units'].append(unit_type)
+                else:
+                    wave_units['second'] = event.second
+                    wave_units['units'] = [unit_type]
+
+                if len(wave_units['units']) > 6:
+                    identified_waves[event.second] = wave_units['units']
 
         #ignore some DT/HT deaths caused by Archon merge
         if event.name == "UnitInitEvent" and event.unit_type_name == "Archon":
@@ -372,6 +428,7 @@ def analyse_replay(filepath, playernames=['']):
 
     replay_report_dict = dict()
     replay_report_dict['replaydata'] = True
+    replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['result'] = game_result
     replay_report_dict['map'] = replay.map_name
     replay_report_dict['filepath'] = filepath
@@ -389,6 +446,9 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['B+'] = replay.raw_data['replay.initData']['lobby_state']['slots'][0]['brutal_plus_difficulty']
 
     replay_report_dict['mainCommander'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander'].decode()
+    if replay_report_dict['mainCommander'] == '':
+        replay_report_dict['mainCommander'] = commander_fallback.get(main_player,"")
+
     replay_report_dict['mainCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander_level']
     replay_report_dict['mainMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander_mastery_talents']
 
@@ -397,11 +457,13 @@ def analyse_replay(filepath, playernames=['']):
     if len(replay.humans) > 1:
         replay_report_dict['allyAPM'] = map_data[ally_player]
         replay_report_dict['allyCommander'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander'].decode()
+        if replay_report_dict['allyCommander'] == '':
+            replay_report_dict['allyCommander'] = commander_fallback.get(ally_player,"")
+
         replay_report_dict['allyCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_level']
         replay_report_dict['allyMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_mastery_talents']
     else:
         logger.error('No ally player')
-
 
     if replay_report_dict.get('mainCommander',None) == 'Tychus':
         replay_report_dict['mainIcons']['outlaws'] = outlaw_order
@@ -479,9 +541,13 @@ if __name__ == "__main__":
     from pprint import pprint
 
     file_path = r'LnL.SC2Replay' #no kills replay
-    # file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Evacuación minera.SC2Replay' #DON
+    file_path = r'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\Dead of Night (275).SC2Replay'
 
+    # for file in os.listdir('replays'):
+    #     file_path = f'replays\\{file}'
+    #     replay_dict = analyse_replay(file_path,['Maguro'])
+    #     pprint(replay_dict, sort_dicts=False)
+    #     break
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
-
     

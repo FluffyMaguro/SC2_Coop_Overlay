@@ -142,7 +142,7 @@
 
     #morestats {
         opacity: 0.7;
-        font-size: 1.83vh;
+        font-size: 1.9vh;
         padding-top: 0.42px;
     }
 
@@ -154,17 +154,25 @@
 
     #map {
         position: absolute;
-        top: 7.8vh;
+        top: 8vh;
         width: 100%;
         text-align: center;
-        font-size: 1.5vh;
+        font-size: 1.4vh;
+    }
+
+    #comp {
+        position: absolute;
+        top: 9.5vh;
+        width: 100%;
+        font-size: 1.4vh;
+        text-align: center;
     }
 
     #brutal {
         position: absolute;
-        top: 9.5vh;
+        top: 11.1vh;
         width: 100%;
-        font-size: 1.5vh;
+        font-size: 1.4vh;
         text-align: center;
     }
 
@@ -436,6 +444,7 @@
                 <div id="map"></div>
                 <span id="apm1"></span>
                 <span id="apm2"></span>
+                <div id="comp"></div>
                 <div id="brutal"></div>
             </div>
         </div>
@@ -624,6 +633,8 @@ var DURATION = 60;
 var maxUnits = 5;
 var gP1Color = '#0080F8';
 var gP2Color = '#00D532';
+var UNIFIEDHOTKEY = true;
+var toBeShown = false;
 
 //main functionality
 setColors(null,null,null,null);
@@ -632,14 +643,14 @@ connect_to_socket();
 // DEBUG START
 // debug();
 // document.body.style.backgroundColor = "black";
-// fillhotkeyinfo('Ctrl+/','Ctrl+*','Alt+/','Alt+*',false);
+// fillhotkeyinfo('Ctrl+*','None','Alt+/','Alt+*',true,false);
 // showNotification();
 // DEBUG END
 
 
 function debug() {
     DURATION = 3;                  
-    var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Part and Parcel', 'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Part and Parcel (14).SC2Replay', 'date': '2020-06-15 18:00:07', 'length': 1033, 'main': 'Maguro', 'mainAPM': 134.0, 'mainkills': 886, 'ally': 'skid', 'extension': 0, 'mainIcons': {}, 'allyIcons': {}, 'B+': 1, 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'allyAPM': 122.0, 'allykills': 648, 'allyCommander': 'Zagara', 'allyCommanderLevel': 15, 'allyMasteries': [30, 0, 30, 0, 30, 0], 'mainUnits': {'Kerrigan': [2, 1, 498, 0.56], 'Mutalisk': [89, 36, 377, 0.43], 'Spine Crawler': [3, 2, 7, 0.01], 'Broodling': [21, 21, 1, 0.0], 'Queen': [3, 2, 1, 0.0]}, 'allyUnits': {'Baneling': [452, 444, 395, 0.61], 'Zagara': [4, 3, 101, 0.16], 'Hunter Killer': [126, 126, 101, 0.16], 'Roach': [60, 60, 33, 0.05], 'Zergling': [583, 294, 12, 0.02], 'Queen': [4, 3, 5, 0.01], 'Scourge': [22, 22, 1, 0.0]}, 'amonUnits': {'Baneling': [180, 181, 134, 0.38], 'Zergling': [793, 753, 55, 0.15], 'Scourge': [98, 98, 31, 0.09], 'Viper': [19, 18, 19, 0.05], 'Hydralisk': [56, 52, 13, 0.04], 'Mutalisk': [87, 76, 9, 0.03], 'Spore Crawler': [24, 13, 9, 0.03], 'Moebius Hybrid': [29, 29, 8, 0.02], 'Aberration': [53, 52, 7, 0.02], 'Swarm Host': [41, 36, 7, 0.02], 'Ultralisk': [10, 8, 4, 0.01], 'Hybrid Dominator': [2, 1, 4, 0.01], 'Ravager': [11, 11, 3, 0.01], 'Queen': [8, 1, 3, 0.01], 'Roach': [79, 64, 2, 0.01], 'Brood Lord': [10, 5, 2, 0.01], 'Hybrid Reaver': [5, 2, 2, 0.01], 'Broodling': [146, 146, 1, 0.0], 'Infestor': [7, 7, 1, 0.0], 'Defense Bot': [0, 32, 1, 0.0]}};
+    var dummydata = {'replaydata': true,'comp': 'Masters and Machines', 'result': 'Victory', 'map': 'Part and Parcel', 'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Part and Parcel (14).SC2Replay', 'date': '2020-06-15 18:00:07', 'length': 1033, 'main': 'Maguro', 'mainAPM': 134.0, 'mainkills': 886, 'ally': 'skid', 'extension': 0, 'mainIcons': {}, 'allyIcons': {}, 'B+': 1, 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'allyAPM': 122.0, 'allykills': 648, 'allyCommander': 'Zagara', 'allyCommanderLevel': 15, 'allyMasteries': [30, 0, 30, 0, 30, 0], 'mainUnits': {'Kerrigan': [2, 1, 498, 0.56], 'Mutalisk': [89, 36, 377, 0.43], 'Spine Crawler': [3, 2, 7, 0.01], 'Broodling': [21, 21, 1, 0.0], 'Queen': [3, 2, 1, 0.0]}, 'allyUnits': {'Baneling': [452, 444, 395, 0.61], 'Zagara': [4, 3, 101, 0.16], 'Hunter Killer': [126, 126, 101, 0.16], 'Roach': [60, 60, 33, 0.05], 'Zergling': [583, 294, 12, 0.02], 'Queen': [4, 3, 5, 0.01], 'Scourge': [22, 22, 1, 0.0]}, 'amonUnits': {'Baneling': [180, 181, 134, 0.38], 'Zergling': [793, 753, 55, 0.15], 'Scourge': [98, 98, 31, 0.09], 'Viper': [19, 18, 19, 0.05], 'Hydralisk': [56, 52, 13, 0.04], 'Mutalisk': [87, 76, 9, 0.03], 'Spore Crawler': [24, 13, 9, 0.03], 'Moebius Hybrid': [29, 29, 8, 0.02], 'Aberration': [53, 52, 7, 0.02], 'Swarm Host': [41, 36, 7, 0.02], 'Ultralisk': [10, 8, 4, 0.01], 'Hybrid Dominator': [2, 1, 4, 0.01], 'Ravager': [11, 11, 3, 0.01], 'Queen': [8, 1, 3, 0.01], 'Roach': [79, 64, 2, 0.01], 'Brood Lord': [10, 5, 2, 0.01], 'Hybrid Reaver': [5, 2, 2, 0.01], 'Broodling': [146, 146, 1, 0.0], 'Infestor': [7, 7, 1, 0.0], 'Defense Bot': [0, 32, 1, 0.0]}};
 
     postGameStatsTimed(dummydata);
     setTimeout(uploadStatus,1500,'Error - some error');
@@ -661,9 +672,9 @@ function connect_to_socket() {
         } else if (data['mutatordata'] != null){
             mutatorInfo(data['data'])
         } else if (data['hideEvent'] != null){
-            hidestats()
+            showhide(false)
         } else if (data['showEvent'] != null){                                       
-            showstats()                                                            
+            showhide(true)                                                            
         } else if (data['uploadEvent'] != null){ 
             setTimeout(uploadStatus,1500,data['response'])                                                                                        
         } else if (data['initEvent'] != null){ 
@@ -677,7 +688,7 @@ function connect_to_socket() {
             console.log('CLEAN EXIT: ' + event)
             reconnect_to_socket();
         } else {
-            console.log('UNCLEAN EXIT: ' + event)
+            // console.log('UNCLEAN EXIT: ' + event)
             reconnect_to_socket();
         }
     };
@@ -700,13 +711,34 @@ function showNotification(){
     setTimeout(function(){document.getElementById('notification').style.opacity = '0';},6000)                    
 }
 
-function fillhotkeyinfo(showh,hideh,newh,olderh,update) {
-    otherinfo = document.getElementById('otherinfo');
-    ttext = '';
+function fillhotkeyinfo(showh,hideh,newh,olderh,unified,update) {
+    var otherinfo = document.getElementById('otherinfo');
+    var ttext = '';
     if (update) {
         ttext = '<p id="update">UPDATE AVAILABLE!</p>';
-       };                                                        
-    otherinfo.innerHTML = ttext + '<table><tr><td><span>'+ showh +'</span> → show</td><td><span>'+olderh+'</span> → older</td></tr><tr><td><span>'+hideh+'</span> → hide</td><td><span>'+newh+'</span> → newer</td></tr></table>';
+       };
+    var text_hide = 'hide';
+    var text_show = 'show';
+    if (unified) {
+        text_hide = 'show/hide';
+        text_show = 'show/hide';       
+    }
+
+    var inner_hide = '<span>' + hideh +'</span> → ' + text_hide;
+    var show_style = '';
+    if (hideh == 'None') {
+            inner_hide = '';
+            show_style = 'colspan="2"';
+            text_show = 'show/hide overlay'
+        }
+    var inner_show = '<span>' + showh +'</span> → ' + text_show;
+    if (showh == 'None') {inner_show = ''}
+    var inner_newer = '<span>' + newh +'</span> → newer';
+    if (newh == 'None') {inner_newer = ''}
+    var inner_older = '<span>' + olderh +'</span> → older';
+    if (olderh == 'None') {inner_older = ''}
+
+    otherinfo.innerHTML = ttext + '<table><tr><td>'+inner_newer+'</td><td>'+inner_older+'</td></tr><tr><td '+show_style+'>'+inner_show+'</td><td>'+inner_hide+'</td></tr></table>';
      if (update) {
         document.getElementById('update').style.display = 'block'
        };      
@@ -717,7 +749,8 @@ function fillhotkeyinfo(showh,hideh,newh,olderh,update) {
 
 function initColorsDuration(data) {
      setColors(data['colors'][0],data['colors'][1],data['colors'][2],data['colors'][3]);
-     DURATION = data['duration']                       
+     DURATION = data['duration'];   
+     UNIFIEDHOTKEY = data['unifiedhotkey']                    
 }
 
 
@@ -741,7 +774,7 @@ function setColors(P1color,P2color,P3color,MasteryColor) {
     document.getElementById('killbar2').style.backgroundColor = gP2Color;
 
     //Player 3
-    color = '#FF0000';
+    var color = '#FF0000';
     if (P3color != null) {
         color = P3color
     };
@@ -806,14 +839,27 @@ function postGameStatsTimed(data) {
     }              
 }
 
+function format_length(seconds) {
+    var gseconds = Math.round(seconds*1.4);
+    var sec = gseconds % 60;
+    var min = (gseconds - sec) / 60;
+    if (sec < 10) {
+        return min+':0'+sec
+    } else {                             
+        return min+':'+sec 
+        }                            
+    }
+
+
 function postGameStats(data,showing=false) {
     //initial change
     document.getElementById('killbar').style.display = 'block';
     document.getElementById('nodata').style.display = 'none';
     // fill 
+    fill('comp', data['comp']);
     fill('name1', data['main']);
     fill('result', data['result'] + '!');
-    fill('map', data['map']);
+    fill('map', data['map'] + '&nbsp;&nbsp;(' + format_length(data['length'])+')');
     fill('name2', data['ally']);
     fill('com1', data['mainCommander']);
     if (data['allyCommander'] != null) {
@@ -890,11 +936,26 @@ function postGameStats(data,showing=false) {
     }
 }
 
+function showhide(show) {
+    if (UNIFIEDHOTKEY) {
+        if (!toBeShown) {
+            showstats()
+        } else {
+            hidestats()
+        }
+    } else {
+        if (show) {
+            showstats()
+        } else {
+            hidestats() 
+        }
+    }
+}
+
 function hidestats() {
+    toBeShown = false;                      
     document.getElementById('stats').style.right = '-50vh';
     document.getElementById('bgdiv').style.opacity = '0';
-    document.getElementById('killbar1').style.width = '50%';
-    document.getElementById('killbar2').style.width = '50%';
     document.getElementById('loader').style.opacity = '0';
     setTimeout(function(){ 
                           document.getElementById('session').innerHTML = '';
@@ -902,10 +963,11 @@ function hidestats() {
                           ,1000)
 }
 
-function showstats() {                            
+function showstats() {
+    toBeShown = true;                            
     document.getElementById('stats').style.right = '2vh';
-    document.getElementById('bgdiv').style.opacity = '1';
-};
+    document.getElementById('bgdiv').style.opacity = '1';   
+}
 
 function fill(el, dat) {
     document.getElementById(el).innerHTML = dat;

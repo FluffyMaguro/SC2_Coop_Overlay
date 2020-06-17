@@ -21,11 +21,12 @@ AllReplays = dict()
 PLAYER_NAMES = []
 
 
-def set_initMessage(colors,duration):
+def set_initMessage(colors,duration,unifiedhotkey):
     """ modify init message that's sent to new websockets """
     global initMessage
     initMessage['colors'] = colors
     initMessage['duration'] = duration
+    initMessage['unifiedhotkey'] = 'true' if unifiedhotkey else 'false'
 
 
 def sendEvent(event):
@@ -74,7 +75,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
     with lock:
         AllReplays = initialize_AllReplays(ACCOUNTDIR)
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
-        ReplayPosition = len(AllReplays) - 1
+        ReplayPosition = len(AllReplays)
 
     while True:   
         current_time = time.time()
