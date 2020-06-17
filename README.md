@@ -98,10 +98,10 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
-* 1.11 version (work in progress)
+* 1.11 version (work in progress & unreleased)
 
-      - Identifying enemy unit composition
-      - By default there is a single key to show/hide overlay (possible to change)
+      - Identifying enemy unit composition (best guess)
+      - By default there is a single key to show/hide overlay (possible to change by user)
 
 * 1.10 version
 
