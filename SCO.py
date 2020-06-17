@@ -240,7 +240,7 @@ def main(startthreads=True):
         sg = QtWidgets.QDesktopWidget().screenGeometry(MONITOR-1)
         logger.info(f'Using monitor {MONITOR} ({sg.width()}x{sg.height()})')
         view.setFixedSize(sg.width()-1, sg.height())
-        view.move(sg.left(),sg.top())
+        view.move(sg.left()+1,sg.top())
 
         ### Load webpage
         if os.path.isfile('Layouts/Layout.html'):
