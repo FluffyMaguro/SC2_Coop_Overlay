@@ -37,8 +37,6 @@ You don't need to change anything in the config file for normal usage.
 * **Changing hotkeys for manual overlay display**
 
    KEY_SHOW = Ctrl+/
-  
-   KEY_HIDE = Ctrl+
 
 * **Changing hotkeys for moving between replays**
 
@@ -77,7 +75,13 @@ You don't need to change anything in the config file for normal usage.
    AMONCOLOR = #FF0000
    
    MASTERYCOLOR = #FFDC87
+   
+* **This lets you have a different hotkey for showing and hiding the overlay**  
+
+   UNIFIEDHOTKEY = False   
      
+   KEY_HIDE = Ctrl+*
+   
 * **For debugging - changes used port. The port also needs to be changed in the html layout.**
 
    PORT = 7305
@@ -94,6 +98,11 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
+* 1.11 version (work in progress)
+
+      - Identifying enemy unit composition
+      - By default there is a single key to show/hide overlay (possible to change)
+
 * 1.10 version
 
       - Multimonitor support
