@@ -5,8 +5,8 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:** 
-* [Mega](https://mega.nz/file/hpdgmKhL#bi9YN9_z5KjYNWbiZq2TbrRrZvWlLW2m6AJQqHNUHSY)
-* [Google-drive](https://drive.google.com/file/d/1KWvWLFGgjMUbu2Y3D6eti-f6oDIboYQ_/view)
+* [Mega](https://mega.nz/file/AsFCFIgJ#0bkJylZk9QVoZTTL3icV22btSlJ3aJthRt-MhSPMPhQ)
+* [Google-drive](https://drive.google.com/file/d/1OQlBc3bt0cSONRBpl-kwoMnwnWPDWZYx/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/wide.jpg)
@@ -98,7 +98,7 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
-* 1.11 version (work in progress & unreleased)
+* 1.11 version
 
       - Identifying enemy unit composition (best guess)
       - By default there is a single key to show/hide overlay (possible to change by user)
