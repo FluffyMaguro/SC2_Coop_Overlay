@@ -98,6 +98,10 @@ You don't need to change anything in the config file for normal usage.
 * [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
 
 # Change log
+* 1.12 version (unreleased, work in progress)
+
+      - Masteries identified in [MM] maps
+
 * 1.11 version
 
       - Identifying enemy unit composition (best guess)
