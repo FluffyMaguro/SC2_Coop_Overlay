@@ -101,6 +101,7 @@ You don't need to change anything in the config file for normal usage.
 * 1.12 version (unreleased, work in progress)
 
       - Masteries identified in [MM] maps
+      - Tweaks to enemy composition identification
 
 * 1.11 version
 
