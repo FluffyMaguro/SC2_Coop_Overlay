@@ -22,6 +22,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 ![Screenshot](/Screenshots/Display.jpg)
 
 
+* If you have trouble with no data being shown even if you played a game, specify replay folder with ACCOUNTDIR = ... in the config file
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 
 
@@ -102,6 +103,7 @@ You don't need to change anything in the config file for normal usage.
 
       - Masteries identified in [MM] maps
       - Tweaks to enemy composition identification
+      - Better way to find documents folder
 
 * 1.11 version
 
