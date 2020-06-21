@@ -103,8 +103,8 @@ You don't need to change anything in the config file for normal usage.
 
       - Masteries identified in [MM] maps
       - Automatic identification of preferred players if none are specified
-      - Better way to find documents folder      
-      - Tweaks to enemy composition identification      
+      - Better way to find documents folder
+      - Tweaks to enemy composition identification
       - Small fixes for replay analysis in custom mutations
 
 * 1.11 version
