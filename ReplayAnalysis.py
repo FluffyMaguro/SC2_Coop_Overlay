@@ -1,10 +1,11 @@
 import os
 import mpyq
 import json
+import time
 import traceback
 
 import sc2reader
-from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict
+from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades
 from MLogging import logclass
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit "]
@@ -17,7 +18,6 @@ dont_show_created_lost = {'Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesn
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
-non_wave_units = {'LurkerMPBurrowed','HybridDominatorCoopBoss','Nuke','Bunker','HybridDestroyer','Larva','InfestedTerransEgg','MutatorStormCloud','MoebiusSeeker','PnPHybridVoidRift','InfestedColonistTransportNova','NovaInfestedBansheeBurrowed','InfestedAbominationBurrowed','InfestedExploder','SCV','Probe','Drone','InfestedCivilianBurrowed','InfestedTerranCampaignBurrowed','InfestedExploderBurrowed','InfestedTerranCampaignBurrowed','InfestedTerranCampaign','ZergDropPodCreep','ParasiticBombDummy','InfestedCivilian','HybridDominatorVoid','HybridReaver','HybridNemesis','HybridBehemoth','Observer','Overlord','Overseer','WarpPrism','LocustMP','Medivac','Broodling','BroodlingEscort','CreepTumor', 'TerranDropPod','ZergDropPod','MutatorPurifierBeam'}
 
 logger = logclass('REPA','INFO')
 
@@ -38,7 +38,15 @@ def check_amon_forces(alist, string):
             return True
     return False
 
-                
+
+def upgrade_is_in_mastery_upgrades(upgrade):
+    """ the function checks if the upgrade is in mastery upgrades, and if yes, returns the Commnader and upgrade index"""
+    for co in COMasteryUpgrades:
+        if upgrade in COMasteryUpgrades[co]:
+            return co, COMasteryUpgrades[co].index(upgrade)
+    return False, 0
+               
+
 def switch_names(pdict):
     """ Changes names to that in unit dictionary, sums duplicates"""
     temp_dict = {}
@@ -78,19 +86,21 @@ def get_enemy_comp(identified_waves):
     #lets go through our waves, substract some units and compare them to known AI unit waves
     for wave in identified_waves:
         types = set(identified_waves[wave])
-        types.difference_update(non_wave_units)
         if len(types) == 0:
             continue
 
         logger.debug(f'{"-"*40}\nChecking this wave type: {types}\n')
         for AI in UnitCompDict:
             for idx,wave in enumerate(UnitCompDict[AI]):
-                wave.difference_update(non_wave_units)
+                #don't include Medivac, it's removed from wave units as well
+                wave.difference_update({'Medivac'})
+
                 #identical wave
                 if types == wave:
                     logger.debug(f'"{AI}" wave {idx+1} is the same: {wave}')
                     results[AI] += 1*len(wave)
                     continue
+
                 #in case of alternate units or some noise
                 if types.issubset(wave) and len(wave) - len(types) == 1: 
                     logger.debug(f'"{AI}" wave {idx+1} is a close subset: {types} | {wave}')
@@ -101,7 +111,7 @@ def get_enemy_comp(identified_waves):
 
     #return the comp with the most points
     if len(results) > 0:
-        logger.debug(f'Most likely AI: "{list(results.keys())[0]}" with {100*list(results.values())[0]/sum(results.values()):.1f}% points\n\n\n')
+        logger.debug(f'Most likely AI: "{list(results.keys())[0]}" with {100*list(results.values())[0]/sum(results.values()):.1f}% points\n\n')
         return list(results.keys())[0]
     return 'unidentified AI'
 
@@ -116,10 +126,15 @@ def analyse_replay(filepath, playernames=['']):
     logger.info(f'Analysing: {filepath}')
 
     ### Load the replay
-    archive = mpyq.MPQArchive(filepath)
+    for i in range(4):
+        try:
+            archive = mpyq.MPQArchive(filepath)
+            break
+        except:  #I got an error here once that went away the second time I tried it. Perhaps SC2 didn't finish writing in the file? 
+            logger.error('Error parsing with mpyq ')
+            time.sleep(0.5)
     metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
     logger.debug(f'Metadata: {metadata}')
-
 
     try:
         replay = sc2reader.load_replay(filepath,load_level=3)
@@ -187,11 +202,12 @@ def analyse_replay(filepath, playernames=['']):
     unit_dict = {} #structure: {unit_id : [UnitType, Owner]}; used to track all units
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] #ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    START_TIME = 99999999 if '[MM]' in filepath else 0
+    START_TIME = 99999999
     commander_fallback = dict()
     outlaw_order = []
     wave_units = {'second':0,'units':[]}
     identified_waves = dict()
+    mastery_fallback = {1:[0,0,0,0,0,0],2:[0,0,0,0,0,0]}
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -201,13 +217,26 @@ def analyse_replay(filepath, playernames=['']):
     ### Go through game events
     for event in replay.events:  
 
-        #get actual start time for arcade maps
-        if event.name == 'UpgradeCompleteEvent':
-            if event.upgrade_type_name == 'CommanderLevel':
-                START_TIME = event.second
+        #get actual start time for arcade maps/customs
+        if event.name == 'PlayerStatsEvent' and event.pid == 1 and event.minerals_collection_rate > 0 and START_TIME == 99999999: 
+            START_TIME = event.second 
+            logger.debug(f'Mission start through player stats: {START_TIME}') #this is a fallback. Upgrade should always kick in first. 
 
+        if event.name == 'UpgradeCompleteEvent':
+            if event.name == 'UpgradeCompleteEvent' and event.pid in [1,2] and 'Spray' in event.upgrade_type_name and START_TIME == 99999999:     
+                START_TIME = event.second
+                logger.debug(f'Mission start through player upgrade: {START_TIME}')
+
+            #commander fallback
             if event.pid in [1,2] and event.upgrade_type_name in commander_upgrades:
                 commander_fallback[event.pid] = commander_upgrades[event.upgrade_type_name]
+
+            #mastery upgrade fallback
+            mas_commander,mas_index = upgrade_is_in_mastery_upgrades(event.upgrade_type_name)
+            if mas_commander and event.pid in [1,2]:
+                logger.debug(f'Player {event.pid} (com: {mas_commander}) got upgrade {event.upgrade_type_name} (idx: {mas_index}) (count: {event.count})')
+                mastery_fallback[event.pid][mas_index] = event.count
+
 
         if event.name == 'UnitBornEvent' or event.name == 'UnitInitEvent':
             unit_type = event.unit_type_name
@@ -247,14 +276,14 @@ def analyse_replay(filepath, playernames=['']):
                 outlaw_order.append(unit_type)
 
             #identifying waves
-            if event.control_pid in [3,4,5,6] and not event.second in [0,START_TIME] and event.second > 60 and not unit_type in non_wave_units:
+            if event.control_pid in [3,4,5,6] and not event.second in [0,START_TIME] and event.second > 60 and unit_type in UnitsInWaves:
                 if wave_units['second'] == event.second:
                     wave_units['units'].append(unit_type)
                 else:
                     wave_units['second'] = event.second
                     wave_units['units'] = [unit_type]
 
-                if len(wave_units['units']) > 6:
+                if len(wave_units['units']) > 5:
                     identified_waves[event.second] = wave_units['units']
 
         #ignore some DT/HT deaths caused by Archon merge
@@ -396,19 +425,19 @@ def analyse_replay(filepath, playernames=['']):
                     continue
 
                 # Add deaths
-                if main_player == losing_player and event.second > 0: #don't count deaths on game init
+                if main_player == losing_player and event.second > 0 and event.second > START_TIME: #don't count deaths on game init
                     if killed_unit_type in unit_type_dict_main:
                         unit_type_dict_main[killed_unit_type][1] += 1
                     else:
                         unit_type_dict_main[killed_unit_type] = [0,1,0,0]
 
-                if ally_player == losing_player and event.second > 0: #don't count deaths on game init
+                if ally_player == losing_player and event.second > 0 and event.second > START_TIME: #don't count deaths on game init
                     if killed_unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[killed_unit_type][1] += 1
                     else:
                         unit_type_dict_ally[killed_unit_type] = [0,1,0,0]
 
-                if losing_player in amon_players and event.second > 0:
+                if losing_player in amon_players and event.second > 0 and event.second > START_TIME:
                     if killed_unit_type in unit_type_dict_amon:
                         unit_type_dict_amon[killed_unit_type][1] += 1  
                     else:
@@ -416,6 +445,9 @@ def analyse_replay(filepath, playernames=['']):
                                
             except:
                 logger.error(traceback.format_exc())
+
+    if START_TIME > 6000:
+        logger.error('Failed to detect the start of the game')
 
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
@@ -463,7 +495,11 @@ def analyse_replay(filepath, playernames=['']):
         replay_report_dict['allyCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_level']
         replay_report_dict['allyMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_mastery_talents']
     else:
-        logger.error('No ally player')
+        logger.debug('No ally player')
+
+    if '[MM]' in filepath:
+        replay_report_dict['mainMasteries'] = mastery_fallback[main_player]
+        replay_report_dict['allyMasteries'] = mastery_fallback[ally_player]
 
     if replay_report_dict.get('mainCommander',None) == 'Tychus':
         replay_report_dict['mainIcons']['outlaws'] = outlaw_order
@@ -491,8 +527,8 @@ def analyse_replay(filepath, playernames=['']):
                 replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2]/player_kill_count,2)
 
                 if unit in dont_show_created_lost:
-                    replay_report_dict[unitkey][unit][0] = '?'
-                    replay_report_dict[unitkey][unit][1] = '?'
+                    replay_report_dict[unitkey][unit][0] = 'N/A'
+                    replay_report_dict[unitkey][unit][1] = 'N/A'
 
             #icons        
             if unit in icon_units:
@@ -540,14 +576,6 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = r'LnL.SC2Replay' #no kills replay
-    file_path = r'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\Dead of Night (275).SC2Replay'
-
-    # for file in os.listdir('replays'):
-    #     file_path = f'replays\\{file}'
-    #     replay_dict = analyse_replay(file_path,['Maguro'])
-    #     pprint(replay_dict, sort_dicts=False)
-    #     break
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\452875987\2-S2-1-7503439\Replays\Multiplayer\Dead of Night (47).SC2Replay' #no kills replay
     replay_dict = analyse_replay(file_path,['Maguro'])
-    pprint(replay_dict, sort_dicts=False)
-    
+    pprint(replay_dict['comp'], sort_dicts=False)

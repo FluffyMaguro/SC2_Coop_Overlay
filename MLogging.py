@@ -43,5 +43,5 @@ class logclass:
         self.printsave(mtype,message)
 
     def error(self,message):
-        mtype = 'error'
+        mtype = 'ERROR'
         self.printsave(mtype,message)

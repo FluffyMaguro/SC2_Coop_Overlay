@@ -36,7 +36,34 @@ def sendEvent(event):
 
 def set_PLAYER_NAMES(names):
     global PLAYER_NAMES
-    PLAYER_NAMES.extend(names)
+    with lock:
+        PLAYER_NAMES.extend(names)
+
+
+def guess_PLAYER_NAMES():
+    """ if no PLAYER_NAMES are set, take the best guess for the preferred player"""
+    global PLAYER_NAMES
+
+    if len(PLAYER_NAMES) > 0:
+        return 
+
+    #get all players to the list
+    list_of_players = list()
+    for replay in AllReplays:
+        replay_dict = AllReplays[replay].get('replay_dict',dict())
+        list_of_players.append(replay_dict.get('main',None))
+        list_of_players.append(replay_dict.get('ally',None))
+
+    players = {i:list_of_players.count(i) for i in list_of_players if not i in [None,'None']} #get counts
+    players = {k:v for k,v in sorted(players.items(),key=lambda x:x[1],reverse=True)} #sort
+    logger.info(f'Guessing player names: {players}')
+
+    if len(players) == 0:
+        return
+
+    with lock:
+        PLAYER_NAMES = [list(players.keys())[0]] #get the first one
+
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -76,6 +103,8 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
         AllReplays = initialize_AllReplays(ACCOUNTDIR)
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
+
+    guess_PLAYER_NAMES()
 
     while True:   
         current_time = time.time()
