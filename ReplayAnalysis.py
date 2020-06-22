@@ -512,7 +512,9 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['map'] = replay.map_name
     replay_report_dict['filepath'] = filepath
     replay_report_dict['date'] = str(replay.date)
-    replay_report_dict['length'] = get_last_deselect_event(filepath,archive=archive)/1.4
+
+    accurate_game_length = get_last_deselect_event(filepath,archive=archive)/1.4
+    replay_report_dict['length'] = accurate_game_length if accurate_game_length > 0 else replay.game_length.seconds
     replay_report_dict['main'] = main_player_name
     replay_report_dict['mainAPM'] = map_data[main_player]
     replay_report_dict['mainkills'] = killcounts[main_player]
