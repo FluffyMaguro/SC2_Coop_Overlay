@@ -1,10 +1,10 @@
 import os
 import sys
 import json
+import string
 import traceback
 import threading
 import configparser
-import string
 import ctypes.wintypes
 
 import requests

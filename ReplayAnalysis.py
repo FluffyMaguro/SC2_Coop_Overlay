@@ -4,6 +4,7 @@ import json
 import time
 import traceback
 
+from s2protocol import versions
 import sc2reader
 from FluffyChatBotDictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades
 from MLogging import logclass
@@ -116,6 +117,50 @@ def get_enemy_comp(identified_waves):
     return 'unidentified AI'
 
 
+def get_last_deselect_event(file,archive=None):
+    """ this functions gets time of the last deselect event in the replay"""
+    if archive == None:
+        archive = mpyq.MPQArchive(file) #passing already opened archive inside 
+
+    contents = archive.header['user_data_header']['content']
+    header = versions.latest().decode_replay_header(contents)
+    base_build = header['m_version']['m_baseBuild']
+
+    try:
+        protocol = versions.build(base_build)
+    except:
+        protocol = protocol = versions.latest()
+
+    game_events = archive.read_file('replay.game.events')
+    game_events = protocol.decode_replay_game_events(game_events)
+    """
+    'SSelectionDeltaEvent', 'SCameraSaveEvent', 'STriggerCutsceneEndSceneFiredEvent', 'STriggerDialogControlEvent', 'SSetSyncLoadingTimeEvent', 
+    'SCmdEvent', 'SUserFinishedLoadingSyncEvent', 'STriggerSoundLengthSyncEvent', 'STriggerSoundOffsetEvent', 'SControlGroupUpdateEvent', 
+    'STriggerTransmissionCompleteEvent', 'SUserOptionsEvent', 'SCommandManagerStateEvent', 'SGameUserLeaveEvent', 'SCmdUpdateTargetPointEvent', 
+    'SAchievementAwardedEvent', 'SCmdUpdateTargetUnitEvent', 'STriggerTransmissionOffsetEvent', 'SCameraUpdateEvent', 'SSetSyncPlayingTimeEvent', 
+    'STriggerCutsceneBookmarkFiredEvent', 'STriggerSoundLengthQueryEvent'"""
+    
+
+    # tracker_events = archive.read_file('replay.tracker.events')
+    # tracker_events = protocol.decode_replay_tracker_events(tracker_events) 
+    """ 
+    SUnitPositionsEvent', 'SUnitDiedEvent', 'SUpgradeEvent', 'SUnitInitEvent', 'SPlayerStatsEvent', 'SUnitDoneEvent', 'SUnitTypeChangeEvent', 
+    'SPlayerSetupEvent', 'SUnitOwnerChangeEvent', 'SUnitBornEvent'
+    """
+
+    # player_info = archive.read_file('replay.details')
+    # player_info = protocol.decode_replay_details(player_info)
+    # detailed_info = archive.read_file('replay.initData')
+    # detailed_info = protocol.decode_replay_initdata(detailed_info)
+
+    last_event = 0
+    for event in list(game_events):
+        if event['_event'] == 'NNet.Game.SSelectionDeltaEvent':
+            last_event = event['_gameloop']/16 - 2 #16 gameloops per second, offset to coincide with speedrun timings more
+
+    return last_event
+
+
 def analyse_replay(filepath, playernames=['']):
     """ Analyses the replay and returns message into the chat"""
     
@@ -129,12 +174,13 @@ def analyse_replay(filepath, playernames=['']):
     for i in range(4):
         try:
             archive = mpyq.MPQArchive(filepath)
+            metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
+            logger.debug(f'Metadata: {metadata}')
             break
         except:  #I got an error here once that went away the second time I tried it. Perhaps SC2 didn't finish writing in the file? 
             logger.error('Error parsing with mpyq ')
             time.sleep(0.5)
-    metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
-    logger.debug(f'Metadata: {metadata}')
+
 
     try:
         replay = sc2reader.load_replay(filepath,load_level=3)
@@ -160,7 +206,7 @@ def analyse_replay(filepath, playernames=['']):
     if len(playernames)>0:
         for per in replay.person:
             for playeriter in playernames:
-                if playeriter.lower() in str(replay.person[per]).lower() and per < 3: 
+                if playeriter.lower() in str(replay.person[per]).lower() and per < 3 and main_player_name == '': 
                     main_player = per
                     main_player_name = playeriter
                     break
@@ -201,7 +247,7 @@ def analyse_replay(filepath, playernames=['']):
 
     unit_dict = {} #structure: {unit_id : [UnitType, Owner]}; used to track all units
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] #ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
-    killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     START_TIME = 99999999
     commander_fallback = dict()
     outlaw_order = []
@@ -334,8 +380,6 @@ def analyse_replay(filepath, playernames=['']):
         #update ownership
         if event.name == 'UnitOwnerChangeEvent' and str(event.unit_id) in unit_dict:
             unit_dict[str(event.unit_id)][1] = str(event.control_pid)
-
-
        
         if event.name == 'UnitDiedEvent':
             try:
@@ -343,14 +387,15 @@ def analyse_replay(filepath, playernames=['']):
                 losing_player = int(unit_dict[str(event.unit_id)][1])
 
                 #count kills for players
-                if losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit' and not(event.killing_player_id in [1,2] and losing_player in [1,2]): #don't count team kills
+                if losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit' and not(event.killing_player_id in [1,2] and losing_player in [1,2]) and event.killing_player_id != None: #don't count team kills
                     killcounts[event.killing_player_id] += 1
 
                 #get last_aoe_unit_killed
                 if killed_unit_type in aoe_units and event.killing_player_id in [1,2] and losing_player in amon_players:
                     last_aoe_unit_killed[losing_player] = [killed_unit_type,event.second]
+
             except:
-                pass
+                logger.error(traceback.format_exc())
 
 
         if event.name == 'UnitDiedEvent' and str(event.unit_id) in unit_dict:    
@@ -449,10 +494,12 @@ def analyse_replay(filepath, playernames=['']):
     if START_TIME > 6000:
         logger.error('Failed to detect the start of the game')
 
+
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
     logger.debug(f'Unit type dict amon: {unit_type_dict_amon}')
     logger.debug(f'Kill counts: {killcounts}')
+
 
     #Get messages
     total_kills = killcounts[1] + killcounts[2]
@@ -465,7 +512,7 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['map'] = replay.map_name
     replay_report_dict['filepath'] = filepath
     replay_report_dict['date'] = str(replay.date)
-    replay_report_dict['length'] = replay.game_length.seconds
+    replay_report_dict['length'] = get_last_deselect_event(filepath,archive=archive)/1.4
     replay_report_dict['main'] = main_player_name
     replay_report_dict['mainAPM'] = map_data[main_player]
     replay_report_dict['mainkills'] = killcounts[main_player]
@@ -508,6 +555,7 @@ def analyse_replay(filepath, playernames=['']):
 
     percent_cutoff = 0.00
     player_max_units = 100 #max units sent. Javascript then sets its own limit.
+
 
     def playercalc(playername,player,pdict):
         new_dict = switch_names(pdict)
@@ -569,6 +617,7 @@ def analyse_replay(filepath, playernames=['']):
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
+
     return replay_report_dict
 
 
@@ -576,6 +625,6 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\452875987\2-S2-1-7503439\Replays\Multiplayer\Dead of Night (47).SC2Replay' #no kills replay
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\452875987\2-S2-1-7503439\Replays\Multiplayer\Malwarfare (21).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
-    pprint(replay_dict['comp'], sort_dicts=False)
+    # pprint(replay_dict, sort_dicts=False)

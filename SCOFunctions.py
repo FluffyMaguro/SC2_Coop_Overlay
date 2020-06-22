@@ -62,7 +62,7 @@ def guess_PLAYER_NAMES():
         return
 
     with lock:
-        PLAYER_NAMES = [list(players.keys())[0]] #get the first one
+        PLAYER_NAMES = list(players.keys())[0:3] #get the three names. Replay analysis will check from the first one to the last one.
 
 
 
@@ -272,7 +272,7 @@ def move_in_AllReplays(delta):
                     AllReplays[key]['replay_dict'] = None
                 move_in_AllReplays(delta)
         except:
-            logger.error(f'Failed to analyse replay: {key}')
+            logger.error(f'Failed to analyse replay: {key}\n{traceback.format_exc()}')
             with lock:
                 AllReplays[key]['replay_dict'] = None
             move_in_AllReplays(delta)
