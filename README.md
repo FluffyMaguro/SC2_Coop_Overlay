@@ -103,7 +103,7 @@ You don't need to change anything in the config file for normal usage.
 
       - Masteries identified in [MM] maps
       - Automatic identification of preferred players if none are specified
-      - Game length more accurate and close to speedrunning times instead of replay length
+      - Game length more accurate and close to speedrunning times instead of the replay length
       - Better way to find documents folder
       - Tweaks to enemy composition identification
       - Small fixes for replay analysis in custom mutations
