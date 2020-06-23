@@ -139,6 +139,13 @@ Changes take effect the next time you start the app!
       - Better logging
       - Bug fixes
 
-* 1.7 Colors can be changed via the config file. Bug fixes.<br>
-* 1.6 Added support for https://starcraft2coop.com<br>
-* 1.0 – 1.5 Initial versions<br>
+* 1.7  version
+
+      - Colors can be changed via the config file
+      - Bug fixes
+
+* 1.6 version
+
+      - Replays can be automatically uploaded to https://starcraft2coop.com
+
+* 1.0 – 1.5 Initial versions
