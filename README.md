@@ -97,9 +97,9 @@ Changes take effect the next time you start the app!
 
 
 # Other notes
-* Kills are shown for top 5 units only
+* Kills are shown for top 5 units only (this can by changed in HTML).
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
-* [sc2reader](https://github.com/ggtracker/sc2reader) was used as replay parser.
+* [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
 # Change log
 * 1.12 version
