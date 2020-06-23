@@ -132,7 +132,13 @@ Changes take effect the next time you start the app!
       - Minor graphical tweaks
       - Small tweaks to sc2reader module to prevent load fails
 
-* 1.8 Replay analysis tweaks and improvements, start up notification, better logging, and bug fixes.<br>
+* 1.8 version
+
+      - Replay analysis tweaks and improvements
+      - Start up notification
+      - Better logging
+      - Bug fixes
+
 * 1.7 Colors can be changed via the config file. Bug fixes.<br>
 * 1.6 Added support for https://starcraft2coop.com<br>
 * 1.0 – 1.5 Initial versions<br>
