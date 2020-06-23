@@ -31,13 +31,6 @@ You don't need to change anything in the config file for normal usage.
 
 Changes take effect the next time you start the app!
 
-
-* **Choosing players that will be preferably shown on top.**
-
-   PLAYER_NAMES = Maguro,SeaMaguro
-   
-   Note: App will automatically identify common players after some time if none players are specified here.
-
 * **Changing hotkeys for manual overlay display**
 
    KEY_SHOW = Ctrl+/
@@ -55,14 +48,6 @@ Changes take effect the next time you start the app!
 * **Choose which monitor to show the overlay on (for multi-monitor setups).**
   
    MONITOR = 1
-   
-* **If it has trouble finding replays, specify the folder directly.**
-
-   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
-
-* **Prevents the from showing. You can still add it to OBS, or open in an internet browser.**  
-
-   SHOWOVERLAY = False
  
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
@@ -79,6 +64,20 @@ Changes take effect the next time you start the app!
    AMONCOLOR = #FF0000
    
    MASTERYCOLOR = #FFDC87
+   
+* **If it has trouble finding replays, specify the folder directly.**
+
+   ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
+
+* **Prevents the from showing. You can still add it to OBS, or open in an internet browser.**  
+
+   SHOWOVERLAY = False 
+   
+* **Choosing players that will be preferably shown on top.**
+
+   PLAYER_NAMES = Maguro,SeaMaguro
+   
+   Note: App will automatically identify common players after some time if none players are specified here.   
    
 * **This lets you have a different hotkey for showing and hiding the overlay**  
 
