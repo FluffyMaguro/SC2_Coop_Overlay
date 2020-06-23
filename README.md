@@ -32,9 +32,11 @@ You don't need to change anything in the config file for normal usage.
 **Changes take effect the next time you start the app!**
 
 
-* **Choosing players that will be preferably shown on top. But app will identify common players after some time automatically if none player are specified.**
+* **Choosing players that will be preferably shown on top.**
 
    PLAYER_NAMES = Maguro,SeaMaguro
+   
+   Note: App will automatically identify common players after some time if none players are specified here.
 
 * **Changing hotkeys for manual overlay display**
 
