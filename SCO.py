@@ -44,9 +44,9 @@ def get_configvalue(name,default,section='CONFIG'):
                     else:
                         return True
                 #integers
-                elif isinstance(default, int):
+                elif isinstance(default, int) or isinstance(default, float):
                     try:
-                        return int(config[section][name].strip(),10)
+                        return float(config[section][name].strip())
                     except:
                         return default
                 #lists        
@@ -129,9 +129,13 @@ LOGGING = get_configvalue('LOGGING', False)
 PORT = get_configvalue('PORT', 7305)
 MONITOR = get_configvalue('MONITOR', 1)
 UNIFIEDHOTKEY = get_configvalue('UNIFIEDHOTKEY', True)
+OWIDTH = get_configvalue('OWIDTH', 0.5)
+OHEIGHT = get_configvalue('OHEIGHT', 1)
+OFFSET = get_configvalue('OFFSET', 0)
 
 logclass.LOGGING = LOGGING
-logger.info(f'\n{PORT=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n--------')
+logger.info(f'\n{PORT=}\n{MONITOR=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n--------')
+
 set_PLAYER_NAMES(PLAYER_NAMES)
 
 
@@ -255,10 +259,10 @@ def main(startthreads=True):
         webpage.setBackgroundColor(QtCore.Qt.transparent)
 
         ### Set correct size and width for the widget; Setting it to full shows black screen on my machine, works fine on notebook
-        sg = QtWidgets.QDesktopWidget().screenGeometry(MONITOR-1)
-        logger.info(f'Using monitor {MONITOR} ({sg.width()}x{sg.height()})')
-        view.setFixedSize(sg.width()-1, sg.height())
-        view.move(sg.left()+1,sg.top())
+        sg = QtWidgets.QDesktopWidget().screenGeometry(int(MONITOR-1))
+        logger.info(f'Using monitor {int(MONITOR)} ({sg.width()}x{sg.height()})')
+        view.setFixedSize(int(sg.width()*OWIDTH-1), int(sg.height()*OHEIGHT))
+        view.move(int(sg.width()*(1-OWIDTH)-OFFSET+1),sg.top())
 
         ### Load webpage
         if os.path.isfile('Layouts/Layout.html'):

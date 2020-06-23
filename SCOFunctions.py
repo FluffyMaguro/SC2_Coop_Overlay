@@ -69,28 +69,35 @@ def guess_PLAYER_NAMES():
 def initialize_AllReplays(ACCOUNTDIR):
     """ Creates a sorted dictionary of all replays with their times """
     AllReplays = set()
-    for root, directories, files in os.walk(ACCOUNTDIR):
-            for file in files:
-                if file.endswith('.SC2Replay'):
-                    file_path = os.path.join(root,file)
-                    AllReplays.add(file_path)
+    try:
+        for root, directories, files in os.walk(ACCOUNTDIR):
+                for file in files:
+                    if file.endswith('.SC2Replay'):
+                        file_path = os.path.join(root,file)
+                        if len(file_path) > 255:
+                            file_path = '\\\?\\' + file_path
+                        AllReplays.add(file_path)
 
-    AllReplays = ((rep,os.path.getmtime(rep)) for rep in AllReplays)
-    AllReplays = {k:{'created':v} for k,v in sorted(AllReplays,key=lambda x:x[1])}
+        AllReplays = ((rep,os.path.getmtime(rep)) for rep in AllReplays)
+        AllReplays = {k:{'created':v} for k,v in sorted(AllReplays,key=lambda x:x[1])}
 
-    # Append already parsed replays
-    if os.path.isfile(analysis_log_file):
-        with open(analysis_log_file,'rb') as file:
-            for line in file.readlines():
-                try:
-                    replay_dict = eval(line.decode('utf-8'))
-                    if 'replaydata' in replay_dict and 'filepath' in replay_dict:
-                        if replay_dict['filepath'] in AllReplays:
-                            AllReplays[replay_dict['filepath']]['replay_dict'] = replay_dict
-                except:
-                    print("Failed to parse a line from replay analysis log\n",traceback.format_exc())
+        # Append already parsed replays
+        if os.path.isfile(analysis_log_file):
+            with open(analysis_log_file,'rb') as file:
+                for line in file.readlines():
+                    try:
+                        replay_dict = eval(line.decode('utf-8'))
+                        if 'replaydata' in replay_dict and 'filepath' in replay_dict:
+                            if replay_dict['filepath'] in AllReplays:
+                                AllReplays[replay_dict['filepath']]['replay_dict'] = replay_dict
+                    except:
+                        print("Failed to parse a line from replay analysis log\n",traceback.format_exc())
 
-    return AllReplays
+    except:
+        logger.error(f'Error during replay initialization\n{traceback.format_exc()}')
+    finally:
+        return AllReplays
+
 
 
 def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
@@ -111,6 +118,8 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
         for root, directories, files in os.walk(ACCOUNTDIR):
             for file in files:
                 file_path = os.path.join(root,file)
+                if len(file_path) > 255:
+                    file_path = '\\\?\\' + file_path
                 if file.endswith('.SC2Replay') and not(file_path in AllReplays): 
                     with lock:
                         AllReplays[file_path] = {'created':os.path.getmtime(file_path)}
@@ -157,7 +166,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     if (time.time() - os.path.getmtime(file_path)) > 60:
         return
 
-    if replay_dict.get('mainCommander',None) in [None,'']:
+    if replay_dict.get('mainCommander',None) in [None,''] or '[MM]' in file_path:
         sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
 

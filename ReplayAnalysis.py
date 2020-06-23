@@ -114,7 +114,7 @@ def get_enemy_comp(identified_waves):
     if len(results) > 0:
         logger.debug(f'Most likely AI: "{list(results.keys())[0]}" with {100*list(results.values())[0]/sum(results.values()):.1f}% points\n\n')
         return list(results.keys())[0]
-    return 'unidentified AI'
+    return 'Unidentified AI'
 
 
 def get_last_deselect_event(file,archive=None):
@@ -493,13 +493,13 @@ def analyse_replay(filepath, playernames=['']):
 
     if START_TIME > 6000:
         logger.error('Failed to detect the start of the game')
+        START_TIME = 0
 
 
     logger.debug(f'Unit type dict main: {unit_type_dict_main}')
     logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
     logger.debug(f'Unit type dict amon: {unit_type_dict_amon}')
     logger.debug(f'Kill counts: {killcounts}')
-
 
     #Get messages
     total_kills = killcounts[1] + killcounts[2]
@@ -513,8 +513,12 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['filepath'] = filepath
     replay_report_dict['date'] = str(replay.date)
 
-    accurate_game_length = get_last_deselect_event(filepath,archive=archive)/1.4
-    replay_report_dict['length'] = accurate_game_length if accurate_game_length > 0 else replay.game_length.seconds
+    replay_report_dict['length'] = replay.game_length.seconds - START_TIME/1.4
+    if game_result == 'Victory':
+        accurate_game_length = get_last_deselect_event(filepath,archive=archive)
+        if accurate_game_length > 0:
+            replay_report_dict['length'] = (accurate_game_length - START_TIME)/1.4
+
     replay_report_dict['main'] = main_player_name
     replay_report_dict['mainAPM'] = map_data[main_player]
     replay_report_dict['mainkills'] = killcounts[main_player]
@@ -593,10 +597,8 @@ def analyse_replay(filepath, playernames=['']):
                     replay_report_dict[iconkey]['ShadeProjection'] = pdict[unit][0]
 
 
-
     playercalc(main_player_name, main_player, unit_type_dict_main)
     playercalc(ally_player_name, ally_player, unit_type_dict_ally)
-
 
     #Amon kills
     message_count = 0
@@ -619,7 +621,6 @@ def analyse_replay(filepath, playernames=['']):
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
-
     return replay_report_dict
 
 
@@ -627,6 +628,6 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\452875987\2-S2-1-7503439\Replays\Multiplayer\Malwarfare (21).SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Mist Opportunities (212).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     # pprint(replay_dict, sort_dicts=False)
