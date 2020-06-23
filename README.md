@@ -146,6 +146,6 @@ Changes take effect the next time you start the app!
 
 * 1.6 version
 
-      - Replays can be automatically uploaded to https://starcraft2coop.com
+      - Replays can be automatically uploaded to  [https://starcraft2coop.com](https://starcraft2coop.com)
 
-* 1.0 – 1.5 Initial versions
+* 1.0 – 1.5 initial versions
