@@ -29,7 +29,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 You don't need to change anything in the config file for normal usage.
 
-**Changes take effect the next time you start the app!**
+Changes take effect the next time you start the app!
 
 
 * **Choosing players that will be preferably shown on top.**
