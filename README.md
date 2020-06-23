@@ -5,8 +5,8 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:** 
-* [Mega](https://mega.nz/file/AsFCFIgJ#0bkJylZk9QVoZTTL3icV22btSlJ3aJthRt-MhSPMPhQ)
-* [Google-drive](https://drive.google.com/file/d/1OQlBc3bt0cSONRBpl-kwoMnwnWPDWZYx/view)
+* [Mega](https://mega.nz/file/94UWnY7Z#itENNxdlPHp8SenXe3ZxLFe5UxLEhDvlkTFLDcf0j-I)
+* [Google-drive](https://drive.google.com/file/d/1RXlV3WZ6-K_bnWdCRgOUn0WMg78Af-lj/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/wide.jpg)
