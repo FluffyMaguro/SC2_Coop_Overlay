@@ -22,7 +22,6 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 ![Screenshot](/Screenshots/Display.jpg)
 
 
-* If you have trouble with no data being shown even if you played a game, specify replay folder with ACCOUNTDIR = ... in the config file
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 
 
@@ -33,7 +32,7 @@ You don't need to change anything in the config file for normal usage.
 **Changes take effect the next time you start the app!**
 
 
-* **Choosing players that will be preferably shown on top**
+* **Choosing players that will be preferably shown on top. But app will identify common players after some time automatically if none player are specified.**
 
    PLAYER_NAMES = Maguro,SeaMaguro
 
