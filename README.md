@@ -100,7 +100,7 @@ Changes take effect the next time you start the app!
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
-# Change log
+# Changelog
 * 1.12 version
 
       - Masteries identified in [MM] maps
