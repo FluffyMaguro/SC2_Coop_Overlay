@@ -101,6 +101,12 @@ Changes take effect the next time you start the app!
 * [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
 # Changelog
+
+* 1.13 version (unreleased, work in progress)
+
+      - Tweaks to replay analysis (Nova airstrike,...)
+      - Doesn't check for new replays during the game
+
 * 1.12 version
 
       - Masteries identified in [MM] maps
