@@ -105,7 +105,7 @@ Changes take effect the next time you start the app!
 * 1.13 version (unreleased, work in progress)
 
       - Tweaks to replay analysis (Nova airstrike,...)
-      - Doesn't check for new replays during the game
+      - The app won't check for new replays while you are in an active game
 
 * 1.12 version
 
