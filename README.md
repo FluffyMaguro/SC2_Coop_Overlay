@@ -106,7 +106,6 @@ Changes take effect the next time you start the app!
 
       - Stats no longer contain events that happened during victory cutscenes (namely units being killed on Cradle of Death)
       - Tweaks to replay analysis (Nova airstrike,...)
-      - The app won't check for new replays while you are in an active game
 
 * 1.12 version
 
