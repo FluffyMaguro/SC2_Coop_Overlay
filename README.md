@@ -104,7 +104,7 @@ Changes take effect the next time you start the app!
 
 * 1.13 version (unreleased, work in progress)
 
-      - Additional icons showing mutator kills (Void Rifts, Propagators, units sacrified to Killbots,...) and Dead of Night structure kills
+      - Additional icons showing mutator kills (Void Rifts, units sacrified to Killbots, etc) and DoN structures destroyed
       - APM rescaled according to accurate replay length 
       - Stats no longer contain events that happened during victory cutscenes (e.g. Cradle of Death)
       - Tweaks to replay analysis (Nova airstrike,...)
