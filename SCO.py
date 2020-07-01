@@ -14,7 +14,7 @@ from MLogging import logclass
 from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 12
+APPVERSION = 13
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')

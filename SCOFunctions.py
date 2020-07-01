@@ -114,6 +114,8 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
     guess_PLAYER_NAMES()
 
     while True:   
+
+        # Check for new replays
         current_time = time.time()
         for root, directories, files in os.walk(ACCOUNTDIR):
             for file in files:
@@ -138,7 +140,6 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
                                 sendEvent({**replay_dict,**session_games})
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
                                     file.write((str(replay_dict)+'\n').encode('utf-8'))     
-
                             #no output                         
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
@@ -174,7 +175,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     try:
         with open(file_path, 'rb') as file:
             response = requests.post(url, files={'file': file})
-        logger.info(f'Replay upload reponse: {response.text}')
+        logger.info(f'Replay upload reponse:\n{response.text}')
      
         if 'Success' in response.text or 'Error' in response.text:
             sendEvent({'uploadEvent':True,'response':response.text})
@@ -225,27 +226,8 @@ def server_thread(PORT):
         logger.error(traceback.format_exc())
 
 
-def keyboard_thread_HIDE(HIDE):
-    """ thread waiting for hide hotkey """
-    logger.info('Starting keyboard hide thread')
-    while True:
-        keyboard.wait(HIDE)
-        logger.info('Hide event')
-        sendEvent({'hideEvent': True})
-
-
-def keyboard_thread_SHOW(SHOW):
-    """ thread waiting for show hotkey """
-    logger.info('Starting keyboard show thread')
-    while True:
-        keyboard.wait(SHOW)
-        logger.info('Show event')
-        sendEvent({'showEvent': True})
-
-
 def move_in_AllReplays(delta):
     global ReplayPosition
-
     logger.info(f'Attempt to move to {ReplayPosition + delta}/{len(AllReplays)-1}')
 
     #check if valid
@@ -290,7 +272,6 @@ def move_in_AllReplays(delta):
 def keyboard_thread_OLDER(OLDER):
     """ thread waiting for hotkey for showing older replay"""
     logger.info('Starting keyboard older thread')
-
     while True:
         keyboard.wait(OLDER)
         move_in_AllReplays(-1)
@@ -302,3 +283,21 @@ def keyboard_thread_NEWER(NEWER):
     while True:
         keyboard.wait(NEWER)
         move_in_AllReplays(1)
+
+
+def keyboard_thread_HIDE(HIDE):
+    """ thread waiting for hide hotkey """
+    logger.info('Starting keyboard hide thread')
+    while True:
+        keyboard.wait(HIDE)
+        logger.info('Hide event')
+        sendEvent({'hideEvent': True})
+
+
+def keyboard_thread_SHOW(SHOW):
+    """ thread waiting for show hotkey """
+    logger.info('Starting keyboard show thread')
+    while True:
+        keyboard.wait(SHOW)
+        logger.info('Show event')
+        sendEvent({'showEvent': True})
