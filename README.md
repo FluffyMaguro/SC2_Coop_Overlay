@@ -101,7 +101,7 @@ Changes take effect the next time you start the app!
 * [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
 # Changelog
-* 1.14 version
+* 1.14 version (unreleased, work in progress)
 
       - (Super) Gary won't show created and lost number as it's not accurate
 
