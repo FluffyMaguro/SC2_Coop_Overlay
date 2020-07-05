@@ -156,7 +156,7 @@ UnitCompDict = {
                               {'ArbiterMP','Archon','Dragoon','HighTemplar','Reaver','Zealot'}]}
 
 #set of all units in waves (excluding Medivac)
-UnitsInWaves = {'Medic', 'Marauder', 'Stalker', 'ArbiterMP', 'Ultralisk', 'Viper', 'Ravager', 'Disruptor', 'Banshee', 'WidowMine', 'Goliath', 'Vulture', 'Liberator', 'Hellion', 'Corruptor', 'QueenClassic', 'Marine', 'Thor', 'Archon', 'VikingFighter', 'Firebat', 'Tempest', 'ScienceVessel', 'InfestedAbomination', 'CorsairMP', 'VoidRay', 'HellionTank', 'DarkTemplar', 'Oracle', 'BroodLord', 'Raven', 'Reaper', 'Immortal', 'Cyclone', 'Colossus', 'SiegeTank', 'Devourer', 'Roach', 'Reaver', 'Ghost', 'Scout', 'Dragoon', 'Carrier', 'LurkerMP', 'Phoenix', 'Sentry', 'Zergling', 'Hydralisk', 'Wraith', 'Battlecruiser', 'Mutalisk', 'Guardian', 'Zealot', 'HighTemplar', 'Infestor', 'Scourge', 'SwarmHostMP', 'Adept', 'Baneling', 'WarHound'}
+UnitsInWaves = _txt_to_iter(_joinDATA('UnitsInWaves.txt'))
 
 COMasteryUpgrades = _csv_to_comastery_dict(_joinDATA('COMasteryUpgrades.csv'))
 
