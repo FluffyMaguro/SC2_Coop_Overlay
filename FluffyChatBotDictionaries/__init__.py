@@ -161,4 +161,4 @@ UnitsInWaves = _txt_to_iter(_joinDATA('UnitsInWaves.txt'))
 COMasteryUpgrades = _csv_to_comastery_dict(_joinDATA('COMasteryUpgrades.csv'))
 
 HFTS_Units = _txt_to_iter(_joinDATA('HFTS_Units.txt'))
-TUS_Units = {'SuperGaryStetmann','SOAMothershipv4','TychusHERC','AvatarofForm','HyperionVoidCoop','StukovAleksander','DehakaMurvar','DehakaDakrun','TychusOdin','StukovApocalisk','AlarakCoop','DehakaGlevig','TychusReaper','TychusFirebat','TychusSpectre','TychusWarhound','FenixCoop','TychusMedic'}
+TUS_Units = _txt_to_iter(_joinDATA('TUS_Units.txt'))
