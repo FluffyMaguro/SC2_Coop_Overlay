@@ -158,27 +158,7 @@ UnitCompDict = {
 #set of all units in waves (excluding Medivac)
 UnitsInWaves = {'Medic', 'Marauder', 'Stalker', 'ArbiterMP', 'Ultralisk', 'Viper', 'Ravager', 'Disruptor', 'Banshee', 'WidowMine', 'Goliath', 'Vulture', 'Liberator', 'Hellion', 'Corruptor', 'QueenClassic', 'Marine', 'Thor', 'Archon', 'VikingFighter', 'Firebat', 'Tempest', 'ScienceVessel', 'InfestedAbomination', 'CorsairMP', 'VoidRay', 'HellionTank', 'DarkTemplar', 'Oracle', 'BroodLord', 'Raven', 'Reaper', 'Immortal', 'Cyclone', 'Colossus', 'SiegeTank', 'Devourer', 'Roach', 'Reaver', 'Ghost', 'Scout', 'Dragoon', 'Carrier', 'LurkerMP', 'Phoenix', 'Sentry', 'Zergling', 'Hydralisk', 'Wraith', 'Battlecruiser', 'Mutalisk', 'Guardian', 'Zealot', 'HighTemplar', 'Infestor', 'Scourge', 'SwarmHostMP', 'Adept', 'Baneling', 'WarHound'}
 
-
-
-COMasteryUpgrades = {'Raynor':["MasteryRaynorResearchCost","MasteryRaynorDropPodHaste","MasteryRaynorHyperionCooldown","MasteryRaynorDuskWingCooldown","MasteryRaynorMedicSecondaryHeal","MasteryRaynorMechAttackSpeed"],
-                 'Swann':["MasterySwannConcentratedBeam","MasterySwannCombatDrop","MasterySwannImmortalityProtocol","MasterySwannBuildingHealth","MasterySwannVespeneHarvesterCost","MasterySwannLaserDrillBuildTime"],
-                 'Kerrigan':["MasteryKerriganEnergyRegen","MasteryKerriganAutoAttackDamage","MasteryKerriganArmyGasCost","MasteryKerriganImmobilizationWaveDamage","MasteryKerriganResearchSpeedandCost","MasteryKerriganPrimarySpeedDamage"],
-                 'Zagara':["MasteryZagaraHealthAndEnergyRegen","MasteryZagaraAutoAttackDamage","MasteryZagaraBanelingsDamage","MasteryZagaraZerglingDodgeChance","MasteryZagaraRoachDropDamageAndHealth","MasteryZagaraMassFrenzySpeedBoost"],
-                 'Abathur':["MasteryAbathurToxicNestDamageAndRespawn","MasteryAbathurMendHeal","MasteryAbathurSymbioteCarapace","MasteryAbathurDoubleBiomass","MasteryAbathurToxicNestCharge","MasteryAbathurTechFastBuild"],
-                 'Artanis':["MasteryArtanisShieldOvercharge","MasteryArtanisGuardianShellHeal","MasteryArtanisEnergyRegenCooldown","MasteryArtanisSoAPowerFieldHaste","MasteryArtanisChronoBoost","MasteryArtanisStartingAndMaxSoAEnergy"],
-                 'Vorazun':["MasteryVorazunDarkPylonRadius","MasteryVorazunBlackHoleDuration","MasteryVorazunShadowGuardDuration","MasteryVorazunTimeStopHaste","MasteryVorazunChronoBoostSpeed","MasteryVorazunStartingAndMaxSoAEnergy"],
-                 'Karax':["MasteryKaraxUnitVital","MasteryKaraxBuildingVital","MasteryKaraxRepairBeamHeal","MasteryKaraxSoAChronoRegen","MasteryKaraxChronoBoostSpeed","MasteryKaraxStartingAndMaxSoAEnergy"],
-                 'Alarak':["MasteryAlarakAutoAttackDamage","MasteryAlarakUnitAttackSpeed","MasteryAlarakEmpowerMeSlavesDuration","MasteryAlarakDeathFleetCDR","MasteryAlarakOverchargeShieldsDamage","MasteryAlarakChronoBoost"],
-                 'Nova':["MasteryNovaNukeAndHoloDecoyCooldown","MasteryNovaGriffinCost","MasteryNovaPrimaryAbilityImprovement","MasteryNovaArmyAttackSpeed","MasteryNovaEnergyRegen","MasteryNovaArmyOOCRegenSpeed"],
-                 'Stukov':["MasteryStukovVolatileChance","MasteryStukovInfestStructureCDR","MasteryStukovAleksanderCDR","MasteryStukovApocaliskCDR","MasteryStukovTimedLife","MasteryStukovMechAttackSpeed"],
-                 'Fenix':["MasteryFenixSuitAttackSpeed","MasteryFenixSuitEnergyRegen","MasteryFenixChampionAttackSpeed","MasteryFenixChampionLifeShieldBuff","MasteryFenixChronoBoostExtra","MasteryFenixExtraStartingSupply"],
-                 'Dehaka':["MasteryDehakaConsumeHealing","MasteryDehakaConsumeDuration","MasteryDehakaPrimalWurmCDR","MasteryDehakaBossTimedLife","MasteryDehakaGeneMutation","MasteryDehakaAttackSpeed"],
-                 'Horner':["MasteryHornerBomberRadius","MasteryHornerBetterDeathRattle","MasteryHornerMSOBonus","MasteryHornerDoubleSalvageChance","MasteryHornerAirStrikeDistance","MasteryHornerMagMineUpgrades"],
-                 'Tychus':["MasteryTychusCommanderAttackSpeed","MasteryTychusGrenadeCooldown","MasteryTychusUpgradesIncrease","MasteryTychusHeroCooldown","MasteryTychusMedivacBuff","MasteryTychusOdinCooldown"],
-                 'Zeratul':["MasteryZeratulZeratulAttackSpeed","MasteryZeratulCombatUnitAttackSpeed","MasteryZeratulArtifactFragmentSpawnRate","MasteryZeratulSupportCalldownCooldownReduction","MasteryZeratulLegendaryLegionCost","MasteryZeratulAvatarCooldown"],
-                 'Stetmann':["MasteryStetmannUpgradeResearchCost","MasteryStetmannGaryAbilityCooldown","MasteryStetmannStetzoneBonuses","MasteryStetmannMaximumEgonergyPool","MasteryStetmannDeployStetelliteCooldown","MasteryStetmannStructureMorphRate"],
-                 'Mengsk':["MasteryMengskTrooperImperialMandateRegeneration","MasteryMengskRoyalGuardImperialMandateRegeneration","MasteryMengskTopPanelPower","MasteryMengskRoyalGuardCost","MasteryMengskStartingImperialMandate","MasteryMengskRoyalGuardExperienceGainRate"]}
-
+COMasteryUpgrades = _csv_to_comastery_dict(_joinDATA('COMasteryUpgrades.csv'))
 
 HFTS_Units = {'MutatorAmonArtanis','MutatorAmonDehaka','MutatorAmonKarax','MutatorAmonKerrigan','MutatorAmonNova','MutatorAmonRaynor','MutatorAmonTychus','MutatorAmonZagara','MutatorAmonZeratul'}
 TUS_Units = {'SuperGaryStetmann','SOAMothershipv4','TychusHERC','AvatarofForm','HyperionVoidCoop','StukovAleksander','DehakaMurvar','DehakaDakrun','TychusOdin','StukovApocalisk','AlarakCoop','DehakaGlevig','TychusReaper','TychusFirebat','TychusSpectre','TychusWarhound','FenixCoop','TychusMedic'}
