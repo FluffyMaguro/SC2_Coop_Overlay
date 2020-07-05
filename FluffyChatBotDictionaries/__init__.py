@@ -19,6 +19,12 @@ _joinDATA = _functools.partial(_os.path.join, _DATADIR)
 UnitNameDict = _csv_to_dictitems(_joinDATA('UnitNames.csv'))
 UnitAddKillsTo = _csv_to_dictitems(_joinDATA('UnitAddKillsTo.csv'))
 CommanderMastery = _csv_to_comastery_dict(_joinDATA('CommanderMastery.csv'))
+COMasteryUpgrades = _csv_to_comastery_dict(_joinDATA('COMasteryUpgrades.csv'))
+
+#set of all units in waves (excluding Medivac)
+UnitsInWaves = _txt_to_iter(_joinDATA('UnitsInWaves.txt'))
+HFTS_Units = _txt_to_iter(_joinDATA('HFTS_Units.txt'))
+TUS_Units = _txt_to_iter(_joinDATA('TUS_Units.txt'))
 
 UnitCompDict = {
 'Brooding Corruption':  [{'Zergling'},
@@ -154,11 +160,3 @@ UnitCompDict = {
                               {'Reaver', 'Archon', 'HighTemplar', 'Zealot'},
                               {'ArbiterMP', 'Dragoon', 'HighTemplar', 'Zealot'},
                               {'ArbiterMP','Archon','Dragoon','HighTemplar','Reaver','Zealot'}]}
-
-#set of all units in waves (excluding Medivac)
-UnitsInWaves = _txt_to_iter(_joinDATA('UnitsInWaves.txt'))
-
-COMasteryUpgrades = _csv_to_comastery_dict(_joinDATA('COMasteryUpgrades.csv'))
-
-HFTS_Units = _txt_to_iter(_joinDATA('HFTS_Units.txt'))
-TUS_Units = _txt_to_iter(_joinDATA('TUS_Units.txt'))
