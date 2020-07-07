@@ -9,8 +9,6 @@ def csv_to_dictitems(filename, *, header=1):
     `header` defaults to 1, for human readable CSV's, and is ignored.
     """
     with open(filename, newline='') as fh:
-        # reader = csv.DictReader(fh)
-        # print(dict(row.values() for row in reader))
         reader = csv.reader(fh)
         for _ in range(header):
             next(reader)
