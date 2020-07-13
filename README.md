@@ -104,8 +104,9 @@ Changes take effect the next time you start the app!
 * 1.14 version (unreleased, work in progress)
 
       - The number of created Infested Bunkers and Mecha Infestors is shown as icons
-      - (Super) Gary won't show created and lost numbers as they are not accurate (the same as with Tychus' outlaws)
+      - Gary won't show created and lost numbers as they are not accurate (as with Tychus' outlaws)
       - Odin's precursor won't be counted for created & lost numbers
+      - Perdition and Devastation Turrets renamed to Flaming Betties and Blasting Billies
       - Internal reorganization of dictionaries, and many comments added to the code    
       
 
