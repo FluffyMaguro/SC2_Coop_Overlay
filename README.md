@@ -103,7 +103,11 @@ Changes take effect the next time you start the app!
 # Changelog
 * 1.14 version (unreleased, work in progress)
 
-      - (Super) Gary won't show created and lost number as it's not accurate
+      - The number of created Infested Bunkers and Mecha Infestors is shown as icons
+      - (Super) Gary won't show created and lost numbers as they are not accurate (the same as with Tychus' outlaws)
+      - Odin's precursor won't be counted for created & lost numbers
+      - Internal reorganization of dictionaries, and many comments added to the code    
+      
 
 * 1.13 version
 
