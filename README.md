@@ -107,7 +107,8 @@ Changes take effect the next time you start the app!
       - Gary won't show created and lost numbers as they are not accurate (as with Tychus' outlaws)
       - Odin's precursor won't be counted for created & lost numbers
       - Perdition and Devastation Turrets renamed to Flaming Betties and Blasting Billies
-      - Internal reorganization of dictionaries, and many comments added to the code    
+      - Internal reorganization of dictionaries, and many comments added to the code
+      - Proper HH:MM:SS format for game length for games over 60 minutes
       
 
 * 1.13 version
