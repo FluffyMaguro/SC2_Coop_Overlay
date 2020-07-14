@@ -111,6 +111,7 @@ Changes take effect the next time you start the app!
       - Perdition and Devastation Turrets renamed to Flaming Betties and Blasting Billies
       - Internal reorganization of dictionaries, and many comments added to the code
       - Proper HH:MM:SS format for game length for games over 60 minutes
+      - Minor visual tweaks
       
 
 * 1.13 version
