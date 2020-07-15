@@ -25,6 +25,14 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 
 
+# Other notes
+* The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay). On Windows 7 you can try enabling aero theme, it might help.
+* Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
+* Kills are shown for top 5 units only (this can by changed in HTML).
+* You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
+* [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
+
+
 # Config file
 
 You don't need to change anything in the config file for normal usage.
@@ -93,14 +101,6 @@ Changes take effect the next time you start the app!
 
    LOGGING = True
 
-
-
-# Other notes
-* The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay). On Windows 7 you can try enabling aero theme, it might help.
-* Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
-* Kills are shown for top 5 units only (this can by changed in HTML).
-* You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
-* [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
 # Changelog
 * 1.14 version
