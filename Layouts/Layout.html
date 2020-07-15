@@ -433,10 +433,15 @@
     .killbotkills {
         color: #FF3333;
         font-weight: bold;
+    }
 
+    .iconcreated {
+        color: #21D84D;
+        font-weight: bold;
     }
 
     </style>
+<link rel="stylesheet" type="text/css" href="custom.css">
 </head>
 
 <body>
@@ -668,7 +673,7 @@ connect_to_socket();
 
 function debug() {
     DURATION = 3;                  
-    var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Dead of Night', 'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay', 'date': '2020-06-19 20:53:27', 'extension': 0, 'B+': 1, 'comp': 'Dominion Battlegroup', 'length': 745.0, 'main': 'Maguro', 'mainAPM': 117, 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'mainkills': 2801, 'mainIcons': {'deadofnight': 117,'tus':25,'hfts':10,'killbots':100,'voidrifts':10}, 'ally': 'Tichondrius', 'allyAPM': 30, 'allyCommander': 'Stukov', 'allyCommanderLevel': 15, 'allyMasteries': [15, 15, 30, 0, 30, 0], 'allykills': 1338, 'allyIcons': {'propagators':5,'deadofnight': 34,'voidreanimators':10,'turkey':100}, 'mainUnits': {'Mutalisk': [60, 12, 1675, 0.6], 'Kerrigan': [1, 0, 1124, 0.4]}, 'allyUnits': {'Infested Trooper': [432, 354, 981, 0.73], 'Apocalisk': [2, 2, 184, 0.14], 'Infested Civilian': [301, 241, 80, 0.06], 'Broodling': [485, 485, 44, 0.03], 'Volatile Infested': [17, 13, 26, 0.02], 'Infested Bunker': [18, 2, 15, 0.01], 'Aleksander': [1, 0, 7, 0.01]}, 'amonUnits': {'Infested Marine': [571, 571, 100, 0.31], 'Kaboomer': [14, 14, 48, 0.15], 'Infested Terran': [2946, 2946, 37, 0.12], 'Aberration': [93, 93, 31, 0.1], 'Hellbat': [23, 23, 24, 0.07], 'Broodling': [483, 483, 14, 0.04], 'Marine': [121, 121, 13, 0.04], 'Marauder': [23, 23, 7, 0.02], 'Hunterling': [11, 11, 7, 0.02], 'Hybrid Reaver': [4, 4, 7, 0.02], 'Hybrid Destroyer': [8, 8, 6, 0.02], 'Siege Tank': [7, 7, 6, 0.02], 'Banshee': [6, 2, 3, 0.01], 'Thor': [1, 1, 2, 0.01], 'Viking': [21, 18, 1, 0.0], 'Raven': [9, 6, 1, 0.0], 'Ghost': [5, 5, 1, 0.0], 'Cyclone': [4, 4, 1, 0.0], 'Hybrid Dominator': [1, 1, 1, 0.0]}}
+    var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Dead of Night', 'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay', 'date': '2020-06-19 20:53:27', 'extension': 0, 'B+': 1, 'comp': 'Dominion Battlegroup', 'length': 745.0, 'main': 'Maguro', 'mainAPM': 117, 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'mainkills': 2801, 'mainIcons': {'deadofnight': 117,'tus':25,'hfts':10,'killbots':100,'voidrifts':10}, 'ally': 'Tichondrius', 'allyAPM': 30, 'allyCommander': 'Stukov', 'allyCommanderLevel': 15, 'allyMasteries': [15, 15, 30, 0, 30, 0], 'allykills': 1338, 'allyIcons': {'propagators':5,'InfestedBunker':5,'deadofnight': 34,'voidreanimators':10,'turkey':100}, 'mainUnits': {'Mutalisk': [60, 12, 1675, 0.6], 'Kerrigan': [1, 0, 1124, 0.4]}, 'allyUnits': {'Infested Trooper': [432, 354, 981, 0.73], 'Apocalisk': [2, 2, 184, 0.14], 'Infested Civilian': [301, 241, 80, 0.06], 'Broodling': [485, 485, 44, 0.03], 'Volatile Infested': [17, 13, 26, 0.02], 'Infested Bunker': [18, 2, 15, 0.01], 'Aleksander': [1, 0, 7, 0.01]}, 'amonUnits': {'Infested Marine': [571, 571, 100, 0.31], 'Kaboomer': [14, 14, 48, 0.15], 'Infested Terran': [2946, 2946, 37, 0.12], 'Aberration': [93, 93, 31, 0.1], 'Hellbat': [23, 23, 24, 0.07], 'Broodling': [483, 483, 14, 0.04], 'Marine': [121, 121, 13, 0.04], 'Marauder': [23, 23, 7, 0.02], 'Hunterling': [11, 11, 7, 0.02], 'Hybrid Reaver': [4, 4, 7, 0.02], 'Hybrid Destroyer': [8, 8, 6, 0.02], 'Siege Tank': [7, 7, 6, 0.02], 'Banshee': [6, 2, 3, 0.01], 'Thor': [1, 1, 2, 0.01], 'Viking': [21, 18, 1, 0.0], 'Raven': [9, 6, 1, 0.0], 'Ghost': [5, 5, 1, 0.0], 'Cyclone': [4, 4, 1, 0.0], 'Hybrid Dominator': [1, 1, 1, 0.0]}}
 ;
 
     postGameStatsTimed(dummydata);
@@ -860,13 +865,21 @@ function postGameStatsTimed(data) {
 function format_length(seconds) {
     var gseconds = Math.round(seconds*1.4);
     var sec = gseconds % 60;
-    var min = (gseconds - sec) / 60;
+    var min = ((gseconds - sec) / 60) % 60;
+    var hr = (gseconds - sec - min*60) / 3600;
+
+    if (hr > 0) {
+        hr = hr + ':'               
+    } else {
+        hr = ''
+        }
+
     if (sec < 10) {
-        return min+':0'+sec
+        return hr+min+':0'+sec
     } else {                             
-        return min+':'+sec 
+        return hr+min+':'+sec 
         }                            
-    }
+}
 
 
 function postGameStats(data,showing=false) {
@@ -1024,7 +1037,7 @@ function fillicons(el,data) {
             text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext killbotkills">-'+ value + '</span>';    
 
         } else if (value > 0) {                                   
-            text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext">x'+ value + '</span>'; 
+            text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext iconcreated">+'+ value + '</span>'; 
         }       
        }    
     document.getElementById(el).innerHTML = text               
@@ -1053,9 +1066,14 @@ function fillunits(el, dat) {
             text = text + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><br>'
             };
     }
+
+    if (idx == 0) {
+        text = '<span class="unitkills"></span>'
+    }
     document.getElementById(el).innerHTML = text;
 }
 
 </script>
+<script src="custom.js"></script>
 
 </html>
