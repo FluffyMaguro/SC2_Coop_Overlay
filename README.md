@@ -103,7 +103,7 @@ Changes take effect the next time you start the app!
 * [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
 
 # Changelog
-* 1.14 version (unreleased, work in progress)
+* 1.14 version
 
       - The number of created Infested Bunkers and Mecha Infestors is shown as icons
       - Gary won't show created and lost numbers as they are not accurate (as with Tychus' outlaws)
