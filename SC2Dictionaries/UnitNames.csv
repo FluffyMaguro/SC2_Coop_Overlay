@@ -1,0 +1,1348 @@
+Unit,Name
+PitAlarak,Ji'nara
+BlightbringerBurrowed,Blightbringer
+MutatorInfestedTurkey,Turkey
+VoidSliverACUnstableEnergy,Void Sliver
+NovaAcidPuddle,Blightbringer
+MoebiusSeeker,Moebius Hybrid
+MutatorMissileSplitterChild,Missile Command
+MutatorMissileNuke,Missile Command
+MutatorMissileSplitter,Missile Command
+MutatorMissileStandard,Missile Command
+MutatorMurderBot,Kill Bot
+SpiderMine,Spider Mine
+MutatorWidowMineBurrowed,Widow Mine
+MutatorTurkey,Turkey
+MutatorTornado,Twister
+MutatorTurking,Turking
+MutatorStormCloud,Blizzard
+MutatorSpiderMine,Spider Mine
+MutatorSpiderMineBurrowed,Spider Mine
+MutatorDeathBot,Kill Bot
+MutatorPurifierBeam,Purifier Beam
+MutatorCloakedMine,Magnetic Mine
+MutatorKillBot,Kill Bot
+VoidSliverAC,Void Sliver
+CoopCasterAbathur,Abathur's Top Bar
+CoopCasterAlarak,Photon Overcharge
+SoACasterArtanis,Artanis' Top Bar
+CoopCasterDehaka,Dehaka's Top Bar
+CoopCasterHorner,Han and Horner's Top Bar
+SoACasterKarax,Karax's Top Bar
+CoopCasterKerrigan,Kerrigan's Top Bar
+CoopCasterMengsk,Mengsk's Top Bar
+CoopCasterNova,Nova's Top Bar
+CoopCasterRaynor,Raynor's Top Bar
+CoopCasterStukov,Stukov's Top Bar
+CoopCasterSwann,Swann's Top Bar
+CoopCasterTychus,Tychus' Top Bar
+CoopCasterZagara,Zagara's Top Bar
+SoACasterFenix,Fenix's Top Bar
+SoACasterVorazun,Vorazun's Top Bar
+CoopCasterZeratul,Zeratul's Top Bar
+CoopCasterStetmann,Stetmann's Top Bar
+TychusOdinPrecursor,Odin
+CarrierRepairDrone,Repair Drone
+FenixClolarionBomber,Interdictor
+SOAThermalLanceTargeter,Thermal Lance
+SOAPurifierBeamUnit,Purifier Beam
+HHD8SingleCluster,Reaper's KD8 Charge
+PowerTowerStetmann,Stetellite
+SpiderMineBurrowed,Spider Mine
+NovaDefensiveMatrixDrone,Defensive Drone
+UltraliskMengsk,Dogs of War (Maguro Brood)
+ZerglingMengsk,Dogs of War (Maguro Brood)
+HydraliskMengsk,Dogs of War (Maguro Brood)
+MutaliskMengsk,Dogs of War (Maguro Brood)
+HHMagneticMinePrep,Mag Mine
+HHGriffon,Assault Drone
+HHBomber,Strike Fighter
+FenixClolarionInterceptor,Interceptor
+NovaBoombot,Sabotage Drone
+BroodlingEscortStetmann,Mecha Broodling
+HHMercenarySpaceStation,Space Station
+CoopDehakaGlevigEggRoach,Glevig's Roach
+CoopDehakaGlevigEggHydralisk,Glevig's Hydralisk
+ZeratulStalkerGhost,Void Apparition
+DehakaNydusDestroyer,Primal Wurm
+CoopDehakaGlevigEggZergling,Glevig's Zergling
+ZeratulKhaydarinMonolithProjection,Tesseract Monolith Projection
+BroodlingEscort,Broodling
+HornerAirFleetStrafer,Call in the Fleet
+DehakaNydusDestroyerTimedNoFood,Greater Primal Wurm
+AbathurSymbioteLeviathan,Leviathan's Symbiote
+UnfinishedDrakkenLaserDrillCoop,Drakken Laser Drill
+ZeratulPhotonCannonProjection,Tesseract Projection
+DehakaGlevig,Glevig
+AbathurSymbioteBrutalisk,Brutalisk's Symbiote
+Colossus,Colossus
+TechLab,Tech Lab
+Reactor,Reactor
+InfestorTerran,Infested Terran
+BanelingCocoon,Baneling Cocoon
+Baneling,Baneling
+Mothership,Mothership
+PointDefenseDrone,Point Defense Drone
+Changeling,Changeling
+ChangelingZealot,Changeling
+ChangelingMarineShield,Changeling
+ChangelingMarine,Changeling
+ChangelingZerglingWings,Changeling
+ChangelingZergling,Changeling
+InfestedTerran,Infested Terran
+CommandCenter,Command Center
+SupplyDepot,Supply Depot
+Refinery,Refinery
+Barracks,Barracks
+EngineeringBay,Engineering Bay
+MissileTurret,Missile Turret
+Bunker,Bunker
+RefineryRich,Refinery
+SensorTower,Sensor Tower
+GhostAcademy,Ghost Academy
+Factory,Factory
+Starport,Starport
+MercCompound,Merc Compound
+Armory,Armory
+FusionCore,Fusion Core
+AutoTurret,Auto-Turret
+SiegeTankSieged,Siege Tank
+SiegeTank,Siege Tank
+VikingAssault,Viking
+VikingFighter,Viking
+CommandCenterFlying,Command Center
+BarracksTechLab,Tech Lab
+BarracksReactor,Reactor
+FactoryTechLab,Tech Lab
+FactoryReactor,Reactor
+StarportTechLab,Tech Lab
+StarportReactor,Reactor
+FactoryFlying,Factory
+StarportFlying,Starport
+SCV,SCV
+BarracksFlying,Barracks
+SupplyDepotLowered,Supply Depot
+Marine,Marine
+Reaper,Reaper
+Ghost,Ghost
+Marauder,Marauder
+Thor,Thor
+Hellion,Hellion
+Medivac,Medivac
+Banshee,Banshee
+Raven,Raven
+Battlecruiser,Battlecruiser
+Nexus,Nexus
+Pylon,Pylon
+Assimilator,Assimilator
+Gateway,Gateway
+Forge,Forge
+FleetBeacon,Fleet Beacon
+TwilightCouncil,Twilight Council
+PhotonCannon,Photon Cannon
+Stargate,Stargate
+TemplarArchive,Templar Archives
+DarkShrine,Dark Shrine
+RoboticsBay,Robotics Bay
+RoboticsFacility,Robotics Facility
+CyberneticsCore,Cybernetics Core
+Zealot,Zealot
+Stalker,Stalker
+HighTemplar,High Templar
+DarkTemplar,Dark Templar
+Sentry,Sentry
+Phoenix,Phoenix
+Carrier,Carrier
+VoidRay,Void Ray
+WarpPrism,Warp Prism
+Observer,Observer
+Immortal,Immortal
+Probe,Probe
+Hatchery,Hatchery
+CreepTumor,Creep Tumor
+Extractor,Extractor
+SpawningPool,Spawning Pool
+EvolutionChamber,Evolution Chamber
+HydraliskDen,Hydralisk Den
+Spire,Spire
+UltraliskCavern,Ultralisk Cavern
+InfestationPit,Infestation Pit
+NydusNetwork,Nydus Network
+BanelingNest,Baneling Nest
+RoachWarren,Roach Warren
+SpineCrawler,Spine Crawler
+SporeCrawler,Spore Crawler
+Lair,Lair
+Hive,Hive
+GreaterSpire,Greater Spire
+Egg,Zerg Cocoon
+Drone,Drone
+Zergling,Zergling
+Overlord,Overlord
+Hydralisk,Hydralisk
+Mutalisk,Mutalisk
+Ultralisk,Ultralisk
+Roach,Roach
+Infestor,Infestor
+Corruptor,Corruptor
+BroodLordCocoon,Brood Lord Cocoon
+BroodLord,Brood Lord
+BanelingBurrowed,Baneling
+DroneBurrowed,Drone
+HydraliskBurrowed,Hydralisk
+RoachBurrowed,Roach
+ZerglingBurrowed,Zergling
+InfestorTerranBurrowed,Infested Terran
+QueenBurrowed,Swarm Queen
+Queen,Swarm Queen
+InfestorBurrowed,Infestor
+OverlordCocoon,Overseer Cocoon
+Overseer,Overseer
+PlanetaryFortress,Planetary Fortress
+UltraliskBurrowed,Ultralisk
+OrbitalCommand,Orbital Command
+WarpGate,Warp Gate
+OrbitalCommandFlying,Orbital Command
+WarpPrismPhasing,Warp Prism
+CreepTumorBurrowed,Creep Tumor
+CreepTumorQueen,Creep Tumor
+SpineCrawlerUprooted,Spine Crawler
+SporeCrawlerUprooted,Spore Crawler
+Archon,Archon
+NydusCanal,Nydus Worm
+GhostNova,Ghost
+Ursadon,Ursadon
+LurkerMPBurrowed,Lurker
+LurkerMP,Lurker
+LurkerDenMP,Lurker Den
+LurkerMPEgg,Lurker Cocoon
+NydusCanalAttacker,Nydus Destroyer
+OverlordTransport,Overlord
+Ravager,Ravager
+RavagerBurrowed,Ravager
+RavagerCocoon,Ravager Cocoon
+TransportOverlordCocoon,Overlord Cocoon
+Oracle,Oracle
+Tempest,Tempest
+LurkerDen,Lurker Den
+InfestedTerransEgg,Infested Swarm Egg
+Larva,Larva
+OverseerSiegeMode,Overseer
+MULE,MULE
+Broodling,Broodling
+LiberatorAG,Liberator
+HellionTank,Hellbat
+Cyclone,Cyclone
+WidowMine,Widow Mine
+Liberator,Liberator
+Adept,Adept
+Disruptor,Disruptor
+SwarmHostMP,Swarm Host
+Viper,Viper
+ShieldBattery,Shield Battery
+MothershipCore,Mothership Core
+AssimilatorRich,Assimilator
+ExtractorRich,Extractor
+RenegadeMissileTurret,Renegade Missile Turret
+Rocks2x2NonConjoined,Rocks
+Lyote,Lyote
+CarrionBird,Urubu
+KarakMale,Male Karak
+KarakFemale,Female Karak
+UrsadakFemaleExotic,Female Ursadak
+UrsadakMale,Male Ursadak
+UrsadakFemale,Female Ursadak
+UrsadakCalf,Ursadak Calf
+UrsadakMaleExotic,Male Ursadak
+UtilityBot,Automaton 2000
+CommentatorBot1,Artosis Bot 2000
+CommentatorBot2,Tasteless Bot 2000
+CommentatorBot3,Artosis Bot 2000
+CommentatorBot4,Tasteless Bot 2000
+Scantipede,Scantipede
+ThorAP,Thor
+AutoTestAttackTargetGround,Target
+AutoTestAttackTargetAir,Target
+Debris2x2NonConjoined,Debris
+ScopeTest,Scope Test
+TechReactor,Tech Reactor
+LurkerEgg,Lurker Cocoon
+Lurker,Lurker
+LurkerBurrowed,Lurker
+InfestedCivilian,Infested Terran
+FlamingBetty,Flaming Betty
+InfestedCivilianBurrowed,Infested Terran
+SiegeBreakerSieged,Siege Breaker
+SiegeBreaker,Siege Breaker
+PerditionTurretUnderground,Flaming Betty
+PerditionTurret,Flaming Betty
+SentryGunUnderground,Sentry Gun
+SentryGun,Sentry Gun
+WarPig,War Pig
+DevilDog,Devil Dog
+SpartanCompany,Spartan Company
+HammerSecurity,Hammer Securities
+HelsAngelFighter,Hel's Angel
+DuskWing,Dusk Wings
+DukesRevenge,Jackson's Revenge
+OdinWreckage,Odin Wreckage
+KerriganCharBurrowed,Kerrigan
+KerriganChar,Kerrigan
+Zeratul,Zeratul
+Urun,Urun
+Mohandar,Zoraya
+Selendis,Selendis
+Scout,Scout
+OmegaliskBurrowed,Omegalisk
+Omegalisk,Omegalisk
+InfestedAbominationBurrowed,Aberration
+InfestedAbomination,Aberration
+HunterKillerBurrowed,Hunter Killer
+HunterKiller,Hunter Killer
+InfestedTerranCampaignBurrowed,Infested Marine
+InfestedTerranCampaign,Infested Marine
+BarracksTechReactor,Tech Reactor
+FactoryTechReactor,Tech Reactor
+StarportTechReactor,Tech Reactor
+ThorWreckage,Thor Wreckage
+ColonistShipFlying,Colony Ship
+ColonistShip,Colony Ship
+BioDomeCommandFlying,Command Bio-Dome
+BioDomeCommand,Command Bio-Dome
+HerculesLanderFlying,Hercules
+HerculesLander,Hercules
+HelsAngelAssault,Hel's Angel
+AutomatedRefinery,Automated Refinery
+BattlecruiserHeliosMorph,Helios
+BattlecruiserHelios,Helios
+NukeSiloNova,Nuke Silo
+Odin,Odin
+PygaliskCocoon,Pygalisk Cocoon
+Spectre,Spectre
+Vulture,Vulture
+Loki,Loki
+Wraith,Wraith
+DominionKillTeam,Marauder
+Firebat,Firebat
+Diamondback,Diamondback
+DevourerTissueSampleTube,Devourer Tissue Sample Tube
+ArtifactVault,Artifact Vault
+BlimpAds,Blimp
+CargoTruckUnitFlatbed,Cargo Truck
+CargoTruckUnitTrailer,Cargo Truck
+Blimp,Blimp
+HomeLarge,Townhouse
+HomeSmall,House
+Predator,Predator
+Goliath,Goliath
+Tassadar,Tassadar
+ScienceFacility,Science Facility
+InfestedCocoon,Infested Cocoon
+FusionReactor,Fusion Reactor
+TalDarimMothership,Mothership
+PsiDisruptor,Psi Disrupter
+HiveMindEmulator,Hive Mind Emulator
+Raynor01,Jim Raynor
+ScienceVessel,Science Vessel
+Scourge,Scourge
+SpaceDiablo,"Diablo, Lord of Terror"
+MurlocMarine,Murloc Marine
+XelNagaVault,Xel'Naga Vault
+PrisonerCivilian,Prisoner
+BiodomeHalfBuilt,Bio-Dome
+Biodome,Bio-Dome
+CargoTruckUnitBarrels,Cargo Truck
+SporeCannon,Spore Cannon
+Stetmann,Egon Stetmann
+CivilianShipWrecked,Transport Ship
+Swann,Rory Swann
+DrakkenLaserDrill,Drakken Laser Drill
+KerriganEgg,Kerrigan Chrysalis
+PrisonerSpectre,Prisoner
+PrisonZealot,Zealot
+RaynorCommando,Jim Raynor
+Overmind,Overmind
+OvermindRemains,Overmind Tendril
+InfestedMercHaven,Wyld Wyngs
+Virophage,Virophage
+TychusCommando,Tychus Findlay
+Brutalisk,Brutalisk
+Pygalisk,Pygalisk
+Warbot,A.R.E.S.
+Artanis,Artanis
+Hercules,Hercules
+MercenaryFortress,Mercenary Fortress
+Raynor,Jim Raynor
+XelNagaWorldshipVault,Xel'Naga Vault
+TychusChaingun,Tychus Findlay
+Artifact,Artifact
+GhostLaserLines,Ghost
+DataCore,Data Core
+SpecialOpsDropship,Special Ops Dropship
+Tosh,Gabriel Tosh
+CastanarUltraliskShackledUnit,Shackled Ultralisk
+Karass,Karass
+Maar,Hybrid
+HybridDestroyer,Hybrid Destroyer
+HybridReaver,Hybrid Reaver
+Hybrid,Hybrid
+TransportTruck,Troop Transport
+XelNagaTemple,Xel'Naga Temple
+SuperWarpGate,Super Warp Gate
+TerrazineTank,Terrazine Tank
+Scientist,Scientist
+MinerMale,Miner
+Hut,Hut
+ColonistHut,Colonist Hut
+InfestableHut,Hut
+InfestableColonistHut,Colonist Hut
+CivilianCarsUnit,Shikoto Coupe
+CruiserBike,Cruiser
+TerranBuggy,Mohican ATV
+ColonistVehicleUnit,Orion Turbo Coupe
+ColonistVehicleUnit01,L2 Speedwheeler
+DumpTruck,Dump Truck
+TankerTruck,Tanker Truck
+FlatbedTruck,Flatbed Truck
+ColonistShipTHanson02A,Colony Ship
+Purifier,Purifier
+InfestedArmory,Infested Armory
+InfestedBarracks,Infested Barracks
+InfestedBunker,Infested Bunker
+InfestedCC,Infested Command Center
+InfestedEngBay,Infested Engineering Bay
+InfestedFactory,Infested Factory
+InfestedRefinery,Infested Refinery
+InfestedStarport,Infested Starport
+InfestedMissileTurret,Infested Missile Turret
+LogisticsHeadquarters,Logistics Headquarters
+InfestedSupply,Infested Supply Depot
+TarsonisEngine,Amon's Train
+TarsonisEngineFast,Amon's Train
+FreightCar,Amon's Train
+Caboose,Amon's Train
+Hyperion,Hyperion
+AbandonedBuilding,Abandoned Structure
+Nova,Nova
+PsiIndoctrinator,Psi-Indoctrinator
+JoriumStockpile,Jorium Stockpile
+ColonistBiodome,Colonist Bio-Dome
+ColonistBiodomeHalfBuilt,Colonist Bio-Dome
+InfestableBiodome,Bio-Dome
+InfestableColonistBiodome,Colonist Bio-Dome
+Medic,Medic
+StoneZealot,Stone Zealot
+PortJunker,Port Junker
+Leviathan,Leviathan
+Swarmling,Swarmling
+NukePack,Seismic Charge
+EggPurple,Zerg Cocoon
+TruckFlatbedUnit,Flatbed Truck
+TruckSemiUnit,Flatbed Truck
+TruckUtilityUnit,Crazyhorse APT
+InfestedColonistShip,Infested Colony Ship
+ColonistTransport,Armored Personnel Carrier
+PreserverBase,Preserver
+PreserverA,Preserver
+PreserverB,Preserver
+PreserverC,Preserver
+TaurenSpaceMarine,Tauren Space Marine
+TestHero,Test Hero
+TestShop,Test Shop
+ReaperPlacement,Reaper
+LocustMP,Locust
+NydusCanalCreeper,Creep Tower
+SwarmHostBurrowedMP,Swarm Host
+WarHound,Warhound
+WidowMineBurrowed,Widow Mine
+ResourceBlocker,Mineral Shield
+Ice2x2NonConjoined,Ice
+CleaningBot,Cleaning Bot
+ProtossSnakeSegmentDemo,Protoss Snake Segment Demo
+TestZerg,Test Zerg
+Artosilope,Artosilope
+Anteplott,Tastelope
+LabBot,Lab Bot 1-X
+Crabeetle,Crab Beetle
+ImpalerBurrowed,Impaler
+PrimalTownHallUprooted,Primal Hive
+PrimalTownHall,Primal Hive
+ZaGaraBurrowed,Zagara
+ZaGara,Zagara
+PrimalZergling,Zergling
+PrimalHydralisk,Hydralisk
+PrimalUltralisk,Ultralisk
+EvoEggSwarmHost,Zerg Cocoon
+SwarmHostSplitA,Swarm Host
+SwarmHostSplitB,Swarm Host
+DehakaBurrowed,Dehaka
+Dehaka,Dehaka
+DehakaMirrorImageBurrowed,Dehaka Spawn
+DehakaMirrorImage,Dehaka Spawn
+RoachCorpserBurrowed,Roach
+RoachCorpser,Roach
+HydraliskLurkerBurrowed,Hydralisk
+HydraliskLurker,Hydralisk
+HydraliskImpalerBurrowed,Hydralisk
+HydraliskImpaler,Hydralisk
+HotSSwarmling,Zergling
+RaynorLab,Jim Raynor
+K5KerriganPsiStrike,Kerrigan
+K5Kerrigan,Kerrigan
+K5KerriganBurrowed,Kerrigan
+ImpalerDen,Impaler Den
+HotSTorrasqueBurrowed,Ultralisk
+HotSTorrasque,Ultralisk
+HotSNoxiousBurrowed,Ultralisk
+HotSNoxious,Ultralisk
+HybridDominator,Hybrid Dominator
+HotSHunter,Baneling
+HotSHunterBurrowed,Baneling
+HotSSplitterlingBig,Baneling
+HotSSplitterlingMedium,Baneling Spawn
+HotSRaptor,Zergling
+RoachVile,Roach
+SwarmQueenEgg,Zerg Cocoon
+SwarmQueenBurrowed,Niadra
+SwarmQueen,Niadra
+LargeSwarmQueenBurrowed,Niadra
+LargeSwarmQueen,Niadra
+HugeSwarmQueenBurrowed,Niadra
+HugeSwarmQueen,Niadra
+SwarmQueenMorphEgg,Broodmother Cocoon
+SwarmQueenMorphing,Broodmother Cocoon
+SwarmQueenMorphingLarge,Broodmother Cocoon
+HotSSplitterlingBigBurrowed,Baneling
+HotSSplitterlingMediumBurrowed,Baneling Spawn
+HotSSwarmlingBurrowed,Zergling
+HotSRaptorBurrowed,Zergling
+RoachVileBurrowed,Roach
+Defiler,Defiler
+Devourer,Devourer
+MutaliskBroodlord,Mutalisk
+MutaliskViper,Mutalisk
+PrimalFlyer,Guardian
+Ravasaur,Ravasaur
+PrimalRoach,Roach
+PrimalMutalisk,Mutalisk
+DefensiveWall45GateWest,Fortress Gate
+DefensiveWall45GateEast,Fortress Gate
+DefensiveWall45GateLargeWest,Fortress Gate
+DefensiveWall45GateLargeEast,Fortress Gate
+KorhalGateWest,Augustgrad Gate
+KorhalGateEast,Augustgrad Gate
+MilitarizedColonistShipFlying,Zeus Lander
+MilitarizedColonistShip,Zeus Lander
+TitanMechAssault,Archangel
+TitanMechFighter,Archangel
+GreaterNydusWorm,Omega Worm
+LabTurret,Gas Turret
+LabTurretUp,Gas Turret
+SJGriffon,Griffon
+SJValkyrie,Valkyrie
+SJBattlecruiser,Battlecruiser
+MercHellion,Outback Hunter
+MercMedic,Skibi's Angel
+MercReaper,Death Head
+MengskSiegeTankSieged,Shock Division
+MengskSiegeTank,Shock Division
+MengskVikingAssault,Sky Fury
+MengskVikingFighter,Sky Fury
+MengskMarine,Son of Korhal
+MengskMarauder,Aegis Guard
+MengskReaper,Death Head
+MengskFirebat,Prometheus Company
+MengskMedic,Field Response Theta
+MengskHellion,Outback Hunter
+MengskGoliath,Bulwark Company
+MengskBanshee,Night Wolf
+MengskBC,Pride of Augustgrad
+MengskThor,Blackhammer
+MengskDiamondback,Red Adder
+MengskWraith,Winged Nightmare
+HybridChannel,Hybrid
+MaarChannel,Hybrid
+OmegaliskCorpse,Omegalisk Corpse
+OmegaliskChrysalis,Omegalisk Chrysalis
+AutomatedExtractor,Automated Extractor
+ProtossFrigate,Shuttle
+CreepTumorUsed,Creep Tumor
+TorrasqueCorpse,Ultralisk Corpse
+TorrasqueChrysalis,Ultralisk Chrysalis
+ViperCocoon,Viper Cocoon
+ImpalerEgg,Impaler Cocoon
+Impaler,Impaler
+SwarmHostBurrowed,Swarm Host
+SwarmHost,Swarm Host
+SwarmHostRooted,Swarm Host
+SwarmHostSplitABurrowed,Swarm Host
+SwarmHostSplitARooted,Swarm Host
+SwarmHostSplitBBurrowed,Swarm Host
+SwarmHostSplitBRooted,Swarm Host
+HydraliskLurkerEgg,Lurker Cocoon
+EvoEggHydralisk,Zerg Cocoon
+KorhalSporeCannon,Bile Launcher
+UmojanLabMicrobot,Sentry Bot
+EvoEggZergling,Zerg Cocoon
+EvoEggBaneling,Zerg Cocoon
+EvoEggRoach,Zerg Cocoon
+EvoEggUltralisk,Zerg Cocoon
+InfestedSiegeBreakerSieged,Infested Siege Tank
+InfestedSiegeBreaker,Infested Siege Tank
+InfestedMedic,Infested Medic
+InfestedBanshee,Infested Banshee
+HotSLeviathan,Leviathan
+PrimalRoachBurrowed,Roach
+RavasaurBurrowed,Ravasaur
+PrimalUltraliskBurrowed,Ultralisk
+PrimalHydraliskBurrowed,Hydralisk
+PrimalZerglingBurrowed,Zergling
+BroodMotherBurrowed,Naktul
+BroodMother,Naktul
+LarvalQueen,Larva
+SJSpaceStationMercenary,Mercenary Space Station
+SJSpaceStationMercenaryShield,Mercenary Space Station Shield
+SJMercStarport,Merc Starport
+SJPirateCapitalShip,Pirate Capital Ship
+DroneFull,Drone
+Roachling,Roachling
+SlivanCreep,Creeper
+StukovInfestedTerran,Infested Terran
+Locust,Locust
+LocustFlying,Locust
+MitosaurusB,Mitoscarab
+MitosaurusC,Mitoscarab
+ScantipedeParasiticSmall,Scantipede
+KerriganInfestBroodling,Broodling
+Brakk,Brakk
+CarrionBug,Carrion Wasp
+ColonistHutDecayedUnit,Hut
+GunTower,Tactical Operations Center
+HybridHoldingCellUnit,Hybrid Holding Cell
+HybridTestTubeUnit,Test Tube
+InfestedStukov,Alexei Stukov
+KerriganGhostLab,Sarah Kerrigan
+KerriganGhostLabUnarmed,Sarah Kerrigan
+KorhalPalaceTurret,Korhal Palace Turret
+KorhalPalaceTurretLeft,Korhal Palace Turret
+KorhalPalaceTurretRight,Korhal Palace Turret
+PrimalLocustFlying,Primal Locust
+SJHyperion,Hyperion
+SJViking,Viking
+SpaceArmoredGenerator,Armored Generator
+StarshipVentdoorUnit,Vent Access
+StarshipVentdoorUnitULBR,Vent Access
+ValerianLab,Valerian Mengsk
+WarfieldBasePlatform,Tactical Operations Center Platform
+LeapingCritter,Leaping Karak
+NarudXelNaga,Narud
+KorhalBaseDoor,Base Door
+KorhalCannon,Air Defense Cannon
+DesertEnergyCannon,Drakken Pulse Cannon
+MarineWarfield,General Warfield
+Mitosaurus,Mitoscarab
+PrimalLarvaBirth,Primal Larva
+PrisonShipJumpDrive,Jump Drive
+ProtossFrigateDocked,Shuttle
+ProtossRadioTower,Psi-link Spire
+ScantipedeParasitic,Scantipede
+StarshipHoldingPenLargeUnit,Holding Pen
+StarshipHoldingPenUnit,Holding Pen
+Terrorzor,Tyrannozor
+UmojanLabGenerator,Generator
+UmojanLabWarbot,Eradicator
+XelNagaCrystal,Xel'Naga Crystal
+NuclearMissileSilo,Nuclear Missile Silo
+MengskPalaceGate,Mengsk's Palace
+KorhalPalaceGate,Korhal Palace Gate
+SpaceCowSmall,Quillgor
+SpaceCowMedium,Quillgor Alpha
+PrimalSunkenColony,Impaler Colony
+GehennaCruiser,Gorgon Battlecruiser
+Yagdra,Yagdra
+YagdraEggSmall,Zerg Cocoon
+YagdraEggBig,Zerg Cocoon
+Kraith,Kraith
+Yeti,Ursadon
+YetiMomma,Ursadon Matriarch
+GiantYeti,Giant Ursadon
+CharEggSackOneEgg,Small Egg Cluster
+CharEggSackTwoEgg,Egg Cluster
+CharEggSackThreeEgg,Large Egg Cluster
+Guardian,Guardian
+QueenClassic,Brood Queen
+Bulldozer,Bulldozer
+Excavator,Excavator
+Bus,Bus
+ProtossMobileSatellite,Protoss Mobile Satellite
+ShipGeneratorSmall,Psi Broadcaster
+ShipEscapePod,Escape Pod
+Zerus02Chrysalis,Kerrigan's Chrysalis
+ZerusAlienTreeHover,Spore Ray
+MilitarizedColonistTransport,Militarized Transport
+HealerBot,Recovery Terminal
+HealthDispenser,Recovery Terminal
+Slivan,Slivan
+ZurvanCore,Zurvan
+ZurvanTentacle,Zurvan Tentacle
+RaynorsRaidersDropship,Raynor's Raiders Dropship
+SJMercAATower,Ordnance Tower
+SJCloakedMine,Mag Mine
+SJWraith,Wraith
+PsiDecimator,Psi Destroyer
+InfestedDominionHousing1,Dominion Garrison
+InfestedDominionHousing2,Dominion Garrison
+InfestedDominionHousing3,Dominion Garrison
+ZerusAlienTreeViper,Zerusian Needler
+SpaceArmoredGeneratorB,Armored Generator
+HyperionKorhal,Hyperion
+ExtractorPipes,Extractor
+AshWorm,Ash Worm
+CarrionNest,Carrion Nest
+RefineryPipes,Refinery
+Talis,Talis
+SlaynMissileTurretLeft,Particle Cannon
+SlaynMissileTurretRight,Particle Cannon
+LocustMPFlying,Locust
+GuardianCocoonMP,Guardian Cocoon
+GuardianMP,Guardian
+DevourerCocoonMP,Devourer Cocoon 
+DevourerMP,Devourer
+DefilerMPBurrowed,Defiler
+DefilerMP,Defiler
+OracleStasisTrap,Stasis Ward
+DisruptorPhased,Disruptor
+HERCPlacement,HERC
+SlaynElementalGrabAirUnit,Solarite Cocoon
+SlaynElementalGrabGroundUnit,Solarite Cocoon
+HERC,HERC
+Replicant,Replicant
+CorsairMP,Corsair
+ScoutMP,Scout 
+ArbiterMP,Arbiter
+ScourgeMP,Scourge
+QueenMP,Brood Queen
+ReptileCrate,Reptile Crate
+SlaynSwarmHostSpawnFlyer,Dirge Beetle
+SlaynElemental,Slayn Elemental
+Ursula,Ursula
+Elsecaro_Colonist_Hut,Hut
+CreepTumorQueenNoCreep,Creep Tumor No Creep
+NovaDefensiveDrone,Defensive Drone
+SentryPhasing,Energizer
+SentryPurifier,Energizer
+Reaver,Reaver
+VoidPylon,Void Pylon
+AutomatedAssimilator,Orbital Assimilator
+KhaydarinMonolith,Khaydarin Monolith
+StargateWarp,Warp Stargate
+RoboticsFacilityWarp,Warp Robotics Facility
+ZealotAiur,Zealot
+ZealotShakuras,Centurion
+ZealotPurifier,Sentinel
+SentryAiur,Sentry
+Monitor,Havoc
+StalkerShakuras,Stalker
+Dragoon,Dragoon
+HighArchonTemplar,High Templar
+HighTemplarTaldarim,Ascendant
+DarkArchon,Dark Archon
+DarkTemplarShakuras,Dark Templar
+DarkTemplarAiur,Avenger
+DarkTemplarTaldarim,Blood Hunter
+PhoenixAiur,Phoenix
+PhoenixPurifier,Mirage
+VoidRayShakuras,Void Ray
+VoidRayTaldarim,Destroyer
+CarrierAiur,Carrier
+SOAMothershipv4,Mothership
+TempestPurifier,Tempest
+ImmortalAiur,Immortal
+ImmortalShakuras,Annihilator
+ImmortalTaldarim,Vanguard
+ColossusPurifier,Colossus
+ColossusTaldarim,Wrathwalker
+FenixChampion,Fenix
+VorazunChampion,Vorazun
+AlarakChampion,Alarak
+KaraxChampion,Karax
+ArtanisVoid,Artanis
+StalkerPurifier,Instigator
+DisruptionWard,Disruption Ward
+ZeratulVoidAiur01,Zeratul
+WarpPrismGiantPhasing,Titanic Warp Prism
+WarpPrismGiant,Titanic Warp Prism
+KaraxRepairDrone,Shield Restore Drone
+VoidCorruption,Void Corruption
+HybridDominatorVoid,Hybrid Dominator
+VoidRift,Void Rift
+RoguePurifierSupportDroneA,Warden Support Alpha
+RoguePurifierSupportDroneB,Warden Support Omega
+XelNagaChargedCrystal,Xel'Naga Charged Crystal
+VoidChasm,Void Chasm
+ZerglingCarbotBurrowed,Zergling
+ZerglingCarbot,Zergling
+NovaPsiEmitter,Psi Emitter
+NovaInfestedSiegeTankUprooted,Infested Siege Tank
+NovaInfestedSiegeTank,Infested Siege Tank
+InfestedExploder,Volatile Infested
+InfestedExploderBurrowed,Volatile Infested
+Blightbringer,Blightbringer
+BlightbringerEgg,Small Egg
+BlightbringerLargeEgg,Large Egg
+NovaInfestedBansheeBurrowed,Infested Banshee
+NovaInfestedBanshee,Infested Banshee
+HyperionVoidCoop,Hyperion
+RavagerAbathur,Ravager
+SIInfestedMarine,Infested Marine
+VoidRayAiur,Void Ray
+CarrierTaldarim,Skylord
+NullCircuit,Null Circuit
+VoidTendrilDeathGripCrystal,Void Shard Death Grip Crystal
+DarkTemplarTalDarimShadowClone,Avenger
+StalkerShakurasHallucination,Stalker
+SOAMothership,Purifier Mothership
+VoidThrasherWalker,Void Thrasher
+NovaHoloDecoy,Nova
+AmonAetherMawEpilogue03,Aether Maw
+TechTreeZealot,Zealot
+TechTreeSentry,Sentry
+TechTreeStalker,Stalker
+TechTreeHighTemplar,High Templar
+TechTreeDarkTemplar,Dark Templar
+KorhalArtifactContainmentField,Keystone Containment Field
+ConstrictionDisabler10x10,Constriction
+MothershipAiur06,Mothership
+NaniteCloudTurret,Nanite Cloud Emitter
+LaunchBayShakuras,Launch Bay
+ShrineGuardian,Tal’darim Ascendant
+XelNagaObeliskAiur06,Xel'Naga Obelisk
+GlaciusTechnologyVault,Technology Vault
+Flagship,Tal'darim Mothership
+ShadowShieldGenerator,Shadow Shield Generator
+ShadowShieldGeneratorSmall,Shadow Shield Generator
+Purifier03VespeneTank,Vespene Tank
+ShadowBattlecruiser,Shadow Battlecruiser
+HybridNemesis,Hybrid Nemesis
+VoidThrasher,Void Thrasher
+ZenithStone,Zenith Stone
+ZeratulVoid,Zeratul
+KerriganVoid,Kerrigan
+KerriganVoidBurrowed,Kerrigan
+KerriganEpilogue03,Kerrigan
+TempleShakuras02,Xel'Naga Temple
+HybridGeneral,Hybrid Mastermind
+HighTemplarShakuras,Signifier
+HybridBehemoth,Hybrid Behemoth
+ShieldBatteryNerazim,Shield Battery
+KerriganEpilogue02,Kerrigan
+KerriganVoidUlnar02,Kerrigan
+ConstrictionDisabler2x2,Constriction
+ConstrictionDisabler4x4,Constriction
+XelNagaConstruct,Xel'Naga Construct
+TechTreePhoenix,Phoenix
+TechTreeVoidRay,Void Ray
+TechTreeCarrier,Carrier
+TechTreeImmortal,Immortal
+TechTreeColossus,Colossus
+CelestialLockDisabler,Constriction
+PlatformStabilizer,Platform Stabilizer
+PlatformPowerCore,Platform Power Core
+VoidShrine,Guardian of Ma'lash
+TerrazineTempleNESW,Guardian of Ma'lash
+TerrazineTempleNWSE,Guardian of Ma'lash
+AdunGenerator,Power Cell
+Aiur03MechanismDisabler,Constriction
+MegalithCutter,Aurana’s Transport
+SunkenColony,Sunken Colony
+PowerCoreHousing,Power Core Housing
+ArtifactChamber,Keystone Platform
+GlaciusDefenseCannon,Glacius Plasma Cannon
+ArtifactAiur06,Keystone
+VoidCrystal,Void Crystal
+AmonShardA,Torment Construct
+AmonShardB,Rampage Construct
+AmonShardC,Oblivion Construct
+VoidRiftAutoBuild,Void Rift Auto Build
+NarudEpilogue,Narud
+AmonCrystalEpilogue03,Void Crystal
+CreepTumorZagara,Creep Tumor
+AmonHostBody,Amon's Host
+Epilogue02VoidRift,Void Rift
+Aiur01MechanismDisabler,Constriction
+RoguePurifier,Purifier Warden
+PylonContainmentUnit,Pylon Containment Unit
+ExtractorPurifier,Extractor
+ExtractorShakuras,Extractor
+AssimilatorPurifierGeyser,Assimilator
+AssimilatorShakurasGeyser,Assimilator
+AssimilatorProtossGeyser,Assimilator
+NovaHero,Nova
+NovaVirophage,Virophage
+NovaInfestableColonistHut,Colonist Hut
+JarbanInfestibleColonistHut,Colonist Hut
+NovaColonistHut,Colonist Hut
+JarbanColonistHut,Colonist Hut
+KasaiSpaceWhale,Unit/Name/KasaiSpaceWhale
+JarbanMinor_Excavator,Excavator
+InfestationPustule,Unit/Name/InfestationPustule
+NovaTerrazineTank,Extraction Device
+HERCCompound,HERC Compound
+NovaEradicator,Eradicator
+MilitarizedColonistTransportNova,Militarized Transport
+InfestedColonistTransportNova,Militarized Transport
+ZagaraVoidCoop,Zagara
+ZagaraVoidCoopBurrowed,Zagara
+SITechLab,Infested Tech Lab
+DarkPylon,Dark Pylon
+ACVirophage,Virophage
+MutatorAmonPhotonCannon,Photon Cannon
+MutatorAmonKhaydarinMonolith,Khaydarin Monolith
+DehakaMutaliskLevel3FightMorph,Primal Mutalisk
+DehakaMutaliskLevel3,Primal Mutalisk
+SIBarracksTechLab,Infested Tech Lab
+SIFactoryTechLab,Infested Tech Lab
+SIStarportTechLab,Infested Tech Lab
+HellbatBlackOps,Hellbat Ranger
+HellionBlackOps,Hellion Ranger
+QueenCoopBurrowed,Queen
+QueenCoop,Queen
+KelMorianWorker,Kel-Morian Worker
+SIInfestedBunker,Infested Bunker
+SIInfestedBunkerUprooted,Infested Bunker
+WarpPrismPhasingTaldarim,War Prism
+WarpPrismTaldarim,War Prism
+ToxicNest,Toxic Nest
+ImpalerAbathurEgg,Impaler Egg
+ImpalerAbathur,Impaler
+RavagerAbathurCocoon,Ravager Cocoon
+RavagerVileAbathurCocoon,Ravager Cocoon
+RavagerAbathurBurrowed,Ravager
+ImpalerAbathurBurrowed,Impaler
+PylonOvercharged,Pylon
+DarkPylonOvercharged,Dark Pylon
+Supplicant,Supplicant
+SentryFenix,Conservator
+HyperionAdvancedPointDefenseDrone,Point Defense Drone
+OdinMKII,Odin Mk II
+FenixAltarOfPsiStorms,Purifier Conclave
+SolarForge,Solar Forge
+AutomatedAssimilatorZeratul,Ancient Assimilator
+VoidCoopWarbot,A.R.E.S.
+HHWraith,Asteria Wraith
+HHBattlecruiser,Sovereign Battlecruiser
+HHWidowMine,Widow Mine
+HHReaper,Reaper
+HHHellion,Hellion
+HHHellionTank,Hellbat
+NovaACLaserTurret,Railgun Turret
+GhostAcademyNova,Ghost Academy
+DrakkenLaserDrillCoop,Drakken Laser Drill
+KelMorianMissileTurret,Spinning Dizzy
+KelMorianGrenadeTurret,Blaster Billy
+VespeneGasDrill,Vespene Gas Drill
+HHStarport,Dominion Starport
+HHCommandCenter,Command Center
+HHMercStarportNoArmy,Assault Galleon
+HHBomberPlatform,Strike Fighter Platform
+HHMercCompound,Engineering Bay
+GreaterRoachWarren,Greater Roach Warren
+OdinMKIIWreckage,Odin Mk II Wreckage
+CycloneWreckage,Cyclone Wreckage
+DiamondbackWreckage,Diamondback Wreckage
+GoliathWreckage,Goliath Wreckage
+HellbatWreckage,Hellbat Wreckage
+HellionWreckage,Hellion Wreckage
+SiegeTankWreckage,Siege Tank Wreckage
+ThorWreckageSwann,Thor Wreckage
+KelMorianAutoTurret,Auto-Turret
+EvolutionPit,Evolution Pit
+ScourgeNest,Scourge Nest
+CreepColony,Creep Colony
+BileLauncherZagara,Bile Launcher
+GuardianCocoon,Guardian Cocoon
+SICommandCenterFlying,Infested Command Center
+SICommandCenter,Infested Command Center
+SICocoonInfestedSCV,Infested Cocoon
+SICocoonInfestedOverlord,Infested Cocoon
+SICocoonInfestedCivilian,Infested Cocoon
+SIInfestedCivilian,Infested Civilian
+SISCV,Infested SCV
+SIOverlord,Overlord
+SICocoonInfestedMarine,Infested Cocoon
+SICocoonInfestedAberration,Infested Cocoon
+SICocoonInfestedSiegeTank,Infested Cocoon
+StukovInfestedSiegeTankUprooted,Infested Siege Tank
+SICocoonInfestedWraith,Infested Cocoon
+SIWraith,Infested Wraith
+SICocoonInfestedLiberator,Infested Cocoon
+SILiberator,Infested Liberator
+SICocoonInfestedBanshee,Infested Cocoon
+StukovInfestedBanshee,Infested Banshee
+SICocoonInfestedDiamondBack,Infested Cocoon
+StukovInfestedDiamondBack,Infested Diamondback
+SICocoonQueen,Infested Cocoon
+SIQueen,Brood Queen
+SIRefinery,Infested Refinery
+SIBarracks,Infested Barracks
+SIEngineeringBay,Infested Engineering Bay
+SIMissileTurret,Infested Missile Turret
+SIFactory,Infested Factory
+SIStarport,Infested Starport
+SIArmory,Infested Armory
+SICivilianStructure,Infested Colonist Compound
+SIBarracksFlying,Infested Barracks
+SICivilianStructureFlying,Infested Colonist Compound
+SIFactoryFlying,Infested Factory
+SIStarportFlying,Infested Starport
+SIMissileTurretFlying,Infested Missile Turret
+SISupplyDepotLowered,Infested Supply Depot
+SISupplyDepot,Infested Supply Depot
+SIDroneBurrowed,Drone
+SIDrone,Drone
+SIEvolutionChamber,Evolution Chamber
+SIInfestedCivilianBurrowed,Infested Civilian
+SIInfestedMarineBurrowed,Infested Marine
+SIInfestedTrooperBurrowed,Infested Trooper
+SIInfestedTrooper,Infested Trooper
+InfestedStukovCoopBurrowed,Alexei Stukov
+InfestedStukovCoop,Alexei Stukov
+MutatorLaserDrill,Moebius Corps Laser Drill
+SporeColony,Spore Colony
+ArchAngelCoopAssault,Archangel
+ArchAngelCoopFighter,Archangel
+ResearchVessel,Research Vessel
+ResearchVesselLanded,Research Vessel
+ObserverSiegeMode,Observer
+ToxicNestBurrowed,Toxic Nest
+HydraliskEvolved,Hydralisk
+HydraliskEvolvedBurrowed,Hydralisk
+RedstoneSalamanderBurrowed,Molten Salamander
+RedstoneSalamander,Molten Salamander
+BrutaliskBurrowed,Brutalisk
+MutatorWidowMine,Widow Mine
+SiegeTankSieged_BlackOps,Heavy Siege Tank
+SiegeTank_BlackOps,Heavy Siege Tank
+LiberatorAG_BlackOps,Raid Liberator
+Liberator_BlackOps,Raid Liberator
+MutatorHybridImmortal,Hybrid Immortal
+PointDefenseDrone_BlackOps,Point Defense Drone Black Ops
+HealingDrone,Bio-Mechanical Repair Drone
+StukovApocalisk,Apocalisk
+StukovAleksander,Aleksander
+HunterlingLeaping,Hunterling
+Hunterling,Hunterling
+StukovInfestedSiegeTank,Infested Siege Tank
+StukovInfestedBansheeBurrowed,Infested Banshee
+SIVolatileInfested,Volatile Infested
+SIVolatileInfestedBurrowed,Volatile Infested
+MutatorAmonZagaraBurrowed,Zagara
+MutatorAmonZagara,Zagara
+MutatorAmonDehakaBurrowed,Dehaka
+MutatorAmonDehaka,Dehaka
+MutatorAmonDehakaMirrorImage,Dehaka Spawn
+MutatorAmonKerriganBurrowed,Kerrigan
+MutatorAmonKerrigan,Kerrigan
+DehakaHatcheryUprooted,Primal Hive
+DehakaHatchery,Primal Hive
+DehakaAirTownHallUprooted,Unit/Name/DehakaAirTownHallUprooted
+DehakaAirTownHall,Unit/Name/DehakaAirTownHall
+DehakaBarracksUprooted,Primal Warden
+DehakaBarracks,Primal Warden
+DehakaGlevigStructure,Glevig's Den
+DehakaMurvarStructure,Murvar's Den
+DehakaDakrunStructure,Dakrun's Den
+DehakaCoop,Dehaka
+FenixKaldalisZealot,Kaldalis
+FenixTalisAdept,Talis
+FenixMojoScout,Mojo
+FenixTaldarinImmortal,Taldarin
+FenixWarbringerColossus,Warbringer
+FenixClolarionCarrier,Clolarion
+SentryFenixPhasing,Conservator
+IndustrialShipFlying,Industrial Ship
+DehakaMutaliskReviveEgg,Primal Mutalisk Chrysalis
+DehakaDrone,Primal Drone
+DehakaTrainEggDrone,Egg
+DehakaTrainEggZergling,Egg
+DehakaTrainEggRoach,Egg
+DehakaTrainEggHydralisk,Egg
+DehakaTrainEggSwarmHost,Egg
+DehakaTrainEggUltralisk,Egg
+DehakaZerglingLevel2,Primal Zergling
+DehakaRoachLevel2,Primal Roach
+DehakaHydraliskLevel2,Primal Hydralisk
+DehakaSwarmHost,Primal Host
+DehakaUltraliskLevel2,Primal Ultralisk
+DehakaDroneBurrowed,Primal Drone
+DehakaHydraliskLevel2Burrowed,Primal Hydralisk
+DehakaRoachBurrowed,Primal Roach
+DehakaRoach,Unit/Name/DehakaRoach
+DehakaRoachLevel2Burrowed,Primal Roach
+DehakaRoachLevel3Burrowed,Primal Igniter
+DehakaRoachLevel3,Primal Igniter
+DehakaZerglingLevel2Burrowed,Primal Zergling
+DehakaSwarmHostBurrowed,Primal Host
+DehakaLocust,Primal Locust
+DehakaLocustFlying,Primal Locust
+DehakaPrimalSwarmHostBurrowed,Creeper Host
+DehakaPrimalSwarmHost,Creeper Host
+DehakaRavasaur,Ravasaur
+DehakaGuardianFightMorph,Primal Guardian
+DehakaGuardian,Primal Guardian
+ImpalerDehaka,Impaler
+DehakaUltraliskLevel3,Tyrannozor
+DehakaUltraliskLevel2Burrowed,Primal Ultralisk
+DehakaUltraliskLevel3Burrowed,Tyrannozor
+DehakaMutaliskLevel2,Unit/Name/DehakaMutaliskLevel2
+CybrosEscortTowerUp,Suppression Tower
+ImpalerDehakaBurrowed,Impaler
+DehakaRavasaurBurrowed,Ravasaur
+HHSCV,SCV
+HHCommandCenterFlying,Command Center
+HHStarportFlying,Dominion Starport
+HHWidowMineBurrowed,Widow Mine
+HHReaperFlying,Reaper
+HHMercStarportUpgraded,Assault Galleon
+HHVikingFighter,Deimos Viking
+HHVikingAssault,Deimos Viking
+HHRavenSiegeMode,Theia Raven
+HHRaven,Theia Raven
+ZeratulWarpPrism,Xel'Naga Void Array
+ZeratulWarpPrismPhasing,Xel'Naga Void Array
+TychusCommandCenterFlying,Command Center
+IndustrialShip,Industrial Ship
+SILarva,Larva
+NydusCanalAlly,Nydus Worm
+ACPirateCapitalShip,Pirate Capital Ship
+MutatorAmonDehakaMirrorImageBurrowed,Dehaka Spawn
+DehakaLarva,Larva
+AdeptFenix,Adept
+DehakaCreeperFlying,Explosive Creeper
+DehakaCreeper,Creeper
+ZagaraCorruptor,Corruptor
+VespeneDrone,Vespene Harvester
+Marine_BlackOps,Elite Marine
+Marauder_BlackOps,Marauder Commando
+Ghost_BlackOps,Spec Ops Ghost
+Goliath_BlackOps,Strike Goliath
+Banshee_BlackOps,Covert Banshee
+Raven_BlackOps,Raven Type-II
+Medivac_BlackOps,Medivac Black Ops
+StukovInfestBroodling,Broodling
+MutatorPropagator,Propagator
+GhostFemale_BlackOps,Spec Ops Ghost
+VoidCoopARES,A.R.E.S.
+VorazunShadowGuard,Shadow Guard
+AbathurLocust,Locust
+SlaynElementalGrabAOEGroundUnitMonolith,Solarite Cocoon
+SlaynElementalGrabAOEAirUnitColossi,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit25,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit50,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit75,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit100,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit125,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit150,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit175,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit200,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit225,Solarite Cocoon
+SlaynElementalGrabAOEAirUnit250,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit25,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit50,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit75,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit100,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit125,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit150,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit175,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit200,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit225,Solarite Cocoon
+SlaynElementalGrabAOEGroundUnit250,Solarite Cocoon
+SIBroodlingFlying,Broodling
+FenixCoop,Fenix
+FenixDragoon,Fenix
+FenixArbiter,Fenix
+DehakaMurvar,Murvar
+DehakaDakrun,Dakrun
+CapturePointTeamColor,Capture Point
+CybrosEscortDownloader,Purifier Data Core
+MutatorAmonKarax,Karax
+MutatorAmonNova,Nova
+InfestedIndustrialShip,Infested Industrial Ship
+AlarakCoop,Alarak
+MutatorVoidReanimator,Void Reanimator
+SelendisCoop,Selendis
+MutatorVoidRift,Void Rift
+VoidSliverDeathGripCrystalAC,Death Grip Crystal
+MutatorAmonZeratul,Zeratul
+CapturePoint,Capture Point
+MercVulture,Unit/Name/MercVulture
+DroneOperator,Vespene Harvester
+ACGriffon,Griffon
+VoidShardAC,Void Shard
+NovaCoop,Nova
+AbathurLavaWorm,Unit/Name/AbathurLavaWorm
+MutatorStoneZealot,Stone Zealot
+EnvironmentalStabilizer,Environmental Stabilizer
+AutoTurret_BlackOps,Unit/Name/AutoTurret_BlackOps
+TerrazineHarvester,Harvesting Bot
+COOPTerrazineTank,Extraction Device
+SICocoon,Infested Cocoon
+Choker,Choker
+Kaboomer,Kaboomer
+Spotter,Spotter
+Stank,Stank
+MutatorAmonRaynor,Raynor
+MutatorAmonTychus,Tychus
+MutatorAmonArtanis,Artanis
+PurifierGuardianEscort,Unit/Name/PurifierGuardianEscort
+HybridDominatorCoopBoss,Moebius Hybrid
+HybridBehemothCoopBoss,Hybrid
+DehakaTrainEgg,Egg
+DehakaMutalisk,Unit/Name/DehakaMutalisk
+DehakaViper,Unit/Name/DehakaViper
+MurvarCreep,Unit/Name/MurvarCreep
+MurvarCreepFlying,Unit/Name/MurvarCreepFlying
+ScrappyBot,Defense Bot
+CODXelNagaConstruct,Gatekeeper Construct 
+ZeratulCoop,Zeratul
+TychusCommandCenter,Command Center
+TychusEngineeringBay,Engineering Bay
+TychusMedivacPlatform,Medivac Platform
+TychusWarhound,James 'Sirius' Sykes
+TychusWarhoundAutoTurret,Warhound Turret
+TychusCoop,Tychus Findlay
+TychusSCV,SCV
+TychusReaper,Crooked Sam
+TychusMarauder,Kev 'Rattlesnake' West
+TychusHERC,Rob 'Cannonball' Boswell
+TychusFirebat,Miles 'Blaze' Lewis
+TychusGhost,Vega
+TychusSpectre,Nux
+TychusMedic,Lt. Layna Nikara
+TychusOdin,Odin
+TychusMarauderHealingWard,Revitalizer
+TychusSCVAutoTurret,Auto-Turret
+TychusResearchCenter,Joeyray's Bar
+TychusArmory,Muscle Armory
+TychusGhostAcademy,Fixers' Safehouse
+TychusMercCompound,Gunslingers' Hideout
+TychusResearchCenterUnlocked,Joeyray's Bar
+ZeratulGateway,Xel'Naga Passageway
+ZeratulPhotonCannon,Tesseract Cannon
+ZeratulRoboticsFacility,Constructs Facility
+ZeratulDarkTemplar,Void Templar
+ZeratulXelNagaConstruct,Avatar of Essence
+ZeratulXelNagaChargedCrystalCyan,Charged Crystal
+ZeratulKhaydarinMonolith,Tesseract Monolith
+ZeratulObserver,Xel'Naga Watcher
+ZeratulImmortal,Xel'Naga Enforcer
+ZeratulDisruptor,Xel'Naga Abrogator
+ZeratulStalker,Xel'Naga Ambusher
+ZeratulSentry,Xel'Naga Shieldguard
+ZeratulCyberneticsCore,Core Forge
+ZeratulDarkShrine,Void Shrine
+ZeratulRoboticsBay,Constructs Bay
+ZeratulObserverSiegeMode,Xel'Naga Watcher
+ZeratulTransportPhasingVoidSeeker,Void Seeker
+ZeratulSummonKarass,Telbrus
+ZeratulHeroDarkArchon,Serdath
+ZeratulXelNagaConstructCyan,Avatar of Form
+ZeratulSummonZealot,Zealot
+ZeratulDarkArchon,Dark Archon
+ZeratulSummonVoidRay,Void Ray
+HydraliskMengskBurrowed,Dogs of War (Maguro Brood)
+ZerglingMengskBurrowed,Dogs of War (Maguro Brood)
+BunkerDepotMengsk,Supply Bunker
+RavenMengsk,Imperial Witness
+RavenMengskSieged,Imperial Witness
+TrooperMengskAA,Dominion Trooper
+TrooperMengskImproved,Dominion Trooper
+TrooperMengskFlamethrower,Dominion Trooper
+ArtilleryMengsk,Earthsplitter Ordnance
+MissileTurretMengsk,Missile Turret
+ThorMengskSieged,Blackhammer
+ThorMengsk,Blackhammer
+VikingMengskAssault,Sky Fury
+BarracksMengsk,Barracks
+BarracksMengskFlying,Barracks
+MarauderMengsk,Aegis Guard
+GhostMengsk,Emperor's Shadow
+CommandCenterMengsk,Enlistment Center
+CommandCenterMengskFlying,Enlistment Center
+SCVMengsk,Dominion Laborer
+TrooperMengsk,Dominion Trooper
+FactoryMengsk,Factory
+FactoryMengskFlying,Factory
+SiegeTankMengsk,Shock Division
+VikingMengskFighter,Sky Fury
+SiegeTankMengskSieged,Shock Division
+StarportMengsk,Starport
+StarportMengskFlying,Starport
+MedivacMengsk,Imperial Intercessor
+BattlecruiserMengsk,Pride of Augustgrad
+RefineryMengsk,Refinery
+EngineeringBayMengsk,Engineering Bay
+GhostAcademyMengsk,Royal Academy
+ArmoryMengsk,Armory
+FusionCoreMengsk,Fusion Core
+BanelingStetmannBurrowed,Mecha Baneling
+BanelingStetmann,Mecha Baneling
+DroneStetmannBurrowed,Mecha Drone
+DroneStetmann,Mecha Drone
+HydraliskStetmannBurrowed,Mecha Hydralisk
+HydraliskStetmann,Mecha Hydralisk
+InfestorStetmannBurrowed,Mecha Infestor
+InfestorStetmann,Mecha Infestor
+LurkerStetmannBurrowed,Mecha Lurker
+UltraliskStetmann,Mecha Ultralisk
+RavagerStetmann,Mecha Ravager
+RoachStetmann,Mecha Roach
+LurkerStetmann,Mecha Lurker
+RavagerStetmannBurrowed,Mecha Ravager
+RoachStetmannBurrowed,Mecha Roach
+UltraliskStetmannBurrowed,Mecha Ultralisk
+ZerglingStetmannBurrowed,Mecha Zergling
+ZerglingStetmann,Mecha Zergling
+EggStetmann,Mecha Egg
+OverlordStetmann,Mecha Overlord
+CorruptorStetmann,Mecha Corruptor
+BroodLordStetmannCocoon,Mecha Battlecarrier Lord Cocoon
+BroodLordStetmann,Mecha Battlecarrier Lord
+SuperGaryStetmann,Super Gary
+LurkerStetmannCocoon,Mecha Lurker Egg
+OverseerStetmannCocoon,Mecha Overseer Cocoon
+OverseerStetmann,Mecha Overseer
+RavagerStetmannCocoon,Mecha Ravager Cocoon
+BanelingStetmannCocoon,Mecha Baneling Cocoon
+OverseerStetmannSiegeMode,Mecha Overseer
+SpineCrawlerStetmann,Mecha Spine Crawler
+SpineCrawlerUprootedStetmann,Mecha Spine Crawler
+SporeCrawlerStetmann,Mecha Spore Crawler
+SporeCrawlerUprootedStetmann,Mecha Spore Crawler
+GaryStetmann,Gary
+GreaterSpireStetmann,Mecha Greater Spire
+HiveStetmann,Mecha Hive
+LairStetmann,Mecha Lair
+LurkerDenStetmann,Mecha Lurker Den
+HatcheryStetmann,Mecha Hatchery
+ExtractorStetmann,Mecha Extractor
+SpawningPoolStetmann,Mecha Spawning Pool
+EvolutionChamberStetmann,Mecha Evolution Chamber
+HydraliskDenStetmann,Mecha Hydralisk Den
+SpireStetmann,Mecha Spire
+UltraliskCavernStetmann,Mecha Ultralisk Cavern
+InfestationPitStetmann,Mecha Infestation Pit
+BanelingNestStetmann,Mecha Baneling Nest
+LarvaStetmann,Mecha Larva
+RavagerStetmannEgg,Mecha Ravager
+RoachStetmannEgg,Mecha Roach
+BroodlingStetmann,Mecha Broodling
+RoachWarrenStetmann,Mecha Roach Warren
+Shapeshifter,Shapeshifter
+DummyArmored,Dummy Armored
+DummyLight,Dummy Light
+DummyStructure,Dummy Structure
+ShadowTerror,ShadowTerror
+Dummy,Dummy
+NuclearMine,Nuclear Mine
+AvatarofForm,Avatar of Form

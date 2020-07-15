@@ -1,7 +1,7 @@
 import datetime
 
 class logclass:
-    """ custom class for logging purposes """
+    """ Custom class for logging purposes """
     LOGGING = False
     LEVELS = ['DEBUG','INFO','WARNING','ERROR']
     FILE = "Logging.txt"

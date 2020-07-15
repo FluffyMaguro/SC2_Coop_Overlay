@@ -4,14 +4,16 @@ import time
 import requests
 import threading
 import traceback
+
 import asyncio
 import keyboard
 import websockets
-from ReplayAnalysis import analyse_replay
-from MLogging import logclass
 
-### Storage for all messages
-OverlayMessages = []
+from MLogging import logclass
+from ReplayAnalysis import analyse_replay
+
+
+OverlayMessages = [] # Storage for all messages
 lock = threading.Lock()
 logger = logclass('SCOF','INFO')
 initMessage = {'initEvent':True,'colors':['null','null','null','null'],'duration':60}
@@ -22,7 +24,7 @@ PLAYER_NAMES = []
 
 
 def set_initMessage(colors,duration,unifiedhotkey):
-    """ modify init message that's sent to new websockets """
+    """ Modify init message that's sent to new websockets """
     global initMessage
     initMessage['colors'] = colors
     initMessage['duration'] = duration
@@ -30,30 +32,33 @@ def set_initMessage(colors,duration,unifiedhotkey):
 
 
 def sendEvent(event):
+    """ Adds event to messages ready to be sent """
     with lock:
         OverlayMessages.append(event) 
 
 
 def set_PLAYER_NAMES(names):
+    """ Extends global player names variable """
     global PLAYER_NAMES
     with lock:
         PLAYER_NAMES.extend(names)
 
 
 def guess_PLAYER_NAMES():
-    """ if no PLAYER_NAMES are set, take the best guess for the preferred player"""
+    """ If no PLAYER_NAMES are set, take the best guess for the preferred player"""
     global PLAYER_NAMES
 
     if len(PLAYER_NAMES) > 0:
         return 
 
-    #get all players to the list
+    # Get all players to the list
     list_of_players = list()
     for replay in AllReplays:
         replay_dict = AllReplays[replay].get('replay_dict',dict())
         list_of_players.append(replay_dict.get('main',None))
         list_of_players.append(replay_dict.get('ally',None))
 
+    # Remove nones, sort
     players = {i:list_of_players.count(i) for i in list_of_players if not i in [None,'None']} #get counts
     players = {k:v for k,v in sorted(players.items(),key=lambda x:x[1],reverse=True)} #sort
     logger.info(f'Guessing player names: {players}')
@@ -61,27 +66,27 @@ def guess_PLAYER_NAMES():
     if len(players) == 0:
         return
 
+    # Get the three most common names. Replay analysis will check from the first one to the last one if they are ingame.
     with lock:
-        PLAYER_NAMES = list(players.keys())[0:3] #get the three names. Replay analysis will check from the first one to the last one.
-
+        PLAYER_NAMES = list(players.keys())[0:3] 
 
 
 def initialize_AllReplays(ACCOUNTDIR):
-    """ Creates a sorted dictionary of all replays with their times """
+    """ Creates a sorted dictionary of all replays with their last modified times """
     AllReplays = set()
     try:
         for root, directories, files in os.walk(ACCOUNTDIR):
-                for file in files:
-                    if file.endswith('.SC2Replay'):
-                        file_path = os.path.join(root,file)
-                        if len(file_path) > 255:
-                            file_path = '\\\?\\' + file_path
-                        AllReplays.add(file_path)
+            for file in files:
+                if file.endswith('.SC2Replay'):
+                    file_path = os.path.join(root,file)
+                    if len(file_path) > 255:
+                        file_path = '\\\?\\' + file_path
+                    AllReplays.add(file_path)
 
         AllReplays = ((rep,os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k:{'created':v} for k,v in sorted(AllReplays,key=lambda x:x[1])}
 
-        # Append already parsed replays
+        # Append data from already parsed replays
         if os.path.isfile(analysis_log_file):
             with open(analysis_log_file,'rb') as file:
                 for line in file.readlines():
@@ -99,9 +104,8 @@ def initialize_AllReplays(ACCOUNTDIR):
         return AllReplays
 
 
-
 def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
-    """ Checks every few seconds for new replays  """
+    """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
     session_games = {'Victory':0,'Defeat':0}
@@ -113,8 +117,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
 
     guess_PLAYER_NAMES()
 
-    while True:   
-
+    while True:
         # Check for new replays
         current_time = time.time()
         for root, directories, files in os.walk(ACCOUNTDIR):
@@ -132,7 +135,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
                         try:   
                             replay_dict = analyse_replay(file_path,PLAYER_NAMES)
 
-                            #good output
+                            # Good output
                             if len(replay_dict) > 1:
                                 logger.debug('Replay analysis result looks good, appending...')
                                 session_games[replay_dict['result']] += 1                                    
@@ -140,7 +143,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
                                 sendEvent({**replay_dict,**session_games})
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
                                     file.write((str(replay_dict)+'\n').encode('utf-8'))     
-                            #no output                         
+                            # No output                         
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
 
@@ -159,14 +162,17 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
 
 
 def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
-    """ function handling uploading the replay on the Aommaster's server"""
+    """ Function handling uploading the replay on the Aommaster's server"""
 
+    # Credentials need to be set up
     if AOM_NAME == None or AOM_SECRETKEY == None:
         return
 
+    # Never upload old replays
     if (time.time() - os.path.getmtime(file_path)) > 60:
         return
 
+    # Upload only valid non-arcade replays
     if replay_dict.get('mainCommander',None) in [None,''] or '[MM]' in file_path:
         sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
@@ -186,7 +192,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
 
 
 async def manager(websocket, path):
-    """ manages websocket connection for each client """
+    """ Manages websocket connection for each client """
     overlayMessagesSent = 0
     logger.info(f"STARTING WEBSOCKET: {websocket}")
     await websocket.send(json.dumps(initMessage))
@@ -214,7 +220,7 @@ async def manager(websocket, path):
 
 
 def server_thread(PORT):
-    """ creates a websocket server """
+    """ Creates a websocket server """
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -227,10 +233,11 @@ def server_thread(PORT):
 
 
 def move_in_AllReplays(delta):
+    """ Moves across all replays and sends info to overlay to show parsed data """
     global ReplayPosition
     logger.info(f'Attempt to move to {ReplayPosition + delta}/{len(AllReplays)-1}')
 
-    #check if valid
+    # Check if valid position
     newPosition = ReplayPosition + delta
     if newPosition < 0 or newPosition >= len(AllReplays):
         logger.info(f'We have gone too far. Staying at {ReplayPosition}')
@@ -239,16 +246,16 @@ def move_in_AllReplays(delta):
     with lock:
         ReplayPosition = newPosition
 
-    #get replay_dict of given replay
+    # Get replay_dict of given replay
     key = list(AllReplays.keys())[ReplayPosition]
     if 'replay_dict' in AllReplays[key]:
         if AllReplays[key]['replay_dict'] != None:
             sendEvent(AllReplays[key]['replay_dict'])
         else:
-            logger.info(f'This replay couldnt be analysed {key}')
+            logger.info(f"This replay couldn't be analysed {key}")
             move_in_AllReplays(delta)
     else:
-        #replay_dict is missing, analyse replay
+        # Replay_dict is missing, analyse replay
         try: 
             replay_dict = analyse_replay(key,PLAYER_NAMES)
             if len(replay_dict) > 1:
@@ -258,7 +265,7 @@ def move_in_AllReplays(delta):
                 with open(analysis_log_file, 'ab') as file:
                     file.write((str(replay_dict)+'\n').encode('utf-8'))  
             else:
-                #no output from analysis
+                # No output from analysis
                 with lock:
                     AllReplays[key]['replay_dict'] = None
                 move_in_AllReplays(delta)
@@ -270,7 +277,7 @@ def move_in_AllReplays(delta):
 
 
 def keyboard_thread_OLDER(OLDER):
-    """ thread waiting for hotkey for showing older replay"""
+    """ Thread waiting for hotkey for showing older replay"""
     logger.info('Starting keyboard older thread')
     while True:
         keyboard.wait(OLDER)
@@ -278,7 +285,7 @@ def keyboard_thread_OLDER(OLDER):
         
 
 def keyboard_thread_NEWER(NEWER):
-    """ thread waiting for hotkey for showing newer replay"""
+    """ Thread waiting for hotkey for showing newer replay"""
     logger.info('Starting keyboard newer thread')
     while True:
         keyboard.wait(NEWER)
@@ -286,7 +293,7 @@ def keyboard_thread_NEWER(NEWER):
 
 
 def keyboard_thread_HIDE(HIDE):
-    """ thread waiting for hide hotkey """
+    """ Thread waiting for hide hotkey """
     logger.info('Starting keyboard hide thread')
     while True:
         keyboard.wait(HIDE)
@@ -295,7 +302,7 @@ def keyboard_thread_HIDE(HIDE):
 
 
 def keyboard_thread_SHOW(SHOW):
-    """ thread waiting for show hotkey """
+    """ Thread waiting for show hotkey """
     logger.info('Starting keyboard show thread')
     while True:
         keyboard.wait(SHOW)
