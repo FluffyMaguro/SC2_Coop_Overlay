@@ -6,11 +6,12 @@ idna==2.9
 keyboard==0.13.5
 mpyq==0.2.5
 pefile==2019.4.18
-PyQt5==5.14.2
-PyQt5-sip==12.7.2
-PyQtWebEngine==5.14.0
+PyInstaller==3.6
+PyQt5==5.15.0
+PyQt5-sip==12.8.0
+PyQtWebEngine==5.15.0
 pywin32-ctypes==0.2.0
-requests==2.23.0
+requests==2.24.0
 s2protocol==4.11.4.78285.0
 sc2reader==1.5.0
 urllib3==1.25.9

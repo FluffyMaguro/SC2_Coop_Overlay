@@ -1,0 +1,11 @@
+PlayerWinrates.json
+SCO_log.txt
+SCO_ZIP.bat
+VENV.bat
+SCO_analysis_log.txt
+SCO.spec
+SCO.exe
+SC2CoopOverlay (1.14).zip
+venv/*
+*__pycache__*
+zip.py

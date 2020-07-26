@@ -8,11 +8,11 @@ import sc2reader
 from s2protocol import versions
 
 from MLogging import logclass
-from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units
+from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
 
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit"]
-duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps']
+duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
 icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor'}
@@ -48,6 +48,14 @@ def upgrade_is_in_mastery_upgrades(upgrade):
         if upgrade in COMasteryUpgrades[co]:
             return co, COMasteryUpgrades[co].index(upgrade)
     return False, 0
+
+
+def prestige_talent_name(upgrade):
+    """ Checks if the upgrade is in prestige upgrades. If yes, returns Prestige name"""
+    for co in prestige_upgrades:
+        if upgrade in prestige_upgrades[co]:
+            return prestige_upgrades[co][upgrade]
+    return None
                
 
 def switch_names(pdict):
@@ -267,6 +275,7 @@ def analyse_replay(filepath, playernames=['']):
     custom_kill_count = dict()
     map_identification = ''
     UsedMutatorSpiderMines = set()
+    PrestigeTalents = [None,None,None]
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -283,20 +292,23 @@ def analyse_replay(filepath, playernames=['']):
             START_TIME = event.second 
             logger.debug(f'Mission start through player stats: {START_TIME}') # This is a fallback. Upgrade should always kick in first. 
 
-        if event.name == 'UpgradeCompleteEvent':
-            if event.name == 'UpgradeCompleteEvent' and event.pid in [1,2] and 'Spray' in event.upgrade_type_name and START_TIME == TIME_DEFAULT:     
+        if event.name == 'UpgradeCompleteEvent' and event.pid in [1,2]:
+            if event.name == 'UpgradeCompleteEvent' and 'Spray' in event.upgrade_type_name and START_TIME == TIME_DEFAULT:     
                 START_TIME = event.second
                 logger.debug(f'Mission start through player upgrade: {START_TIME}')
 
             # Commander fallback (used for arcade maps)
-            if event.pid in [1,2] and event.upgrade_type_name in commander_upgrades:
+            if event.upgrade_type_name in commander_upgrades:
                 commander_fallback[event.pid] = commander_upgrades[event.upgrade_type_name]
 
             # Mastery upgrade fallback (used for arcade maps)
             mas_commander,mas_index = upgrade_is_in_mastery_upgrades(event.upgrade_type_name)
-            if mas_commander and event.pid in [1,2]:
+            if mas_commander:
                 logger.debug(f'Player {event.pid} (com: {mas_commander}) got upgrade {event.upgrade_type_name} (idx: {mas_index}) (count: {event.count})')
                 mastery_fallback[event.pid][mas_index] = event.count
+
+            # Prestige talents
+            PrestigeTalents[event.pid] = prestige_talent_name(event.upgrade_type_name)
 
 
         if event.name == 'UnitBornEvent' or event.name == 'UnitInitEvent':
@@ -595,6 +607,7 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['mainMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander_mastery_talents']
     replay_report_dict['mainkills'] = killcounts[main_player]
     replay_report_dict['mainIcons'] = dict()
+    replay_report_dict['mainPrestige'] = PrestigeTalents[main_player]
 
     if replay_report_dict['mainCommander'] == '':
         replay_report_dict['mainCommander'] = commander_fallback.get(main_player,"")
@@ -602,6 +615,7 @@ def analyse_replay(filepath, playernames=['']):
     # Ally player
     replay_report_dict['ally'] = ally_player_name
     replay_report_dict['allyAPM'] = 0
+    replay_report_dict['allyPrestige'] = PrestigeTalents[ally_player]
     if len(replay.humans) > 1:
         replay_report_dict['allyAPM'] = round(map_data[ally_player]*(replay.game_length.seconds/replay_report_dict['length']))
         replay_report_dict['allyCommander'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander'].decode()
@@ -650,7 +664,7 @@ def analyse_replay(filepath, playernames=['']):
         logger.error('Not a Co-op replay')
         return {}
 
-    percent_cutoff = 0.00
+    percent_cutoff = -20.00
     player_max_units = 100 # Max units sent. Javascript then sets its own limit.
 
     def playercalc(playername,player,pdict):
@@ -724,6 +738,6 @@ def analyse_replay(filepath, playernames=['']):
 if __name__ == "__main__":
     from pprint import pprint
 
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\[MM] Dead of Night - Zerg.SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\98-S2-1-770\Replays\Multiplayer\\Void Thrashing (2).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
