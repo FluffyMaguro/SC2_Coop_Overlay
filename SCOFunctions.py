@@ -154,7 +154,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
 
     if PLAYER_WINRATES:
         time_counter_start = time.time()
-        player_winrate_data = get_player_winrates(AllReplays, excludeMM=True)
+        player_winrate_data = get_player_winrates(AllReplays)
         logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
 
 

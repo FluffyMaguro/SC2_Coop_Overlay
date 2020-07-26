@@ -67,10 +67,8 @@ def calculate_player_stats(replays):
     return players
 
 
-def get_player_winrates(AllReplays, excludeMM=False, save_file=True):
-    """ Returns winrate data. Uses saved data if available. Saves data by default.
-
-    `excludeMM`` excludes MM replays quickly """
+def get_player_winrates(AllReplays, save_file=True):
+    """ Returns winrate data. Uses saved data if available. Saves data by default."""
         
     players = {}
     file_modified = 0
@@ -86,10 +84,11 @@ def get_player_winrates(AllReplays, excludeMM=False, save_file=True):
             file_modified = 0
             logger.error(traceback.format_exc())
 
-    # Parse replays newer than the file
-    if excludeMM:
-        AllReplays = {r:AllReplays[r] for r in AllReplays if not '[MM]' in r}
+    
+    # Exclude MM replays
+    AllReplays = {r:AllReplays[r] for r in AllReplays if not '[MM]' in r}
 
+    # Parse replays newer than the file
     new_replays = {r:AllReplays[r] for r in AllReplays if AllReplays[r]['created'] > file_modified}
     new_player_data = calculate_player_stats(new_replays)
     logger.info(f'Appending {len(new_player_data)} players with new winrate data')
