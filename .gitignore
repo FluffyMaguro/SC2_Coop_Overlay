@@ -1,3 +1,4 @@
+.gitignore
 PlayerWinrates.json
 SCO_log.txt
 SCO_ZIP.bat
@@ -9,3 +10,4 @@ SC2CoopOverlay (1.14).zip
 venv/*
 *__pycache__*
 zip.py
+SCO_config.ini
