@@ -15,7 +15,7 @@ amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius',
 duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
-icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor'}
+icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic','Strike Fighter Platform'}
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {'Super Gary','Gary','Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
@@ -695,11 +695,19 @@ def analyse_replay(filepath, playernames=['']):
 
         # Add certain units created to icons   
         for unit in pdict:
+            Zeratul_artifacts_collected = 0
+            if unit in ['ZeratulArtifactPickup1','ZeratulArtifactPickup2','ZeratulArtifactPickup3','ZeratulArtifactPickupUnlimited']:
+                Zeratul_artifacts_collected +=  pdict[unit][1]
+
             if unit in ['ZeratulKhaydarinMonolithProjection','ZeratulPhotonCannonProjection']:
                 if 'ShadeProjection' in replay_report_dict[iconkey]:
                     replay_report_dict[iconkey]['ShadeProjection'] += pdict[unit][0]
                 else:
                     replay_report_dict[iconkey]['ShadeProjection'] = pdict[unit][0]
+
+        if Zeratul_artifacts_collected > 0:
+            replay_report_dict[iconkey]['Artifact'] = Zeratul_artifacts_collected
+
 
 
     playercalc(main_player_name, main_player, unit_type_dict_main)
