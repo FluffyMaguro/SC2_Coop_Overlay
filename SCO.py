@@ -4,6 +4,7 @@ import json
 import string
 import traceback
 import threading
+import multiprocessing
 import configparser
 import ctypes.wintypes
 
@@ -176,6 +177,17 @@ def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NE
 
 
 def main(startthreads=True):
+
+    # Start by testing write permissions
+    permission_error = False
+    try:
+        with open(logclass.FILE,'a') as file:
+            file.write('Starting...\n')
+    except:
+        permission_error = True
+        print(traceback.format_exc())
+
+
     # Lets start by initinalizing config file an getting values from it
     config = config_setup()
     ACCOUNTDIR = get_account_dir(get_configvalue(config,'ACCOUNTDIR', None))
@@ -201,7 +213,8 @@ def main(startthreads=True):
     OFFSET = get_configvalue(config,'OFFSET', 0)
     PLAYER_WINRATES = get_configvalue(config,'PLAYER_WINRATES', False)
 
-    logclass.LOGGING = LOGGING
+
+    logclass.LOGGING = False if permission_error else LOGGING
     logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n--------')
 
     # Set player names in SCOFunctions
@@ -229,6 +242,13 @@ def main(startthreads=True):
         
     # Add icons to the system tray
     menu = QtWidgets.QMenu()
+
+    # 0.Permission error
+    if permission_error:
+        PerError = QtWidgets.QAction("Permission error, exclude app folder in antivirus")
+        PerError.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxCritical')))
+        menu.addAction(PerError)
+        menu.addSeparator()
 
     # 1.Link to github
     SCO = QtWidgets.QAction("StarCraft II Co-op Overlay")
@@ -264,7 +284,7 @@ def main(startthreads=True):
     tray.setContextMenu(menu)
 
     # Show overlay if it's not set otherwise
-    if SHOWOVERLAY:
+    if SHOWOVERLAY and not permission_error:
         webpage = view.page()
         webpage.setBackgroundColor(QtCore.Qt.transparent)
 
@@ -291,11 +311,12 @@ def main(startthreads=True):
     # Send init message to all connected layouts, not just the one created as overlay
     set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION, UNIFIEDHOTKEY)
 
-    if startthreads:        
+    if startthreads and not permission_error:        
         startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES)            
 
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()

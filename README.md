@@ -5,8 +5,8 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:** 
-* [Mega](https://mega.nz/file/ZgUUXawC#RGx3PNTP6-slkwwffK9pAkCNsjHkhP2tc1RKt3JqQIM)
-* [Google-drive](https://drive.google.com/file/d/1uRO_pXjpXF6E3f89S7LjaGpdwRjzQ0Gy/view)
+* [Mega](https://mega.nz/file/1os3mSZI#NXRsBuyffOcijUjaFd6DKXaLIqunDwy0z1R-t8X3T68)
+* [Google-drive](https://drive.google.com/file/d/1hHASFDY73YLySGaRLOpBZUjOFSXquFf5/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/wide2.jpg)
@@ -116,6 +116,7 @@ Changes take effect the next time you start the app!
       - Better player name guess with above activated
       - Small visual tweaks
       - Parser is now using just s2protocol to parse replays
+      - Better behavior when write permissions are denied by antivirus
 
 
 * 1.14 version

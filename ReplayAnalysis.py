@@ -4,9 +4,8 @@ import json
 import time
 import traceback
 
-from S2Parser import s2_parse_replay
-
 from MLogging import logclass
+from S2Parser import s2_parse_replay
 from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
 
 
