@@ -31,7 +31,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
 * Kills are shown for top 5 units only (this can by changed in HTML).
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
-* [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
+* Blizzard's s2protocol is used to parse replays.
 
 
 # Config file
@@ -57,6 +57,10 @@ Changes take effect the next time you start the app!
 * **Choose which monitor to show the overlay on (for multi-monitor setups).**
   
    MONITOR = 1
+
+* **At the start of the game shows the winrate and number of games played with your ally (based on his name)**
+
+   PLAYER_WINRATES = True	
  
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
@@ -104,6 +108,16 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
+* 1.15 version
+
+      - Support for prestige talents
+      - Showing Strike Platforms built, Unbound Archons created, and Artifacts collected
+      - At the start of each game, the app can show the number of games with your ally and winrate
+      - Better player name guess with above activated
+      - Small visual tweaks
+      - Parser is now using just s2protocol to parse replays
+
+
 * 1.14 version
 
       - The number of created Infested Bunkers and Mecha Infestors is shown as icons

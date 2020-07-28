@@ -268,6 +268,7 @@ function setColors(P1color,P2color,P3color,MasteryColor) {
     document.getElementById('name1').style.color = gP1Color;
     document.getElementById('CMname1').style.color = gP1Color;
     document.getElementById('killbar1').style.backgroundColor = gP1Color;
+    document.getElementById('CMtalent1').style.color = gP1Color;
 
     //Player 2
     if (P2color != null) {
@@ -277,6 +278,7 @@ function setColors(P1color,P2color,P3color,MasteryColor) {
     document.getElementById('name2').style.color = gP2Color;
     document.getElementById('CMname2').style.color = gP2Color;
     document.getElementById('killbar2').style.backgroundColor = gP2Color;
+    document.getElementById('CMtalent2').style.color = gP2Color;
 
     //Player 3
     var color = '#FF0000';

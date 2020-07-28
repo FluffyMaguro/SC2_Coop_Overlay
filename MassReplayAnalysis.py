@@ -24,7 +24,7 @@ def get_player_stats(file, archive=None):
     try:
         protocol = versions.build(base_build)
     except:
-        protocol = protocol = versions.latest()
+        protocol = versions.latest()
 
     details = archive.read_file('replay.details')
     details = protocol.decode_replay_details(details)

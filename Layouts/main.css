@@ -203,7 +203,8 @@ body {
 }
 
 .prestige {
-    opacity: 0.7;
+    opacity: 1;
+    font-size: 1.5vh;
     text-shadow: 0.1vh 0.1vh 0.1vh black;
 }
 
