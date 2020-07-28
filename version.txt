@@ -1,4 +1,4 @@
 {
 "version" : 15, 
-"download_link_1" : "https://mega.nz/file/1os3mSZI#NXRsBuyffOcijUjaFd6DKXaLIqunDwy0z1R-t8X3T68"
+"download_link_1" : "https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/1.15/SC2CoopOverlay%20(1.15).zip"
 }
