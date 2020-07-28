@@ -1,0 +1,461 @@
+@font-face {
+    font-family: 'Eurostile';
+    src: url('Eurostile-Reg.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: Eurostile;
+    overflow: hidden
+}
+
+#bgdiv {
+    position: absolute;
+    height: 100%;
+    width: 65vh;
+    top: 0px;
+    right: 0px;
+    opacity: 0;
+    transition: opacity 1.5s;
+    -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.8), rgba(0,0,0,0.8), rgba(0,0,0,0.8))
+}
+
+#bgdiv div {
+   position: absolute;
+   width: 100%;
+   height: calc(100% - 4.5vh - 3vh);
+   background-color: black;
+   box-shadow: 3vh 3vh 3vh black;
+}
+
+#stats {
+    color: white;
+    position: absolute;
+    top: 4vh;
+    right: -50vh;
+    width: 50vh;
+    transition: right 1.5s, opacity 1s;
+}
+
+#topstats {
+    margin-bottom: 0.35vh;
+}
+
+#nodata {
+    color: red;
+    font-size:3vh;
+    position: absolute;
+    top: 20vh;
+    right: 15vh;
+    font-weight: bold
+}
+
+#name1,
+#CMname1 {
+    font-size: 2.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    font-weight: bold;
+}
+
+#name2,
+#CMname2 {
+    font-size: 2.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    font-weight: bold;
+}
+
+#CMname3 {
+    font-size: 2.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    font-weight: bold;
+    margin-bottom: -2.6vh;
+}
+
+#name2 {
+    position: absolute;
+    right: 0vh;
+}
+
+#result {
+    position: absolute;
+    top: 0vh;
+    width: 100%;
+    font-size: 2.5vh;
+    opacity: 0.7;
+    text-align: center;
+}
+
+#killbar {
+    margin-top: 0.4vh;
+    margin-bottom: 0.4vh;
+    width: 100%;
+    height: 4.2vh;
+    position: relative;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    font-size: 2.2vh;
+    display: none;
+}
+
+#killbar1 {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+    left: 0px;
+    transition: width 1s;
+}
+
+#percent1 {
+   z-index: 1;
+}
+
+#killbar2 {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+    right: 0px;
+    text-align: right;
+    transition: width 1s;
+}
+
+#killbar2 span {
+    position: absolute;
+    top: 1vh;
+    right: 1.2vh;
+}
+
+#killbar1 span {
+    position: absolute;
+    top: 1vh;
+    left: 1.2vh;
+}
+
+#kills {
+    position: absolute;
+    top: 1vh;
+    width: 100%;
+    text-align: center;
+    color: #E1E1E1;
+}
+
+#morestats {
+    opacity: 0.7;
+    font-size: 1.9vh;
+    padding-top: 0.42px;
+    text-shadow: 0.1vh 0.1vh 0.1vh #060606;
+}
+
+#apm1 {
+    position: absolute;
+    top: 10vh;
+    left: 0px;
+}
+
+#map {
+    position: absolute;
+    top: 8vh;
+    width: 100%;
+    text-align: center;
+    font-size: 1.4vh;
+}
+
+#comp {
+    position: absolute;
+    top: 9.5vh;
+    width: 100%;
+    font-size: 1.4vh;
+    text-align: center;
+}
+
+#brutal {
+    position: absolute;
+    top: 11.1vh;
+    width: 100%;
+    font-size: 1.4vh;
+    text-align: center;
+}
+
+#com2 {
+    position: absolute;
+    right: 0px;
+}
+
+#apm2 {
+    position: absolute;
+    top: 10vh;
+    right: 0px;
+}
+
+.commstats {
+    margin-top: 4vh;
+    color: white;
+    width: 31.2vh
+    margin-right: 1.04vh;
+    right: 0px;
+}
+
+#commstats2 {
+    margin-top: 1.5vh;
+}
+
+#amon {
+    margin-top: 1.5vh;
+}
+
+.prestige {
+    opacity: 1;
+    font-size: 1.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+}
+
+.mastery {
+    font-size: 1.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    margin-top: 0.8vh;
+}
+
+.nomastery {
+    opacity: 0.4;
+}
+
+.units {
+    font-size: 1.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    margin-top: -0.5vh;
+    padding: 0.94vh;
+    padding-left: 0px;
+}
+
+.unitkills {
+    position: absolute;
+    left: 22vh;
+    opacity: 0.9;
+}
+
+.unitcreated {
+    color: #2FFF00;
+    position: absolute;
+    right: 6vh;
+    opacity: 0.6
+}
+
+#CMunits3 {
+    margin-top: -2vh
+}
+
+.unitdied {
+    position: absolute;
+    right: 0px;
+    color: #FF0000;
+    opacity: 0.9
+}
+
+.killpadding {
+    margin-left: 0.9vh;
+}
+.nokillpadding {
+    margin-left: -0.9vh;
+}
+
+#mutatorinfo {
+    margin: auto;
+    margin-top: 8.33vh;
+    width: 65vh;
+    height: 65vh;
+    text-align: center;
+}
+
+#mutatorinfo div {
+    width: 60vh;
+    height: 10vh;
+    border: 2px solid #444;
+    margin: 0px 4px 10px 4px;
+    color: white;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(20, 20, 20, 0.7));
+    box-shadow: 0px 0px 10px black;
+    text-align: left;
+    display: none;
+    opacity: 0;
+    transition: opacity 2s;
+}
+
+#mutatorinfo div img {
+    height: 100%;
+    border-right: 2px solid #222;
+}
+
+#mutatorinfo div p {
+    margin-left: 11vh;
+    margin-top: -10vh;
+    margin-right: 0.52vh;
+    height: 2vh;
+}
+
+.muttop {
+    color: orange;
+    text-transform: uppercase;
+    font-size: 2vh;
+}
+
+.mutvalue {
+    font-size: 1.04vh;
+    color: #777;
+    font-size: 2vh;
+}
+
+.mutdesc {
+    display: block;
+    height: 7vh;
+    overflow: hidden;
+    font-size: 1.7vh;
+}
+
+#loader {
+    width: 100%;
+    height: 3vh;
+    opacity: 0;
+    text-align: center;
+    transition: opacity 1s;
+    font-size: 1.5vh;
+}
+
+#session {
+    width: 100%;
+    margin-top: 1vh;
+    height: 2.5vh;
+    opacity: 0.5;
+    text-align: center;
+    transition: opacity 1s;
+    font-size: 1.5vh;
+}    
+
+#notification {
+    position: absolute;
+    bottom: 13vh;
+    right: 2vh;
+    background-color: #252525;
+    width: 30vh;
+    height: 5vh;
+    opacity: 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: opacity 1s;
+    box-shadow: 0.2vh 0.2vh 0.4vh rgba(0,0,0,0.6);
+}
+
+#notification div:first-child {
+    background-color: #002F53;
+    width: 5vh;
+    color: #00C1FF;
+    font-size: 4vh;
+    text-align: center;
+    padding: 0.2vh;
+    font-weight: bold;
+    display: inline-block;
+    border: 0.15vh solid #00C1FF;
+    position: relative;
+    top: -0.1vh;
+    left: -0.1vh;
+}
+
+#notification div:nth-child(2) {
+    display: inline-block;
+    position: relative;
+    top: -0.8vh;
+    right: -1vh;
+    font-size: 1.5vh;
+    color: white;
+}
+
+#otherinfo {
+    position: absolute;
+    bottom: 4.5vh;
+    right: 2vh;
+    width: 30vh;
+    height: 8vh;
+    opacity: 0;
+    transition: opacity 1s;
+    color: white;
+    font-size: 1.7vh;
+    text-shadow: .1vh .1vh .1vh black;
+}
+#otherinfo table {
+    margin: auto;
+    position: relative;
+    bottom: 0vh;
+}
+
+#otherinfo tr  {
+    width: 100%;
+}
+
+#otherinfo td {
+    width: 50%;
+    padding-left: 0.2vh;
+    padding-right: 0.2vh;
+}
+
+#otherinfo span {
+    color: #F4F489;
+}
+
+#update {
+    margin-top: 0.1vh;
+    margin-bottom: 0.1vh;
+    text-align: center;
+    display: none;
+}
+
+.commstats div:first-child {
+    display: inline-block
+}
+
+.icons {
+    display: inline-block;
+    padding-left: 1.5vh;
+    color: #ccc;
+    height: 2vh;
+    overflow: visible;
+}
+
+.icons img {
+    height: 4vh;
+    margin-top: -0.5vh;
+    vertical-align: middle;
+}
+
+.icontext {
+    position: relative;
+    left: -1.5vh;
+    top: 0.9vh;
+    color: #FFF;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+}
+
+.killbotkills {
+    color: #FF3333;
+    font-weight: bold;
+}
+
+.iconcreated {
+    color: #21D84D;
+    font-weight: bold;
+}
+
+#playerstats {
+    position: absolute;
+    top: 5vh;
+    right: -60vh;
+    width: 60vh;
+    height: 8vh;
+    text-align: right;    
+    transition: all 1.5s;
+    color: white;
+    font-size: 1.7vh;
+    text-shadow: .1vh .1vh .1vh black;
+    font-size: 2vh;
+    opacity: 0
+}
+
+.player_stat {
+    color: #F4F489;
+}

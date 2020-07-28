@@ -4,18 +4,16 @@ import json
 import time
 import traceback
 
-import sc2reader
-from s2protocol import versions
-
 from MLogging import logclass
-from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units
+from S2Parser import s2_parse_replay
+from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
 
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit"]
-duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps']
+duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
-icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor'}
+icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic','Strike Fighter Platform'}
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {'Super Gary','Gary','Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
@@ -48,6 +46,15 @@ def upgrade_is_in_mastery_upgrades(upgrade):
         if upgrade in COMasteryUpgrades[co]:
             return co, COMasteryUpgrades[co].index(upgrade)
     return False, 0
+
+
+def prestige_talent_name(upgrade):
+    """ Checks if the upgrade is in prestige upgrades. If yes, returns Prestige name"""
+
+    for co in prestige_upgrades:
+        if upgrade in prestige_upgrades[co]:
+            return prestige_upgrades[co][upgrade]
+    return None
                
 
 def switch_names(pdict):
@@ -119,51 +126,6 @@ def get_enemy_comp(identified_waves):
     return 'Unidentified AI'
 
 
-def get_last_deselect_event(file,archive=None):
-    """ Gets time of the last deselect event in the replay
-
-    This corresponds to the game victory time. For defeat this is inaccurate if user just quits.
-    """
-    if archive == None:
-        archive = mpyq.MPQArchive(file) # Passing already opened archive inside 
-
-    contents = archive.header['user_data_header']['content']
-    header = versions.latest().decode_replay_header(contents)
-    base_build = header['m_version']['m_baseBuild']
-
-    try:
-        protocol = versions.build(base_build)
-    except:
-        protocol = protocol = versions.latest()
-
-    game_events = archive.read_file('replay.game.events')
-    game_events = protocol.decode_replay_game_events(game_events)
-    """
-    'SSelectionDeltaEvent', 'SCameraSaveEvent', 'STriggerCutsceneEndSceneFiredEvent', 'STriggerDialogControlEvent', 'SSetSyncLoadingTimeEvent', 
-    'SCmdEvent', 'SUserFinishedLoadingSyncEvent', 'STriggerSoundLengthSyncEvent', 'STriggerSoundOffsetEvent', 'SControlGroupUpdateEvent', 
-    'STriggerTransmissionCompleteEvent', 'SUserOptionsEvent', 'SCommandManagerStateEvent', 'SGameUserLeaveEvent', 'SCmdUpdateTargetPointEvent', 
-    'SAchievementAwardedEvent', 'SCmdUpdateTargetUnitEvent', 'STriggerTransmissionOffsetEvent', 'SCameraUpdateEvent', 'SSetSyncPlayingTimeEvent', 
-    'STriggerCutsceneBookmarkFiredEvent', 'STriggerSoundLengthQueryEvent'"""
-    
-
-    # tracker_events = archive.read_file('replay.tracker.events')
-    # tracker_events = protocol.decode_replay_tracker_events(tracker_events) 
-    """ 
-    SUnitPositionsEvent', 'SUnitDiedEvent', 'SUpgradeEvent', 'SUnitInitEvent', 'SPlayerStatsEvent', 'SUnitDoneEvent', 'SUnitTypeChangeEvent', 
-    'SPlayerSetupEvent', 'SUnitOwnerChangeEvent', 'SUnitBornEvent'
-    """
-
-    # player_info = archive.read_file('replay.details')
-    # player_info = protocol.decode_replay_details(player_info)
-    # detailed_info = archive.read_file('replay.initData')
-    # detailed_info = protocol.decode_replay_initdata(detailed_info)
-
-    last_event = 0
-    for event in list(game_events):
-        if event['_event'] == 'NNet.Game.SSelectionDeltaEvent':
-            last_event = event['_gameloop']/16 - 2 #16 gameloops per second, offset to coincide with speedrun timings more
-
-    return last_event
 
 
 def analyse_replay(filepath, playernames=['']):
@@ -176,20 +138,16 @@ def analyse_replay(filepath, playernames=['']):
     logger.info(f'Analysing: {filepath}')
 
     # Load the replay
-    for i in range(4):
-        try:
-            archive = mpyq.MPQArchive(filepath)
-            metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
-            logger.debug(f'Metadata: {metadata}')
-            break
-        except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare. 
-            logger.error('Error parsing with mpyq ')
-            time.sleep(0.5)
-
     try:
-        replay = sc2reader.load_replay(filepath,load_level=3)
+        for i in range(4):
+            try:
+                replay = s2_parse_replay(filepath, return_events=True)
+                break
+            except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare. 
+                logger.error('Error parsing, giving it a bit of time ')
+                time.sleep(0.1)
     except:
-        logger.error(f'ERROR: sc2reader failed to load replay ({filepath})\n{traceback.format_exc()}')
+        logger.error(f'Parsing failed ({filepath})\n{traceback.format_exc()}')
         return {}
 
     
@@ -197,67 +155,51 @@ def analyse_replay(filepath, playernames=['']):
     amon_players = set()
     amon_players.add(3)
     amon_players.add(4)
-    for per in replay.person:
-        if check_amon_forces(amon_forces,str(replay.person[per])) and per > 4:
-            amon_players.add(per)
+    for player in replay['players']:
+        if player['pid'] > 4 and check_amon_forces(amon_forces,player['name']):
+            amon_players.add(player['pid'])
 
 
     # Find player names and numbers
     main_player = 1
-    main_player_name = ''
+    main_player_found = False
 
-    # Check if you can find the name in the list
-    if len(playernames)>0:
-        for per in replay.person:
+    if len(playernames)>0: # Check if you can find the name in the list
+        for player in replay['players']:
             for playeriter in playernames:
-                if playeriter.lower() in str(replay.person[per]).lower() and per < 3 and main_player_name == '': 
-                    main_player = per
-                    main_player_name = playeriter
+                if player['pid'] in [1,2] and main_player_found == False and playeriter.lower() in player.get('name','').lower(): 
+                    main_player = player['pid']
+                    main_player_found = True
                     break
-
-    # In case the name wasn't found            
-    if main_player_name == '':
-        main_player_name = str(replay.person[main_player]).split(' - ')[1].replace(' (Zerg)', '').replace(' (Terran)', '').replace(' (Protoss)', '')
    
     # Ally
     ally_player = 1 if main_player == 2 else 2
 
-    # Fix for playing alone
-    if len(replay.humans) == 1:
-        ally_player_name = 'None'
-    else:
-        ally_player_name = str(replay.person[ally_player]).split(' - ')[1].replace(' (Zerg)', '').replace(' (Terran)', '').replace(' (Protoss)', '')
+    
+    # Start saving data
+    replay_report_dict = dict()
+    replay_report_dict['filepath'] = filepath
+    replay_report_dict['replaydata'] = True
+    replay_report_dict['map'] = replay['map_name']
+    replay_report_dict['extension'] = replay['extension']
+    replay_report_dict['B+'] = replay['brutal_plus']
+    replay_report_dict['result'] = replay['result']
+    replay_report_dict['main'] = replay['players'][main_player].get('name','None')
+    replay_report_dict['ally'] = replay['players'][ally_player].get('name','None')
+    replay_report_dict['mainAPM'] = replay['players'][main_player].get('apm',0)
+    replay_report_dict['allyAPM'] = replay['players'][ally_player].get('apm',0)
 
-    logger.debug(f'Main player: {main_player_name} | {main_player} | Ally player: {ally_player_name} | {ally_player} | Amon players: {amon_players}')
+    logger.debug(f'Report dict: {replay_report_dict}')
 
-
-    # Get APM & Game result
-    game_result = 'Defeat'
-    map_data = dict()
-    map_data[main_player] = 0
-    map_data[ally_player] = 0
-
-    for player in metadata["Players"]:
-        if player["PlayerID"] == main_player:
-            map_data[main_player] = player["APM"]
-            if player["Result"] == 'Win':
-                game_result = 'Victory'
-        elif player["PlayerID"] == ally_player:
-            map_data[ally_player] = player["APM"]
-            if player["Result"] == 'Win':
-                game_result = 'Victory'
-
-    logger.debug(f'Map data: {map_data}')
-
-
-    # Now lets go through game events    
+    
+    # Events 
     unit_dict = {} # Data structure is {unit_id : [UnitType, Owner]}; used to track all units
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] # Ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     TIME_DEFAULT = 99999999
-    START_TIME = TIME_DEFAULT
-    accu_length = get_last_deselect_event(filepath, archive=archive)
-    END_TIME = TIME_DEFAULT if accu_length <= 0 or game_result != 'Victory' else accu_length
+    START_TIME = replay['start_time']
+    accu_length = replay['accurate_length']
+    END_TIME = replay['end_time']
     commander_fallback = dict()
     outlaw_order = []
     wave_units = {'second':0,'units':[]}
@@ -267,371 +209,356 @@ def analyse_replay(filepath, playernames=['']):
     custom_kill_count = dict()
     map_identification = ''
     UsedMutatorSpiderMines = set()
+    PrestigeTalents = [None,None,None]
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
         last_aoe_unit_killed[player] = [None, 0] if player in amon_players else None
 
 
-    for event in replay.events:  
+    for event in replay['events']:  
         # Skip events after the game ended
-        if event.second > END_TIME:
+        if event['_gameloop']/16 > END_TIME:
             continue
 
-        # Get actual start time for arcade maps/customs (it's delayed)
-        if event.name == 'PlayerStatsEvent' and event.pid == 1 and event.minerals_collection_rate > 0 and START_TIME == TIME_DEFAULT: 
-            START_TIME = event.second 
-            logger.debug(f'Mission start through player stats: {START_TIME}') # This is a fallback. Upgrade should always kick in first. 
-
-        if event.name == 'UpgradeCompleteEvent':
-            if event.name == 'UpgradeCompleteEvent' and event.pid in [1,2] and 'Spray' in event.upgrade_type_name and START_TIME == TIME_DEFAULT:     
-                START_TIME = event.second
-                logger.debug(f'Mission start through player upgrade: {START_TIME}')
+        if event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1,2]:
+            _upg_name = event['m_upgradeTypeName'].decode()
+            _upg_pid = event['m_playerId']
 
             # Commander fallback (used for arcade maps)
-            if event.pid in [1,2] and event.upgrade_type_name in commander_upgrades:
-                commander_fallback[event.pid] = commander_upgrades[event.upgrade_type_name]
+            if _upg_name in commander_upgrades:
+                commander_fallback[_upg_pid] = commander_upgrades[_upg_name]
 
             # Mastery upgrade fallback (used for arcade maps)
-            mas_commander,mas_index = upgrade_is_in_mastery_upgrades(event.upgrade_type_name)
-            if mas_commander and event.pid in [1,2]:
-                logger.debug(f'Player {event.pid} (com: {mas_commander}) got upgrade {event.upgrade_type_name} (idx: {mas_index}) (count: {event.count})')
-                mastery_fallback[event.pid][mas_index] = event.count
+            mas_commander, mas_index = upgrade_is_in_mastery_upgrades(_upg_name)
+            if mas_commander:
+                logger.debug(f'Player {_upg_pid} (com: {mas_commander}) got upgrade {_upg_name} (idx: {mas_index}) (count: {event["m_count"]})')
+                mastery_fallback[_upg_pid][mas_index] = event['m_count']
 
+            # Prestige talents
+            _prestige = prestige_talent_name(_upg_name)
+            if _prestige != None:
+                PrestigeTalents[_upg_pid] = _prestige 
 
-        if event.name == 'UnitBornEvent' or event.name == 'UnitInitEvent':
-            unit_type = event.unit_type_name
-            unit_dict[str(event.unit_id)] = [unit_type, event.control_pid]
+        if event['_event'] in ['NNet.Replay.Tracker.SUnitBornEvent','NNet.Replay.Tracker.SUnitInitEvent']:
+            _unit_type = event['m_unitTypeName'].decode()
+            _control_pid = event['m_controlPlayerId']
+            unit_dict[event['m_unitTagIndex']] = [_unit_type, _control_pid]
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
-            if unit_type in revival_types and event.control_pid in [1,2] and event.second > START_TIME:
-                if event.control_pid == main_player:
-                    unit_type_dict_main[revival_types[unit_type]][1] += 1
-                    unit_type_dict_main[revival_types[unit_type]][0] += 1
-                if event.control_pid == ally_player:
-                    unit_type_dict_ally[revival_types[unit_type]][1] += 1
-                    unit_type_dict_ally[revival_types[unit_type]][0] += 1
+            if _unit_type in revival_types and _control_pid in [1,2] and event['_gameloop']/16 > START_TIME:
+                if _control_pid == main_player:
+                    unit_type_dict_main[revival_types[_unit_type]][1] += 1
+                    unit_type_dict_main[revival_types[_unit_type]][0] += 1
+                if _control_pid == ally_player:
+                    unit_type_dict_ally[revival_types[_unit_type]][1] += 1
+                    unit_type_dict_ally[revival_types[_unit_type]][0] += 1
 
             # Identify Dead of Night map
-            if unit_type == 'SensorTower' and event.control_pid == 6:
+            if _unit_type == 'SensorTower' and _control_pid == 6:
                 map_identification = 'Dead of Night'
 
             # Save stats for units created
-            if main_player == event.control_pid:
-                if unit_type in unit_type_dict_main:
-                    unit_type_dict_main[unit_type][0] += 1
+            if main_player == _control_pid:
+                if _unit_type in unit_type_dict_main:
+                    unit_type_dict_main[_unit_type][0] += 1
                 else:
-                    unit_type_dict_main[unit_type] = [1,0,0,0]
+                    unit_type_dict_main[_unit_type] = [1,0,0,0]
 
-            if ally_player == event.control_pid:
-                if unit_type in unit_type_dict_ally:
-                    unit_type_dict_ally[unit_type][0] += 1
+            if ally_player == _control_pid:
+                if _unit_type in unit_type_dict_ally:
+                    unit_type_dict_ally[_unit_type][0] += 1
                 else:
-                    unit_type_dict_ally[unit_type] = [1,0,0,0]
+                    unit_type_dict_ally[_unit_type] = [1,0,0,0]
 
-            if event.control_pid in amon_players:
-                if unit_type in unit_type_dict_amon:
-                    unit_type_dict_amon[unit_type][0] += 1
+            if _control_pid in amon_players:
+                if _unit_type in unit_type_dict_amon:
+                    unit_type_dict_amon[_unit_type][0] += 1
                 else:
-                    unit_type_dict_amon[unit_type] = [1,0,0,0]
+                    unit_type_dict_amon[_unit_type] = [1,0,0,0]
 
             # Outlaw order
-            if unit_type in tychus_outlaws and event.control_pid in [1,2] and not(unit_type in outlaw_order):
-                outlaw_order.append(unit_type)
+            if _unit_type in tychus_outlaws and _control_pid in [1,2] and not(_unit_type in outlaw_order):
+                outlaw_order.append(_unit_type)
 
             # Identifying waves
-            if event.control_pid in [3,4,5,6] and not event.second in [0,START_TIME] and event.second > 60 and unit_type in UnitsInWaves:
-                if wave_units['second'] == event.second:
-                    wave_units['units'].append(unit_type)
+            if _control_pid in [3,4,5,6] and not event['_gameloop']/16 in [0,START_TIME] and event['_gameloop']/16 > 60 and _unit_type in UnitsInWaves:
+                if wave_units['second'] == event['_gameloop']/16:
+                    wave_units['units'].append(_unit_type)
                 else:
-                    wave_units['second'] = event.second
-                    wave_units['units'] = [unit_type]
+                    wave_units['second'] = event['_gameloop']/16
+                    wave_units['units'] = [_unit_type]
 
                 if len(wave_units['units']) > 5:
-                    identified_waves[event.second] = wave_units['units']
+                    identified_waves[event['_gameloop']/16] = wave_units['units']
 
         # In future ignore some Dark/High Templar deaths caused by Archon merge
-        if event.name == "UnitInitEvent" and event.unit_type_name == "Archon":
-            DT_HT_Ignore[event.control_pid] += 2
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitInitEvent' and event['m_unitTypeName'].decode() == "Archon":
+            DT_HT_Ignore[event['m_controlPlayerId']] += 2
 
-        if event.name == 'UnitTypeChangeEvent' and str(event.unit_id) in unit_dict:
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitTypeChangeEvent' and event['m_unitTagIndex'] in unit_dict:
+                _old_unit_type = unit_dict[event['m_unitTagIndex']][0]
+                _control_pid = unit_dict[event['m_unitTagIndex']][1]
+                _unit_type = event['m_unitTypeName'].decode()
+
                 # Update unit_dict
-                old_unit_type = unit_dict[str(event.unit_id)][0]
-                unit_dict[str(event.unit_id)][0] = str(event.unit_type_name)
+                unit_dict[event['m_unitTagIndex']][0] = _unit_type
 
-                # Add to created units
-                unit_type = event.unit_type_name
-           
-                if unit_type in UnitNameDict and old_unit_type in UnitNameDict:
-                    event.control_pid = int(unit_dict[str(event.unit_id)][1])
-                    if UnitNameDict[unit_type] != UnitNameDict[old_unit_type]: #don't add into created units if it's just a morph
+                # Add to created units         
+                if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
+                    
+                    if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type]: #don't add into created units if it's just a morph
 
                         # Increase unit type created for controlling player 
-                        if main_player == event.control_pid:
-                            if unit_type in unit_type_dict_main:
-                                unit_type_dict_main[unit_type][0] += 1
+                        if main_player == _control_pid:
+                            if _unit_type in unit_type_dict_main:
+                                unit_type_dict_main[_unit_type][0] += 1
                             else:
-                                unit_type_dict_main[unit_type] = [1,0,0,0]
+                                unit_type_dict_main[_unit_type] = [1,0,0,0]
 
-                        if ally_player == event.control_pid:
-                            if unit_type in unit_type_dict_ally:
-                                unit_type_dict_ally[unit_type][0] += 1
+                        if ally_player == _control_pid:
+                            if _unit_type in unit_type_dict_ally:
+                                unit_type_dict_ally[_unit_type][0] += 1
                             else:
-                                unit_type_dict_ally[unit_type] = [1,0,0,0]
+                                unit_type_dict_ally[_unit_type] = [1,0,0,0]
 
-                        if event.control_pid in amon_players:
-                            if unit_type in unit_type_dict_amon:
-                                unit_type_dict_amon[unit_type][0] += 1
+                        if _control_pid in amon_players:
+                            if _unit_type in unit_type_dict_amon:
+                                unit_type_dict_amon[_unit_type][0] += 1
                             else:
-                                unit_type_dict_amon[unit_type] = [1,0,0,0]
+                                unit_type_dict_amon[_unit_type] = [1,0,0,0]
                     else:
-                        if main_player == event.control_pid and not(unit_type in unit_type_dict_main):
-                            unit_type_dict_main[unit_type] = [0,0,0,0]
+                        if main_player == _control_pid and not(_unit_type in unit_type_dict_main):
+                            unit_type_dict_main[_unit_type] = [0,0,0,0]
 
-                        if ally_player == event.control_pid and not(unit_type in unit_type_dict_ally):
-                            unit_type_dict_ally[unit_type] = [0,0,0,0]
+                        if ally_player == _control_pid and not(_unit_type in unit_type_dict_ally):
+                            unit_type_dict_ally[_unit_type] = [0,0,0,0]
 
-                        if event.control_pid in amon_players and not(unit_type in unit_type_dict_amon):
-                            unit_type_dict_amon[unit_type] = [0,0,0,0]
+                        if _control_pid in amon_players and not(_unit_type in unit_type_dict_amon):
+                            unit_type_dict_amon[_unit_type] = [0,0,0,0]
 
 
         # Update ownership
-        if event.name == 'UnitOwnerChangeEvent' and str(event.unit_id) in unit_dict:
-            unit_dict[str(event.unit_id)][1] = str(event.control_pid)
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and event['m_unitTagIndex'] in unit_dict:
+            unit_dict[event['m_unitTagIndex']][1] = event['m_controlPlayerId']
        
         # Update some kill stats
-        if event.name == 'UnitDiedEvent':
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent':
             try:
-                killed_unit_type = unit_dict[str(event.unit_id)][0]
-                losing_player = int(unit_dict[str(event.unit_id)][1])
+                _killed_unit_type = unit_dict[event['m_unitTagIndex']][0]
+                _losing_player = unit_dict[event['m_unitTagIndex']][1]
+                _killing_player = event['m_killerPlayerId']
 
                 # Count kills for players
-                if losing_player != event.killing_player_id and not killed_unit_type in ['FuelCellPickupUnit','ForceField'] and not(event.killing_player_id in [1,2] and losing_player in [1,2]) and event.killing_player_id != None: #don't count team kills
-                    killcounts[event.killing_player_id] += 1
+                if _losing_player != _killing_player and not _killed_unit_type in ['FuelCellPickupUnit','ForceField'] and not(_killing_player in [1,2] and _losing_player in [1,2]) and _killing_player != None: #don't count team kills
+                    killcounts[_killing_player] += 1
 
                 # Get last_aoe_unit_killed (used when player units die without a killing unit, it was likely some enemy caster casting persistent AoE spell)
-                if killed_unit_type in aoe_units and event.killing_player_id in [1,2] and losing_player in amon_players:
-                    last_aoe_unit_killed[losing_player] = [killed_unit_type,event.second]
+                if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players:
+                    last_aoe_unit_killed[_losing_player] = [_killed_unit_type, event['_gameloop']/16]
 
             except:
                 logger.error(traceback.format_exc())
 
         # More kill stats
-        if event.name == 'UnitDiedEvent' and str(event.unit_id) in unit_dict:    
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent' and event['m_unitTagIndex'] in unit_dict:    
             try:
-                killing_unit_id = str(event.killing_unit_id)
-                killed_unit_type = unit_dict[str(event.unit_id)][0]
-                losing_player = int(unit_dict[str(event.unit_id)][1])
+                _killing_unit_id = event['m_killerUnitTagIndex']
+                _killing_player = event['m_killerPlayerId']
+                _killed_unit_type = unit_dict[event['m_unitTagIndex']][0]
+                _losing_player = int(unit_dict[event['m_unitTagIndex']][1])
 
-                if killing_unit_id in unit_dict:
-                    killing_unit_type = unit_dict[killing_unit_id][0]
+                if _killing_unit_id in unit_dict:
+                    _killing_unit_type = unit_dict[_killing_unit_id][0]
                 else:
-                    killing_unit_type = 'NoUnit'
-                    if commander_fallback.get(event.killing_player_id,None) == 'Nova': # It's most likely an airstrike
-                        killing_unit_type = 'CoopCasterNova'
+                    _killing_unit_type = 'NoUnit'
+                    if commander_fallback.get(_killing_player,None) == 'Nova': # It's most likely an airstrike
+                        _killing_unit_type = 'CoopCasterNova'
 
                 # Killbot feed
-                if killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and losing_player in [1,2]:
-                    killbot_feed[losing_player] += 1
+                if _killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and _losing_player in [1,2]:
+                    killbot_feed[_losing_player] += 1
+
 
                 # Custom kill count
-                if event.killing_player_id in [1,2] and losing_player in amon_players:
-                    if killed_unit_type in HFTS_Units:
+                if _killing_player in [1,2] and _losing_player in amon_players:
+                    if _killed_unit_type in HFTS_Units:
                         if not 'hfts' in custom_kill_count:
                             custom_kill_count['hfts'] = {1:0,2:0}
-                        custom_kill_count['hfts'][event.killing_player_id] += 1
+                        custom_kill_count['hfts'][_killing_player] += 1
 
-                    if killed_unit_type in TUS_Units:
+                    if _killed_unit_type in TUS_Units:
                         if not 'tus' in custom_kill_count:
                             custom_kill_count['tus'] = {1:0,2:0}
-                        custom_kill_count['tus'][event.killing_player_id] += 1
+                        custom_kill_count['tus'][_killing_player] += 1
 
-                    elif killed_unit_type == 'MutatorPropagator':
+                    elif _killed_unit_type == 'MutatorPropagator':
                         if not 'propagators' in custom_kill_count:
                             custom_kill_count['propagators'] = {1:0,2:0}
-                        custom_kill_count['propagators'][event.killing_player_id] += 1
+                        custom_kill_count['propagators'][_killing_player] += 1
 
-                    elif killed_unit_type in ['MutatorSpiderMine','MutatorSpiderMineBurrowed','WidowMineBurrowed','WidowMine']:
+                    elif _killed_unit_type in ['MutatorSpiderMine','MutatorSpiderMineBurrowed','WidowMineBurrowed','WidowMine']:
                         if not 'minesweeper' in custom_kill_count:
                             custom_kill_count['minesweeper'] = {1:0,2:0}
-                        custom_kill_count['minesweeper'][event.killing_player_id] += 1   
+                        custom_kill_count['minesweeper'][_killing_player] += 1   
 
-                    elif killed_unit_type == 'MutatorVoidRift':
+                    elif _killed_unit_type == 'MutatorVoidRift':
                         if not 'voidrifts' in custom_kill_count:
                             custom_kill_count['voidrifts'] = {1:0,2:0}
-                        custom_kill_count['voidrifts'][event.killing_player_id] += 1
+                        custom_kill_count['voidrifts'][_killing_player] += 1
                         
-                    elif killed_unit_type in ['MutatorTurkey','MutatorTurking','MutatorInfestedTurkey']:
+                    elif _killed_unit_type in ['MutatorTurkey','MutatorTurking','MutatorInfestedTurkey']:
                         if not 'turkey' in custom_kill_count:
                             custom_kill_count['turkey'] = {1:0,2:0}
-                        custom_kill_count['turkey'][event.killing_player_id] += 1
+                        custom_kill_count['turkey'][_killing_player] += 1
 
-                    elif killed_unit_type == 'MutatorVoidReanimator':
+                    elif _killed_unit_type == 'MutatorVoidReanimator':
                         if not 'voidreanimators' in custom_kill_count:
                             custom_kill_count['voidreanimators'] = {1:0,2:0}
-                        custom_kill_count['voidreanimators'][event.killing_player_id] += 1
+                        custom_kill_count['voidreanimators'][_killing_player] += 1
                             
-                    elif killed_unit_type in ['InfestableBiodome','JarbanInfestibleColonistHut','InfestedMercHaven','InfestableHut']:
+                    elif _killed_unit_type in ['InfestableBiodome','JarbanInfestibleColonistHut','InfestedMercHaven','InfestableHut']:
                         if not 'deadofnight' in custom_kill_count:
                             custom_kill_count['deadofnight'] = {1:0,2:0}
-                        custom_kill_count['deadofnight'][event.killing_player_id] += 1
+                        custom_kill_count['deadofnight'][_killing_player] += 1
 
                 # If an enemy mutator spider mine kills something, counts a kill for the first player who lost a unit to it
-                if losing_player in [1,2] and event.killing_player_id in amon_players:
-                    if killing_unit_type == 'MutatorSpiderMine' and not event.killing_unit_id in UsedMutatorSpiderMines:
-                        UsedMutatorSpiderMines.add(event.killing_unit_id) # Count each mutator spider mine only once
+                if _losing_player in [1,2] and _killing_player in amon_players:
+                    if _killing_unit_type == 'MutatorSpiderMine' and not _killing_unit_id in UsedMutatorSpiderMines:
+                        UsedMutatorSpiderMines.add(_killing_unit_id) # Count each mutator spider mine only once
                         if not 'minesweeper' in custom_kill_count:
                             custom_kill_count['minesweeper'] = {1:0,2:0}
-                        custom_kill_count['minesweeper'][losing_player] += 1   
-
+                        custom_kill_count['minesweeper'][_losing_player] += 1   
 
                 """Fix kills for some enemy area-of-effect units that kills player units after they are dead. 
                    This is the best guess, if one of aoe_units died recently, it was likely that one. """
-                if killing_unit_type == 'NoUnit' and event.killing_unit_id == None and event.killer_pid in amon_players and losing_player != event.killing_player_id:
-                    if event.second - last_aoe_unit_killed[event.killer_pid][1] < 9 and last_aoe_unit_killed[event.killer_pid][0] != None:
-                        unit_type_dict_amon[last_aoe_unit_killed[event.killer_pid][0]][2] += 1
-                        logger.debug(f'{last_aoe_unit_killed[event.killer_pid][0]}({event.killer_pid}) killed {killed_unit_type} | {event.second}s')
+                if _killing_unit_type == 'NoUnit' and _killing_unit_id == None and _killing_player in amon_players and _losing_player != _killing_player:
+                    if event['_gameloop']/16 - last_aoe_unit_killed[_killing_player][1] < 9 and last_aoe_unit_killed[_killing_player][0] != None:
+                        unit_type_dict_amon[last_aoe_unit_killed[_killing_player][0]][2] += 1
+                        logger.debug(f'{last_aoe_unit_killed[_killing_player][0]}({_killing_player}) killed {_killed_unit_type} | {event["_gameloop"]/16}s')
 
                 # Update unit kill stats
-                if ((killing_unit_id in unit_dict) or killing_unit_type == 'CoopCasterNova') and (killing_unit_id != str(event.unit_id)) and losing_player != event.killing_player_id and killed_unit_type != 'FuelCellPickupUnit':
-                    if main_player == event.killing_player_id:
-                        if killing_unit_type in unit_type_dict_main:
-                            unit_type_dict_main[killing_unit_type][2] += 1
+                if ((_killing_unit_id in unit_dict) or _killing_unit_type == 'CoopCasterNova') and (_killing_unit_id != event['m_unitTagIndex']) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
+                    if main_player == _killing_player:
+                        if _killing_unit_type in unit_type_dict_main:
+                            unit_type_dict_main[_killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_main[killing_unit_type] = [0,0,1,0]
+                            unit_type_dict_main[_killing_unit_type] = [0,0,1,0]
 
-                    if ally_player == event.killing_player_id:
-                        if killing_unit_type in unit_type_dict_ally:
-                            unit_type_dict_ally[killing_unit_type][2] += 1
+                    if ally_player == _killing_player:
+                        if _killing_unit_type in unit_type_dict_ally:
+                            unit_type_dict_ally[_killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_ally[killing_unit_type] = [0,0,1,0]
+                            unit_type_dict_ally[_killing_unit_type] = [0,0,1,0]
 
-                    if event.killing_player_id in amon_players and not losing_player in amon_players:  
-                        if killing_unit_type in unit_type_dict_amon:
-                            unit_type_dict_amon[killing_unit_type][2] += 1
+                    if _killing_player in amon_players and not _losing_player in amon_players:  
+                        if _killing_unit_type in unit_type_dict_amon:
+                            unit_type_dict_amon[_killing_unit_type][2] += 1
                         else:
-                            unit_type_dict_amon[killing_unit_type] = [0,0,1,0]
+                            unit_type_dict_amon[_killing_unit_type] = [0,0,1,0]
 
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
-                if killed_unit_type in self_killing_units and event.killer == None:
-                    if main_player == losing_player:
-                        unit_type_dict_main[killed_unit_type][0] -= 1
-                    if ally_player == losing_player:
-                        unit_type_dict_ally[killed_unit_type][0] -= 1
+                if _killed_unit_type in self_killing_units and _killing_player == None:
+                    if main_player == _losing_player:
+                        unit_type_dict_main[_killed_unit_type][0] -= 1
+                    if ally_player == _losing_player:
+                        unit_type_dict_ally[_killed_unit_type][0] -= 1
                     continue
 
                 # Fix for units like Raptorlings that are counted each time they jump (as death and birth)
-                if event.second > 0 and killed_unit_type in duplicating_units and killed_unit_type == killing_unit_type and losing_player == event.killing_player_id:
-                    if main_player == losing_player:
-                        unit_type_dict_main[killed_unit_type][0] -= 1
+                if event['_gameloop']/16 > 0 and _killed_unit_type in duplicating_units and _killed_unit_type == _killing_unit_type and _losing_player == _killing_player:
+                    if main_player == _losing_player:
+                        unit_type_dict_main[_killed_unit_type][0] -= 1
                         continue
-                    if ally_player == losing_player:
-                        unit_type_dict_ally[killed_unit_type][0] -= 1
+                    if ally_player == _losing_player:
+                        unit_type_dict_ally[_killed_unit_type][0] -= 1
                         continue
-                    if event.killing_player_id in amon_players:
-                        unit_type_dict_amon[killed_unit_type][0] -= 1
+                    if _killing_player in amon_players:
+                        unit_type_dict_amon[_killed_unit_type][0] -= 1
                         continue
                    
                     
                 # In case of death caused by Archon merge, ignore these kills
-                if (killed_unit_type == 'HighTemplar' or killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[losing_player] > 0:
-                    DT_HT_Ignore[losing_player] -= 1
+                if (_killed_unit_type == 'HighTemplar' or _killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[_losing_player] > 0:
+                    DT_HT_Ignore[_losing_player] -= 1
                     continue
 
                 # Add deaths
-                if main_player == losing_player and event.second > 0 and event.second > START_TIME: # Don't count deaths on game init
-                    if killed_unit_type in unit_type_dict_main:
-                        unit_type_dict_main[killed_unit_type][1] += 1
+                if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME: # Don't count deaths on game init
+                    if _killed_unit_type in unit_type_dict_main:
+                        unit_type_dict_main[_killed_unit_type][1] += 1
                     else:
-                        unit_type_dict_main[killed_unit_type] = [0,1,0,0]
+                        unit_type_dict_main[_killed_unit_type] = [0,1,0,0]
 
-                if ally_player == losing_player and event.second > 0 and event.second > START_TIME:
-                    if killed_unit_type in unit_type_dict_ally:
-                        unit_type_dict_ally[killed_unit_type][1] += 1
+                if ally_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME:
+                    if _killed_unit_type in unit_type_dict_ally:
+                        unit_type_dict_ally[_killed_unit_type][1] += 1
                     else:
-                        unit_type_dict_ally[killed_unit_type] = [0,1,0,0]
+                        unit_type_dict_ally[_killed_unit_type] = [0,1,0,0]
 
-                if losing_player in amon_players and event.second > 0 and event.second > START_TIME:
-                    if killed_unit_type in unit_type_dict_amon:
-                        unit_type_dict_amon[killed_unit_type][1] += 1 
+                if _losing_player in amon_players and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME:
+                    if _killed_unit_type in unit_type_dict_amon:
+                        unit_type_dict_amon[_killed_unit_type][1] += 1 
                     else:
-                        unit_type_dict_amon[killed_unit_type] = [0,1,0,0]  
+                        unit_type_dict_amon[_killed_unit_type] = [0,1,0,0]  
 
             except:
                 logger.error(traceback.format_exc())
 
-    if START_TIME > 6000:
-        logger.error('Failed to detect the start of the game')
-        START_TIME = 0
 
 
-    logger.debug(f'Unit type dict main: {unit_type_dict_main}')
-    logger.debug(f'Unit type dict ally: {unit_type_dict_ally}')
-    logger.debug(f'Unit type dict amon: {unit_type_dict_amon}')
-    logger.debug(f'Kill counts: {killcounts}')
 
-    # Star saving data into the final dict
-    replay_report_dict = dict()
-    replay_report_dict['replaydata'] = True
-    replay_report_dict['result'] = game_result
-    replay_report_dict['map'] = replay.map_name
-    replay_report_dict['filepath'] = filepath
-    replay_report_dict['date'] = str(replay.date)
-    replay_report_dict['extension'] = replay.raw_data['replay.initData']['game_description']['has_extension_mod']
-    replay_report_dict['B+'] = replay.raw_data['replay.initData']['lobby_state']['slots'][0]['brutal_plus_difficulty']
+    # logger.info(f'Unit type dict main: {unit_type_dict_main}')
+    # logger.info(f'Unit type dict ally: {unit_type_dict_ally}')
+    # logger.info(f'Unit type dict amon: {unit_type_dict_amon}')
+    # logger.info(f'Kill counts: {killcounts}')
+
+    # Save more data to final dictionary
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
-
-    replay_report_dict['length'] = replay.game_length.seconds - START_TIME/1.4
-    if game_result == 'Victory' and accu_length > 0:
-        replay_report_dict['length'] = (accu_length - START_TIME)/1.4
-
+    replay_report_dict['length'] = replay['accurate_length']/1.4
 
     # Main player
-    replay_report_dict['main'] = main_player_name
-    replay_report_dict['mainAPM'] = round(map_data[main_player]*(replay.game_length.seconds/replay_report_dict['length']))
-    replay_report_dict['mainCommander'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander'].decode()
-    replay_report_dict['mainCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander_level']
-    replay_report_dict['mainMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][main_player-1]['commander_mastery_talents']
+    replay_report_dict['mainCommander'] = replay['players'][main_player].get('commander','')
+    replay_report_dict['mainCommanderLevel'] = replay['players'][main_player].get('commander_level',0)
+    replay_report_dict['mainMasteries'] = replay['players'][main_player].get('masteries',[0,0,0,0,0,0])
     replay_report_dict['mainkills'] = killcounts[main_player]
     replay_report_dict['mainIcons'] = dict()
+    replay_report_dict['mainPrestige'] = PrestigeTalents[main_player]
 
+    # Ally player
+    replay_report_dict['allyCommander'] = replay['players'][ally_player].get('commander','')
+    replay_report_dict['allyCommanderLevel'] = replay['players'][ally_player].get('commander_level',0)
+    replay_report_dict['allyMasteries'] = replay['players'][ally_player].get('masteries',[0,0,0,0,0,0])
+    replay_report_dict['allykills'] = killcounts[ally_player]
+    replay_report_dict['allyIcons'] = dict()
+    replay_report_dict['allyPrestige'] = PrestigeTalents[ally_player]
+
+    # Fallback
     if replay_report_dict['mainCommander'] == '':
         replay_report_dict['mainCommander'] = commander_fallback.get(main_player,"")
 
-    # Ally player
-    replay_report_dict['ally'] = ally_player_name
-    replay_report_dict['allyAPM'] = 0
-    if len(replay.humans) > 1:
-        replay_report_dict['allyAPM'] = round(map_data[ally_player]*(replay.game_length.seconds/replay_report_dict['length']))
-        replay_report_dict['allyCommander'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander'].decode()
-        replay_report_dict['allyCommanderLevel'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_level']
-        replay_report_dict['allyMasteries'] = replay.raw_data['replay.initData']['lobby_state']['slots'][ally_player-1]['commander_mastery_talents']
-    else:
-        logger.debug('No ally player')
-    replay_report_dict['allykills'] = killcounts[ally_player]
-    replay_report_dict['allyIcons'] = dict()
+    if replay_report_dict['allyCommander'] == '':
+        replay_report_dict['allyCommander'] = commander_fallback.get(ally_player,"")   
 
-    if replay_report_dict.get('allyCommander','') == '':
-        replay_report_dict['allyCommander'] = commander_fallback.get(ally_player,"")
-
-    # More shared stats
+    # MM mastery fallback
     if '[MM]' in filepath:
         replay_report_dict['mainMasteries'] = mastery_fallback[main_player]
         replay_report_dict['allyMasteries'] = mastery_fallback[ally_player]
-    if replay_report_dict.get('mainCommander',None) == 'Tychus':
+
+    # Icons: Tychus' Outlaws
+    if replay_report_dict.get('mainCommander', None) == 'Tychus':
         replay_report_dict['mainIcons']['outlaws'] = outlaw_order
-    elif replay_report_dict.get('allyCommander',None) == 'Tychus':
+    elif replay_report_dict.get('allyCommander', None) == 'Tychus':
         replay_report_dict['allyIcons']['outlaws'] = outlaw_order
 
-    # Custom kills
+    # Icons: Kills
     # First decide between hfts and tus
     if 'tus' in custom_kill_count and 'hfts' in custom_kill_count:
         custom_kill_count['tus'][1] += custom_kill_count['hfts'][1]
         custom_kill_count['tus'][2] += custom_kill_count['hfts'][2]
         del custom_kill_count['hfts']
 
-    # Now fill
     for item in ['hfts','tus','propagators','voidrifts','turkey','voidreanimators','deadofnight','minesweeper']:
         if item in custom_kill_count:
             # Skip if it's not a Dead of Night map
@@ -648,56 +575,64 @@ def analyse_replay(filepath, playernames=['']):
     # Don't post if no commander, likely non-coop replay
     if replay_report_dict['mainCommander'] == '':
         logger.error('Not a Co-op replay')
-        return {}
 
-    percent_cutoff = 0.00
-    player_max_units = 100 # Max units sent. Javascript then sets its own limit.
 
-    def playercalc(playername,player,pdict):
+    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=0):
+        """ Fills units into output dictionary, fill created/list units into icons """
         new_dict = switch_names(pdict)
         sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse = True, key=lambda item: item[1][2])} # Sorts by number of create (0), lost (1), kills (2), K/D (3)
-        message_count = 0
 
         # Save data
         unitkey = 'mainUnits' if player == main_player else 'allyUnits'
         iconkey = 'mainIcons' if player == main_player else 'allyIcons'
         replay_report_dict[unitkey] = dict()
-        player_kill_count = killcounts[player] if killcounts[player] != 0 else 1 # Prevent zero division
-        idx = 0
+        player_kill_count = killcounts[player] if killcounts[player] != 0 else 1 # Prevent division by zero
 
         for unit in sorted_dict:
-            idx += 1
-            if (sorted_dict[unit][2]/player_kill_count > percent_cutoff) and idx < (player_max_units+1):
+            if (sorted_dict[unit][2]/player_kill_count > percent_cutoff):
                 replay_report_dict[unitkey][unit] = sorted_dict[unit]
                 replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2]/player_kill_count,2)
+
+                # Copy created & lost stats from Dehaka 
+                if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
+                    replay_report_dict[unitkey][unit][0] = replay_report_dict[unitkey]['Dehaka'][0]
+                    replay_report_dict[unitkey][unit][1] = replay_report_dict[unitkey]['Dehaka'][1]
 
                 if unit in dont_show_created_lost:
                     replay_report_dict[unitkey][unit][0] = '-'
                     replay_report_dict[unitkey][unit][1] = '-'
 
-            # Icons        
+            # Icons: Created units      
             if unit in icon_units:
                 replay_report_dict[iconkey][unit] = sorted_dict[unit][0]
 
-        # Add certain units created to icons   
+        # Icons: Artifacts and used projections
+        Zeratul_artifacts_collected = 0
         for unit in pdict:
+            if unit in ['ZeratulArtifactPickup1','ZeratulArtifactPickup2','ZeratulArtifactPickup3','ZeratulArtifactPickupUnlimited']:
+                Zeratul_artifacts_collected += pdict[unit][1]
+
             if unit in ['ZeratulKhaydarinMonolithProjection','ZeratulPhotonCannonProjection']:
                 if 'ShadeProjection' in replay_report_dict[iconkey]:
                     replay_report_dict[iconkey]['ShadeProjection'] += pdict[unit][0]
                 else:
                     replay_report_dict[iconkey]['ShadeProjection'] = pdict[unit][0]
 
+        if Zeratul_artifacts_collected > 0:
+            replay_report_dict[iconkey]['Artifact'] = Zeratul_artifacts_collected
 
-    playercalc(main_player_name, main_player, unit_type_dict_main)
-    playercalc(ally_player_name, ally_player, unit_type_dict_ally)
 
+
+    fill_unit_kills_and_icons(replay_report_dict['main'], main_player, unit_type_dict_main)
+    fill_unit_kills_and_icons(replay_report_dict['ally'], ally_player, unit_type_dict_ally)
+
+    # Icons: Killbots
     if killbot_feed[main_player] > 0:
         replay_report_dict['mainIcons']['killbots'] = killbot_feed[main_player]
     if killbot_feed[ally_player] > 0:
         replay_report_dict['allyIcons']['killbots'] = killbot_feed[ally_player]
 
     # Amon kills
-    message_count = 0
     sorted_amon = switch_names(unit_type_dict_amon)
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][0])}
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][2])}
@@ -710,20 +645,18 @@ def analyse_replay(filepath, playernames=['']):
 
     # Calculate Amon unit percentages and fill data
     replay_report_dict['amonUnits'] = dict()
-    idx = 0
+
     for unit in sorted_amon:
-        idx += 1
-        if (contains_skip_strings(unit)==False) and idx < (player_max_units+1) and sorted_amon[unit][2] > 0:
+        if not contains_skip_strings(unit) and sorted_amon[unit][2] > 0:
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
     return replay_report_dict
 
 
-# FOR DEBUGGING
+# DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\[MM] Dead of Night - Zerg.SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\\Chain of Ascension (229).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)

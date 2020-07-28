@@ -11,16 +11,20 @@ import websockets
 
 from MLogging import logclass
 from ReplayAnalysis import analyse_replay
+from MassReplayAnalysis import get_player_winrates
 
 
 OverlayMessages = [] # Storage for all messages
+globalOverlayMessagesSent = 0 # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
 lock = threading.Lock()
 logger = logclass('SCOF','INFO')
 initMessage = {'initEvent':True,'colors':['null','null','null','null'],'duration':60}
 analysis_log_file = 'SCO_analysis_log.txt'
 ReplayPosition = 0
 AllReplays = dict()
+player_winrate_data = dict()
 PLAYER_NAMES = []
+CONFIG_PLAYER_NAMES = []
 
 
 def set_initMessage(colors,duration,unifiedhotkey):
@@ -40,8 +44,10 @@ def sendEvent(event):
 def set_PLAYER_NAMES(names):
     """ Extends global player names variable """
     global PLAYER_NAMES
+    global CONFIG_PLAYER_NAMES
     with lock:
         PLAYER_NAMES.extend(names)
+        CONFIG_PLAYER_NAMES.extend(names)
 
 
 def guess_PLAYER_NAMES():
@@ -50,6 +56,13 @@ def guess_PLAYER_NAMES():
 
     if len(PLAYER_NAMES) > 0:
         return 
+
+    # If we have calculated winrate data for all players, use that. Otherwise check for common players in analysis log.
+    if len(player_winrate_data) > 10:
+        with lock:
+            PLAYER_NAMES = list(player_winrate_data.keys())[0:3] 
+        logger.info(f'Player guess through player_winrate_data: {PLAYER_NAMES}')
+        return
 
     # Get all players to the list
     list_of_players = list()
@@ -61,7 +74,6 @@ def guess_PLAYER_NAMES():
     # Remove nones, sort
     players = {i:list_of_players.count(i) for i in list_of_players if not i in [None,'None']} #get counts
     players = {k:v for k,v in sorted(players.items(),key=lambda x:x[1],reverse=True)} #sort
-    logger.info(f'Guessing player names: {players}')
 
     if len(players) == 0:
         return
@@ -69,6 +81,7 @@ def guess_PLAYER_NAMES():
     # Get the three most common names. Replay analysis will check from the first one to the last one if they are ingame.
     with lock:
         PLAYER_NAMES = list(players.keys())[0:3] 
+        logger.info(f'Player guess through analysis log: {PLAYER_NAMES}')
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -83,6 +96,7 @@ def initialize_AllReplays(ACCOUNTDIR):
                         file_path = '\\\?\\' + file_path
                     AllReplays.add(file_path)
 
+        # Get dictionary of all replays with their last modification time
         AllReplays = ((rep,os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k:{'created':v} for k,v in sorted(AllReplays,key=lambda x:x[1])}
 
@@ -104,16 +118,45 @@ def initialize_AllReplays(ACCOUNTDIR):
         return AllReplays
 
 
-def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
+def update_player_winrate_data(replay_dict):
+    """ Updates global player_winrate_data with new results"""
+    global player_winrate_data
+
+    result = replay_dict.get('result',None)
+    if result == None:
+        return
+    elif result == 'Victory': # In player_data, victory are on index 0 and losses on index 1
+        result = 0
+    else:
+        result = 1
+
+    main = replay_dict.get('main',None)
+    ally = replay_dict.get('ally',None)
+
+    for player in [main,ally]:
+        if not player in player_winrate_data:
+            player_winrate_data[player] = [0,0]
+        player_winrate_data[player][result] += 1
+
+
+def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
+    global player_winrate_data
+
     session_games = {'Victory':0,'Defeat':0}
 
     with lock:
         AllReplays = initialize_AllReplays(ACCOUNTDIR)
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
+
+    if PLAYER_WINRATES:
+        time_counter_start = time.time()
+        player_winrate_data = get_player_winrates(AllReplays)
+        logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
+
 
     guess_PLAYER_NAMES()
 
@@ -138,7 +181,8 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY):
                             # Good output
                             if len(replay_dict) > 1:
                                 logger.debug('Replay analysis result looks good, appending...')
-                                session_games[replay_dict['result']] += 1                                    
+                                session_games[replay_dict['result']] += 1
+                                update_player_winrate_data(replay_dict)
                                     
                                 sendEvent({**replay_dict,**session_games})
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
@@ -191,9 +235,19 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
 
+def update_global_overlay_messages(overlayMessagesSent):
+    """ Updates global overlay messages to the last value
+
+    This is so a newly opened instance of the overlay won't be sent all previous messages at once"""
+    global globalOverlayMessagesSent
+    if overlayMessagesSent > globalOverlayMessagesSent:
+        with lock:
+            globalOverlayMessagesSent = overlayMessagesSent
+
+
 async def manager(websocket, path):
     """ Manages websocket connection for each client """
-    overlayMessagesSent = 0
+    overlayMessagesSent = globalOverlayMessagesSent
     logger.info(f"STARTING WEBSOCKET: {websocket}")
     await websocket.send(json.dumps(initMessage))
     logger.info(f"Sending init message: {initMessage}")
@@ -203,6 +257,7 @@ async def manager(websocket, path):
                 message = json.dumps(OverlayMessages[overlayMessagesSent])
                 logger.info(f'Sending message #{overlayMessagesSent} through {websocket}')
                 overlayMessagesSent += 1
+                update_global_overlay_messages(overlayMessagesSent)
                 await websocket.send(message)
         except websockets.exceptions.ConnectionClosedOK:
             logger.error('Websocket connection closed OK!')
@@ -308,3 +363,52 @@ def keyboard_thread_SHOW(SHOW):
         keyboard.wait(SHOW)
         logger.info('Show event')
         sendEvent({'showEvent': True})
+
+
+def check_for_new_game():
+    """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
+
+    # Wait a bit for the replay initialization to complete
+    time.sleep(4)
+    last_replay_amount = 0
+
+    while True:
+        time.sleep(0.5)
+        # Skip if winrate data not showing OR no new replay analysed, meaning it's the same game (excluding the first game)
+        if len(player_winrate_data) < 10 or len(AllReplays) == last_replay_amount:
+            continue
+
+        try:
+            # Request data from the game
+            resp = requests.get('http://localhost:6119/game', timeout=4).json()
+            players = resp.get('players',list())
+            player_names = set()
+
+            # Check if we have players in, and it's not a replay
+            if len(players) > 0 and not resp.get('isReplay',True):
+                for player in players:
+                    if player['id'] in [1,2] and not player['name'].lower() in [pn.lower() for pn in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()] :
+                        player_names.add(player['name'])
+
+            # If we identified allies, send an event to the overlay
+            if len(player_names) > 0:
+                displayTime = resp.get('displayTime',None)
+                respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy ~4s, so it might not show immediately
+                activeScreens = respUI['activeScreens']
+
+                # Show it only while ingame or during loading into the mission
+                if len(activeScreens) == 0 or (len(activeScreens) == 1 and activeScreens[0] == "ScreenLoading/ScreenLoading" and displayTime == 0):
+                    last_replay_amount = len(AllReplays)
+                    data = {'playerEvent': True,'data':{p:player_winrate_data.get(p,None) for p in player_names}}
+                    sendEvent({'playerEvent': True,'data':data})
+                    logger.info(f'Sending player data event: {data}')
+
+        except requests.exceptions.ConnectionError:
+            logger.info(f'No game connection for player winrate stats')
+
+        except json.decoder.JSONDecodeError:
+            logger.info('Json decoding of a request failed (SC2 is starting)')
+
+        except:
+            logger.info(traceback.format_exc())
+        

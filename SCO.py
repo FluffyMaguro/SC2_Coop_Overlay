@@ -4,6 +4,7 @@ import json
 import string
 import traceback
 import threading
+import multiprocessing
 import configparser
 import ctypes.wintypes
 
@@ -11,10 +12,10 @@ import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 from MLogging import logclass
-from SCOFunctions import check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
+from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 14
+APPVERSION = 15
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -22,7 +23,7 @@ logclass.FILE = "SCO_log.txt"
 
 
 def config_setup():
-    """ config setup """
+    """ Config setup """
     if not(os.path.isfile('SCO_config.ini')):
         with open('SCO_config.ini','w') as file:
             file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nPLAYER_NAMES = Maguro,BigMaguro\nDURATION = 60\nMONITOR = 1\n\nKEY_SHOW = Ctrl+/\nKEY_HIDE = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nSHOWOVERLAY = True\nLOGGING = False""")
@@ -37,27 +38,27 @@ def config_setup():
 
 
 def get_configvalue(config,name,default,section='CONFIG'):
-    """ gets values out of the config file in the correct type"""
+    """ Gets values out of the config file in the correct type"""
     try:
         if name in config[section]:
             if config[section][name].strip() != '':
-                # bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
+                # Bools (this need to be infront on ints, as 'True' isintance of 'int' as well.)
                 if isinstance(default, bool):
                     if config[section][name].strip().lower() in ['false','0','no']:
                         return False
                     else:
                         return True
-                # integers
+                # Integers
                 elif isinstance(default, int) or isinstance(default, float):
                     try:
                         return float(config[section][name].strip())
                     except:
                         return default
-                # lists        
+                # Lists        
                 elif isinstance(default, list):
                     return [i.strip() for i in config[section][name].split(',')]
                     
-                # return as string
+                # Return as string
                 else:
                     return config[section][name].strip()
     except:
@@ -66,30 +67,30 @@ def get_configvalue(config,name,default,section='CONFIG'):
 
 
 def get_account_dir(path):
-    """ locates StarCraft account directory """
+    """ Locates StarCraft account directory """
 
-    # if one is specified, use that
+    # If one is specified, use that
     if path != None and os.path.isdir(path):
         return path
 
-    # use ctypes.wintypes instad of expanduser to get current documents folder
+    # Use ctypes.wintypes instad of expanduser to get current documents folder
     CSIDL_PERSONAL = 5       # My Documents
     SHGFP_TYPE_CURRENT = 1   # Get current, not default value
     buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
     ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
     user_folder = buf.value.replace('Documents','')
 
-    # typical folder location
+    # Typical folder location
     account_path = os.path.join(user_folder,'Documents\\StarCraft II\\Accounts')
     if os.path.isdir(account_path):
         return account_path
 
-    # one drive location
+    # One drive location
     account_path = os.path.join(user_folder,'OneDrive\\Documents\\StarCraft II\\Accounts')
     if os.path.isdir(account_path):
         return account_path
 
-    # check in all current user folders
+    # Check in all current user folders
     for root, directories, files in os.walk(user_folder):
         for file in files:
             if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
@@ -99,7 +100,7 @@ def get_account_dir(path):
                     f.write(f'\nACCOUNTDIR = {account_path}')
                 return account_path
 
-    # check in all drives
+    # Check in all drives
     available_drives = [f'{d}:\\' for d in string.ascii_uppercase if os.path.exists(f'{d}:\\')]
     for drive in available_drives:
         for root, directories, files in os.walk(drive):
@@ -116,7 +117,7 @@ def get_account_dir(path):
 
 
 def new_version():
-    """ checks for a new version of the app """
+    """ Checks for a new version of the app """
     try:
         data = json.loads(requests.get(version_link).text)
         logger.info(f'This version: 1.{APPVERSION}. Most current live version: 1.{data["version"]}. ')
@@ -130,7 +131,7 @@ def new_version():
 
 
 class WWW(QtWebEngineWidgets.QWebEngineView):
-    """ expanding this class to add javascript after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
+    """ Expanding this class to add javascript after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
     def __init__(self, unified, dll, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER, parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
@@ -147,9 +148,9 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
             self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{self.KEY_SHOW}','{self.KEY_HIDE}','{self.KEY_NEWER}','{self.KEY_OLDER}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
 
 
-def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER):
-    """ threading moved to this function so I can import main function without threading """
-    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY))
+def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES):
+    """ Threading moved to this function so I can import main function without threading """
+    t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES))
     t1.start()
     t2 = threading.Thread(target = server_thread, daemon=True, args=(PORT,))
     t2.start()
@@ -170,8 +171,23 @@ def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NE
         t6 = threading.Thread(target = keyboard_thread_OLDER, daemon=True, args=(KEY_OLDER,))
         t6.start()
 
+    if PLAYER_WINRATES:
+        t7 = threading.Thread(target = check_for_new_game, daemon=True)
+        t7.start()
+
 
 def main(startthreads=True):
+
+    # Start by testing write permissions
+    permission_error = False
+    try:
+        with open(logclass.FILE,'a') as file:
+            file.write('Starting...\n')
+    except:
+        permission_error = True
+        print(traceback.format_exc())
+
+
     # Lets start by initinalizing config file an getting values from it
     config = config_setup()
     ACCOUNTDIR = get_account_dir(get_configvalue(config,'ACCOUNTDIR', None))
@@ -195,11 +211,13 @@ def main(startthreads=True):
     OWIDTH = get_configvalue(config,'OWIDTH', 0.5)
     OHEIGHT = get_configvalue(config,'OHEIGHT', 1)
     OFFSET = get_configvalue(config,'OFFSET', 0)
+    PLAYER_WINRATES = get_configvalue(config,'PLAYER_WINRATES', False)
 
-    logclass.LOGGING = LOGGING
-    logger.info(f'\n{PORT=}\n{MONITOR=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n--------')
 
-    #set player names in SCOFunctions
+    logclass.LOGGING = False if permission_error else LOGGING
+    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n--------')
+
+    # Set player names in SCOFunctions
     set_PLAYER_NAMES(PLAYER_NAMES)
 
 
@@ -218,20 +236,28 @@ def main(startthreads=True):
     if os.path.isfile('OverlayIcon.ico'):
         tray.setIcon(QtGui.QIcon("OverlayIcon.ico"))
     else:
-        tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
+       tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
     tray.setVisible(True)
+    tray.setToolTip(f'StarCraft Co-op Overlay 1.{APPVERSION}')
         
     # Add icons to the system tray
     menu = QtWidgets.QMenu()
 
-    # 1.link to github
+    # 0.Permission error
+    if permission_error:
+        PerError = QtWidgets.QAction("Permission error, exclude app folder in antivirus")
+        PerError.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxCritical')))
+        menu.addAction(PerError)
+        menu.addSeparator()
+
+    # 1.Link to github
     SCO = QtWidgets.QAction("StarCraft II Co-op Overlay")
     SCO.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_ToolBarHorizontalExtensionButton')))
     SCO.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(github_link)))
     menu.addAction(SCO)
     menu.addSeparator()
 
-    # 2.config file
+    # 2.Config file
     config_file = QtWidgets.QAction(f"Config file")
     config_file.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DirIcon')))
     config_file_path = os.path.join(os.getcwd(),"SCO_config.ini")
@@ -239,7 +265,7 @@ def main(startthreads=True):
     menu.addAction(config_file)
     menu.addSeparator()
 
-    # 3.update link
+    # 3.Update link
     if download_link:
         update = QtWidgets.QAction("New version available!")
         update.triggered.connect(lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(download_link)))
@@ -250,7 +276,7 @@ def main(startthreads=True):
     menu.addAction(update)
     menu.addSeparator()
 
-    # 4.quit
+    # 4.Quit
     quit = QtWidgets.QAction("Quit")
     quit.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DialogCancelButton')))
     quit.triggered.connect(app.quit)
@@ -258,7 +284,7 @@ def main(startthreads=True):
     tray.setContextMenu(menu)
 
     # Show overlay if it's not set otherwise
-    if SHOWOVERLAY:
+    if SHOWOVERLAY and not permission_error:
         webpage = view.page()
         webpage.setBackgroundColor(QtCore.Qt.transparent)
 
@@ -285,11 +311,12 @@ def main(startthreads=True):
     # Send init message to all connected layouts, not just the one created as overlay
     set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION, UNIFIEDHOTKEY)
 
-    if startthreads:        
-        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER)            
+    if startthreads and not permission_error:        
+        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES)            
 
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()

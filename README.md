@@ -5,8 +5,9 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:** 
-* [Mega](https://mega.nz/file/ZgUUXawC#RGx3PNTP6-slkwwffK9pAkCNsjHkhP2tc1RKt3JqQIM)
-* [Google-drive](https://drive.google.com/file/d/1uRO_pXjpXF6E3f89S7LjaGpdwRjzQ0Gy/view)
+* [Mega](https://mega.nz/file/1os3mSZI#NXRsBuyffOcijUjaFd6DKXaLIqunDwy0z1R-t8X3T68)
+* [Google-drive](https://drive.google.com/file/d/1hHASFDY73YLySGaRLOpBZUjOFSXquFf5/view)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/1.15/SC2CoopOverlay%20(1.15).zip)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/wide2.jpg)
@@ -31,7 +32,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
 * Kills are shown for top 5 units only (this can by changed in HTML).
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
-* [sc2reader](https://github.com/ggtracker/sc2reader) and s2protocol were used to parse replays.
+* Blizzard's s2protocol is used to parse replays.
 
 
 # Config file
@@ -57,6 +58,10 @@ Changes take effect the next time you start the app!
 * **Choose which monitor to show the overlay on (for multi-monitor setups).**
   
    MONITOR = 1
+
+* **At the start of the game shows the winrate and number of games played with your ally (based on his name)**
+
+   PLAYER_WINRATES = True	
  
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
@@ -104,6 +109,17 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
+* 1.15 version
+
+      - Support for prestige talents
+      - Showing Strike Platforms built, Unbound Archons created, and Artifacts collected
+      - At the start of each game, the app can show the number of games with your ally and winrate
+      - Better player name guess with above activated
+      - Small visual tweaks
+      - Parser is now using just s2protocol to parse replays
+      - Better behavior when write permissions are denied by antivirus
+
+
 * 1.14 version
 
       - The number of created Infested Bunkers and Mecha Infestors is shown as icons
