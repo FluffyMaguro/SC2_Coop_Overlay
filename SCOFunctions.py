@@ -396,8 +396,8 @@ def check_for_new_game():
                 respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy ~4s, so it might not show immediately
                 activeScreens = respUI['activeScreens']
 
-                # Show it only while ingame or during loading into the mission
-                if len(activeScreens) == 0 or (len(activeScreens) == 1 and activeScreens[0] == "ScreenLoading/ScreenLoading" and displayTime == 0):
+                # Show it only while ingame 
+                if len(activeScreens) == 0:
                     last_replay_amount = len(AllReplays)
                     data = {'playerEvent': True,'data':{p:player_winrate_data.get(p,None) for p in player_names}}
                     sendEvent({'playerEvent': True,'data':data})
