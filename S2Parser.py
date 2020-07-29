@@ -74,8 +74,6 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
     replay['length'] = metadata['Duration']
     replay['start_time'] = get_start_time(events)
     replay['last_deselect_event'] = get_last_deselect_event(events)
-    replay['difficulty'] = (detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][2]['m_difficulty'], detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][3]['m_difficulty'])
-
     replay['result'] = 'Victory' if metadata['Players'][0]['Result'] == 'Win' or metadata['Players'][1]['Result'] == 'Win' else 'Defeat'
 
     if replay['result'] == 'Victory':
@@ -106,17 +104,22 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
             replay['players'][idx]['commander_mastery_level'] = player['m_commanderMasteryLevel']
             replay['players'][idx]['prestige'] = player.get('m_selectedCommanderPrestige',0)
             replay['players'][idx]['handle'] = player['m_toonHandle'].decode()
+            replay['players'][idx]['difficulty'] = player['m_difficulty']
 
     for idx,player in enumerate(detailed_info['m_syncLobbyState']['m_userInitialData']):
         _name = player['m_name'].decode()
         if idx < len(replay['players']) and _name != '':
             replay['players'][idx]['name'] = _name
 
-
     # Insert dummy players to positions: zero & two if playing alone.
     replay['players'].insert(0, {'pid':0})
     if replay['players'][2]['pid'] != 2:
         replay['players'].insert(2, {'pid':2})
+
+    # Difficulty
+    replay['difficulty'] = (replay['players'][3]['difficulty'],replay['players'][4]['difficulty'])
+    for player in replay['players']: # Delete difficulty per player as it's not accurate for human players and we are returning map difficulty already
+        player.pop('difficulty', None)
 
     # Events
     if return_events:
@@ -132,6 +135,6 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
 # DEBUGGING
 if __name__ == '__main__':
     from pprint import pprint   
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Lock & Load (250).SC2Replay'
+    file_path = r'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\[MM] Temple of the Past - Terran (22).SC2Replay'
     replay = s2_parse_replay(file_path)
     pprint(replay)
