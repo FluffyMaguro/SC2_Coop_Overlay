@@ -74,6 +74,7 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
     replay['length'] = metadata['Duration']
     replay['start_time'] = get_start_time(events)
     replay['last_deselect_event'] = get_last_deselect_event(events)
+    replay['difficulty'] = (detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][2]['m_difficulty'], detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][3]['m_difficulty'])
 
     replay['result'] = 'Victory' if metadata['Players'][0]['Result'] == 'Win' or metadata['Players'][1]['Result'] == 'Win' else 'Defeat'
 
@@ -131,6 +132,6 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
 # DEBUGGING
 if __name__ == '__main__':
     from pprint import pprint   
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\\Chain of Ascension (229).SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Lock & Load (250).SC2Replay'
     replay = s2_parse_replay(file_path)
     pprint(replay)
