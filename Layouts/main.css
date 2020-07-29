@@ -140,15 +140,9 @@ body {
 
 #morestats {
     opacity: 0.7;
-    font-size: 1.9vh;
+    font-size: 1.7vh;
     padding-top: 0.42px;
     text-shadow: 0.1vh 0.1vh 0.1vh #060606;
-}
-
-#apm1 {
-    position: absolute;
-    top: 10vh;
-    left: 0px;
 }
 
 #map {
@@ -156,28 +150,26 @@ body {
     top: 8vh;
     width: 100%;
     text-align: center;
-    font-size: 1.4vh;
-}
-
-#comp {
-    position: absolute;
-    top: 9.5vh;
-    width: 100%;
-    font-size: 1.4vh;
-    text-align: center;
+    font-size: 1.7vh;
 }
 
 #brutal {
     position: absolute;
-    top: 11.1vh;
+    top: 10vh;
     width: 100%;
-    font-size: 1.4vh;
+    font-size: 1.7vh;
     text-align: center;
 }
 
 #com2 {
     position: absolute;
     right: 0px;
+}
+
+#apm1 {
+    position: absolute;
+    top: 10vh;
+    left: 0px;
 }
 
 #apm2 {
@@ -204,6 +196,11 @@ body {
 
 .prestige {
     opacity: 1;
+    font-size: 1.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+}
+
+#comp {
     font-size: 1.5vh;
     text-shadow: 0.1vh 0.1vh 0.1vh black;
 }

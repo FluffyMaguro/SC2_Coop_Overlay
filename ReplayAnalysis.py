@@ -175,6 +175,7 @@ def analyse_replay(filepath, playernames=['']):
     # Ally
     ally_player = 1 if main_player == 2 else 2
 
+
     
     # Start saving data
     replay_report_dict = dict()
@@ -188,6 +189,12 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['ally'] = replay['players'][ally_player].get('name','None')
     replay_report_dict['mainAPM'] = replay['players'][main_player].get('apm',0)
     replay_report_dict['allyAPM'] = replay['players'][ally_player].get('apm',0)
+
+    # Difficulty
+    diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
+    diff_1 = diff_dict.get(replay['difficulty'][0],'')
+    diff_2 = diff_dict.get(replay['difficulty'][1],'')
+    replay_report_dict['difficulty'] = diff_1 if diff_1 == diff_2 else f'{diff_1}/{diff_2}'
 
     logger.debug(f'Report dict: {replay_report_dict}')
 
@@ -657,6 +664,6 @@ def analyse_replay(filepath, playernames=['']):
 # DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\\Chain of Ascension (229).SC2Replay'
+    file_path = 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\Miner Evacuation (258).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)

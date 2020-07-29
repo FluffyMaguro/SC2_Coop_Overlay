@@ -221,7 +221,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
         sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
 
-    url = f'http://starcraft2coop.com/scripts/assistant/replay.php?username={AOM_NAME}&secretkey={AOM_SECRETKEY}'
+    url = f'https://starcraft2coop.com/scripts/assistant/replay.php?username={AOM_NAME}&secretkey={AOM_SECRETKEY}'
     try:
         with open(file_path, 'rb') as file:
             response = requests.post(url, files={'file': file})

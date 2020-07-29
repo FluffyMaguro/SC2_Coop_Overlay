@@ -109,6 +109,17 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
+* 1.16 version (work in progress)
+
+      - Masteries show only when they are non-zero
+      - Showing all difficulties
+      - Showing commander level if under 15
+      - 
+      - 
+      - Small fixes and visual tweaks
+      - Updated s2protocol
+
+
 * 1.15 version
 
       - Support for prestige talents

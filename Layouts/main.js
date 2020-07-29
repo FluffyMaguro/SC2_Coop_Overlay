@@ -121,7 +121,7 @@ var UNIFIEDHOTKEY = true;
 var toBeShown = false;
 
 //main functionality
-setColors(null,null,null,null);
+setColors(null, null, null, null);
 connect_to_socket();
 
 // DEBUG START
@@ -133,9 +133,76 @@ connect_to_socket();
 
 
 function debug() {
-    DURATION = 3;                  
-    var dummydata = {'replaydata': true, 'result': 'Victory', 'map': 'Dead of Night','allyPrestige':'Heavy Weapons Specialist','mainPrestige':'Desolate Queen', 'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay', 'date': '2020-06-19 20:53:27', 'extension': 0, 'B+': 1, 'comp': 'Dominion Battlegroup', 'length': 745.0, 'main': 'Maguro', 'mainAPM': 117, 'mainCommander': 'Kerrigan', 'mainCommanderLevel': 15, 'mainMasteries': [30, 0, 30, 0, 30, 0], 'mainkills': 2801, 'mainIcons': {'deadofnight': 117,'tus':25,'hfts':10,'killbots':100,'voidrifts':10}, 'ally': 'Tichondrius', 'allyAPM': 30, 'allyCommander': 'Stukov', 'allyCommanderLevel': 15, 'allyMasteries': [15, 15, 30, 0, 30, 0], 'allykills': 1338, 'allyIcons': {'propagators':5,'Infested Bunker':6,'deadofnight': 34,'voidreanimators':10,'turkey':100}, 'mainUnits': {'Mutalisk': [60, 12, 1675, 0.6], 'Kerrigan': [1, 0, 1124, 0.4]}, 'allyUnits': {'Infested Trooper': [432, 354, 981, 0.73], 'Apocalisk': [2, 2, 184, 0.14], 'Infested Civilian': [301, 241, 80, 0.06], 'Broodling': [485, 485, 44, 0.03], 'Volatile Infested': [17, 13, 26, 0.02], 'Infested Bunker': [18, 2, 15, 0.01], 'Aleksander': [1, 0, 7, 0.01]}, 'amonUnits': {'Infested Marine': [571, 571, 100, 0.31], 'Kaboomer': [14, 14, 48, 0.15], 'Infested Terran': [2946, 2946, 37, 0.12], 'Aberration': [93, 93, 31, 0.1], 'Hellbat': [23, 23, 24, 0.07], 'Broodling': [483, 483, 14, 0.04], 'Marine': [121, 121, 13, 0.04], 'Marauder': [23, 23, 7, 0.02], 'Hunterling': [11, 11, 7, 0.02], 'Hybrid Reaver': [4, 4, 7, 0.02], 'Hybrid Destroyer': [8, 8, 6, 0.02], 'Siege Tank': [7, 7, 6, 0.02], 'Banshee': [6, 2, 3, 0.01], 'Thor': [1, 1, 2, 0.01], 'Viking': [21, 18, 1, 0.0], 'Raven': [9, 6, 1, 0.0], 'Ghost': [5, 5, 1, 0.0], 'Cyclone': [4, 4, 1, 0.0], 'Hybrid Dominator': [1, 1, 1, 0.0]}}
-;
+    DURATION = 3;
+    var dummydata = {
+        'replaydata': true,
+        'result': 'Victory',
+        'map': 'Dead of Night',
+        'allyPrestige': 'Heavy Weapons Specialist',
+        'mainPrestige': 'Desolate Queen',
+        'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay',
+        'date': '2020-06-19 20:53:27',
+        'extension': 0,
+        'B+': 1,
+        'comp': 'Dominion Battlegroup',
+        'length': 745.0,
+        'main': 'Maguro',
+        'mainAPM': 117,
+        'mainCommander': 'Kerrigan',
+        'mainCommanderLevel': 14,
+        'mainMasteries': [30, 0, 30, 0, 30, 0],
+        'mainkills': 2801,
+        'mainIcons': {
+            'deadofnight': 117,
+            'tus': 25,
+
+        },
+        'ally': 'Tichondrius',
+        'allyAPM': 30,
+        'allyCommander': 'Stukov',
+        'allyCommanderLevel': 7,
+        'allyMasteries': [15, 15, 30, 0, 30, 0],
+        'allykills': 1338,
+        'allyIcons': {
+            'propagators': 5,
+            'Infested Bunker': 6,
+
+        },
+        'mainUnits': {
+            'Mutalisk': [60, 12, 1675, 0.6],
+            'Kerrigan': [1, 0, 1124, 0.4]
+        },
+        'allyUnits': {
+            'Infested Trooper': [432, 354, 981, 0.73],
+            'Apocalisk': [2, 2, 184, 0.14],
+            'Infested Civilian': [301, 241, 80, 0.06],
+            'Broodling': [485, 485, 44, 0.03],
+            'Volatile Infested': [17, 13, 26, 0.02],
+            'Infested Bunker': [18, 2, 15, 0.01],
+            'Aleksander': [1, 0, 7, 0.01]
+        },
+        'amonUnits': {
+            'Infested Marine': [571, 571, 100, 0.31],
+            'Kaboomer': [14, 14, 48, 0.15],
+            'Infested Terran': [2946, 2946, 37, 0.12],
+            'Aberration': [93, 93, 31, 0.1],
+            'Hellbat': [23, 23, 24, 0.07],
+            'Broodling': [483, 483, 14, 0.04],
+            'Marine': [121, 121, 13, 0.04],
+            'Marauder': [23, 23, 7, 0.02],
+            'Hunterling': [11, 11, 7, 0.02],
+            'Hybrid Reaver': [4, 4, 7, 0.02],
+            'Hybrid Destroyer': [8, 8, 6, 0.02],
+            'Siege Tank': [7, 7, 6, 0.02],
+            'Banshee': [6, 2, 3, 0.01],
+            'Thor': [1, 1, 2, 0.01],
+            'Viking': [21, 18, 1, 0.0],
+            'Raven': [9, 6, 1, 0.0],
+            'Ghost': [5, 5, 1, 0.0],
+            'Cyclone': [4, 4, 1, 0.0],
+            'Hybrid Dominator': [1, 1, 1, 0.0]
+        }
+    };
     // data = {data: {'LilArrin': [3, 13]}};
     // playerWinrate(data)
     postGameStatsTimed(dummydata);
@@ -144,34 +211,34 @@ function debug() {
 
 
 function connect_to_socket() {
-    if(function_is_running) {
+    if (function_is_running) {
         return
     };
     function_is_running = true;
-    let socket = new WebSocket("ws://localhost:"+ PORT);
+    let socket = new WebSocket("ws://localhost:" + PORT);
     socket.onopen = function(e) {};
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data)
         if (data['replaydata'] != null) {
             postGameStatsTimed(data)
-        } else if (data['mutatordata'] != null){
+        } else if (data['mutatordata'] != null) {
             mutatorInfo(data['data'])
-        } else if (data['hideEvent'] != null){
+        } else if (data['hideEvent'] != null) {
             showhide(false)
-        } else if (data['showEvent'] != null){                                       
-            showhide(true)                                                            
-        } else if (data['uploadEvent'] != null){ 
-            setTimeout(uploadStatus,1500,data['response'])                                                                                        
-        } else if (data['initEvent'] != null){ 
-            initColorsDuration(data)   
-        } else if (data['playerEvent'] != null){ 
-            playerWinrate(data['data'])  
+        } else if (data['showEvent'] != null) {
+            showhide(true)
+        } else if (data['uploadEvent'] != null) {
+            setTimeout(uploadStatus, 1500, data['response'])
+        } else if (data['initEvent'] != null) {
+            initColorsDuration(data)
+        } else if (data['playerEvent'] != null) {
+            playerWinrate(data['data'])
         } else {
             console.log('unidentified message')
         }
     };
     socket.onclose = function(event) {
-        if(event.wasClean) {
+        if (event.wasClean) {
             console.log('CLEAN EXIT: ' + event)
             reconnect_to_socket();
         } else {
@@ -193,78 +260,91 @@ function reconnect_to_socket(message) {
     }, 1000);
 }
 
-function playerWinrate(dat){   
+function playerWinrate(dat) {
     var element = document.getElementById('playerstats');
     var text = '';
 
-    for(let [key, value] of Object.entries(dat['data'])) {  
-       if ((value != null) && (value.length > 1)) {                                                                                                        
-           let total_games =  value[0] + value[1];                                                
-           text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100*value[0]/total_games) + '% winrate)'                                         
+    for (let [key, value] of Object.entries(dat['data'])) {
+        if ((value != null) && (value.length > 1)) {
+            let total_games = value[0] + value[1];
+            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)'
         } else {
             text = text + 'No games played with <span class="player_stat">' + key + '</span>'
         }
-    }   
+    }
     element.innerHTML = text;
     element.style.right = '2vh';
     element.style.opacity = '1';
-    setTimeout(function(){document.getElementById('playerstats').style.right = '-60vh'; document.getElementById('playerstats').style.opacity = '0'},10000)        
+    setTimeout(function() {
+        document.getElementById('playerstats').style.right = '-60vh';
+        document.getElementById('playerstats').style.opacity = '0'
+    }, 10000)
 }
 
-function showNotification(){
+function showNotification() {
     document.getElementById('notification').style.opacity = '1';
-    setTimeout(function(){document.getElementById('notification').style.opacity = '0';},6000)                    
+    setTimeout(function() {
+        document.getElementById('notification').style.opacity = '0';
+    }, 6000)
 }
 
-function fillhotkeyinfo(showh,hideh,newh,olderh,unified,update) {
+function fillhotkeyinfo(showh, hideh, newh, olderh, unified, update) {
     var otherinfo = document.getElementById('otherinfo');
     var ttext = '';
     if (update) {
         ttext = '<p id="update">UPDATE AVAILABLE!</p>';
-       };
+    };
     var text_hide = 'hide';
     var text_show = 'show';
     if (unified) {
         text_hide = 'show/hide';
-        text_show = 'show/hide';       
+        text_show = 'show/hide';
     }
 
-    var inner_hide = '<span>' + hideh +'</span> &rArr; ' + text_hide;
+    var inner_hide = '<span>' + hideh + '</span> &rArr; ' + text_hide;
     var show_style = '';
     if (hideh == 'None') {
-            inner_hide = '';
-            show_style = 'colspan="2"';
-            text_show = 'show/hide overlay'
-        }
-    var inner_show = '<span>' + showh +'</span> &rArr; ' + text_show;
-    if (showh == 'None') {inner_show = ''}
-    var inner_newer = '<span>' + newh +'</span> &rArr; newer';
-    if (newh == 'None') {inner_newer = ''}
-    var inner_older = '<span>' + olderh +'</span> &rArr; older';
-    if (olderh == 'None') {inner_older = ''}
+        inner_hide = '';
+        show_style = 'colspan="2"';
+        text_show = 'show/hide overlay'
+    }
+    var inner_show = '<span>' + showh + '</span> &rArr; ' + text_show;
+    if (showh == 'None') {
+        inner_show = ''
+    }
+    var inner_newer = '<span>' + newh + '</span> &rArr; newer';
+    if (newh == 'None') {
+        inner_newer = ''
+    }
+    var inner_older = '<span>' + olderh + '</span> &rArr; older';
+    if (olderh == 'None') {
+        inner_older = ''
+    }
 
-    otherinfo.innerHTML = ttext + '<table><tr><td>'+inner_newer+'</td><td>'+inner_older+'</td></tr><tr><td '+show_style+'>'+inner_show+'</td><td>'+inner_hide+'</td></tr></table>';
-     if (update) {
+    otherinfo.innerHTML = ttext + '<table><tr><td>' + inner_newer + '</td><td>' + inner_older + '</td></tr><tr><td ' + show_style + '>' + inner_show + '</td><td>' + inner_hide + '</td></tr></table>';
+    if (update) {
         document.getElementById('update').style.display = 'block'
-       };      
+    };
 
     otherinfo.style.opacity = '1';
-    setTimeout(function(){document.getElementById('otherinfo').style.opacity = 0},6000)                       
+    setTimeout(function() {
+        document.getElementById('otherinfo').style.opacity = 0
+    }, 6000)
 }
 
 function initColorsDuration(data) {
-     setColors(data['colors'][0],data['colors'][1],data['colors'][2],data['colors'][3]);
-     DURATION = data['duration'];   
-     UNIFIEDHOTKEY = data['unifiedhotkey'];                 
+    setColors(data['colors'][0], data['colors'][1], data['colors'][2], data['colors'][3]);
+    DURATION = data['duration'];
+    UNIFIEDHOTKEY = data['unifiedhotkey'];
 }
 
 
-function setColors(P1color,P2color,P3color,MasteryColor) {
+function setColors(P1color, P2color, P3color, MasteryColor) {
     //this function is executed by the app on page load                                                         
     //Player 1
     if (P1color != null) {
         gP1Color = P1color
-    };                                                   
+    };
     document.getElementById('name1').style.color = gP1Color;
     document.getElementById('CMname1').style.color = gP1Color;
     document.getElementById('killbar1').style.backgroundColor = gP1Color;
@@ -286,11 +366,12 @@ function setColors(P1color,P2color,P3color,MasteryColor) {
         color = P3color
     };
     document.getElementById('CMname3').style.color = color;
+    document.getElementById('comp').style.color = color;
 
     //Mastery
     color = '#FFDC87';
-    if (MasteryColor != null) { 
-       color = MasteryColor
+    if (MasteryColor != null) {
+        color = MasteryColor
     };
     document.getElementById('CMmastery1').style.color = color;
     document.getElementById('CMmastery2').style.color = color;
@@ -299,106 +380,128 @@ function setColors(P1color,P2color,P3color,MasteryColor) {
 
 function uploadStatus(result) {
     var loader = document.getElementById('loader');
-    var tshowing = DURATION*1000;
+    var tshowing = DURATION * 1000;
 
     loader.style.transition = 'opacity 0s';
     loader.style.opacity = '0'
     loader.style.transition = 'opacity 1s';
     loader.innerHTML = ''
     loader.style.opacity = '1';
-    
-    if (result.includes('Success')) { 
+
+    if (result.includes('Success')) {
         loader.style.color = 'rgba(0, 150, 0, 1)';
-        loader.innerHTML = 'Replay uploaded successfully!';                          
+        loader.innerHTML = 'Replay uploaded successfully!';
     } else {
         loader.style.color = 'rgba(225, 0, 0, 1)';
-        loader.innerHTML = 'Replay not uploaded!<br>'+result;              
+        loader.innerHTML = 'Replay not uploaded!<br>' + result;
     };
 }
 
 
 function mutatorInfo(data) {
-    if (!(showmutators)) {return};                            
+    if (!(showmutators)) {
+        return
+    };
     var mduration = 15 * 1000;
-    if(data.length > 6) {
+    if (data.length > 6) {
         document.getElementById('mutatorinfo').style.width = '133vh';
     }
-    for(i = 0; i < data.length; i++) {
+    for (i = 0; i < data.length; i++) {
         var divelement = document.getElementById('mut' + i);
         divelement.getElementsByTagName("img")[0].src = '../HQ Mutator Icons/' + data[i][0] + '.png';
         divelement.getElementsByTagName("p")[0].innerHTML = '<span class="muttop">' + data[i][0] + '</span><span class="mutvalue"> ' + data[i][1] + '</span><br><span class="mutdesc">' + mutatorDescriptions[data[i][0]] + '</span>';
         divelement.style.display = 'inline-block';
-        setTimeout(function(el) {el.style.opacity = '1'}, i * 400, divelement);
-        setTimeout(function(el) {el.style.opacity = '0'}, mduration, divelement);
-        setTimeout(function(el) {el.style.display = 'none'}, mduration + 5000, divelement);
+        setTimeout(function(el) {
+            el.style.opacity = '1'
+        }, i * 400, divelement);
+        setTimeout(function(el) {
+            el.style.opacity = '0'
+        }, mduration, divelement);
+        setTimeout(function(el) {
+            el.style.display = 'none'
+        }, mduration + 5000, divelement);
     }
 }
 
 function postGameStatsTimed(data) {
     //This is a wrapper for postGameStats
     //The goal is to nicely update the data if it's already showing     
-    if ((document.getElementById('stats').style.right != '-50vh')&&(document.getElementById('stats').style.right != '')) {
+    if ((document.getElementById('stats').style.right != '-50vh') && (document.getElementById('stats').style.right != '')) {
         document.getElementById('stats').style.opacity = '0';
-        setTimeout(function(){document.getElementById('stats').style.opacity = '1'},300);
-        setTimeout(postGameStats,300,data,showing=true);
+        setTimeout(function() {
+            document.getElementById('stats').style.opacity = '1'
+        }, 300);
+        setTimeout(postGameStats, 300, data, showing = true);
     } else {
         postGameStats(data);
-    }              
+    }
 }
 
 function format_length(seconds) {
-    var gseconds = Math.round(seconds*1.4);
+    var gseconds = Math.round(seconds * 1.4);
     var sec = gseconds % 60;
     var min = ((gseconds - sec) / 60) % 60;
-    var hr = (gseconds - sec - min*60) / 3600;
+    var hr = (gseconds - sec - min * 60) / 3600;
 
     if (hr > 0) {
-        hr = hr + ':'               
+        hr = hr + ':'
     } else {
         hr = ''
-        }
+    }
 
     if (sec < 10) {
-        return hr+min+':0'+sec
-    } else {                             
-        return hr+min+':'+sec 
-        }                            
+        return hr + min + ':0' + sec
+    } else {
+        return hr + min + ':' + sec
+    }
+}
+
+function fillCommander(el, commander, commander_level) {
+    var addition = '';
+    if (commander == null) {
+        return
+        }
+    if (commander_level < 15) {
+        addition = '{'+commander_level+'}'
+        }
+    if (el == 'com1') {
+        fill(el,commander+' '+addition)
+       } else {
+        fill(el,addition+' '+commander)
+       }
 }
 
 
-function postGameStats(data,showing=false) {
+function postGameStats(data, showing = false) {
     //initial change
     document.getElementById('killbar').style.display = 'block';
     document.getElementById('nodata').style.display = 'none';
     // fill 
+    fill('CMtalent1',data['mainPrestige'])
+    fill('CMtalent2',data['allyPrestige'])
     fill('comp', data['comp']);
-    fill('CMtalent1', data['mainPrestige']);
-    fill('CMtalent2', data['allyPrestige']);
+
     fill('name1', data['main']);
     fill('result', data['result'] + '!');
-    fill('map', data['map'] + '&nbsp;&nbsp;(' + format_length(data['length'])+')');
+    fill('map', data['map'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
     fill('name2', data['ally']);
-    fill('com1', data['mainCommander']);
-    if (data['allyCommander'] != null) {
-        fill('com2', data['allyCommander'])
-    } else {
-        fill('com2', '');        
-    }
+    fillCommander('com1', data['mainCommander'], data['mainCommanderLevel'])
+    fillCommander('com2', data['allyCommander'], data['allyCommanderLevel'])
     fill('apm1', data['mainAPM'] + ' APM');
     fill('apm2', data['allyAPM'] + ' APM');
 
-    if (data['Victory'] != null) {                           
-        fill('session', 'Session: ' + data['Victory']+' wins/'+(data['Victory']+data['Defeat']) + ' games');
+    if (data['Victory'] != null) {
+        fill('session', 'Session: ' + data['Victory'] + ' wins/' + (data['Victory'] + data['Defeat']) + ' games');
     } else {
-        fill('session','');
+        fill('session', '');
     };
 
     if (data['extension'] > 0) {
-        fill('brutal','weekly/custom')
+        fill('brutal', 'weekly/custom')
     } else if (data['B+'] > 0) {
         fill('brutal', 'Brutal+' + data['B+'])
     } else {
-        fill('brutal','')
+        fill('brutal', data['difficulty'])
     };
 
     // kill counts 
@@ -411,7 +514,10 @@ function postGameStats(data,showing=false) {
         document.getElementById('killbar2').style.backgroundColor = gP2Color;
         //delay unless it's already being showed
         if (!(showing)) {
-            setTimeout(function(){document.getElementById('killbar1').style.width = percent1;document.getElementById('killbar2').style.width = percent2;},700)
+            setTimeout(function() {
+                document.getElementById('killbar1').style.width = percent1;
+                document.getElementById('killbar2').style.width = percent2;
+            }, 700)
         } else {
             document.getElementById('killbar1').style.width = percent1;
             document.getElementById('killbar2').style.width = percent2
@@ -429,17 +535,17 @@ function postGameStats(data,showing=false) {
 
     //player stats
     fill('CMname1', data['main']);
-    fillicons('CMicons1',data['mainIcons']);
+    fillicons('CMicons1', data['mainIcons']);
     fillmasteries('CMmastery1', data['mainMasteries'], data['mainCommander']);
     fillunits('CMunits1', data['mainUnits']);
 
     fill('CMname2', data['ally']);
-    fillicons('CMicons2',data['allyIcons']);
+    fillicons('CMicons2', data['allyIcons']);
     fillmasteries('CMmastery2', data['allyMasteries'], data['allyCommander']);
-    fillunits('CMunits2', data['allyUnits'],'CMicons2');
+    fillunits('CMunits2', data['allyUnits'], 'CMicons2');
 
     fill('CMname3', 'Amon');
-    fillunits('CMunits3', data['amonUnits'],null);
+    fillunits('CMunits3', data['amonUnits'], null);
     //show 
     showstats();
 
@@ -447,13 +553,13 @@ function postGameStats(data,showing=false) {
     if (data['Victory'] == null) {
         document.getElementById('loader').style.opacity = '0';
         document.getElementById('loader').innerHTML = ''
-    } else {  
-        setTimeout(hidestats, DURATION*1000);
+    } else {
+        setTimeout(hidestats, DURATION * 1000);
     }
 }
 
 function showhide(show) {
-    if (UNIFIEDHOTKEY=='true') {
+    if (UNIFIEDHOTKEY == 'true') {
         if (!toBeShown) {
             showstats()
         } else {
@@ -463,26 +569,26 @@ function showhide(show) {
         if (show) {
             showstats()
         } else {
-            hidestats() 
+            hidestats()
         }
     }
 }
 
 function hidestats() {
-    toBeShown = false;                      
+    toBeShown = false;
     document.getElementById('stats').style.right = '-50vh';
     document.getElementById('bgdiv').style.opacity = '0';
     document.getElementById('loader').style.opacity = '0';
-    setTimeout(function(){ 
-                          document.getElementById('session').innerHTML = '';
-                          document.getElementById('loader').innerHTML = ''}
-                          ,1000)
+    setTimeout(function() {
+        document.getElementById('session').innerHTML = '';
+        document.getElementById('loader').innerHTML = ''
+    }, 1000)
 }
 
 function showstats() {
-    toBeShown = true;                            
+    toBeShown = true;
     document.getElementById('stats').style.right = '2vh';
-    document.getElementById('bgdiv').style.opacity = '1';   
+    document.getElementById('bgdiv').style.opacity = '1';
 }
 
 function fill(el, dat) {
@@ -491,42 +597,57 @@ function fill(el, dat) {
 
 function fillmasteries(el, dat, commander) {
     var text = '';
-    if ((dat == null) || (commander==null) || (commander=='') || (masteryNames[commander] == null)) {
+    if ((dat == null) || (commander == null) || (commander == '') || (masteryNames[commander] == null)) {
         document.getElementById(el).innerHTML = '';
         return
     };
-    for(i = 0; i < dat.length; i++) {
+    var any_mastery = false;
+    for (i = 0; i < dat.length; i++) {
         var spacer = '<span>';
-        if(dat[i] < 10) {
+
+        if (dat[i] < 10) {
             spacer = '<span class="">&nbsp;&nbsp;'
-        };
-        if(dat[i] == 0) {
+        }
+
+        if (dat[i] == 0) {
             spacer = '<span class="nomastery">&nbsp;&nbsp;'
-        };
+        } else {
+            any_mastery = true;
+        }
+
         text = text + spacer + dat[i] + ' ' + masteryNames[commander][i] + '<br></span>';
-    };
+
+    }
+
+    if (any_mastery) {
+        document.getElementById(el).style.display = 'block';
+    } else {
+        document.getElementById(el).style.display = 'none';
+    }
+
+
     document.getElementById(el).innerHTML = text;
 }
 
-function fillicons(el,data) {
+function fillicons(el, data) {
     var text = '';
-    for(let [key, value] of Object.entries(data)) {
+    for (let [key, value] of Object.entries(data)) {
         if (key == 'outlaws') {
-           for (i=0; i<data['outlaws'].length; i++) {
-               text = text + '<img src="Icons/'+ data['outlaws'][i]+'.png">';                                      
-           }  
+            for (i = 0; i < data['outlaws'].length; i++) {
+                text = text + '<img src="Icons/' + data['outlaws'][i] + '.png">';
+            }
 
-        } else if ((['hfts','tus','propagators','voidrifts','turkey','voidreanimators','deadofnight','minesweeper'].includes(key)) && (value > 0)) {      
-            text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext">'+ value + '</span>'; 
+        } else if ((['hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper'].includes(key)) && (value > 0)) {
+            text = text + '<img src="Icons/' + key + '.png"> <span class="icontext">' + value + '</span>';
 
-        } else if ((key == 'killbots') && (value > 0)) {      
-            text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext killbotkills">-'+ value + '</span>';    
+        } else if ((key == 'killbots') && (value > 0)) {
+            text = text + '<img src="Icons/' + key + '.png"> <span class="icontext killbotkills">-' + value + '</span>';
 
-        } else if (value > 0) {                                   
-            text = text + '<img src="Icons/'+ key+'.png"> <span class="icontext iconcreated">+'+ value + '</span>'; 
-        }       
-       }    
-    document.getElementById(el).innerHTML = text               
+        } else if (value > 0) {
+            text = text + '<img src="Icons/' + key + '.png"> <span class="icontext iconcreated">+' + value + '</span>';
+        }
+    }
+    document.getElementById(el).innerHTML = text
 }
 
 function fillunits(el, dat) {
@@ -534,22 +655,24 @@ function fillunits(el, dat) {
     var percent = 0
     var spacer = ''
     var idx = 0
-    if(dat == null) {
+    if (dat == null) {
         return
     };
-    for(let [key, value] of Object.entries(dat)) {
+    for (let [key, value] of Object.entries(dat)) {
         idx += 1;
-        if (idx === (maxUnits+1)) { break };
+        if (idx === (maxUnits + 1)) {
+            break
+        };
         spacer = ''
         percent = Math.round(100 * value[3])
-        if(percent < 10) {
+        if (percent < 10) {
             spacer = 'killpadding'
-        } else if (percent==100) {
+        } else if (percent == 100) {
             spacer = 'nokillpadding'
         };
         if (value[2] > -100) {
             text = text + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><br>'
-            };
+        };
     }
 
     if (idx == 0) {
