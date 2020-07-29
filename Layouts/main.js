@@ -232,7 +232,7 @@ function connect_to_socket() {
         } else if (data['initEvent'] != null) {
             initColorsDuration(data)
         } else if (data['playerEvent'] != null) {
-            playerWinrate(data['data'])
+            playerWinrate(data)
         } else {
             console.log('unidentified message')
         }
@@ -278,7 +278,7 @@ function playerWinrate(dat) {
     setTimeout(function() {
         document.getElementById('playerstats').style.right = '-60vh';
         document.getElementById('playerstats').style.opacity = '0'
-    }, 10000)
+    }, 12000)
 }
 
 function showNotification() {
