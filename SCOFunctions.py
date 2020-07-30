@@ -164,10 +164,12 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
                 player_winrate_data = player_winrate_data_temp
             logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
         except:
-            logger.error(f'Failed to initialize player winrate data:\n{traceback.format_exc()}')
+            logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
 
-
-    guess_PLAYER_NAMES()
+    try:
+        guess_PLAYER_NAMES()
+    except:
+        logger.error(f'Error when guessing player names:\n{traceback.format_exc()}')
 
     while True:
         # Check for new replays
@@ -234,7 +236,7 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
     try:
         with open(file_path, 'rb') as file:
             response = requests.post(url, files={'file': file})
-        logger.info(f'Replay upload reponse:\n{response.text}')
+        logger.info(f'Replay upload reponse: {response.text}')
      
         if 'Success' in response.text or 'Error' in response.text:
             sendEvent({'uploadEvent':True,'response':response.text})

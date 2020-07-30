@@ -25,28 +25,32 @@ def get_player_stats(file, archive=None):
     except:
         protocol = versions.latest()
 
-    details = archive.read_file('replay.details')
-    details = protocol.decode_replay_details(details)
+    try:
+        details = archive.read_file('replay.details')
+        details = protocol.decode_replay_details(details)
 
-    # Get stats only for Blizzard maps, and recover replay has to be disabled (live Co-op)
-    if details['m_isBlizzardMap'] == False or details['m_disableRecoverGame'] == False:
+        # Get stats only for Blizzard maps, and recover replay has to be disabled (live Co-op)
+        if details['m_isBlizzardMap'] == False or details['m_disableRecoverGame'] == False:
+            return [None,'Win'],[None,'Win']
+
+        # Get names
+        p1 = details['m_playerList'][0]['m_name'].decode().split('<sp/>')[-1]
+        p2 = None
+        if len(details['m_playerList']) > 1:
+            p2 = details['m_playerList'][1]['m_name'].decode().split('<sp/>')[-1]
+
+        # Get results
+        metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
+        result = 'Loss'
+        if metadata['Players'][0]['Result'] == 'Win':
+            result = 'Win'
+        elif len(metadata['Players']) > 1 and metadata['Players'][1]['Result'] == 'Win':
+            result = 'Win'
+
+        return [p1,result],[p2,result]
+    except:
+        logger.error(f'Failed to parse: {file}')
         return [None,'Win'],[None,'Win']
-
-    # Get names
-    p1 = details['m_playerList'][0]['m_name'].decode().split('<sp/>')[-1]
-    p2 = None
-    if len(details['m_playerList']) > 1:
-        p2 = details['m_playerList'][1]['m_name'].decode().split('<sp/>')[-1]
-
-    # Get results
-    metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
-    result = 'Loss'
-    if metadata['Players'][0]['Result'] == 'Win':
-        result = 'Win'
-    elif len(metadata['Players']) > 1 and metadata['Players'][1]['Result'] == 'Win':
-        result = 'Win'
-
-    return [p1,result],[p2,result]
 
 
 def calculate_player_stats(replays):
