@@ -94,6 +94,7 @@ def initialize_AllReplays(ACCOUNTDIR):
                     file_path = os.path.join(root,file)
                     if len(file_path) > 255:
                         file_path = '\\\?\\' + file_path
+                    file_path = file_path = os.path.normpath(file_path)
                     AllReplays.add(file_path)
 
         # Get dictionary of all replays with their last modification time
@@ -134,9 +135,10 @@ def update_player_winrate_data(replay_dict):
     ally = replay_dict.get('ally',None)
 
     for player in [main,ally]:
-        if not player in player_winrate_data:
-            player_winrate_data[player] = [0,0]
-        player_winrate_data[player][result] += 1
+        with lock:
+            if not player in player_winrate_data:
+                player_winrate_data[player] = [0,0]
+            player_winrate_data[player][result] += 1
 
 
 def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
@@ -148,19 +150,18 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
     session_games = {'Victory':0,'Defeat':0}
 
     with lock:
-        try:
-            AllReplays = initialize_AllReplays(ACCOUNTDIR)
-            logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
-            ReplayPosition = len(AllReplays)
-        except:
-            logger.error(f'Failed to initialize all replay data:\n{traceback.format_exc()}')
+        AllReplays = initialize_AllReplays(ACCOUNTDIR)
+        logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
+        ReplayPosition = len(AllReplays)
 
 
     if PLAYER_WINRATES:
         try:
             time_counter_start = time.time()
             logger.info(f'Starting mass replay analysis')
-            player_winrate_data = get_player_winrates(AllReplays)
+            player_winrate_data_temp = get_player_winrates(AllReplays)
+            with lock:
+                player_winrate_data = player_winrate_data_temp
             logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
         except:
             logger.error(f'Failed to initialize player winrate data:\n{traceback.format_exc()}')
