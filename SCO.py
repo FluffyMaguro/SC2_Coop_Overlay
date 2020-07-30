@@ -4,7 +4,6 @@ import json
 import string
 import traceback
 import threading
-import multiprocessing
 import configparser
 import ctypes.wintypes
 
@@ -318,5 +317,4 @@ def main(startthreads=True):
 
 
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
     main()

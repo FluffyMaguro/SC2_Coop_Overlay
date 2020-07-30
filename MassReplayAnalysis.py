@@ -3,7 +3,6 @@ import mpyq
 import json
 import traceback
 from pprint import pprint
-from multiprocessing import Pool
 
 from s2protocol import versions
 from MLogging import logclass
@@ -54,8 +53,7 @@ def calculate_player_stats(replays):
     """ Counts wins and losses for all players (1,2) in given replays """
 
     # Analyse
-    with Pool() as P:
-        games = P.map(get_player_stats, replays)
+    games = map(get_player_stats, replays)
 
     # Calculate wins, losses and exclude some player names
     excluded = {None,'Purifier Hologram',"Amon's Forces", 'Forces of Amon'}

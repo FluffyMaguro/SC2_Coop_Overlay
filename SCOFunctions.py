@@ -148,14 +148,22 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
     session_games = {'Victory':0,'Defeat':0}
 
     with lock:
-        AllReplays = initialize_AllReplays(ACCOUNTDIR)
-        logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
-        ReplayPosition = len(AllReplays)
+        try:
+            AllReplays = initialize_AllReplays(ACCOUNTDIR)
+            logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
+            ReplayPosition = len(AllReplays)
+        except:
+            logger.error(f'Failed to initialize all replay data:\n{traceback.format_exc()}')
+
 
     if PLAYER_WINRATES:
-        time_counter_start = time.time()
-        player_winrate_data = get_player_winrates(AllReplays)
-        logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
+        try:
+            time_counter_start = time.time()
+            logger.info(f'Starting mass replay analysis')
+            player_winrate_data = get_player_winrates(AllReplays)
+            logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
+        except:
+            logger.error(f'Failed to initialize player winrate data:\n{traceback.format_exc()}')
 
 
     guess_PLAYER_NAMES()
@@ -393,7 +401,7 @@ def check_for_new_game():
             # If we identified allies, send an event to the overlay
             if len(player_names) > 0:
                 displayTime = resp.get('displayTime',None)
-                respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy ~4s, so it might not show immediately
+                respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy, so it might not show immediately
                 activeScreens = respUI['activeScreens']
 
                 # Show it only while ingame 
