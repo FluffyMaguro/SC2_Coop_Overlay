@@ -399,7 +399,7 @@ def check_for_new_game():
                 # Show it only while ingame 
                 if len(activeScreens) == 0:
                     last_replay_amount = len(AllReplays)
-                    data = {'playerEvent': True,'data':{p:player_winrate_data.get(p,None) for p in player_names}}
+                    data = {p:player_winrate_data.get(p,None) for p in player_names}
                     sendEvent({'playerEvent': True,'data':data})
                     logger.info(f'Sending player data event: {data}')
 
