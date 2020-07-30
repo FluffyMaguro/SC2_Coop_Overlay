@@ -1,10 +1,10 @@
 import os
 import json
 import time
-import requests
 import threading
 import traceback
 
+import requests
 import asyncio
 import keyboard
 import websockets

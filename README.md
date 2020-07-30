@@ -28,6 +28,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 
 # Other notes
+* If you want this app (or any other) run with the windows start-up, create a shortcut of the executable, press Win+R (start/run) and write shell:startup. A startup folder will open. Now move the shortcut here.
 * The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay). 
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
 * Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
