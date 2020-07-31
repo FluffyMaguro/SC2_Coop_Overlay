@@ -8,7 +8,6 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.16/SC2CoopOverlay.1.16.zip)
 * [Mega](https://mega.nz/file/ttEHEQrb#SSrKt2g_6o3-_kNdcQLWxbA4JPN1VCQDMEnfbpwYHS8)
 * [Google-drive](https://drive.google.com/file/d/1AHl3uZpW32_Qc2twXZSwrdMFjKRQN1jV/view)
-
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/wide2.jpg)

@@ -184,7 +184,7 @@ def main(startthreads=True):
             file.write('--------\nStarting...\n')
     except:
         permission_error = True
-        print(traceback.format_exc())
+        logger.info(f'Persmission error:\n{traceback.format_exc()}')
 
 
     # Lets start by initinalizing config file an getting values from it
