@@ -219,7 +219,6 @@ def main(startthreads=True):
     # Set player names in SCOFunctions
     set_PLAYER_NAMES(PLAYER_NAMES)
 
-
     # Check for a new version
     download_link = new_version()
     # Init the app and QWebEngineView
@@ -241,13 +240,6 @@ def main(startthreads=True):
         
     # Add icons to the system tray
     menu = QtWidgets.QMenu()
-
-    # 0.Permission error
-    if permission_error:
-        PerError = QtWidgets.QAction("Permission error, exclude app folder in antivirus")
-        PerError.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxCritical')))
-        menu.addAction(PerError)
-        menu.addSeparator()
 
     # 1.Link to github
     SCO = QtWidgets.QAction("StarCraft II Co-op Overlay")
@@ -282,6 +274,14 @@ def main(startthreads=True):
     menu.addAction(quit)
     tray.setContextMenu(menu)
 
+    # 5.Permission error
+    if permission_error:
+        perError = QtWidgets.QAction("Permission error! Exclude app folder in antivirus")
+        perError.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
+        tray.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
+        menu.addAction(perError)
+        menu.addSeparator()    
+
     # Show overlay if it's not set otherwise
     if SHOWOVERLAY and not permission_error:
         webpage = view.page()
@@ -299,6 +299,7 @@ def main(startthreads=True):
             view.load(QtCore.QUrl().fromLocalFile(path))
             view.show()
         else:
+            # 6. Layout file error
             logger.error("Error! Failed to locate the html file")
             menu.addSeparator()
             error = QtWidgets.QAction("Error! Failed to locate the html file")
