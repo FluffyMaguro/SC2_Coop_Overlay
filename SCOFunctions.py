@@ -418,7 +418,7 @@ def check_for_new_game():
             logger.info(f'No game connection for player winrate stats')
 
         except json.decoder.JSONDecodeError:
-            logger.info('Json decoding of a request failed (SC2 is starting)')
+            logger.info('Json decoding of a request failed (SC2 is starting or closing)')
 
         except:
             logger.info(traceback.format_exc())

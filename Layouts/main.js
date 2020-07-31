@@ -593,6 +593,8 @@ function showstats() {
     toBeShown = true;
     document.getElementById('stats').style.right = '2vh';
     document.getElementById('bgdiv').style.opacity = '1';
+    setTimeout(function(){document.getElementById('session').style.opacity = '0.6'},1000)
+    
 }
 
 function fill(el, dat) {

@@ -319,9 +319,9 @@ body {
 
 #session {
     height: 2vh;
-    opacity: 0.5;
-    transition: opacity 1s;
     color: white;
+    opacity: 0;
+    transition: opacity 1s;
 }   
 
 #loader {
