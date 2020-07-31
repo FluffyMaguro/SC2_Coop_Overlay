@@ -201,7 +201,10 @@ function debug() {
             'Ghost': [5, 5, 1, 0.0],
             'Cyclone': [4, 4, 1, 0.0],
             'Hybrid Dominator': [1, 1, 1, 0.0]
-        }
+        },
+        'Victory':5,
+        'Defeat':2
+
     };
     // data = {data: {'LilArrin': [3, 13]}};
     // playerWinrate(data)
@@ -579,6 +582,7 @@ function hidestats() {
     document.getElementById('stats').style.right = '-50vh';
     document.getElementById('bgdiv').style.opacity = '0';
     document.getElementById('loader').style.opacity = '0';
+    document.getElementById('session').style.opacity = '0';
     setTimeout(function() {
         document.getElementById('session').innerHTML = '';
         document.getElementById('loader').innerHTML = ''

@@ -307,24 +307,28 @@ body {
     font-size: 1.7vh;
 }
 
-#loader {
-    width: 100%;
-    height: 3vh;
-    opacity: 0;
-    text-align: center;
-    transition: opacity 1s;
-    font-size: 1.5vh;
+#otherstats {
+    position: absolute;
+    bottom: 7vh;
+    right: 2vh;
+    width: 50vh;   
+    font-size: 1.5vh;  
+    text-align: center; 
+    color: white;
 }
 
 #session {
-    width: 100%;
-    margin-top: 1vh;
-    height: 2.5vh;
+    height: 2vh;
     opacity: 0.5;
-    text-align: center;
     transition: opacity 1s;
-    font-size: 1.5vh;
-}    
+    color: white;
+}   
+
+#loader {
+    height: 2vh;
+    opacity: 0;
+    transition: opacity 1s;
+} 
 
 #notification {
     position: absolute;
