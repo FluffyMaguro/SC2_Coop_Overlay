@@ -221,7 +221,8 @@ function connect_to_socket() {
     let socket = new WebSocket("ws://localhost:" + PORT);
     socket.onopen = function(e) {};
     socket.onmessage = function(event) {
-        var data = JSON.parse(event.data)
+        var data = JSON.parse(event.data);
+        console.log('New event');
         if (data['replaydata'] != null) {
             postGameStatsTimed(data)
         } else if (data['mutatordata'] != null) {
@@ -243,14 +244,13 @@ function connect_to_socket() {
     socket.onclose = function(event) {
         if (event.wasClean) {
             console.log('CLEAN EXIT: ' + event)
-            reconnect_to_socket();
         } else {
-            // console.log('UNCLEAN EXIT: ' + event)
-            reconnect_to_socket();
-        }
+            console.log('UNCLEAN EXIT: ' + event)
+        };
+        reconnect_to_socket();
     };
     socket.onerror = function(error) {
-        console.log('ERROR: ' + error)
+        console.log('ERROR: ' + error);
         reconnect_to_socket()
     };
 }

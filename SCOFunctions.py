@@ -260,9 +260,8 @@ def update_global_overlay_messages(overlayMessagesSent):
 async def manager(websocket, path):
     """ Manages websocket connection for each client """
     overlayMessagesSent = globalOverlayMessagesSent
-    logger.info(f"STARTING WEBSOCKET: {websocket}")
+    logger.info(f"Starting: {websocket}\nSending init message: {initMessage}")
     await websocket.send(json.dumps(initMessage))
-    logger.info(f"Sending init message: {initMessage}")
     while True:
         try:
             if len(OverlayMessages) > overlayMessagesSent:
@@ -270,8 +269,15 @@ async def manager(websocket, path):
                 logger.info(f'#{overlayMessagesSent} message is being sent through {websocket}')
                 overlayMessagesSent += 1
                 update_global_overlay_messages(overlayMessagesSent)
-                await websocket.send(message)
-                logger.info(f'#{overlayMessagesSent-1} message sent through {websocket}')
+                
+                try: # Send the message
+                    await asyncio.wait_for(websocket.send(message), timeout=0.1)
+                    logger.info(f'#{overlayMessagesSent-1} message sent')
+                except asyncio.TimeoutError:
+                    logger.error(f'#{overlayMessagesSent-1} message was timed-out.')
+                except:
+                    logger.error(traceback.format_exc())
+
         except websockets.exceptions.ConnectionClosedOK:
             logger.error('Websocket connection closed OK!')
             break
@@ -376,7 +382,6 @@ def keyboard_thread_SHOW(SHOW):
         keyboard.wait(SHOW)
         logger.info('Show event')
         sendEvent({'showEvent': True})
-    logger.error('Show thread closed')
 
 
 def check_for_new_game():
