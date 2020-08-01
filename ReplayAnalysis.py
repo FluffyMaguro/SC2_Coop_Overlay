@@ -204,7 +204,7 @@ def analyse_replay(filepath, playernames=['']):
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] # Ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     TIME_DEFAULT = 99999999
-    START_TIME = replay['start_time']
+    START_TIME = replay['start_time']+1 # Add one second for wider margins
     accu_length = replay['accurate_length']
     END_TIME = replay['end_time']
     commander_fallback = dict()
@@ -289,7 +289,7 @@ def analyse_replay(filepath, playernames=['']):
                 outlaw_order.append(_unit_type)
 
             # Identifying waves
-            if _control_pid in [3,4,5,6] and not event['_gameloop']/16 in [0,START_TIME] and event['_gameloop']/16 > 60 and _unit_type in UnitsInWaves:
+            if _control_pid in [3,4,5,6] and event['_gameloop']/16 > START_TIME + 60 and _unit_type in UnitsInWaves:
                 if wave_units['second'] == event['_gameloop']/16:
                     wave_units['units'].append(_unit_type)
                 else:
@@ -664,6 +664,6 @@ def analyse_replay(filepath, playernames=['']):
 # DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-    file_path = 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\Miner Evacuation (258).SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Void Thrashing (322).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)

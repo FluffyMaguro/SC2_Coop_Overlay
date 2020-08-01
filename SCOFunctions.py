@@ -172,6 +172,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
         logger.error(f'Error when guessing player names:\n{traceback.format_exc()}')
 
     while True:
+        logger.info('Checking for replays....')
         # Check for new replays
         current_time = time.time()
         for root, directories, files in os.walk(ACCOUNTDIR):
@@ -266,10 +267,11 @@ async def manager(websocket, path):
         try:
             if len(OverlayMessages) > overlayMessagesSent:
                 message = json.dumps(OverlayMessages[overlayMessagesSent])
-                logger.info(f'Sending message #{overlayMessagesSent} through {websocket}')
+                logger.info(f'#{overlayMessagesSent} message is being sent through {websocket}')
                 overlayMessagesSent += 1
                 update_global_overlay_messages(overlayMessagesSent)
                 await websocket.send(message)
+                logger.info(f'#{overlayMessagesSent-1} message sent through {websocket}')
         except websockets.exceptions.ConnectionClosedOK:
             logger.error('Websocket connection closed OK!')
             break
@@ -374,6 +376,7 @@ def keyboard_thread_SHOW(SHOW):
         keyboard.wait(SHOW)
         logger.info('Show event')
         sendEvent({'showEvent': True})
+    logger.error('Show thread closed')
 
 
 def check_for_new_game():
@@ -403,7 +406,7 @@ def check_for_new_game():
 
             # If we identified allies, send an event to the overlay
             if len(player_names) > 0:
-                displayTime = resp.get('displayTime',None)
+                logger.info(f'Current player to show for a winrate: {player_names}, waiting for the game to load...')
                 respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy, so it might not show immediately
                 activeScreens = respUI['activeScreens']
 

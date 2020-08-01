@@ -10,7 +10,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 * [Google-drive](https://drive.google.com/file/d/1AHl3uZpW32_Qc2twXZSwrdMFjKRQN1jV/view)
 * Or run the script with Python
 
-![Screenshot](/Screenshots/wide2.jpg)
+![Screenshot](/Screenshots/widescreen.png)
 
 # How to use
 1. Extract the archive
