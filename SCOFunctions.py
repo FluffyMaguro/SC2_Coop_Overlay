@@ -269,7 +269,7 @@ async def manager(websocket, path):
                 logger.info(f'#{overlayMessagesSent} message is being sent through {websocket}')
                 overlayMessagesSent += 1
                 update_global_overlay_messages(overlayMessagesSent)
-                
+
                 try: # Send the message
                     await asyncio.wait_for(websocket.send(message), timeout=0.1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
@@ -427,6 +427,9 @@ def check_for_new_game():
 
         except json.decoder.JSONDecodeError:
             logger.info('Json decoding of a request failed (SC2 is starting or closing)')
+
+        except socket.timeout:
+            logger.info('SC2 socket timed out (likely game closing)')
 
         except:
             logger.info(traceback.format_exc())

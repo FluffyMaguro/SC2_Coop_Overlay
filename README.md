@@ -34,7 +34,9 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * Kills are shown for top 5 units only (this can by changed in HTML).
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * Blizzard's s2protocol is used to parse replays.
+* At the start of the game, your record with your ally calculated based on your replays and matching his name is shown:
 
+![Screenshot](/Screenshots/winrate.png)
 
 # Config file
 
