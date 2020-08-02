@@ -421,7 +421,10 @@ def check_for_new_game(PLAYER_NOTES):
                     # Get player data
                     data = {p:player_winrate_data.get(p,None) for p in player_names} 
                     # Add player notes if there are any
-                    data = {p:v + [PLAYER_NOTES[p.lower()]] for p,v in data.items() if v!=None and p.lower() in PLAYER_NOTES}
+                    for player in data:
+                        if player.lower() in PLAYER_NOTES and data[player] != None:
+                            data[player].append(PLAYER_NOTES[p.lower()])
+                            
                     sendEvent({'playerEvent': True,'data':data})
                     logger.info(f'Sending player data event: {data}')
 

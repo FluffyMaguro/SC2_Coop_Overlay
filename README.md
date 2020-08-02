@@ -44,6 +44,11 @@ You don't need to change anything in the config file for normal usage.
 
 Changes take effect the next time you start the app!
 
+* **Adding notes to any players (this will show with winrates)**
+
+   [PLAYER_NOTES]
+   Maguro = Overlay creator
+
 * **Changing hotkeys for manual overlay display**
 
    KEY_SHOW = Ctrl+/
@@ -115,6 +120,8 @@ Changes take effect the next time you start the app!
 * 1.17 version (work in progress)
 
       - You can add notes to players that will show together with the winrate and games played
+      - Fixed random enemy units showing in your units stats
+      - H&H Mag-mines are shown separetedly and kills are correctly counted
       - Fixed respawning heroes showing one more death and creation
       - Small fixes and tweaks
 

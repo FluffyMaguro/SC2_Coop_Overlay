@@ -126,6 +126,24 @@ def get_enemy_comp(identified_waves):
     return 'Unidentified AI'
 
 
+def unitid(event, killer=False):
+    """ Returns and unique integer as unit id.
+    `killer`=True for killer unique id, otherwise normal unit.
+    Assuming index is less than 100000 (usually it's < 1000)
+     """
+    if killer:
+        index = event['m_killerUnitTagIndex']
+        recycleindex = event['m_killerUnitTagRecycle']
+    else:
+        index = event['m_unitTagIndex']    
+        recycleindex = event['m_unitTagRecycle'] 
+
+    if index==None or recycleindex==None:
+        logger.debug(f'No unitid from {killer=}{event=}')
+        return None
+
+    return recycleindex*100000 + index
+
 
 
 def analyse_replay(filepath, playernames=['']):
@@ -174,7 +192,6 @@ def analyse_replay(filepath, playernames=['']):
    
     # Ally
     ally_player = 1 if main_player == 2 else 2
-
 
     
     # Start saving data
@@ -250,7 +267,7 @@ def analyse_replay(filepath, playernames=['']):
         if event['_event'] in ['NNet.Replay.Tracker.SUnitBornEvent','NNet.Replay.Tracker.SUnitInitEvent']:
             _unit_type = event['m_unitTypeName'].decode()
             _control_pid = event['m_controlPlayerId']
-            unit_dict[event['m_unitTagIndex']] = [_unit_type, _control_pid]
+            unit_dict[unitid(event)] = [_unit_type, _control_pid]
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
             if _unit_type in revival_types and _control_pid in [1,2] and event['_gameloop']/16 > START_TIME:
@@ -303,13 +320,13 @@ def analyse_replay(filepath, playernames=['']):
         if event['_event'] == 'NNet.Replay.Tracker.SUnitInitEvent' and event['m_unitTypeName'].decode() == "Archon":
             DT_HT_Ignore[event['m_controlPlayerId']] += 2
 
-        if event['_event'] == 'NNet.Replay.Tracker.SUnitTypeChangeEvent' and event['m_unitTagIndex'] in unit_dict:
-                _old_unit_type = unit_dict[event['m_unitTagIndex']][0]
-                _control_pid = unit_dict[event['m_unitTagIndex']][1]
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitTypeChangeEvent' and unitid(event) in unit_dict:
+                _old_unit_type = unit_dict[unitid(event)][0]
+                _control_pid = unit_dict[unitid(event)][1]
                 _unit_type = event['m_unitTypeName'].decode()
 
                 # Update unit_dict
-                unit_dict[event['m_unitTagIndex']][0] = _unit_type
+                unit_dict[unitid(event)][0] = _unit_type
 
                 # Add to created units         
                 if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
@@ -346,46 +363,47 @@ def analyse_replay(filepath, playernames=['']):
 
 
         # Update ownership
-        if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and event['m_unitTagIndex'] in unit_dict:
-            unit_dict[event['m_unitTagIndex']][1] = event['m_controlPlayerId']
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and unitid(event) in unit_dict:
+            unit_dict[unitid(event)][1] = event['m_controlPlayerId']
        
         # Update some kill stats
         if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent':
             try:
-                _killed_unit_type = unit_dict[event['m_unitTagIndex']][0]
-                _losing_player = unit_dict[event['m_unitTagIndex']][1]
+                _killed_unit_type = unit_dict[unitid(event)][0]
+                _losing_player = unit_dict[unitid(event)][1]
                 _killing_player = event['m_killerPlayerId']
 
                 # Count kills for players
-                if _losing_player != _killing_player and not _killed_unit_type in ['FuelCellPickupUnit','ForceField'] and not(_killing_player in [1,2] and _losing_player in [1,2]) and _killing_player != None: #don't count team kills
+                if _losing_player != _killing_player and not _killed_unit_type in ['FuelCellPickupUnit','ForceField'] and not(_killing_player in [1,2] and _losing_player in [1,2]) and _killing_player != None: # Don't count team kills
                     killcounts[_killing_player] += 1
 
                 # Get last_aoe_unit_killed (used when player units die without a killing unit, it was likely some enemy caster casting persistent AoE spell)
-                if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players:
+                if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players and unitid(event) != None:
                     last_aoe_unit_killed[_losing_player] = [_killed_unit_type, event['_gameloop']/16]
 
             except:
                 logger.error(traceback.format_exc())
 
         # More kill stats
-        if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent' and event['m_unitTagIndex'] in unit_dict:    
+        if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent' and unitid(event) in unit_dict:    
             try:
-                _killing_unit_id = event['m_killerUnitTagIndex']
+                _killing_unit_id = unitid(event, killer=True)
                 _killing_player = event['m_killerPlayerId']
-                _killed_unit_type = unit_dict[event['m_unitTagIndex']][0]
-                _losing_player = int(unit_dict[event['m_unitTagIndex']][1])
+                _killed_unit_type = unit_dict[unitid(event)][0]
+                _losing_player = int(unit_dict[unitid(event)][1])
 
-                if _killing_unit_id in unit_dict:
+                if _killing_unit_id in unit_dict and unitid(event) != None: # We have a killing unit
                     _killing_unit_type = unit_dict[_killing_unit_id][0]
+                elif commander_fallback.get(_killing_player,None) == 'Nova': # It's most likely an airstrike
+                    _killing_unit_type = 'CoopCasterNova'
+                elif commander_fallback.get(_killing_player,None) == "Han & Horner": # It's most likely a magmine
+                    _killing_unit_type = 'HHMagneticMine'
                 else:
-                    _killing_unit_type = 'NoUnit'
-                    if commander_fallback.get(_killing_player,None) == 'Nova': # It's most likely an airstrike
-                        _killing_unit_type = 'CoopCasterNova'
+                    _killing_unit_type = 'NoUnit' # No unit otherwise
 
                 # Killbot feed
                 if _killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and _losing_player in [1,2]:
                     killbot_feed[_losing_player] += 1
-
 
                 # Custom kill count
                 if _killing_player in [1,2] and _losing_player in amon_players:
@@ -445,7 +463,7 @@ def analyse_replay(filepath, playernames=['']):
                         logger.debug(f'{last_aoe_unit_killed[_killing_player][0]}({_killing_player}) killed {_killed_unit_type} | {event["_gameloop"]/16}s')
 
                 # Update unit kill stats
-                if ((_killing_unit_id in unit_dict) or _killing_unit_type == 'CoopCasterNova') and (_killing_unit_id != event['m_unitTagIndex']) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
+                if ((_killing_unit_id in unit_dict) or _killing_unit_type in {'CoopCasterNova','HHMagneticMine'}) and (_killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
                     if main_player == _killing_player:
                         if _killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[_killing_unit_type][2] += 1
@@ -463,6 +481,10 @@ def analyse_replay(filepath, playernames=['']):
                             unit_type_dict_amon[_killing_unit_type][2] += 1
                         else:
                             unit_type_dict_amon[_killing_unit_type] = [0,0,1,0]
+
+                # Debug for player no units kills            
+                if not _killing_unit_id in unit_dict and not _killing_unit_type in {'CoopCasterNova','HHMagneticMine'} and _killing_player in {1,2}:
+                    logger.info(f'{_killing_unit_type} ({_killing_player}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16.:0f}s ')
 
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
@@ -515,10 +537,10 @@ def analyse_replay(filepath, playernames=['']):
 
 
 
-
-    # logger.info(f'Unit type dict main: {unit_type_dict_main}')
-    # logger.info(f'Unit type dict ally: {unit_type_dict_ally}')
-    # logger.info(f'Unit type dict amon: {unit_type_dict_amon}')
+    # pprint(replay['events'])
+    # pprint(unit_type_dict_main)
+    # pprint(unit_type_dict_ally)
+    # pprint(unit_type_dict_amon)
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
@@ -664,6 +686,6 @@ def analyse_replay(filepath, playernames=['']):
 # DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Void Thrashing (322).SC2Replay'
+    file_path = r'C:\Users\Maguro\Downloads\Dead_of_Night_149.SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
