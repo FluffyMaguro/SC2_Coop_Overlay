@@ -585,6 +585,7 @@ function hidestats() {
     document.getElementById('session').style.opacity = '0';
     setTimeout(function() {
         document.getElementById('session').innerHTML = '';
+        document.getElementById('loader').style.opacity = '0';
         document.getElementById('loader').innerHTML = ''
     }, 1000)
 }
