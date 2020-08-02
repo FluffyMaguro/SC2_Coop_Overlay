@@ -19,6 +19,7 @@ dont_show_created_lost = {'Super Gary','Gary','Tychus Findlay',"James 'Sirius' S
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
+commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine'}
 
 logger = logclass('REPA','INFO')
 
@@ -193,7 +194,6 @@ def analyse_replay(filepath, playernames=['']):
     # Ally
     ally_player = 1 if main_player == 2 else 2
 
-    
     # Start saving data
     replay_report_dict = dict()
     replay_report_dict['filepath'] = filepath
@@ -392,14 +392,17 @@ def analyse_replay(filepath, playernames=['']):
                 _killed_unit_type = unit_dict[unitid(event)][0]
                 _losing_player = int(unit_dict[unitid(event)][1])
 
+                # Get killing unit
                 if _killing_unit_id in unit_dict and unitid(event) != None: # We have a killing unit
                     _killing_unit_type = unit_dict[_killing_unit_id][0]
-                elif commander_fallback.get(_killing_player,None) == 'Nova': # It's most likely an airstrike
-                    _killing_unit_type = 'CoopCasterNova'
-                elif commander_fallback.get(_killing_player,None) == "Han & Horner": # It's most likely a magmine
-                    _killing_unit_type = 'HHMagneticMine'
                 else:
-                    _killing_unit_type = 'NoUnit' # No unit otherwise
+                    """ 
+                    For no-unit, check if we default to some commander no-unit like airstrike, or use 'NoUnit'
+                    But lets use this only rarely. Units killed in transports count for this as well.
+                    Other not counted sources: Dusk Wings lifting off, CoD explosion, ...
+                    """
+                    _commander = commander_fallback.get(_killing_player,None) # 
+                    _killing_unit_type = commander_no_units.get(_commander,'NoUnit')
 
                 # Killbot feed
                 if _killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and _losing_player in [1,2]:
@@ -463,7 +466,7 @@ def analyse_replay(filepath, playernames=['']):
                         logger.debug(f'{last_aoe_unit_killed[_killing_player][0]}({_killing_player}) killed {_killed_unit_type} | {event["_gameloop"]/16}s')
 
                 # Update unit kill stats
-                if ((_killing_unit_id in unit_dict) or _killing_unit_type in {'CoopCasterNova','HHMagneticMine'}) and (_killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
+                if ((_killing_unit_id in unit_dict) or _killing_unit_type in commander_no_units.values()) and (_killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
                     if main_player == _killing_player:
                         if _killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[_killing_unit_type][2] += 1
@@ -483,8 +486,8 @@ def analyse_replay(filepath, playernames=['']):
                             unit_type_dict_amon[_killing_unit_type] = [0,0,1,0]
 
                 # Debug for player no units kills            
-                if not _killing_unit_id in unit_dict and not _killing_unit_type in {'CoopCasterNova','HHMagneticMine'} and _killing_player in {1,2}:
-                    logger.info(f'{_killing_unit_type} ({_killing_player}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16.:0f}s ')
+                if _killed_unit_type not in {'Scarab','Interceptor'} and not _killing_unit_id in unit_dict and not _killing_unit_type in commander_no_units.values() and _killing_player in {1,2} and _losing_player != _killing_player:
+                    logger.info(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16.:0f}s ')
 
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
@@ -507,7 +510,6 @@ def analyse_replay(filepath, playernames=['']):
                         unit_type_dict_amon[_killed_unit_type][0] -= 1
                         continue
                    
-                    
                 # In case of death caused by Archon merge, ignore these kills
                 if (_killed_unit_type == 'HighTemplar' or _killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[_losing_player] > 0:
                     DT_HT_Ignore[_losing_player] -= 1
@@ -535,9 +537,6 @@ def analyse_replay(filepath, playernames=['']):
             except:
                 logger.error(traceback.format_exc())
 
-
-
-    # pprint(replay['events'])
     # pprint(unit_type_dict_main)
     # pprint(unit_type_dict_ally)
     # pprint(unit_type_dict_amon)
@@ -651,7 +650,6 @@ def analyse_replay(filepath, playernames=['']):
             replay_report_dict[iconkey]['Artifact'] = Zeratul_artifacts_collected
 
 
-
     fill_unit_kills_and_icons(replay_report_dict['main'], main_player, unit_type_dict_main)
     fill_unit_kills_and_icons(replay_report_dict['ally'], ally_player, unit_type_dict_ally)
 
@@ -686,6 +684,6 @@ def analyse_replay(filepath, playernames=['']):
 # DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-    file_path = r'C:\Users\Maguro\Downloads\Dead_of_Night_149.SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Dead of Night (284).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
