@@ -423,7 +423,7 @@ def check_for_new_game(PLAYER_NOTES):
                     # Add player notes if there are any
                     for player in data:
                         if player.lower() in PLAYER_NOTES and data[player] != None:
-                            data[player].append(PLAYER_NOTES[p.lower()])
+                            data[player].append(PLAYER_NOTES[player.lower()])
                             
                     sendEvent({'playerEvent': True,'data':data})
                     logger.info(f'Sending player data event: {data}')
