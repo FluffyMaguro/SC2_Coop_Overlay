@@ -384,7 +384,7 @@ def keyboard_thread_SHOW(SHOW):
         sendEvent({'showEvent': True})
 
 
-def check_for_new_game():
+def check_for_new_game(PLAYER_NOTES):
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
 
     # Wait a bit for the replay initialization to complete
@@ -418,7 +418,10 @@ def check_for_new_game():
                 # Show it only while ingame 
                 if len(activeScreens) == 0:
                     last_replay_amount = len(AllReplays)
-                    data = {p:player_winrate_data.get(p,None) for p in player_names}
+                    # Get player data
+                    data = {p:player_winrate_data.get(p,None) for p in player_names} 
+                    # Add player notes if there are any
+                    data = {p:v + [PLAYER_NOTES[p.lower()]] for p,v in data.items() if v!=None and p.lower() in PLAYER_NOTES}
                     sendEvent({'playerEvent': True,'data':data})
                     logger.info(f'Sending player data event: {data}')
 
@@ -427,9 +430,6 @@ def check_for_new_game():
 
         except json.decoder.JSONDecodeError:
             logger.info('Json decoding of a request failed (SC2 is starting or closing)')
-
-        except socket.timeout:
-            logger.info('SC2 socket timed out (likely game closing)')
 
         except:
             logger.info(traceback.format_exc())

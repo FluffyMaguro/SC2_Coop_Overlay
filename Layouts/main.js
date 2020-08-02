@@ -166,7 +166,6 @@ function debug() {
         'allyIcons': {
             'propagators': 5,
             'Infested Bunker': 6,
-
         },
         'mainUnits': {
             'Mutalisk': [60, 12, 1675, 0.6],
@@ -206,9 +205,9 @@ function debug() {
         'Defeat':2
 
     };
-    // data = {data: {'LilArrin': [3, 13]}};
-    // playerWinrate(data)
-    postGameStatsTimed(dummydata);
+    data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
+    playerWinrate(data)
+    // postGameStatsTimed(dummydata);
     // setTimeout(uploadStatus,1500,'Error - some error');
 }
 
@@ -269,8 +268,12 @@ function playerWinrate(dat) {
 
     for (let [key, value] of Object.entries(dat['data'])) {
         if ((value != null) && (value.length > 1)) {
+            var player_message = '';                                           
+            if (value.length > 2) {
+                player_message = '<br>' + value[2];                       
+               }                                      
             let total_games = value[0] + value[1];
-            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)'
+            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)' + player_message
         } else {
             text = text + 'No games played with <span class="player_stat">' + key + '</span>'
         }

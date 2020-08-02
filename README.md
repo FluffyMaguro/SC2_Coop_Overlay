@@ -112,6 +112,13 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
+* 1.17 version (work in progress)
+
+      - You can add notes to players that will show together with the winrate and games played
+      - Fixed respawning heroes showing one more death and creation
+      - Small fixes and tweaks
+
+
 * 1.16 version
 
       - Masteries show only when players have them

@@ -147,7 +147,7 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
             self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{self.KEY_SHOW}','{self.KEY_HIDE}','{self.KEY_NEWER}','{self.KEY_OLDER}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
 
 
-def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES):
+def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES,PLAYER_NOTES):
     """ Threading moved to this function so I can import main function without threading """
     t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES))
     t1.start()
@@ -171,7 +171,7 @@ def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NE
         t6.start()
 
     if PLAYER_WINRATES:
-        t7 = threading.Thread(target = check_for_new_game, daemon=True)
+        t7 = threading.Thread(target = check_for_new_game, daemon=True, args=(PLAYER_NOTES,))
         t7.start()
 
 
@@ -212,9 +212,13 @@ def main(startthreads=True):
     OFFSET = get_configvalue(config,'OFFSET', 0)
     PLAYER_WINRATES = get_configvalue(config,'PLAYER_WINRATES', False)
 
+    try:
+        PLAYER_NOTES = dict(config.items('PLAYER_NOTES'))
+    except:
+        PLAYER_NOTES = dict()
 
     logclass.LOGGING = False if permission_error else LOGGING
-    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n--------')
+    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n{PLAYER_NOTES=}\n--------')
 
     # Set player names in SCOFunctions
     set_PLAYER_NAMES(PLAYER_NAMES)
@@ -312,7 +316,7 @@ def main(startthreads=True):
     set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION, UNIFIEDHOTKEY)
 
     if startthreads and not permission_error:        
-        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES)            
+        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES,PLAYER_NOTES)            
 
     sys.exit(app.exec_())
 
