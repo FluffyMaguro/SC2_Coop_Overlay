@@ -6,8 +6,8 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 **Download links:** 
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.16/SC2CoopOverlay.1.16.zip)
-* [Mega](https://mega.nz/file/ttEHEQrb#SSrKt2g_6o3-_kNdcQLWxbA4JPN1VCQDMEnfbpwYHS8)
-* [Google-drive](https://drive.google.com/file/d/1AHl3uZpW32_Qc2twXZSwrdMFjKRQN1jV/view)
+* [Mega](https://mega.nz/file/kslVVCrT#jPnICVd1RUXIWr1XEtf4hVYsUftipZodPIdlFUuK0Ic)
+* [Google-drive](https://drive.google.com/file/d/1tJbLrwo7CMbBrrdbssfXYDFuZzAvWfhx/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/widescreen.png)
@@ -47,6 +47,7 @@ Changes take effect the next time you start the app!
 * **Adding notes to any players (this will show with winrates)**
 
    [PLAYER_NOTES]
+   
    Maguro = Overlay creator
 
 * **Changing hotkeys for manual overlay display**
