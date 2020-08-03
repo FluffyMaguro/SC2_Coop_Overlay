@@ -389,46 +389,68 @@ def check_for_new_game(PLAYER_NOTES):
 
     # Wait a bit for the replay initialization to complete
     time.sleep(4)
+    last_game_time = None
     last_replay_amount = 0
+    last_replay_amount_flowing = len(AllReplays) # For a timer
+    last_replay_time = 0 # Time when we got the last replay parsed
 
     while True:
         time.sleep(0.5)
         # Skip if winrate data not showing OR no new replay analysed, meaning it's the same game (excluding the first game)
-        if len(player_winrate_data) < 10 or len(AllReplays) == last_replay_amount:
+        if len(player_winrate_data) == 0 or len(AllReplays) == last_replay_amount:
             continue
 
+        # When we get a new replay, mark the time
+        if len(AllReplays) > last_replay_amount_flowing:
+            last_replay_amount_flowing = len(AllReplays)
+            last_replay_time = time.time()
+
         try:
-            # If we are in-game
-            respUI = requests.get('http://localhost:6119/ui', timeout=4).json()
-            if len(respUI['activeScreens']) == 0: 
+            # Request player data from the game
+            resp = requests.get('http://localhost:6119/game', timeout=4).json()
+            players = resp.get('players',list())
+            
+            # Check if we have players in, and it's not a replay
+            if len(players) > 0 and not resp.get('isReplay',True):
+                # If the last time is the same, then we are in menus. Otherwise in-game.
 
-                # Request player data from the game
-                resp = requests.get('http://localhost:6119/game', timeout=4).json()
-                players = resp.get('players',list())
+                if last_game_time == None:
+                    last_game_time = resp['displayTime']
+                    continue                    
+
+                if last_game_time == resp['displayTime']:
+                    logger.info(f"-->The same time (curent: {resp['displayTime']}) (last: {last_game_time}) skipping...")
+                    continue
+
+                last_game_time = resp['displayTime']
+                
+                # Don't show too soon after a replay has been parsed, false positive.
+                if time.time() - last_replay_time < 15:
+                    logger.info('--> Replay added recently, wont show player winrates right now')
+                    continue
+
+                # Mark this game so it won't be checked it again    
+                last_replay_amount = len(AllReplays) 
+
+                # Add the first player name that's not the main player
                 player_names = set()
+                for player in players:
+                    if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()]:
+                        player_names.add(player['name'])
+                        break # Let's just have one player now. This could be expanded to any number of players.
 
-                # Check if we have players in, and it's not a replay
-                if len(players) > 0 and not resp.get('isReplay',True):
-                    # Add the first player name that's not the main player
-                    for player in players:
-                        if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()]:
-                            player_names.add(player['name'])
-                            break # Let's just have one player now. This could be expanded to any number of players.
+                # If we have players to show
+                if len(player_names) > 0:
+                    # Get player winrate data
+                    data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
+                    # Get player notes
+                    for player in data:
+                        if player.lower() in PLAYER_NOTES:
+                            data[player].append(PLAYER_NOTES[player.lower()])
+                            
+                    sendEvent({'playerEvent': True,'data':data})
+                    logger.info(f'Sending player data event: {data}')
 
-                    last_replay_amount = len(AllReplays) # Mark this game
-
-                    # If we have players to show
-                    if len(player_names) > 0:
-                        logger.info(resp) ### REMOVE THIS LATER
-                        # Get player winrate data
-                        data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
-                        # Get player notes
-                        for player in data:
-                            if player.lower() in PLAYER_NOTES:
-                                data[player].append(PLAYER_NOTES[player.lower()])
-                                
-                        sendEvent({'playerEvent': True,'data':data})
-                        logger.info(f'Sending player data event: {data}')
 
         except requests.exceptions.ConnectionError:
             logger.info(f'SC2 request failed. Game not running.')
