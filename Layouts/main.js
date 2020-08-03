@@ -119,6 +119,7 @@ var gP1Color = '#0080F8';
 var gP2Color = '#00D532';
 var UNIFIEDHOTKEY = true;
 var toBeShown = false;
+var winrateTime = 12;
 
 //main functionality
 setColors(null, null, null, null);
@@ -267,15 +268,23 @@ function playerWinrate(dat) {
     var text = '';
 
     for (let [key, value] of Object.entries(dat['data'])) {
-        if ((value != null) && (value.length > 1)) {
-            var player_message = '';                                           
-            if (value.length > 2) {
-                player_message = '<br>' + value[2];                       
-               }                                      
-            let total_games = value[0] + value[1];
-            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)' + player_message
-        } else {
-            text = text + 'No games played with <span class="player_stat">' + key + '</span>'
+        // no data                                                        
+        if ((value.length == 1) && (value[0] == null)) {
+            text = text + 'No games played with <span class="player_stat">' + key + '</span>'   
+
+        // no winrate data but with a player note
+        } else if ((value.length == 2) && (value[0] == null)) {
+            text = text + 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]    
+
+        // winrate data
+        } else if (value.length == 2) {
+            let total_games = value[0] + value[1];                               
+            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)'
+
+        // winrate data and player note
+        } else if (value.length == 3) {
+            let total_games = value[0] + value[1];                               
+            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)<br>' + value[2] 
         }
     }
     element.innerHTML = text;
@@ -284,7 +293,7 @@ function playerWinrate(dat) {
     setTimeout(function() {
         document.getElementById('playerstats').style.right = '-60vh';
         document.getElementById('playerstats').style.opacity = '0'
-    }, 12000)
+    }, winrateTime*1000)
 }
 
 function showNotification() {

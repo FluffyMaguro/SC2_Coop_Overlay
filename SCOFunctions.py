@@ -398,41 +398,42 @@ def check_for_new_game(PLAYER_NOTES):
             continue
 
         try:
-            # Request data from the game
-            resp = requests.get('http://localhost:6119/game', timeout=4).json()
-            players = resp.get('players',list())
-            player_names = set()
+            # If we are in-game
+            respUI = requests.get('http://localhost:6119/ui', timeout=4).json()
+            if len(respUI['activeScreens']) == 0: 
 
-            # Check if we have players in, and it's not a replay
-            if len(players) > 0 and not resp.get('isReplay',True):
-                for player in players:
-                    if player['id'] in [1,2] and not player['name'].lower() in [pn.lower() for pn in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()] :
-                        player_names.add(player['name'])
+                # Request player data from the game
+                resp = requests.get('http://localhost:6119/game', timeout=4).json()
+                players = resp.get('players',list())
+                player_names = set()
 
-            # If we identified allies, send an event to the overlay
-            if len(player_names) > 0:
-                logger.info(f'Current player to show for a winrate: {player_names}, waiting for the game to load...')
-                respUI = requests.get('http://localhost:6119/ui', timeout=4).json() # Double request to SC2 is a bit lengthy, so it might not show immediately
-                activeScreens = respUI['activeScreens']
+                # Check if we have players in, and it's not a replay
+                if len(players) > 0 and not resp.get('isReplay',True):
+                    # Add the first player name that's not the main player
+                    for player in players:
+                        if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()]:
+                            player_names.add(player['name'])
+                            break # Let's just have one player now. This could be expanded to any number of players.
 
-                # Show it only while ingame 
-                if len(activeScreens) == 0:
-                    last_replay_amount = len(AllReplays)
-                    # Get player data
-                    data = {p:player_winrate_data.get(p,None) for p in player_names} 
+                    last_replay_amount = len(AllReplays) # Mark this game
+                    # Get player notes data
+                    data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
                     # Add player notes if there are any
                     for player in data:
-                        if player.lower() in PLAYER_NOTES and data[player] != None:
+                        if player.lower() in PLAYER_NOTES:
                             data[player].append(PLAYER_NOTES[player.lower()])
                             
                     sendEvent({'playerEvent': True,'data':data})
                     logger.info(f'Sending player data event: {data}')
 
         except requests.exceptions.ConnectionError:
-            logger.info(f'No game connection for player winrate stats')
+            logger.info(f'SC2 request failed. Game not running.')
 
         except json.decoder.JSONDecodeError:
-            logger.info('Json decoding of a request failed (SC2 is starting or closing)')
+            logger.info('SC2 request json decoding failed (SC2 is starting or closing)')
+
+        except requests.exceptions.ReadTimeout:
+            logger.info('SC2 request timeout (SC2 is closing)')
 
         except:
             logger.info(traceback.format_exc())
