@@ -117,11 +117,12 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
-* 1.17 version (work in progress)
+* 1.17 version
 
       - You can add notes to players that will show together with the winrate and games played
       - Fixed random enemy units showing in your units stats
       - H&H Mag-mines are shown separetedly and kills are correctly counted
+      - Fixed the issue where player winrate data occasionaly showed for the previous player
       - Fixed respawning heroes showing one more death and creation
       - Small fixes and tweaks
 
