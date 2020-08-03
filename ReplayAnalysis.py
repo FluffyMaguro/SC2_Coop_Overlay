@@ -19,7 +19,7 @@ dont_show_created_lost = {'Super Gary','Gary','Tychus Findlay',"James 'Sirius' S
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
-commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine'}
+commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"CoopCasterKarax"}
 
 logger = logclass('REPA','INFO')
 
@@ -157,19 +157,18 @@ def analyse_replay(filepath, playernames=['']):
     logger.info(f'Analysing: {filepath}')
 
     # Load the replay
-    try:
-        for i in range(4):
-            try:
-                replay = s2_parse_replay(filepath, return_events=True)
-                break
-            except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare. 
-                logger.error('Error parsing, giving it a bit of time ')
-                time.sleep(0.1)
-    except:
-        logger.error(f'Parsing failed ({filepath})\n{traceback.format_exc()}')
+    replay = None
+    for i in range(2):
+        try:
+            replay = s2_parse_replay(filepath, return_events=True)
+            break
+        except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare. 
+            logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
+            time.sleep(0.2)
+
+    if replay == None:
         return {}
 
-    
     # Find Amon players
     amon_players = set()
     amon_players.add(3)

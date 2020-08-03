@@ -172,7 +172,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
         logger.error(f'Error when guessing player names:\n{traceback.format_exc()}')
 
     while True:
-        logger.info('Checking for replays....')
+        logger.debug('Checking for replays....')
         # Check for new replays
         current_time = time.time()
         for root, directories, files in os.walk(ACCOUNTDIR):
@@ -419,6 +419,7 @@ def check_for_new_game(PLAYER_NOTES):
 
                     # If we have players to show
                     if len(player_names) > 0:
+                        logger.info(resp) ### REMOVE THIS LATER
                         # Get player winrate data
                         data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
                         # Get player notes
@@ -436,7 +437,7 @@ def check_for_new_game(PLAYER_NOTES):
             logger.info('SC2 request json decoding failed (SC2 is starting or closing)')
 
         except requests.exceptions.ReadTimeout:
-            logger.info('SC2 request timeout (SC2 is closing)')
+            logger.info('SC2 request timeout')
 
         except:
             logger.info(traceback.format_exc())
