@@ -81,7 +81,7 @@ def guess_PLAYER_NAMES():
     # Get the three most common names. Replay analysis will check from the first one to the last one if they are ingame.
     with lock:
         PLAYER_NAMES = list(players.keys())[0:3] 
-        logger.info(f'Player guess through analysis log: {PLAYER_NAMES}')
+    logger.info(f'Player guess through analysis log: {PLAYER_NAMES}')
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -416,15 +416,18 @@ def check_for_new_game(PLAYER_NOTES):
                             break # Let's just have one player now. This could be expanded to any number of players.
 
                     last_replay_amount = len(AllReplays) # Mark this game
-                    # Get player notes data
-                    data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
-                    # Add player notes if there are any
-                    for player in data:
-                        if player.lower() in PLAYER_NOTES:
-                            data[player].append(PLAYER_NOTES[player.lower()])
-                            
-                    sendEvent({'playerEvent': True,'data':data})
-                    logger.info(f'Sending player data event: {data}')
+
+                    # If we have players to show
+                    if len(player_names) > 0:
+                        # Get player winrate data
+                        data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
+                        # Get player notes
+                        for player in data:
+                            if player.lower() in PLAYER_NOTES:
+                                data[player].append(PLAYER_NOTES[player.lower()])
+                                
+                        sendEvent({'playerEvent': True,'data':data})
+                        logger.info(f'Sending player data event: {data}')
 
         except requests.exceptions.ConnectionError:
             logger.info(f'SC2 request failed. Game not running.')
