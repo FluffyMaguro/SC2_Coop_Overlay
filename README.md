@@ -6,7 +6,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 **Download links:** 
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.17/SC2CoopOverlay.1.17.zip)
-* [Mega](https://mega.nz/file/8tF3HIKJ#VKP_UGEqPvATp0f3eVFjwInIME8YXocjq9bVBe_oCHc)
+* [Mega](https://mega.nz/file/A4kXhQAJ#QXNbzg5weTxt0jor8dbo_rd7bmc0OWK4_hnGvwSSzIQ)
 * [Google-drive](https://drive.google.com/file/d/1tJbLrwo7CMbBrrdbssfXYDFuZzAvWfhx/view)
 * Or run the script with Python
 
@@ -121,11 +121,12 @@ Changes take effect the next time you start the app!
 * 1.17 version
 
       - You can add notes to players that will show together with the winrate and games played
-      - H&H Mag-mines are shown separatedly and kills are correctly counted
+      - H&H Mag-mines are shown separately and kills are correctly counted
       - Fixed random enemy units showing in your units stats
       - Fixed respawning heroes showing one more death and creation
-      - Fixed player winrate data occasionaly showing for the previous player
+      - Fixed player winrate data occasionally showing for the previous player
       - Fixed player winrate showing in menus
+      - Fixed some issues with primal combat and morphs
       - Small fixes and tweaks
 
 
