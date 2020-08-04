@@ -6,7 +6,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 **Download links:** 
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.16/SC2CoopOverlay.1.16.zip)
-* [Mega](https://mega.nz/file/kslVVCrT#jPnICVd1RUXIWr1XEtf4hVYsUftipZodPIdlFUuK0Ic)
+* [Mega](https://mega.nz/file/w1sjFBwI#jgTs4HELyfsC2hVRZxpoaPj0sc-3fNrIxnyJbPWWjMU)
 * [Google-drive](https://drive.google.com/file/d/1tJbLrwo7CMbBrrdbssfXYDFuZzAvWfhx/view)
 * Or run the script with Python
 
@@ -118,7 +118,7 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
-* 1.17 version (work in progress)
+* 1.17 version
 
       - You can add notes to players that will show together with the winrate and games played
       - H&H Mag-mines are shown separatedly and kills are correctly counted

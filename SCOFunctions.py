@@ -389,9 +389,16 @@ def check_for_new_game(PLAYER_NOTES):
 
     # Wait a bit for the replay initialization to complete
     time.sleep(4)
+
+    """
+    To identify new game, this is checking for the ingame display time to change. Plus isReplay has to be False.
+    To identify unique new game, we want the length of all replays to change first => new game.
+    And we don't want to show it right after all replays changed, since that's a false positive and ingame time actually didn't change.
+
+    """
     last_game_time = None
     last_replay_amount = 0
-    last_replay_amount_flowing = len(AllReplays) # For a timer
+    last_replay_amount_flowing = len(AllReplays) # This helps identify when a replay has been parsed
     last_replay_time = 0 # Time when we got the last replay parsed
 
     while True:
@@ -414,30 +421,30 @@ def check_for_new_game(PLAYER_NOTES):
             if len(players) > 0 and not resp.get('isReplay',True):
                 # If the last time is the same, then we are in menus. Otherwise in-game.
 
-                if last_game_time == None:
+                if last_game_time == None or resp['displayTime'] == 0:
                     last_game_time = resp['displayTime']
-                    continue                    
+                    continue
 
                 if last_game_time == resp['displayTime']:
-                    logger.info(f"-->The same time (curent: {resp['displayTime']}) (last: {last_game_time}) skipping...")
+                    logger.debug(f"The same time (curent: {resp['displayTime']}) (last: {last_game_time}) skipping...")
                     continue
 
                 last_game_time = resp['displayTime']
                 
                 # Don't show too soon after a replay has been parsed, false positive.
                 if time.time() - last_replay_time < 15:
-                    logger.info('--> Replay added recently, wont show player winrates right now')
+                    logger.debug('Replay added recently, wont show player winrates right now')
                     continue
 
                 # Mark this game so it won't be checked it again    
                 last_replay_amount = len(AllReplays) 
 
-                # Add the first player name that's not the main player
+                # Add the first player name that's not the main player. This could be expanded to any number of players.
                 player_names = set()
                 for player in players:
                     if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()]:
                         player_names.add(player['name'])
-                        break # Let's just have one player now. This could be expanded to any number of players.
+                        break
 
                 # If we have players to show
                 if len(player_names) > 0:
