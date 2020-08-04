@@ -20,6 +20,8 @@ aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighT
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
 commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"SoACasterKarax"}
+units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
+primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 
 logger = logclass('REPA','INFO')
 
@@ -281,6 +283,14 @@ def analyse_replay(filepath, playernames=['']):
             if _unit_type == 'SensorTower' and _control_pid == 6:
                 map_identification = 'Dead of Night'
 
+            # Primal combat fix. For every morph we are substracting two losses from the base unit type
+            if _unit_type in primal_combat_predecessors:
+                logger.debug(f'{_unit_type} substracting from {primal_combat_predecessors[_unit_type]}\n')
+                if main_player == _control_pid:
+                    unit_type_dict_main[primal_combat_predecessors[_unit_type]][1] -= 2
+                if ally_player == _control_pid:
+                    unit_type_dict_ally[primal_combat_predecessors[_unit_type]][1] -= 2     
+
             # Save stats for units created
             if main_player == _control_pid:
                 if _unit_type in unit_type_dict_main:
@@ -323,6 +333,10 @@ def analyse_replay(filepath, playernames=['']):
                 _old_unit_type = unit_dict[unitid(event)][0]
                 _control_pid = unit_dict[unitid(event)][1]
                 _unit_type = event['m_unitTypeName'].decode()
+                
+                # Strange. Some units morph to egg, then the morph is created, then the egg morphs back and the unit is killed
+                if _unit_type in units_killed_in_morph:
+                    continue
 
                 # Update unit_dict
                 unit_dict[unitid(event)][0] = _unit_type
@@ -683,6 +697,6 @@ def analyse_replay(filepath, playernames=['']):
 # DEBUGGING
 if __name__ == "__main__":
     from pprint import pprint
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\Dead of Night (284).SC2Replay'
+    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\[MM] Temple of the Past - Terran (31).SC2Replay'
     replay_dict = analyse_replay(file_path,['Maguro'])
     pprint(replay_dict, sort_dicts=False)
