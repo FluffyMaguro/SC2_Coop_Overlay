@@ -273,20 +273,21 @@ async def manager(websocket, path):
                 try: # Send the message
                     await asyncio.wait_for(websocket.send(message), timeout=0.1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
+
                 except asyncio.TimeoutError:
                     logger.error(f'#{overlayMessagesSent-1} message was timed-out.')
+                except websockets.exceptions.ConnectionClosedOK:
+                    logger.error('Websocket connection closed OK!')
+                    break
+                except websockets.exceptions.ConnectionClosedError:
+                    logger.error('Websocket connection closed ERROR!')
+                    break            
+                except websockets.exceptions.ConnectionClosed:
+                    logger.error('Websocket connection closed!')
+                    break 
                 except:
                     logger.error(traceback.format_exc())
 
-        except websockets.exceptions.ConnectionClosedOK:
-            logger.error('Websocket connection closed OK!')
-            break
-        except websockets.exceptions.ConnectionClosedError:
-            logger.error('Websocket connection closed ERROR!')
-            break            
-        except websockets.exceptions.ConnectionClosed:
-            logger.error('Websocket connection closed!')
-            break 
         except:
             logger.error(traceback.format_exc())
         finally:

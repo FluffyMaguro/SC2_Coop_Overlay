@@ -151,6 +151,14 @@ def unitid(event, killer=False):
 
 def analyse_replay(filepath, playernames=['']):
     """ Analyses the replay and returns the analysis"""
+
+    """
+    This whole function is a bit messy. It originated in a very different form.
+    I should be broken into more functions. Players shouldn't be hardcoded to 
+    "main" and "ally" but instead a single datastructure. Which player shows on
+    top should be decided in javascript and not here.
+
+    """
     
     # Data structure is {unitType : [#created, #died, #kills, #killfraction]}
     unit_type_dict_main = {}
@@ -586,6 +594,10 @@ def analyse_replay(filepath, playernames=['']):
     if '[MM]' in filepath:
         replay_report_dict['mainMasteries'] = mastery_fallback[main_player]
         replay_report_dict['allyMasteries'] = mastery_fallback[ally_player]
+
+        # Assume commander level of 15
+        replay_report_dict['mainCommanderLevel'] = 15
+        replay_report_dict['allyCommanderLevel'] = 15
 
     # Icons: Tychus' Outlaws
     if replay_report_dict.get('mainCommander', None) == 'Tychus':
