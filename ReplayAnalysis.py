@@ -19,7 +19,7 @@ dont_show_created_lost = {'Super Gary','Gary','Tychus Findlay',"James 'Sirius' S
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
-commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"CoopCasterKarax"}
+commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"SoACasterKarax"}
 
 logger = logclass('REPA','INFO')
 
