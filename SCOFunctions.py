@@ -271,7 +271,7 @@ async def manager(websocket, path):
                 update_global_overlay_messages(overlayMessagesSent)
 
                 try: # Send the message
-                    await asyncio.wait_for(websocket.send(message), timeout=0.1)
+                    await asyncio.wait_for(asyncio.create_task(websocket.send(message)), timeout=1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
 
                 except asyncio.TimeoutError:

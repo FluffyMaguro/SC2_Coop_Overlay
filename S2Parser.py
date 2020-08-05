@@ -130,11 +130,3 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
         replay['raw'] = [metadata, player_info, detailed_info]
 
     return replay
-
-
-# DEBUGGING
-if __name__ == '__main__':
-    from pprint import pprint   
-    file_path = r'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\114803619\\1-S2-1-4189373\\Replays\\Multiplayer\\[MM] Temple of the Past - Terran (22).SC2Replay'
-    replay = s2_parse_replay(file_path)
-    pprint(replay)

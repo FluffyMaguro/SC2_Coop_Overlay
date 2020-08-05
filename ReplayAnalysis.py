@@ -508,7 +508,7 @@ def analyse_replay(filepath, playernames=['']):
 
                 # Debug for player no units kills            
                 if _killed_unit_type not in {'Scarab','Interceptor'} and not _killing_unit_id in unit_dict and not _killing_unit_type in commander_no_units.values() and _killing_player in {1,2} and _losing_player != _killing_player:
-                    logger.info(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16.:0f}s ')
+                    logger.info(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16:.1f}s ')
 
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
@@ -704,11 +704,3 @@ def analyse_replay(filepath, playernames=['']):
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2]/total_amon_kills,2)
 
     return replay_report_dict
-
-
-# DEBUGGING
-if __name__ == "__main__":
-    from pprint import pprint
-    file_path = r'C:\Users\Maguro\Documents\StarCraft II\Accounts\114803619\1-S2-1-4189373\Replays\Multiplayer\[MM] Temple of the Past - Terran (31).SC2Replay'
-    replay_dict = analyse_replay(file_path,['Maguro'])
-    pprint(replay_dict, sort_dicts=False)
