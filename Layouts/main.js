@@ -134,7 +134,7 @@ connect_to_socket();
 
 
 function debug() {
-    DURATION = 3;
+    DURATION = 60;
     var dummydata = {
         'replaydata': true,
         'result': 'Victory',
@@ -206,9 +206,9 @@ function debug() {
         'Defeat':2
 
     };
-    data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
-    playerWinrate(data)
-    // postGameStatsTimed(dummydata);
+    // data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
+    // playerWinrate(data)
+    postGameStatsTimed(dummydata);
     // setTimeout(uploadStatus,1500,'Error - some error');
 }
 
@@ -495,6 +495,9 @@ function postGameStats(data, showing = false) {
     fill('CMtalent1',data['mainPrestige'])
     fill('CMtalent2',data['allyPrestige'])
     fill('comp', data['comp']);
+    //BG images
+    document.getElementById('killbar1img').src ='Commanders/'+ data['mainCommander'] +'.png'
+    document.getElementById('killbar2img').src ='Commanders/'+ data['allyCommander'] +'.png'
 
     fill('name1', data['main']);
     fill('result', data['result'] + '!');

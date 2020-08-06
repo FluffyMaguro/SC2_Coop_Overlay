@@ -460,3 +460,20 @@ body {
 .player_stat {
     color: #F4F489;
 }
+
+#killbar > div > img {
+    position: absolute;    
+    top: 0vh;  
+    opacity: .5;
+    height: 100%;                            
+}
+
+#killbar1img {
+    left: 0vh;
+}
+
+#killbar2img {
+    right: 0vh;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
