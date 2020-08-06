@@ -127,6 +127,6 @@ def s2_parse_replay(file, return_raw=False, return_events=False):
 
     # Raw
     if return_raw:
-        replay['raw'] = [metadata, player_info, detailed_info]
+        replay['raw'] = {'metadata':metadata, 'player_info': player_info, 'detailed_info': detailed_info}
 
     return replay

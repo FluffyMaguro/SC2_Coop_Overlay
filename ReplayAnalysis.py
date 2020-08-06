@@ -220,7 +220,12 @@ def analyse_replay(filepath, playernames=['']):
     diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
     diff_1 = diff_dict.get(replay['difficulty'][0],'')
     diff_2 = diff_dict.get(replay['difficulty'][1],'')
-    replay_report_dict['difficulty'] = diff_1 if diff_1 == diff_2 else f'{diff_1}/{diff_2}'
+    if diff_1 == diff_2:
+        replay_report_dict['difficulty'] = diff_1
+    elif main_player == 1:
+        replay_report_dict['difficulty'] = f'{diff_1}/{diff_2}'
+    else:
+        replay_report_dict['difficulty'] = f'{diff_2}/{diff_1}'
 
     logger.debug(f'Report dict: {replay_report_dict}')
 

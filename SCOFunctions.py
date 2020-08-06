@@ -266,12 +266,12 @@ async def manager(websocket, path):
         try:
             if len(OverlayMessages) > overlayMessagesSent:
                 message = json.dumps(OverlayMessages[overlayMessagesSent])
-                logger.info(f'#{overlayMessagesSent} message is being sent through {websocket}')
                 overlayMessagesSent += 1
                 update_global_overlay_messages(overlayMessagesSent)
-
-                try: # Send the message
-                    await asyncio.wait_for(asyncio.create_task(websocket.send(message)), timeout=1)
+                logger.info(f'#{overlayMessagesSent-1} message is being sent through {websocket}')
+                
+                try: # Send the message  
+                    await asyncio.wait_for(asyncio.gather(websocket.send(message)), timeout=1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
 
                 except asyncio.TimeoutError:
