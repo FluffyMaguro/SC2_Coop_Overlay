@@ -25,6 +25,7 @@ AllReplays = dict()
 player_winrate_data = dict()
 PLAYER_NAMES = []
 CONFIG_PLAYER_NAMES = []
+most_recent_playerdata = None
 
 
 def set_initMessage(colors,duration,unifiedhotkey):
@@ -38,7 +39,7 @@ def set_initMessage(colors,duration,unifiedhotkey):
 def sendEvent(event):
     """ Adds event to messages ready to be sent """
     with lock:
-        OverlayMessages.append(event) 
+        OverlayMessages.append(event)
 
 
 def set_PLAYER_NAMES(names):
@@ -55,12 +56,12 @@ def guess_PLAYER_NAMES():
     global PLAYER_NAMES
 
     if len(PLAYER_NAMES) > 0:
-        return 
+        return
 
     # If we have calculated winrate data for all players, use that. Otherwise check for common players in analysis log.
     if len(player_winrate_data) > 10:
         with lock:
-            PLAYER_NAMES = list(player_winrate_data.keys())[0:3] 
+            PLAYER_NAMES = list(player_winrate_data.keys())[0:3]
         logger.info(f'Player guess through player_winrate_data: {PLAYER_NAMES}')
         return
 
@@ -80,7 +81,7 @@ def guess_PLAYER_NAMES():
 
     # Get the three most common names. Replay analysis will check from the first one to the last one if they are ingame.
     with lock:
-        PLAYER_NAMES = list(players.keys())[0:3] 
+        PLAYER_NAMES = list(players.keys())[0:3]
     logger.info(f'Player guess through analysis log: {PLAYER_NAMES}')
 
 
@@ -180,14 +181,14 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
                 file_path = os.path.join(root,file)
                 if len(file_path) > 255:
                     file_path = '\\\?\\' + file_path
-                if file.endswith('.SC2Replay') and not(file_path in AllReplays): 
+                if file.endswith('.SC2Replay') and not(file_path in AllReplays):
                     with lock:
                         AllReplays[file_path] = {'created':os.path.getmtime(file_path)}
 
-                    if current_time - os.path.getmtime(file_path) < 60: 
+                    if current_time - os.path.getmtime(file_path) < 60:
                         logger.info(f'New replay: {file_path}')
                         replay_dict = dict()
-                        try:   
+                        try:
                             replay_dict = analyse_replay(file_path,PLAYER_NAMES)
 
                             # Good output
@@ -195,18 +196,18 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
                                 logger.debug('Replay analysis result looks good, appending...')
                                 session_games[replay_dict['result']] += 1
                                 update_player_winrate_data(replay_dict)
-                                    
+
                                 sendEvent({**replay_dict,**session_games})
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
-                                    file.write((str(replay_dict)+'\n').encode('utf-8'))     
-                            # No output                         
+                                    file.write((str(replay_dict)+'\n').encode('utf-8'))
+                            # No output
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
 
                             with lock:
                                 AllReplays[file_path]['replay_dict'] = replay_dict
                                 ReplayPosition = len(AllReplays)-1
-                
+
                         except:
                             logger.error(traceback.format_exc())
 
@@ -214,7 +215,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
                             upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict)
                             break
 
-        time.sleep(3)   
+        time.sleep(3)
 
 
 def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
@@ -238,10 +239,10 @@ def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
         with open(file_path, 'rb') as file:
             response = requests.post(url, files={'file': file})
         logger.info(f'Replay upload reponse: {response.text}')
-     
+
         if 'Success' in response.text or 'Error' in response.text:
             sendEvent({'uploadEvent':True,'response':response.text})
-    
+
     except:
         sendEvent({'uploadEvent':True,'response':'Error'})
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
@@ -269,8 +270,8 @@ async def manager(websocket, path):
                 overlayMessagesSent += 1
                 update_global_overlay_messages(overlayMessagesSent)
                 logger.info(f'#{overlayMessagesSent-1} message is being sent through {websocket}')
-                
-                try: # Send the message  
+
+                try: # Send the message
                     await asyncio.wait_for(asyncio.gather(websocket.send(message)), timeout=1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
 
@@ -281,10 +282,10 @@ async def manager(websocket, path):
                     break
                 except websockets.exceptions.ConnectionClosedError:
                     logger.error('Websocket connection closed ERROR!')
-                    break            
+                    break
                 except websockets.exceptions.ConnectionClosed:
                     logger.error('Websocket connection closed!')
-                    break 
+                    break
                 except:
                     logger.error(traceback.format_exc())
 
@@ -331,14 +332,14 @@ def move_in_AllReplays(delta):
             move_in_AllReplays(delta)
     else:
         # Replay_dict is missing, analyse replay
-        try: 
+        try:
             replay_dict = analyse_replay(key,PLAYER_NAMES)
             if len(replay_dict) > 1:
                 sendEvent(replay_dict)
                 with lock:
                     AllReplays[key]['replay_dict'] = replay_dict
                 with open(analysis_log_file, 'ab') as file:
-                    file.write((str(replay_dict)+'\n').encode('utf-8'))  
+                    file.write((str(replay_dict)+'\n').encode('utf-8'))
             else:
                 # No output from analysis
                 with lock:
@@ -357,7 +358,7 @@ def keyboard_thread_OLDER(OLDER):
     while True:
         keyboard.wait(OLDER)
         move_in_AllReplays(-1)
-        
+
 
 def keyboard_thread_NEWER(NEWER):
     """ Thread waiting for hotkey for showing newer replay"""
@@ -384,8 +385,22 @@ def keyboard_thread_SHOW(SHOW):
         logger.info('Show event')
         sendEvent({'showEvent': True})
 
+def keyboard_thread_PLAYERWINRATES(PLAYERWINRATES):
+    global most_recent_playerdata
+    """ Thread waiting for show hotkey """
+    logger.info('Starting keyboard playerwinrates thread')
+    while True:
+        keyboard.wait(PLAYERWINRATES)
+        logger.info('PlayerWinrate key event')
+        if most_recent_playerdata:
+            logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
+            sendEvent({'playerEvent': True,'data':most_recent_playerdata})
+        else:
+            logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
+
 
 def check_for_new_game(PLAYER_NOTES):
+    global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
 
     # Wait a bit for the replay initialization to complete
@@ -417,7 +432,7 @@ def check_for_new_game(PLAYER_NOTES):
             # Request player data from the game
             resp = requests.get('http://localhost:6119/game', timeout=4).json()
             players = resp.get('players',list())
-            
+
             # Check if we have players in, and it's not a replay
             if len(players) > 0 and not resp.get('isReplay',True):
                 # If the last time is the same, then we are in menus. Otherwise in-game.
@@ -431,14 +446,14 @@ def check_for_new_game(PLAYER_NOTES):
                     continue
 
                 last_game_time = resp['displayTime']
-                
+
                 # Don't show too soon after a replay has been parsed, false positive.
                 if time.time() - last_replay_time < 15:
                     logger.debug('Replay added recently, wont show player winrates right now')
                     continue
 
-                # Mark this game so it won't be checked it again    
-                last_replay_amount = len(AllReplays) 
+                # Mark this game so it won't be checked it again
+                last_replay_amount = len(AllReplays)
 
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
                 player_names = set()
@@ -450,15 +465,15 @@ def check_for_new_game(PLAYER_NOTES):
                 # If we have players to show
                 if len(player_names) > 0:
                     # Get player winrate data
-                    data = {p:player_winrate_data.get(p,[None]) for p in player_names} 
+                    data = {p:player_winrate_data.get(p,[None]) for p in player_names}
                     # Get player notes
                     for player in data:
                         if player.lower() in PLAYER_NOTES:
                             data[player].append(PLAYER_NOTES[player.lower()])
-                            
-                    sendEvent({'playerEvent': True,'data':data})
-                    logger.info(f'Sending player data event: {data}')
 
+                    most_recent_playerdata = data
+                    logger.info(f'Sending player data event: {data}')
+                    sendEvent({'playerEvent': True,'data':data})
 
         except requests.exceptions.ConnectionError:
             logger.info(f'SC2 request failed. Game not running.')
@@ -471,4 +486,4 @@ def check_for_new_game(PLAYER_NOTES):
 
         except:
             logger.info(traceback.format_exc())
-        
+
