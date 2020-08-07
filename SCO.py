@@ -14,7 +14,7 @@ from MLogging import logclass
 from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
 
 
-APPVERSION = 17
+APPVERSION = 18
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
@@ -25,8 +25,7 @@ def config_setup():
     """ Config setup """
     if not(os.path.isfile('SCO_config.ini')):
         with open('SCO_config.ini','w') as file:
-            file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nPLAYER_NAMES = Maguro,BigMaguro\nDURATION = 60\nMONITOR = 1\n\nKEY_SHOW = Ctrl+/\nKEY_HIDE = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nSHOWOVERLAY = True\nLOGGING = False""")
-
+            file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nDURATION = 60\nMONITOR = 1\nPLAYER_WINRATES = True\n\nKEY_SHOW = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nPLAYER_NAMES = \nSHOWOVERLAY = True\nLOGGING = False\n\n[PLAYER_NOTES]\nMaguro = Overlay creator""")
     config = configparser.ConfigParser()
     try:
         config.read('SCO_config.ini')

@@ -118,6 +118,13 @@ Changes take effect the next time you start the app!
 
 
 # Changelog
+* 1.18 version
+
+      - Commander images are shown in the background of the killbar
+      - In mixed difficulties, the order reflects which player queued for what difficulty
+      - On MM maps commander level isn't shown as 1
+      - Minor fixes and tweaks
+
 * 1.17 version
 
       - You can add notes to players that will show together with the winrate and games played
@@ -127,7 +134,7 @@ Changes take effect the next time you start the app!
       - Fixed player winrate data occasionally showing for the previous player
       - Fixed player winrate showing in menus
       - Fixed some issues with primal combat and morphs
-      - Small fixes and tweaks
+      - Minor fixes and tweaks
 
 
 * 1.16 version
