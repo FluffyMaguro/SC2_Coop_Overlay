@@ -5,9 +5,9 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:** 
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.17/SC2CoopOverlay.1.17.zip)
-* [Mega](https://mega.nz/file/A4kXhQAJ#QXNbzg5weTxt0jor8dbo_rd7bmc0OWK4_hnGvwSSzIQ)
-* [Google-drive](https://drive.google.com/file/d/1tJbLrwo7CMbBrrdbssfXYDFuZzAvWfhx/view)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.18/SC2CoopOverlay.1.18.zip)
+* [Mega](https://mega.nz/file/cwcU0SYS#Jj28ans99l1yAWOpsngPw68JbuUgnHU8B8wMi4DI9j0)
+* [Google-drive](https://drive.google.com/file/d/1dZF-gajEJr153oqZL4L7Ds5apdR3ZWAD/view)
 * Or run the script with Python
 
 ![Screenshot](/Screenshots/widescreen.png)
