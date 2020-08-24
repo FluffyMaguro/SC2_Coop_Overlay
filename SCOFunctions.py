@@ -385,9 +385,10 @@ def keyboard_thread_SHOW(SHOW):
         logger.info('Show event')
         sendEvent({'showEvent': True})
 
+
 def keyboard_thread_PLAYERWINRATES(PLAYERWINRATES):
     global most_recent_playerdata
-    """ Thread waiting for show hotkey """
+    """ Thread waiting for player winrate hotkey """
     logger.info('Starting keyboard playerwinrates thread')
     while True:
         keyboard.wait(PLAYERWINRATES)
