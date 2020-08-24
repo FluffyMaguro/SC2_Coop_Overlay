@@ -217,9 +217,8 @@ def analyse_replay(filepath, playernames=['']):
     replay_report_dict['allyAPM'] = replay['players'][ally_player].get('apm',0)
 
     # Difficulty
-    diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
-    diff_1 = diff_dict.get(replay['difficulty'][0],'')
-    diff_2 = diff_dict.get(replay['difficulty'][1],'')
+    diff_1 = replay['difficulty'][0]
+    diff_2 = replay['difficulty'][1]
     if diff_1 == diff_2:
         replay_report_dict['difficulty'] = diff_1
     elif main_player == 1:

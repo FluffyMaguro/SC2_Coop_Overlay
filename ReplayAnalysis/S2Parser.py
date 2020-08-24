@@ -2,6 +2,9 @@ import mpyq
 import json
 
 from s2protocol import versions
+from ReplayAnalysis.SC2Dictionaries import map_names
+
+diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
 
 
 def get_last_deselect_event(events):
@@ -91,7 +94,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
-    replay['map_name'] = metadata['Title']
+    replay['map_name'] = map_names.get(metadata['Title'])['EN']
     replay['isBlizzard'] = player_info['m_isBlizzardMap']
     replay['extension'] = detailed_info['m_syncLobbyState']['m_gameDescription']['m_hasExtensionMod']
     replay['brutal_plus'] = detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0].get('m_brutalPlusDifficulty',0)
@@ -149,10 +152,25 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     if replay['players'][2]['pid'] != 2:
         replay['players'].insert(2, {'pid':2})
 
+    # Enemy race
+    replay['enemy_race'] = replay['players'][3]['race']
+
     # Difficulty
-    replay['difficulty'] = (replay['players'][3]['difficulty'],replay['players'][4]['difficulty'])
-    for player in replay['players']: # Delete difficulty per player as it's not accurate for human players and we are returning map difficulty already
+    diff_1 = diff_dict.get(replay['players'][3]['difficulty'],'')
+    diff_2 = diff_dict.get(replay['players'][4]['difficulty'],'')
+    replay['difficulty'] = (diff_1,diff_2)
+
+    # Delete difficulty per player as it's not accurate for human players and we are returning map difficulty already
+    for player in replay['players']: 
         player.pop('difficulty', None)
+
+    # Extended difficulty (including B+)
+    if replay['brutal_plus'] > 0:
+        replay['ext_difficulty'] = f'B+{replay["brutal_plus"]}'
+    elif diff_1 == diff_2:
+        replay['ext_difficulty'] = diff_1
+    else:
+        replay['ext_difficulty'] = f'{diff_1}/{diff_2}'
 
     # Events
     if return_events:

@@ -135,6 +135,7 @@ Changes take effect the next time you start the app!
 
       - New hotkey to show player winrates
       - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards it
+      - Map name is reported in english
 
 * 1.18 version
 
