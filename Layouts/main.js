@@ -268,23 +268,23 @@ function playerWinrate(dat) {
     var text = '';
 
     for (let [key, value] of Object.entries(dat['data'])) {
-        // no data                                                        
+        // no data
         if ((value.length == 1) && (value[0] == null)) {
-            text = text + 'No games played with <span class="player_stat">' + key + '</span>'   
+            text = text + 'No games played with <span class="player_stat">' + key + '</span>'
 
         // no winrate data but with a player note
         } else if ((value.length == 2) && (value[0] == null)) {
-            text = text + 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]    
+            text = text + 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]
 
         // winrate data
         } else if (value.length == 2) {
-            let total_games = value[0] + value[1];                               
+            let total_games = value[0] + value[1];
             text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)'
 
         // winrate data and player note
         } else if (value.length == 3) {
-            let total_games = value[0] + value[1];                               
-            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)<br>' + value[2] 
+            let total_games = value[0] + value[1];
+            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)<br>' + value[2]
         }
     }
     element.innerHTML = text;
@@ -303,7 +303,7 @@ function showNotification() {
     }, 6000)
 }
 
-function fillhotkeyinfo(showh, hideh, newh, olderh, unified, update) {
+function fillhotkeyinfo(showh, hideh, newh, olderh, playerwinrates, unified, update) {
     var otherinfo = document.getElementById('otherinfo');
     var ttext = '';
     if (update) {
@@ -335,8 +335,13 @@ function fillhotkeyinfo(showh, hideh, newh, olderh, unified, update) {
     if (olderh == 'None') {
         inner_older = ''
     }
+    var inner_playerwinrates = '<span>' + playerwinrates + '</span> &rArr; current partner winrate';
+    if (playerwinrates == 'None') {
+        inner_playerwinrates = ''
+    }
 
-    otherinfo.innerHTML = ttext + '<table><tr><td>' + inner_newer + '</td><td>' + inner_older + '</td></tr><tr><td ' + show_style + '>' + inner_show + '</td><td>' + inner_hide + '</td></tr></table>';
+    otherinfo.innerHTML = ttext + '<table><tr><td>' + inner_newer + '</td><td>' + inner_older + '</td></tr><tr><td ' + show_style + '>' + inner_show + '</td><td>' + inner_hide + '</td></tr><tr><td colspan="2">' + inner_playerwinrates + '</td></tr></table>';
+
     if (update) {
         document.getElementById('update').style.display = 'block'
     };
@@ -355,7 +360,7 @@ function initColorsDuration(data) {
 
 
 function setColors(P1color, P2color, P3color, MasteryColor) {
-    //this function is executed by the app on page load                                                         
+    //this function is executed by the app on page load
     //Player 1
     if (P1color != null) {
         gP1Color = P1color
@@ -440,7 +445,7 @@ function mutatorInfo(data) {
 
 function postGameStatsTimed(data) {
     //This is a wrapper for postGameStats
-    //The goal is to nicely update the data if it's already showing     
+    //The goal is to nicely update the data if it's already showing
     if ((document.getElementById('stats').style.right != '-50vh') && (document.getElementById('stats').style.right != '')) {
         document.getElementById('stats').style.opacity = '0';
         setTimeout(function() {
@@ -491,7 +496,7 @@ function postGameStats(data, showing = false) {
     //initial change
     document.getElementById('killbar').style.display = 'block';
     document.getElementById('nodata').style.display = 'none';
-    // fill 
+    // fill
     fill('CMtalent1',data['mainPrestige'])
     fill('CMtalent2',data['allyPrestige'])
     fill('comp', data['comp']);
@@ -522,7 +527,7 @@ function postGameStats(data, showing = false) {
         fill('brutal', data['difficulty'])
     };
 
-    // kill counts 
+    // kill counts
     var killbarW = document.getElementById('killbar').offsetWidth;
     var totalkills = data['mainkills'] + data['allykills']
     if (totalkills > 0) {
@@ -564,7 +569,7 @@ function postGameStats(data, showing = false) {
 
     fill('CMname3', 'Amon');
     fillunits('CMunits3', data['amonUnits'], null);
-    //show 
+    //show
     showstats();
 
     //victory data is for automatic showing. In that case automatically hide. Otherwise hide loader.
@@ -610,7 +615,7 @@ function showstats() {
     document.getElementById('stats').style.right = '2vh';
     document.getElementById('bgdiv').style.opacity = '1';
     setTimeout(function(){document.getElementById('session').style.opacity = '0.6'},1000)
-    
+
 }
 
 function fill(el, dat) {
