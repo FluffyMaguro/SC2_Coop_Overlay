@@ -133,6 +133,7 @@ Changes take effect the next time you start the app!
 # Changelog
 * 1.19 version (work in progress)
 
+      - New hotkey to show player winrates
       - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards it
 
 * 1.18 version
