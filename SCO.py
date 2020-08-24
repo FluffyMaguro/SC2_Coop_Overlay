@@ -10,11 +10,11 @@ import ctypes.wintypes
 import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
-from MLogging import logclass
+from ReplayAnalysis.MLogging import logclass
 from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
 
 
-APPVERSION = 18
+APPVERSION = 19
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')

@@ -4,9 +4,9 @@ import json
 import time
 import traceback
 
-from Logging.MLogging import logclass
-from S2Parser import s2_parse_replay
-from SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
+from ReplayAnalysis.MLogging import logclass
+from ReplayAnalysis.S2Parser import s2_parse_replay
+from ReplayAnalysis.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
 
 
 amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit"]

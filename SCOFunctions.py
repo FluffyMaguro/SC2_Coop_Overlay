@@ -9,9 +9,9 @@ import asyncio
 import keyboard
 import websockets
 
-from MLogging import logclass
-from ReplayAnalysis import analyse_replay
-from PlayerWinrateAnalysis import get_player_winrates
+from ReplayAnalysis.MLogging import logclass
+from ReplayAnalysis.ReplayAnalysis import analyse_replay
+from ReplayAnalysis.PlayerWinrateAnalysis import get_player_winrates
 
 
 OverlayMessages = [] # Storage for all messages

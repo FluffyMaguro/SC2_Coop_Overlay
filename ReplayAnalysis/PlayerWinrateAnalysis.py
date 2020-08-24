@@ -5,7 +5,7 @@ import traceback
 from pprint import pprint
 
 from s2protocol import versions
-from MLogging import logclass
+from ReplayAnalysis.MLogging import logclass
 
 logger = logclass('SCOM','INFO')
 

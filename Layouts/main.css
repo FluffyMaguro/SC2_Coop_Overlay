@@ -404,6 +404,8 @@ body {
     margin-bottom: 0.1vh;
     text-align: center;
     display: none;
+    color: green;
+    font-weight: bold;
 }
 
 .commstats div:first-child {
