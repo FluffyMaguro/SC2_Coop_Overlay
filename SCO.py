@@ -71,7 +71,7 @@ def get_account_dir(path):
     if path != None and os.path.isdir(path):
         return path
 
-    # Use ctypes.wintypes instad of expanduser to get current documents folder
+    # Use ctypes.wintypes instead of expanduser to get current documents folder
     CSIDL_PERSONAL = 5       # My Documents
     SHGFP_TYPE_CURRENT = 1   # Get current, not default value
     buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)

@@ -22,16 +22,17 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 ![Screenshot](/Screenshots/Display.jpg)
 
+* Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
 
-* If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 
 
 # Other notes
 * If you want this app (or any other) run with the windows start-up, create a shortcut of the executable, press Win+R (start/run) and write "shell:startup". Startup folder will open. Now move the shortcut there. Done.
 * The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay). 
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
-* Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception for the file and the directory.
 * Kills are shown for top 5 units only (this can by changed in HTML).
+* Indirectly killed interceptors are counted towards player kills which is not the case in kills showed in-game. Directly killed interceptors are counted in both cases.
+* If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 * You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
 * Blizzard's s2protocol is used to parse replays.
 * At the start of the game, your record with your ally calculated based on your replays and matching his name is shown:
