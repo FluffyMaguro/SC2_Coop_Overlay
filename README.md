@@ -4,11 +4,17 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
 
 The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
-**Download links:** 
+**Download links:**
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.18/SC2CoopOverlay.1.18.zip)
 * [Mega](https://mega.nz/file/cwcU0SYS#Jj28ans99l1yAWOpsngPw68JbuUgnHU8B8wMi4DI9j0)
 * [Google-drive](https://drive.google.com/file/d/1dZF-gajEJr153oqZL4L7Ds5apdR3ZWAD/view)
-* Or run the script with Python
+* Or run the script with Python 3.8 or newer:
+
+```
+pip install -r requirements.txt
+python SCO.py
+```
+
 
 ![Screenshot](/Screenshots/widescreen.png)
 
@@ -28,7 +34,7 @@ The overlay is fully customizable through simple editing of the HTML file. Its s
 
 # Other notes
 * If you want this app (or any other) run with the windows start-up, create a shortcut of the executable, press Win+R (start/run) and write "shell:startup". Startup folder will open. Now move the shortcut there. Done.
-* The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay). 
+* The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay).
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
 * Kills are shown for top 5 units only (this can by changed in HTML).
 * Indirectly killed interceptors are counted towards player kills which is not the case in kills showed in-game. Directly killed interceptors are counted in both cases.
@@ -48,67 +54,73 @@ Changes take effect the next time you start the app!
 * **Adding notes to any players (this will show with winrates)**
 
    [PLAYER_NOTES]
-   
+
    Maguro = Overlay creator
 
 * **Changing hotkeys for manual overlay display**
 
    KEY_SHOW = Ctrl+/
 
+   KEY_HIDE = Ctrl+*
+
 * **Changing hotkeys for moving between replays**
 
    KEY_NEWER = Alt+/
-  
+
    KEY_OLDER = Alt+*
 
+* **Changing hotkeys for shows the winrate and number of games played with your ally**
+
+   KEY_PLAYERWINRATE = Alt+-
+
 * **Changing the duration for how long the overlay is visible when shown automatically (in seconds)**
-  
+
    DURATION = 30
 
 * **Choose which monitor to show the overlay on (for multi-monitor setups).**
-  
+
    MONITOR = 1
 
 * **At the start of the game shows the winrate and number of games played with your ally (based on his name)**
 
-   PLAYER_WINRATES = True	
- 
+   PLAYER_WINRATES = True
+
 * **If and only if these are set, analysed replays will be automatically uploaded to https://starcraft2coop.com/**
 
    AOM_NAME = Maguro (account name)
 
    AOM_SECRETKEY = .... (secret key generated on the site)
-   
+
 * **Some color customization directly via config file (deleting values resets to default)**
 
    P1COLOR = #0080F8
-   
+
    P2COLOR = #00D532
-   
+
    AMONCOLOR = #FF0000
-   
+
    MASTERYCOLOR = #FFDC87
-   
+
 * **If it has trouble finding replays, specify the folder directly.**
 
    ACCOUNTDIR = C:\Users\Maguro\Documents\StarCraft II\Accounts
 
-* **Prevents the from showing. You can still add it to OBS, or open in an internet browser.**  
+* **Prevents the overlay from showing. You can still add it to OBS, or open in an internet browser.**
 
-   SHOWOVERLAY = False 
-   
+   SHOWOVERLAY = False
+
 * **Choosing players that will be preferably shown on top.**
 
    PLAYER_NAMES = Maguro,SeaMaguro
-   
-   Note: App will automatically identify common players after some time if none players are specified here.   
-   
-* **This lets you have a different hotkey for showing and hiding the overlay**  
 
-   UNIFIEDHOTKEY = False   
-     
+   Note: App will automatically identify common players after some time if none players are specified here.
+
+* **This lets you have a different hotkey for showing and hiding the overlay**
+
+   UNIFIEDHOTKEY = False
+
    KEY_HIDE = Ctrl+*
-   
+
 * **For debugging - changes used port. The port also needs to be changed in the html layout.**
 
    PORT = 7305
@@ -173,13 +185,13 @@ Changes take effect the next time you start the app!
       - Internal reorganization of dictionaries, and many comments added to the code
       - Proper HH:MM:SS format for game length for games over 60 minutes
       - Minor visual tweaks
-      
+
 
 * 1.13 version
 
       - Additional icons showing structures destroyed on Dead of Night and certain mutator kills:
         Void Rifts, Propagators, Void Reanimators, Turkeys, Mines, HftS & TUS, units sacrified to Killbots
-      - APM rescaled according to accurate replay length 
+      - APM rescaled according to accurate replay length
       - Stats no longer contain events that happened during victory cutscenes (e.g. Cradle of Death)
       - Tweaks to replay analysis (Nova airstrike,...)
 

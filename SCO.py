@@ -11,7 +11,7 @@ import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 from MLogging import logclass
-from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, set_PLAYER_NAMES
+from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
 
 
 APPVERSION = 18
@@ -52,10 +52,10 @@ def get_configvalue(config,name,default,section='CONFIG'):
                         return float(config[section][name].strip())
                     except:
                         return default
-                # Lists        
+                # Lists
                 elif isinstance(default, list):
                     return [i.strip() for i in config[section][name].split(',')]
-                    
+
                 # Return as string
                 else:
                     return config[section][name].strip()
@@ -119,7 +119,7 @@ def new_version():
     try:
         data = json.loads(requests.get(version_link).text)
         logger.info(f'This version: 1.{APPVERSION}. Most current live version: 1.{data["version"]}. ')
-        if data['version'] > APPVERSION:        
+        if data['version'] > APPVERSION:
             return data['download_link_1']
         else:
             return False
@@ -130,7 +130,7 @@ def new_version():
 
 class WWW(QtWebEngineWidgets.QWebEngineView):
     """ Expanding this class to add javascript after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
-    def __init__(self, unified, dll, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER, parent=None):
+    def __init__(self, unified, dll, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER, KEY_PLAYERWINRATES, parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
         self.unified = unified
@@ -139,14 +139,15 @@ class WWW(QtWebEngineWidgets.QWebEngineView):
         self.KEY_HIDE = KEY_HIDE
         self.KEY_NEWER = KEY_NEWER
         self.KEY_OLDER = KEY_OLDER
+        self.KEY_PLAYERWINRATES = KEY_PLAYERWINRATES
 
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{self.KEY_SHOW}','{self.KEY_HIDE}','{self.KEY_NEWER}','{self.KEY_OLDER}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
+            self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{self.KEY_SHOW}','{self.KEY_HIDE}','{self.KEY_NEWER}','{self.KEY_OLDER}','{self.KEY_PLAYERWINRATES}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
 
 
-def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES,PLAYER_NOTES):
+def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,KEY_PLAYERWINRATES,PLAYER_WINRATES,PLAYER_NOTES):
     """ Threading moved to this function so I can import main function without threading """
     t1 = threading.Thread(target = check_replays, daemon=True, args=(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES))
     t1.start()
@@ -173,6 +174,10 @@ def startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NE
         t7 = threading.Thread(target = check_for_new_game, daemon=True, args=(PLAYER_NOTES,))
         t7.start()
 
+        if KEY_PLAYERWINRATES != None:
+            t8 = threading.Thread(target = keyboard_thread_PLAYERWINRATES, daemon=True, args=(KEY_PLAYERWINRATES,))
+            t8.start()
+
 
 def main(startthreads=True):
 
@@ -196,6 +201,7 @@ def main(startthreads=True):
     KEY_HIDE = get_configvalue(config,'KEY_HIDE', None)
     KEY_OLDER = get_configvalue(config,'KEY_OLDER', None)
     KEY_NEWER = get_configvalue(config,'KEY_NEWER', None)
+    KEY_PLAYERWINRATES = get_configvalue(config,'KEY_PLAYERWINRATES', None)
     P1COLOR = get_configvalue(config,'P1COLOR', 'null')
     P2COLOR = get_configvalue(config,'P2COLOR', 'null')
     AMONCOLOR = get_configvalue(config,'AMONCOLOR', 'null')
@@ -226,11 +232,11 @@ def main(startthreads=True):
     download_link = new_version()
     # Init the app and QWebEngineView
     app = QtWidgets.QApplication(sys.argv)
-    view = WWW(UNIFIEDHOTKEY, download_link, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER)
+    view = WWW(UNIFIEDHOTKEY, download_link, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER, KEY_PLAYERWINRATES)
     # Set flags, this might work only on Windows 10
     view.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
-    
+
     # Create the system tray
     tray = QtWidgets.QSystemTrayIcon()
     # Add the icon either from the packaged file or from the directory
@@ -240,7 +246,7 @@ def main(startthreads=True):
        tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
     tray.setVisible(True)
     tray.setToolTip(f'StarCraft Co-op Overlay 1.{APPVERSION}')
-        
+
     # Add icons to the system tray
     menu = QtWidgets.QMenu()
 
@@ -283,7 +289,7 @@ def main(startthreads=True):
         perError.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
         tray.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_MessageBoxWarning')))
         menu.addAction(perError)
-        menu.addSeparator()    
+        menu.addSeparator()
 
     # Show overlay if it's not set otherwise
     if SHOWOVERLAY and not permission_error:
@@ -314,8 +320,8 @@ def main(startthreads=True):
     # Send init message to all connected layouts, not just the one created as overlay
     set_initMessage([P1COLOR,P2COLOR,AMONCOLOR,MASTERYCOLOR], DURATION, UNIFIEDHOTKEY)
 
-    if startthreads and not permission_error:        
-        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,PLAYER_WINRATES,PLAYER_NOTES)            
+    if startthreads and not permission_error:
+        startThreads(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PORT,KEY_SHOW,KEY_HIDE,KEY_NEWER,KEY_OLDER,KEY_PLAYERWINRATES,PLAYER_WINRATES,PLAYER_NOTES)
 
     sys.exit(app.exec_())
 
