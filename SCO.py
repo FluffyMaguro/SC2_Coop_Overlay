@@ -223,7 +223,7 @@ def main(startthreads=True):
         PLAYER_NOTES = dict()
 
     logclass.LOGGING = False if permission_error else LOGGING
-    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n{PLAYER_NOTES=}\n--------')
+    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{KEY_PLAYERWINRATES=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n{PLAYER_NOTES=}\n--------')
 
     # Set player names in SCOFunctions
     set_PLAYER_NAMES(PLAYER_NAMES)

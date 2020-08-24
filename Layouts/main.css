@@ -332,7 +332,7 @@ body {
 
 #notification {
     position: absolute;
-    bottom: 13vh;
+    bottom: 15vh;
     right: 2vh;
     background-color: #252525;
     width: 30vh;
@@ -369,7 +369,7 @@ body {
 
 #otherinfo {
     position: absolute;
-    bottom: 4.5vh;
+    bottom: 6.5vh;
     right: 2vh;
     width: 30vh;
     height: 8vh;

@@ -11,7 +11,7 @@ import websockets
 
 from MLogging import logclass
 from ReplayAnalysis import analyse_replay
-from MassReplayAnalysis import get_player_winrates
+from PlayerWinrateAnalysis import get_player_winrates
 
 
 OverlayMessages = [] # Storage for all messages
