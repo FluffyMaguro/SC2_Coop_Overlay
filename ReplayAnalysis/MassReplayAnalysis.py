@@ -177,13 +177,14 @@ class mass_replay_analysis:
         ts = time.time()
         self.ReplayData = self.ReplayData + list(map(parse_replay, replays_to_parse))
         self.ReplayData = [r for r in self.ReplayData if r != None]
+        self.parsed_replays = {r['file'] for r in self.ReplayData}
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
 
     def save_cache(self):
         """ Saves cache """
         with open('cache_overallstats','wb') as f:
-            pickle.dump(self.ReplayData, f, protocol=5)
+            pickle.dump(self.ReplayData, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
     def initialize(self, replays):
@@ -193,14 +194,15 @@ class mass_replay_analysis:
         self.save_cache()
 
 
-    def analyse_replays(self, mutations=True, normal_games=True, mindate=None, maxdate=None):
-        """ Filters and analyses replays replay data """
+    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None):
+        """ Filters and analyses replays replay data
+        `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS """
         data = self.ReplayData
 
-        if not mutations:
+        if not include_mutations:
             data = [r for r in data if not r['extension'] and not r['brutal_plus'] > 0]
 
-        if not normal_games:
+        if not include_normal_games:
             data = [r for r in data if r['extension'] or r['brutal_plus'] > 0]
 
         if mindate != None:
