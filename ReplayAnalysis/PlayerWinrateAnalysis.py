@@ -75,12 +75,12 @@ def get_player_winrates(AllReplays, save_file=True):
     players = {}
     file_modified = 0
 
-    if os.path.isfile('PlayerWinrates.json'):
+    if os.path.isfile('cache_player_winrates.json'):
         try:
             # Get time of saved data
-            file_modified = os.path.getmtime('PlayerWinrates.json')
+            file_modified = os.path.getmtime('cache_player_winrates.json')
             # Parse saved data
-            with open('PlayerWinrates.json', 'r') as f:
+            with open('cache_player_winrates.json', 'r') as f:
                 players = json.load(f)[1]
         except:
             file_modified = 0
@@ -108,7 +108,7 @@ def get_player_winrates(AllReplays, save_file=True):
 
     # Save 
     if save_file:
-        with open('PlayerWinrates.json', 'w') as f:
+        with open('cache_player_winrates.json', 'w') as f:
             data = [{'name':['wins','losses']},players]
             json.dump(data, f, indent=2)
 

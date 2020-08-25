@@ -159,11 +159,11 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
     if PLAYER_WINRATES:
         try:
             time_counter_start = time.time()
-            logger.info(f'Starting mass replay analysis')
+            logger.info(f'Starting player winrate analysis')
             player_winrate_data_temp = get_player_winrates(AllReplays)
             with lock:
                 player_winrate_data = player_winrate_data_temp
-            logger.info(f'Mass replay analysis completed in {time.time()-time_counter_start:.1f} seconds')
+            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds')
         except:
             logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
 

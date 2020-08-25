@@ -1,8 +1,13 @@
+import os
 import mpyq
 import json
+from datetime import datetime
 
 from s2protocol import versions
 from ReplayAnalysis.SC2Dictionaries import map_names
+from ReplayAnalysis.MLogging import logclass
+
+logger = logclass('PARS','INFO')
 
 diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
 
@@ -54,6 +59,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     except:
         if try_lastest:
             protocol = versions.latest()
+            logger.info('Trying the lastest protocol')
         else:
             return None
 
@@ -94,7 +100,13 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
-    replay['map_name'] = map_names.get(metadata['Title'])['EN']
+    replay['date'] = datetime.fromtimestamp(os.path.getmtime(file)).strftime("%Y:%m:%d:%H:%M:%S")
+
+    if metadata['Title'] in map_names:
+        replay['map_name'] = map_names[metadata['Title']]['EN']
+    else:
+        replay['map_name'] = metadata['Title']
+
     replay['isBlizzard'] = player_info['m_isBlizzardMap']
     replay['extension'] = detailed_info['m_syncLobbyState']['m_gameDescription']['m_hasExtensionMod']
     replay['brutal_plus'] = detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0].get('m_brutalPlusDifficulty',0)
@@ -109,7 +121,6 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     else:
         replay['accurate_length'] = replay['length'] - replay['start_time']
         replay['end_time'] = replay['length']
-
 
     # Add data to players
     replay['players'] = list()

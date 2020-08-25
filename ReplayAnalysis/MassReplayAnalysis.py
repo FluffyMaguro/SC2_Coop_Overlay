@@ -1,41 +1,19 @@
 """
-This module is used for generating overall stats from a list of replays (and main names)
-
-TODO:
-- decide how to store already parsed data so we don't have to do it all the time again (likely store as json and check against a set of replay file_paths)
-- create a function for mass parse and replay store (instead of main), IN: replay paths, names | OUT: dictionary with all computed
-- incorporate it into the app
+This module is used for generating overall stats from a list of replays (and main names distinquishing between the main player and ally players)
 
 """
 
 import os
 import time
+import pickle
 import traceback
 import statistics 
 
+from ReplayAnalysis.MLogging import logclass
 from ReplayAnalysis.S2Parser import s2_parse_replay
 
+logger = logclass('MREP','INFO')
 
-AllReplays = set()
-MainNames = set()
-
-
-
-
-############ DEBUG ###########
-
-for root, directories, files in os.walk(r'C:\Users\Maguro\Documents\StarCraft II\Accounts'):
-    for file in files:
-        if file.endswith('.SC2Replay'):
-            file_path = os.path.join(root,file)
-            if len(file_path) > 255:
-                file_path = '\\\?\\' + file_path
-            file_path = file_path = os.path.normpath(file_path)
-            AllReplays.add(file_path)
-
-MainNames = {'Maguro','Potato','SeaMaguro','BigMaguro'}
-
-##############################
 
 
 def parse_replay(file):
@@ -43,7 +21,7 @@ def parse_replay(file):
     try:
         return s2_parse_replay(file, try_lastest=False, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
     except:
-        print(file,traceback.format_exc())
+        logger.error(file,traceback.format_exc())
         return None
 
 
@@ -61,6 +39,9 @@ def calculate_difficulty_data(ReplayData):
             DifficultyData[diff] = {'Victory':0,'Defeat':0}
 
         DifficultyData[diff][r['result']] += 1
+
+    for diff in DifficultyData:
+        DifficultyData[diff]['Winrate'] = DifficultyData[diff]['Victory']/(DifficultyData[diff]['Victory'] + DifficultyData[diff]['Defeat'])
 
     return DifficultyData
 
@@ -82,6 +63,18 @@ def calculate_map_data(ReplayData):
             MapData[r['map_name']]['Fastest']['enemy_race'] = r['enemy_race']
 
     return MapData
+
+
+def get_masterises(replay,player):
+    """ Return masteries. Contains fix for mastery switches (e.g. Zagara)"""
+    masteries = replay['players'][player]['masteries']
+    commander = replay['players'][player]['commander']
+
+    # Zagara mastery fix (at least some)
+    if commander == 'Zagara' and int(replay['date'].replace(':','')) < 20200825000000:
+        masteries[2], masteries[5] = masteries[5], masteries[2]
+
+    return masteries
 
 
 def calculate_commander_data(ReplayData, MainNames):
@@ -110,7 +103,7 @@ def calculate_commander_data(ReplayData, MainNames):
                 AllyCommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
 
                 # Add masteries, use relative values to properly reflect player preferences
-                masteries = r['players'][p]['masteries']
+                masteries = get_masterises(r,p)
                 mastery_sum = sum(masteries)/3
                 masteries = [m/mastery_sum for m in masteries] if mastery_sum != 0 else masteries
                 AllyCommanderData[commander]['Mastery'].append(masteries)
@@ -139,7 +132,7 @@ def calculate_commander_data(ReplayData, MainNames):
         # Normalize mastery choices
         mastery_summed_copy = mastery_summed.copy()
         for idx,m in enumerate(mastery_summed):
-            mastery_summed[idx] = mastery_summed[idx]/(mastery_summed_copy[(idx//2)*2]+mastery_summed_copy[(idx//2)*2+1])
+            mastery_summed[idx] = mastery_summed[idx]/(mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
 
         AllyCommanderData[commander]['Mastery'] = mastery_summed
 
@@ -147,7 +140,7 @@ def calculate_commander_data(ReplayData, MainNames):
         AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
 
         # For ally correct frequency for the main player selecting certain commander (1/(1-f)) factor and rescale
-        would_be_observed_games = (1/(1-CommanderData[commander]['Frequency']))*(AllyCommanderData[commander]['Victory']+AllyCommanderData[commander]['Defeat'])
+        would_be_observed_games = (1/(1-CommanderData[commander]['Frequency']))*(AllyCommanderData[commander]['Victory'] + AllyCommanderData[commander]['Defeat'])
         AllyCommanderData[commander]['Frequency'] = would_be_observed_games
         would_be_observed_games_total += would_be_observed_games
 
@@ -157,58 +150,71 @@ def calculate_commander_data(ReplayData, MainNames):
     return CommanderData, AllyCommanderData
 
 
+class mass_replay_analysis:
+    """ Class for mass replay analysis"""
 
-def main():
-    import pickle
-    from pprint import pprint
-    if False:
+    def __init__(self, main_names):
+        self.main_names = main_names
+        self.parsed_replays = set()
+        self.ReplayData = list()
+
+
+    def load_cache(self):
+        """ Try to load previously parsed replays """
+        try:
+            if os.path.isfile('cache_overallstats'):
+                with open('cache_overallstats','rb') as f:
+                    self.ReplayData = pickle.load(f)
+
+                self.parsed_replays = {r['file'] for r in self.ReplayData}
+        except:
+            logger.error(traceback.format_exc())
+
+
+    def add_replays(self,replays):
+        """ Parses and adds new replays. Doesn't parse already parsed replays. """
+        replays_to_parse = {r for r in replays if not r in self.parsed_replays}
         ts = time.time()
-        ReplayData = map(parse_replay, AllReplays)
-
-        ReplayData = [r for r in ReplayData if r != None]
-        print(f'Successfully parsed {len(ReplayData)}/{len(AllReplays)} in {time.time()-ts:.1f} seconds')
-
-        
-        with open('ReplayData','wb') as f:
-            pickle.dump(ReplayData, f, protocol=5)
-    else:
-        with open('ReplayData','rb') as f:
-            ReplayData = pickle.load(f)
-
-    # from pprint import pprint 
-    # pprint(ReplayData)
-
-    # import json
-    # with open('ReplayData.json', 'w') as f:
-    #     json.dump(ReplayData, f, indent=2)
+        self.ReplayData = self.ReplayData + list(map(parse_replay, replays_to_parse))
+        self.ReplayData = [r for r in self.ReplayData if r != None]
+        logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
 
-    # 4352/5024 | 44.3s - base
-    # 4352/5024 | 43.9 - no recovery
-    # 4328/5024 | 42.1 - no lastest version
-    # 4352/5024 | 44.7 - with MM excluded straight away    
-    # 4328/5024 | 41.2 - no lastest
-    # 4328/5024 | 4185 - with parsing events
-
-    # Exclude weekly/custom
-    ReplayData = [r for r in ReplayData if r['extension'] == False]
-
-    # Get difficulty data
-    DifficultyData = calculate_difficulty_data(ReplayData)
-    # pprint(DifficultyData)
-
-    # # Get map data
-    MapData = calculate_map_data(ReplayData)
-    pprint(MapData)
-
-    # # Get main commander data
-    CommanderData, AllyCommanderData = calculate_commander_data(ReplayData, MainNames)
-    # pprint(CommanderData)
-
-    pprint(AllyCommanderData)
+    def save_cache(self):
+        """ Saves cache """
+        with open('cache_overallstats','wb') as f:
+            pickle.dump(self.ReplayData, f, protocol=5)
 
 
+    def initialize(self, replays):
+        """ Executes full initialization """
+        self.load_cache()
+        self.add_replays(replays)
+        self.save_cache()
 
 
+    def analyse_replays(self, mutations=True, normal_games=True, mindate=None, maxdate=None):
+        """ Filters and analyses replays replay data """
+        data = self.ReplayData
 
+        if not mutations:
+            data = [r for r in data if not r['extension'] and not r['brutal_plus'] > 0]
+
+        if not normal_games:
+            data = [r for r in data if r['extension'] or r['brutal_plus'] > 0]
+
+        if mindate != None:
+            data = [r for r in data if int(r['date'].replace(':','')) > mindate]
+
+        if maxdate != None:
+            data = [r for r in data if int(r['date'].replace(':','')) < maxdate]    
+
+        logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')
+
+        # Analyse
+        DifficultyData = calculate_difficulty_data(data)
+        MapData = calculate_map_data(data)
+        CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_names)
+
+        return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData}
 
