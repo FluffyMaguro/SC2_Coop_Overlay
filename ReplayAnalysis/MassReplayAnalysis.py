@@ -177,7 +177,7 @@ class mass_replay_analysis:
         ts = time.time()
         self.ReplayData = self.ReplayData + list(map(parse_replay, replays_to_parse))
         self.ReplayData = [r for r in self.ReplayData if r != None]
-        self.parsed_replays = {r['file'] for r in self.ReplayData}
+        self.parsed_replays = self.parsed_replays.union(replays_to_parse)
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
 
