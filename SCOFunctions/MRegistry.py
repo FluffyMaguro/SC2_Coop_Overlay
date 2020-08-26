@@ -2,6 +2,7 @@ import winreg as reg
 
 # This might need administrative access to edit the keys
 
+
 def reg_add_to_startup(name,value):
     """ Adds a new field to the startup registry field.
     `name` is the name of the new field.
@@ -37,3 +38,4 @@ def reg_delete_startup_field(name):
     open = reg.OpenKey(key,key_value,0,reg.KEY_ALL_ACCESS)
     reg.DeleteValue(open, name)
     reg.CloseKey(open) 
+

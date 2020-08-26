@@ -15,7 +15,6 @@ from SCOFunctions.S2Parser import s2_parse_replay
 logger = logclass('MREP','INFO')
 
 
-
 def parse_replay(file):
     """ Parse replay with added exceptions and set key-arguments """
     try:
