@@ -10,25 +10,28 @@ import ctypes.wintypes
 import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
-from ReplayAnalysis.MLogging import logclass
-from SCOFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
+from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MLogging import logclass
+from SCOFunctions.MainFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
 
 
 APPVERSION = 19
+config_file = truePath('SCO_config.ini')
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
-logclass.FILE = "SCO_log.txt"
+logclass.FILE = truePath("SCO_log.txt")
+
 
 
 def config_setup():
     """ Config setup """
-    if not(os.path.isfile('SCO_config.ini')):
-        with open('SCO_config.ini','w') as file:
+    if not(os.path.isfile(config_file)):
+        with open(config_file,'w') as file:
             file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nDURATION = 60\nMONITOR = 1\nPLAYER_WINRATES = True\n\nKEY_SHOW = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nPLAYER_NAMES = \nSHOWOVERLAY = True\nLOGGING = False\n\n[PLAYER_NOTES]\nMaguro = Overlay creator""")
     config = configparser.ConfigParser()
     try:
-        config.read('SCO_config.ini')
+        config.read(config_file)
     except:
         logger.error(traceback.format_exc())
 
@@ -94,7 +97,7 @@ def get_account_dir(path):
             if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
                 account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
                 account_path += 'StarCraft II\\Accounts'
-                with open('SCO_config.ini','a') as f:
+                with open(config_file,'a') as f:
                     f.write(f'\nACCOUNTDIR = {account_path}')
                 return account_path
 
@@ -106,7 +109,7 @@ def get_account_dir(path):
                 if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
                     account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
                     account_path += 'StarCraft II\\Accounts'
-                    with open('SCO_config.ini','a') as f:
+                    with open(config_file,'a') as f:
                         f.write(f'\nACCOUNTDIR = {account_path}')
                     return account_path
 
@@ -241,7 +244,7 @@ def main(startthreads=True):
     tray = QtWidgets.QSystemTrayIcon()
     # Add the icon either from the packaged file or from the directory
     if os.path.isfile('OverlayIcon.ico'):
-        tray.setIcon(QtGui.QIcon("OverlayIcon.ico"))
+        tray.setIcon(QtGui.QIcon('OverlayIcon.ico'))
     else:
        tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
     tray.setVisible(True)
@@ -258,11 +261,10 @@ def main(startthreads=True):
     menu.addSeparator()
 
     # 2.Config file
-    config_file = QtWidgets.QAction(f"Config file")
-    config_file.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DirIcon')))
-    config_file_path = os.path.join(os.getcwd(),"SCO_config.ini")
-    config_file.triggered.connect(lambda: os.startfile(config_file_path,'open'))
-    menu.addAction(config_file)
+    config_fileB = QtWidgets.QAction("Config file")
+    config_fileB.setIcon(view.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DirIcon')))
+    config_fileB.triggered.connect(lambda: os.startfile(config_file,'open'))
+    menu.addAction(config_fileB)
     menu.addSeparator()
 
     # 3.Update link
@@ -303,9 +305,8 @@ def main(startthreads=True):
         view.move(int(sg.width()*(1-OWIDTH)-OFFSET+1),sg.top())
 
         # Load webpage
-        if os.path.isfile('Layouts/Layout.html'):
-            path = os.path.join(os.getcwd(),'Layouts/Layout.html')
-            view.load(QtCore.QUrl().fromLocalFile(path))
+        if os.path.isfile(truePath('Layouts/Layout.html')):
+            view.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
             view.show()
         else:
             # 6. Layout file error

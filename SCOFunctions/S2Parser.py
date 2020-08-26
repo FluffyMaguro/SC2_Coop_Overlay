@@ -4,8 +4,8 @@ import json
 from datetime import datetime
 
 from s2protocol import versions
-from ReplayAnalysis.SC2Dictionaries import map_names
-from ReplayAnalysis.MLogging import logclass
+from SCOFunctions.SC2Dictionaries import map_names
+from SCOFunctions.MLogging import logclass
 
 logger = logclass('PARS','INFO')
 
@@ -62,7 +62,6 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
             logger.info('Trying the lastest protocol')
         else:
             return None
-
 
     # Get player info
     player_info = archive.read_file('replay.details')

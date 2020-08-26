@@ -2,15 +2,15 @@
 This module is used for generating overall stats from a list of replays (and main names distinquishing between the main player and ally players)
 
 """
-
 import os
 import time
 import pickle
 import traceback
 import statistics 
 
-from ReplayAnalysis.MLogging import logclass
-from ReplayAnalysis.S2Parser import s2_parse_replay
+from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MLogging import logclass
+from SCOFunctions.S2Parser import s2_parse_replay
 
 logger = logclass('MREP','INFO')
 
@@ -157,13 +157,14 @@ class mass_replay_analysis:
         self.main_names = main_names
         self.parsed_replays = set()
         self.ReplayData = list()
+        self.cachefile = truePath('cache_overallstats')
 
 
     def load_cache(self):
         """ Try to load previously parsed replays """
         try:
-            if os.path.isfile('cache_overallstats'):
-                with open('cache_overallstats','rb') as f:
+            if os.path.isfile(self.cachefile):
+                with open(self.cachefile,'rb') as f:
                     self.ReplayData = pickle.load(f)
 
                 self.parsed_replays = {r['file'] for r in self.ReplayData}
@@ -183,7 +184,7 @@ class mass_replay_analysis:
 
     def save_cache(self):
         """ Saves cache """
-        with open('cache_overallstats','wb') as f:
+        with open(self.cachefile,'wb') as f:
             pickle.dump(self.ReplayData, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 

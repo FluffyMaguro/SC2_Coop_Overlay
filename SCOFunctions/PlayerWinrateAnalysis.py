@@ -5,7 +5,8 @@ import traceback
 from pprint import pprint
 
 from s2protocol import versions
-from ReplayAnalysis.MLogging import logclass
+from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MLogging import logclass
 
 logger = logclass('SCOM','INFO')
 
@@ -74,13 +75,14 @@ def get_player_winrates(AllReplays, save_file=True):
         
     players = {}
     file_modified = 0
+    cache_file = truePath('cache_player_winrates.json')
 
-    if os.path.isfile('cache_player_winrates.json'):
+    if os.path.isfile(cache_file):
         try:
             # Get time of saved data
-            file_modified = os.path.getmtime('cache_player_winrates.json')
+            file_modified = os.path.getmtime(cache_file)
             # Parse saved data
-            with open('cache_player_winrates.json', 'r') as f:
+            with open(cache_file, 'r') as f:
                 players = json.load(f)[1]
         except:
             file_modified = 0
@@ -108,7 +110,7 @@ def get_player_winrates(AllReplays, save_file=True):
 
     # Save 
     if save_file:
-        with open('cache_player_winrates.json', 'w') as f:
+        with open(cache_file, 'w') as f:
             data = [{'name':['wins','losses']},players]
             json.dump(data, f, indent=2)
 
