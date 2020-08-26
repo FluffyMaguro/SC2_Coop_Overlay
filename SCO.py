@@ -187,8 +187,9 @@ def main(startthreads=True):
     # Start by testing write permissions
     permission_error = False
     try:
-        with open(logclass.FILE,'a') as file:
+        with open('test_permission_file','a') as file:
             file.write('--------\nStarting...\n')
+        os.remove('test_permission_file')
     except:
         permission_error = True
         logger.info(f'Persmission error:\n{traceback.format_exc()}')
