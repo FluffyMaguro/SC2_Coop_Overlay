@@ -6,10 +6,9 @@ import traceback
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades
+from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
 
 
-amon_forces = ['Amon','Infested','Salamander','Void Shard','Hologram','Moebius', "Ji'nara","Warp Conduit"]
 duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
@@ -31,14 +30,6 @@ def contains_skip_strings(pname):
     lowered_name = pname.lower()
     for item in skip_strings:
         if item in lowered_name:
-            return True
-    return False
-
-
-def check_amon_forces(alist, string):
-    """ Checks if any word from the list is in the string """
-    for item in alist:
-        if item in string:
             return True
     return False
 
@@ -148,7 +139,6 @@ def unitid(event, killer=False):
     return recycleindex*100000 + index
 
 
-
 def analyse_replay(filepath, playernames=['']):
     """ Analyses the replay and returns the analysis"""
 
@@ -183,10 +173,12 @@ def analyse_replay(filepath, playernames=['']):
     amon_players = set()
     amon_players.add(3)
     amon_players.add(4)
-    for player in replay['players']:
-        if player['pid'] > 4 and check_amon_forces(amon_forces,player['name']):
-            amon_players.add(player['pid'])
 
+    # Add a list of amon players written for each map
+    for m in amon_player_ids:
+        if m in replay['map_name'] or ('[MM] Lnl' in replay['map_name'] and m == 'Lock & Load'):
+            amon_players = amon_players.union(amon_player_ids[m])
+            break
 
     # Find player names and numbers
     main_player = 1
@@ -233,7 +225,7 @@ def analyse_replay(filepath, playernames=['']):
     DT_HT_Ignore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] # Ignore certain amount of DT/HT deaths after archon is initialized. DT_HT_Ignore[player]
     killcounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     TIME_DEFAULT = 99999999
-    START_TIME = replay['start_time']+1 # Add one second for wider margins
+    START_TIME = replay['start_time']
     accu_length = replay['accurate_length']
     END_TIME = replay['end_time']
     commander_fallback = dict()
@@ -243,9 +235,9 @@ def analyse_replay(filepath, playernames=['']):
     mastery_fallback = {1:[0,0,0,0,0,0],2:[0,0,0,0,0,0]}
     killbot_feed = [0,0,0]
     custom_kill_count = dict()
-    map_identification = ''
     UsedMutatorSpiderMines = set()
     PrestigeTalents = [None,None,None]
+    bonus_timings = list()
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -281,17 +273,13 @@ def analyse_replay(filepath, playernames=['']):
             unit_dict[unitid(event)] = [_unit_type, _control_pid]
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
-            if _unit_type in revival_types and _control_pid in [1,2] and event['_gameloop']/16 > START_TIME:
+            if _unit_type in revival_types and _control_pid in [1,2] and event['_gameloop']/16 > START_TIME+1:
                 if _control_pid == main_player:
                     unit_type_dict_main[revival_types[_unit_type]][1] += 1
                     unit_type_dict_main[revival_types[_unit_type]][0] += 1
                 if _control_pid == ally_player:
                     unit_type_dict_ally[revival_types[_unit_type]][1] += 1
                     unit_type_dict_ally[revival_types[_unit_type]][0] += 1
-
-            # Identify Dead of Night map
-            if _unit_type == 'SensorTower' and _control_pid == 6:
-                map_identification = 'Dead of Night'
 
             # Primal combat fix. For every morph we are substracting two losses from the base unit type
             if _unit_type in primal_combat_predecessors:
@@ -538,20 +526,42 @@ def analyse_replay(filepath, playernames=['']):
                     DT_HT_Ignore[_losing_player] -= 1
                     continue
 
-                # Add deaths
-                if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME: # Don't count deaths on game init
+                # Bonus objectives
+                if ('Void Thrashing' in replay['map_name'] and _killed_unit_type in {'ArchAngelCoopFighter','ArchAngelCoopAssault'} and _losing_player == 5) or \
+                   ('Dead of Night' in replay['map_name'] and 'ACVirophage' == _killed_unit_type and _losing_player == 7) or \
+                   (('Lock & Load' in replay['map_name'] or '[MM] LnL' in replay['map_name']) and 'XelNagaConstruct' == _killed_unit_type and _losing_player == 3) or \
+                   ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10) or \
+                   ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8) or \
+                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and _killing_player != None) or \
+                   ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7) or \
+                   ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'}  and _losing_player == 9) or \
+                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'Blightbringer' and  _losing_player == 5) or \
+                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'NovaEradicator' and  _losing_player == 9 and unit_type_dict_amon[_killed_unit_type][1] == 1) or \
+                   ('Temple of the Past' in replay['map_name'] and 'ZenithStone' == _killed_unit_type and _losing_player == 8):
+
+
+                    bonus_timings.append(event['_gameloop']/16 - START_TIME)
+                    print(f'-------------')
+                    print(f'BO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------\n')
+
+
+
+
+
+                # Add deaths    
+                if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1: # Don't count deaths on game init
                     if _killed_unit_type in unit_type_dict_main:
                         unit_type_dict_main[_killed_unit_type][1] += 1
                     else:
                         unit_type_dict_main[_killed_unit_type] = [0,1,0,0]
 
-                if ally_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME:
+                if ally_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1:
                     if _killed_unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[_killed_unit_type][1] += 1
                     else:
                         unit_type_dict_ally[_killed_unit_type] = [0,1,0,0]
 
-                if _losing_player in amon_players and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME:
+                if _losing_player in amon_players and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1:
                     if _killed_unit_type in unit_type_dict_amon:
                         unit_type_dict_amon[_killed_unit_type][1] += 1
                     else:
@@ -560,12 +570,13 @@ def analyse_replay(filepath, playernames=['']):
             except:
                 logger.error(traceback.format_exc())
 
-    # pprint(unit_type_dict_main)
-    # pprint(unit_type_dict_ally)
-    # pprint(unit_type_dict_amon)
+    # print(unit_type_dict_main)
+    # print(unit_type_dict_ally)
+    # print(unit_type_dict_amon)
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
+    replay_report_dict['bonus'] = bonus_timings
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length']/1.4
 
@@ -617,7 +628,7 @@ def analyse_replay(filepath, playernames=['']):
     for item in ['hfts','tus','propagators','voidrifts','turkey','voidreanimators','deadofnight','minesweeper']:
         if item in custom_kill_count:
             # Skip if it's not a Dead of Night map
-            if item == 'deadofnight' and map_identification != 'Dead of Night':
+            if item == 'deadofnight' and not 'Dead of Night' in replay['map_name']:
                 continue
 
             # Skip if just mines died, not a mutation
@@ -687,6 +698,8 @@ def analyse_replay(filepath, playernames=['']):
         replay_report_dict['allyIcons']['killbots'] = killbot_feed[ally_player]
 
     # Amon kills
+    print()
+    print(set(unit_type_dict_amon.keys()))
     sorted_amon = switch_names(unit_type_dict_amon)
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][0])}
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][2])}

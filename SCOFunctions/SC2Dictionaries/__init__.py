@@ -438,3 +438,22 @@ map_names = {
  '코랄의 균열': {'EN': 'Rifts to Korhal', 'ID': 'AC_KorhalRift'},
  '하늘이 무너져도': {'EN': 'The Sky is Falling', 'ID': 'AC_KorhalSkyGuard'},
  '핵심 부품': {'EN': 'Part and Parcel', 'ID': 'AC_PartAndParcel'}}
+
+
+amon_player_ids = {
+ 'Chain of Ascension': {3,4,5,6,9,10},
+ 'Cradle of Death': {3,4,5,6},
+ 'Dead of Night': {3,4,5,7},
+ 'Lock & Load': {3,4},
+ 'Malwarfare': {3,4},
+ 'Miner Evacuation': {3,4,5,6,7,9},
+ 'Mist Opportunities': {3,4},
+ 'Oblivion Express': {3,4,5,6,7},
+ 'Part and Parcel': {3,4,8},
+ 'Rifts to Korhal': {3,4,7,8},
+ 'Scythe of Amon': {3,4,5,6,7},
+ 'Temple of the Past': {3,4,5,6,8},
+ 'The Vermillion Problem': {3,4,5,6,9},
+ 'Void Launch': {3,4,5,6},
+ 'Void Thrashing': {3,4,5}
+ }

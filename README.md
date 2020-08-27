@@ -137,6 +137,8 @@ Changes take effect the next time you start the app!
       - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards it
       - Map name is reported in english
       - Adjusted for Zagara mastery changes
+      - Improved replay analysis for non-english replays
+      - Various tweaks and fixes
 
 * 1.18 version
 
