@@ -238,6 +238,7 @@ def analyse_replay(filepath, playernames=['']):
     UsedMutatorSpiderMines = set()
     PrestigeTalents = [None,None,None]
     bonus_timings = list()
+    ResearchVesselLandedTiming = None
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -331,6 +332,14 @@ def analyse_replay(filepath, playernames=['']):
                 _old_unit_type = unit_dict[unitid(event)][0]
                 _control_pid = unit_dict[unitid(event)][1]
                 _unit_type = event['m_unitTypeName'].decode()
+
+                # Void Launch bonus objective. If it lands and soon-ish after takes off, the bonus is complete.
+                if _control_pid == 7 and _unit_type == 'ResearchVesselLanded':
+                    ResearchVesselLandedTiming = event['_gameloop']
+
+                if _control_pid == 7 and _unit_type == 'ResearchVessel' and ResearchVesselLandedTiming != None and (ResearchVesselLandedTiming + 1100 > event['_gameloop']):
+                    bonus_timings.append(event['_gameloop']/16 - START_TIME)
+                    ResearchVesselLandedTiming = None
 
                 # Strange. Some units morph to egg, then the morph is created, then the egg morphs back and the unit is killed
                 if _unit_type in units_killed_in_morph:
@@ -526,26 +535,32 @@ def analyse_replay(filepath, playernames=['']):
                     DT_HT_Ignore[_losing_player] -= 1
                     continue
 
-                # Bonus objectives
+                """
+                Bonus objectives
+                Mostly kills here. Sometimes checking killing player to prevent despawns from counting.
+                In case of trains, killing player is almost always None, and so I'm checking the position of the train.
+
+                """
                 if ('Void Thrashing' in replay['map_name'] and _killed_unit_type in {'ArchAngelCoopFighter','ArchAngelCoopAssault'} and _losing_player == 5) or \
-                   ('Dead of Night' in replay['map_name'] and 'ACVirophage' == _killed_unit_type and _losing_player == 7) or \
+                   ('Dead of Night' in replay['map_name'] and 'ACVirophage' == _killed_unit_type and _losing_player == 7 and _killing_player in {1,2}) or \
                    (('Lock & Load' in replay['map_name'] or '[MM] LnL' in replay['map_name']) and 'XelNagaConstruct' == _killed_unit_type and _losing_player == 3) or \
-                   ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10) or \
-                   ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8) or \
-                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and _killing_player != None) or \
-                   ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7) or \
-                   ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'}  and _losing_player == 9) or \
-                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'Blightbringer' and  _losing_player == 5) or \
-                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'NovaEradicator' and  _losing_player == 9 and unit_type_dict_amon[_killed_unit_type][1] == 1) or \
+                   ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10 and _killing_player in {1,2}) or \
+                   ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8 and _killing_player in {1,2}) or \
+                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99)) or \
+                   ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7 and event['m_x'] < 196) or \
+                   ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'} and _losing_player == 9 and _killing_player in {1,2}) or \
+                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'Blightbringer' and  _losing_player == 5 and _killing_player in {1,2}) or \
+                   ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'NovaEradicator' and  _losing_player == 9 and unit_type_dict_amon[_killed_unit_type][1] == 1 and _killing_player in {1,2}) or \
                    ('Temple of the Past' in replay['map_name'] and 'ZenithStone' == _killed_unit_type and _losing_player == 8):
 
 
                     bonus_timings.append(event['_gameloop']/16 - START_TIME)
-                    print(f'-------------')
-                    print(f'BO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------\n')
+                    print(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------\n')
 
-
-
+                    if _killed_unit_type in {'Caboose','TarsonisEngine'}:
+                        print()
+                        print(event)
+                        print()
 
 
                 # Add deaths    
@@ -576,7 +591,8 @@ def analyse_replay(filepath, playernames=['']):
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
-    replay_report_dict['bonus'] = bonus_timings
+    print(f'{bonus_timings=}')
+    replay_report_dict['bonus'] = [f'{i // 60:.0f}:{i % 60:.0f}' for i in bonus_timings]
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length']/1.4
 
@@ -698,8 +714,6 @@ def analyse_replay(filepath, playernames=['']):
         replay_report_dict['allyIcons']['killbots'] = killbot_feed[ally_player]
 
     # Amon kills
-    print()
-    print(set(unit_type_dict_amon.keys()))
     sorted_amon = switch_names(unit_type_dict_amon)
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][0])}
     sorted_amon = {k:v for k,v in sorted(sorted_amon.items(), reverse = True, key=lambda item: item[1][2])}
