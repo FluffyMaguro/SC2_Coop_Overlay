@@ -4,7 +4,6 @@ Run the pyinstaller, cleans up, zips files.
 
 """
 
-
 import os
 import shutil
 from zipfile import ZipFile 

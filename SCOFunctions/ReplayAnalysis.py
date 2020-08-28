@@ -3,6 +3,7 @@ import mpyq
 import json
 import time
 import traceback
+from pprint import pprint
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
@@ -341,6 +342,10 @@ def analyse_replay(filepath, playernames=['']):
                     bonus_timings.append(event['_gameloop']/16 - START_TIME)
                     ResearchVesselLandedTiming = None
 
+                # Scythe of Amon bonus objective. If it changes to WarpPrismPhasing, the bonus is completed.
+                if 'Scythe of Amon' in replay['map_name'] and _control_pid == 11 and _unit_type == 'WarpPrismPhasing':
+                    bonus_timings.append(event['_gameloop']/16 - START_TIME)                    
+
                 # Strange. Some units morph to egg, then the morph is created, then the egg morphs back and the unit is killed
                 if _unit_type in units_killed_in_morph:
                     continue
@@ -385,6 +390,10 @@ def analyse_replay(filepath, playernames=['']):
         # Update ownership
         if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and unitid(event) in unit_dict:
             unit_dict[unitid(event)][1] = event['m_controlPlayerId']
+
+            # Malwarfare bonus objective. If it changes, the bonus is completed.
+            if 'Malwarfare' in replay['map_name'] and event['m_controlPlayerId'] == 6:
+                bonus_timings.append(event['_gameloop']/16 - START_TIME)    
 
         # Update some kill stats
         if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent':
@@ -546,22 +555,22 @@ def analyse_replay(filepath, playernames=['']):
                    (('Lock & Load' in replay['map_name'] or '[MM] LnL' in replay['map_name']) and 'XelNagaConstruct' == _killed_unit_type and _losing_player == 3) or \
                    ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10 and _killing_player in {1,2}) or \
                    ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8 and _killing_player in {1,2}) or \
-                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99)) or \
+                   ('Cradle of Death' in replay['map_name'] and 'LogisticsHeadquarters' == _killed_unit_type and _losing_player == 3) or \
+                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99) and not (event['m_x'] == 38 and event['m_y'] == 178)) or \
                    ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7 and event['m_x'] < 196) or \
+                   ('Mist Opportunities' in replay['map_name'] and 'COOPTerrazineTank' == _killed_unit_type and _losing_player == 3 and _killing_player in {1,2}) or \
                    ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'} and _losing_player == 9 and _killing_player in {1,2}) or \
                    ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'Blightbringer' and  _losing_player == 5 and _killing_player in {1,2}) or \
                    ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'NovaEradicator' and  _losing_player == 9 and unit_type_dict_amon[_killed_unit_type][1] == 1 and _killing_player in {1,2}) or \
                    ('Temple of the Past' in replay['map_name'] and 'ZenithStone' == _killed_unit_type and _losing_player == 8):
 
-
-                    bonus_timings.append(event['_gameloop']/16 - START_TIME)
-                    print(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------\n')
-
-                    if _killed_unit_type in {'Caboose','TarsonisEngine'}:
-                        print()
-                        print(event)
-                        print()
-
+                    # Time offset for Cradle of Death as the explosion is delayed
+                    if 'Cradle of Death' in replay['map_name']: 
+                        bonus_timings.append(event['_gameloop']/16 - START_TIME - 8)
+                    else:
+                        bonus_timings.append(event['_gameloop']/16 - START_TIME)
+                    
+                    logger.debug(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------')
 
                 # Add deaths    
                 if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1: # Don't count deaths on game init
@@ -585,14 +594,13 @@ def analyse_replay(filepath, playernames=['']):
             except:
                 logger.error(traceback.format_exc())
 
-    # print(unit_type_dict_main)
-    # print(unit_type_dict_ally)
-    # print(unit_type_dict_amon)
+    # pprint(unit_type_dict_main)
+    # pprint(unit_type_dict_ally)
+    # pprint(unit_type_dict_amon)
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
-    print(f'{bonus_timings=}')
-    replay_report_dict['bonus'] = [f'{i // 60:.0f}:{i % 60:.0f}' for i in bonus_timings]
+    replay_report_dict['bonus'] = [time.strftime('%M:%S',time.gmtime(i)) for i in bonus_timings]
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length']/1.4
 
