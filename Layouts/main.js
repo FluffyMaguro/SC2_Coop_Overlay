@@ -137,6 +137,7 @@ function debug() {
     DURATION = 60;
     var dummydata = {
         'replaydata': true,
+        'bonus': ['10:23', '15:49', '20:15'],
         'result': 'Victory',
         'map': 'Dead of Night',
         'allyPrestige': 'Heavy Weapons Specialist',
@@ -163,7 +164,7 @@ function debug() {
         'allyCommander': 'Stukov',
         'allyCommanderLevel': 7,
         'allyMasteries': [15, 15, 30, 0, 30, 0],
-        'allykills': 1338,
+        'allykills': 2801,
         'allyIcons': {
             'propagators': 5,
             'Infested Bunker': 6,
@@ -395,7 +396,6 @@ function setColors(P1color, P2color, P3color, MasteryColor) {
     };
     document.getElementById('CMmastery1').style.color = color;
     document.getElementById('CMmastery2').style.color = color;
-
 }
 
 function uploadStatus(result) {
@@ -416,7 +416,6 @@ function uploadStatus(result) {
         loader.innerHTML = 'Replay not uploaded!<br>' + result;
     };
 }
-
 
 function mutatorInfo(data) {
     if (!(showmutators)) {
@@ -491,16 +490,26 @@ function fillCommander(el, commander, commander_level) {
        }
 }
 
-
 function postGameStats(data, showing = false) {
     //initial change
     document.getElementById('killbar').style.display = 'block';
     document.getElementById('nodata').style.display = 'none';
-    // fill
+    //fill
     fill('CMtalent1',data['mainPrestige'])
     fill('CMtalent2',data['allyPrestige'])
     fill('comp', data['comp']);
-    
+
+    //Bonus objectives
+    var bonus_text = '';
+    for (i = 0; i < data['bonus'].length; i++) {
+        if (i == 0) {
+            bonus_text = data['bonus'][i]
+        } else {
+            bonus_text = bonus_text + ' | ' + data['bonus'][i]
+        }                                            
+    }
+    fill('bonus', bonus_text);
+
     //BG images
     if ((data['mainCommander'] != null) && (data['mainCommander'] != '')) {
         document.getElementById('killbar1img').src ='Commanders/'+ data['mainCommander'] +'.png'
