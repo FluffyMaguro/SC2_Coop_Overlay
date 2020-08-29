@@ -10,7 +10,7 @@ import ctypes.wintypes
 import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
-from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MFilePath import truePath, filePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
 
@@ -21,7 +21,6 @@ version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/vers
 github_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/'
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("SCO_log.txt")
-
 
 
 def config_setup():
@@ -242,12 +241,8 @@ def main(startthreads=True):
     view.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
     # Create the system tray
-    tray = QtWidgets.QSystemTrayIcon()
-    # Add the icon either from the packaged file or from the directory
-    if os.path.isfile('OverlayIcon.ico'):
-        tray.setIcon(QtGui.QIcon('OverlayIcon.ico'))
-    else:
-       tray.setIcon(QtGui.QIcon(os.path.join(sys._MEIPASS,'src/OverlayIcon.ico')))
+    tray = QtWidgets.QSystemTrayIcon()   
+    tray.setIcon(QtGui.QIcon(filePath('src/OverlayIcon.ico')))
     tray.setVisible(True)
     tray.setToolTip(f'StarCraft Co-op Overlay 1.{APPVERSION}')
 

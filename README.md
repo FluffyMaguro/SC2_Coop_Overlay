@@ -133,12 +133,12 @@ Changes take effect the next time you start the app!
 # Changelog
 * 1.19 version (work in progress)
 
-      - New hotkey to show player winrates
       - Showing timings of bonus objectives
-      - Map name is reported in english
+      - New hotkey to show player winrates
       - Updated for Zagara mastery changes
+      - Map name is reported in English
       - Improved replay analysis for non-english replays
-      - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards it
+      - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards the top bar
       - Various tweaks and fixes
 
 * 1.18 version

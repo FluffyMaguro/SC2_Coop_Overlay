@@ -89,9 +89,10 @@ def calculate_commander_data(ReplayData, MainNames):
             commander = r['players'][p]['commander']
             if r['players'][p]['name'].lower() in MainNames:
                 if not commander in CommanderData:
-                    CommanderData[commander] = {'Victory':0,'Defeat':0}
+                    CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
 
                 CommanderData[commander][r['result']] += 1
+                CommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
                 games += 1
             else:
                 if not commander in AllyCommanderData:
@@ -112,6 +113,7 @@ def calculate_commander_data(ReplayData, MainNames):
     for commander in CommanderData:
         CommanderData[commander]['Frequency'] = (CommanderData[commander]['Victory'] + CommanderData[commander]['Defeat'])/games
         CommanderData[commander]['Winrate'] = CommanderData[commander]['Victory']/games
+        CommanderData[commander]['MedianAPM'] = statistics.median(CommanderData[commander]['MedianAPM'])
         
     # Ally
     would_be_observed_games_total = 0
@@ -131,7 +133,8 @@ def calculate_commander_data(ReplayData, MainNames):
         # Normalize mastery choices
         mastery_summed_copy = mastery_summed.copy()
         for idx,m in enumerate(mastery_summed):
-            mastery_summed[idx] = mastery_summed[idx]/(mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
+            divisor = (mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
+            mastery_summed[idx] = 0 if divisor == 0 else mastery_summed[idx]/divisor
 
         AllyCommanderData[commander]['Mastery'] = mastery_summed
 
@@ -139,7 +142,7 @@ def calculate_commander_data(ReplayData, MainNames):
         AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
 
         # For ally correct frequency for the main player selecting certain commander (1/(1-f)) factor and rescale
-        would_be_observed_games = (1/(1-CommanderData[commander]['Frequency']))*(AllyCommanderData[commander]['Victory'] + AllyCommanderData[commander]['Defeat'])
+        would_be_observed_games = (1/(1-CommanderData.get(commander,{'Frequency':0})['Frequency']))*(AllyCommanderData[commander]['Victory'] + AllyCommanderData[commander]['Defeat'])
         AllyCommanderData[commander]['Frequency'] = would_be_observed_games
         would_be_observed_games_total += would_be_observed_games
 
@@ -194,22 +197,42 @@ class mass_replay_analysis:
         self.save_cache()
 
 
-    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None):
+    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None):
         """ Filters and analyses replays replay data
-        `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS """
+        `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS 
+        `minLength` and `maxLength` in minutes 
+        `difficulty_filter` is a list or set of difficulties to filter away: 'Casual', 'Normal', 'Hard', 'Brutal' or an integer (1-6) for Brutal+ games """
+
         data = self.ReplayData
 
         if not include_mutations:
-            data = [r for r in data if not r['extension'] and not r['brutal_plus'] > 0]
+            data = [r for r in data if not r['extension']]
 
         if not include_normal_games:
-            data = [r for r in data if r['extension'] or r['brutal_plus'] > 0]
+            data = [r for r in data if r['extension']]
 
         if mindate != None:
             data = [r for r in data if int(r['date'].replace(':','')) > mindate]
 
         if maxdate != None:
-            data = [r for r in data if int(r['date'].replace(':','')) < maxdate]    
+            data = [r for r in data if int(r['date'].replace(':','')) < maxdate] 
+
+        if minlength != None:
+            data = [r for r in data if r['length'] >= minlength*60] 
+
+        if maxLength != None:
+            data = [r for r in data if r['length'] <= maxLength*60] 
+
+        if difficulty_filter != None:
+            for difficulty in difficulty_filter:
+                if isinstance(difficulty, str):
+                    print('filtering away (STR)',difficulty)
+                    data = [r for r in data if not difficulty in r['difficulty'] or r['brutal_plus'] > 0] # Don't filter out B+ if filtering out "Brutal"
+
+                elif isinstance(difficulty, int):
+                    print('filtering away (INT)',difficulty)
+                    data = [r for r in data if not difficulty == r['brutal_plus']]
+
 
         logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')
 
@@ -218,5 +241,5 @@ class mass_replay_analysis:
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_names)
 
-        return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData}
+        return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 

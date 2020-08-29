@@ -21,7 +21,7 @@ for root, directories, files in os.walk(os.getcwd()):
 
 
 # Run pyinstaller
-os.system('cmd /c "pyinstaller.exe --onefile --noconsole -i=OverlayIcon.ico --add-data OverlayIcon.ico;src --add-data venv\Lib\site-packages\s2protocol;s2protocol --add-data OverlayIcon.ico;src  --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries  --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries SCO.py"')
+os.system('cmd /c "pyinstaller.exe --onefile --noconsole -i=src/OverlayIcon.ico --add-data venv\Lib\site-packages\s2protocol;s2protocol --add-data src\*.ico;src --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries SCO.py"')
 
 # Move SCO.exe
 os.replace('dist/SCO.exe','SCO.exe')
