@@ -14,7 +14,7 @@
    <string>TabWidget</string>
   </property>
   <property name="currentIndex">
-   <number>1</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="TAB_Main">
    <attribute name="title">
@@ -1639,12 +1639,12 @@
      <rect>
       <x>20</x>
       <y>260</y>
-      <width>111</width>
+      <width>221</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Map freq, winrate</string>
+     <string>Map freq, winrate, avg victory time</string>
     </property>
    </widget>
    <widget class="QLabel" name="TBD4">
@@ -1665,12 +1665,12 @@
      <rect>
       <x>20</x>
       <y>320</y>
-      <width>271</width>
+      <width>421</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Ally commander games (corrected)</string>
+     <string>Ally commander games (corrected), Ally mastery, prestige frequency, median apm</string>
     </property>
    </widget>
    <widget class="QLabel" name="TBD5">
@@ -1678,7 +1678,7 @@
      <rect>
       <x>20</x>
       <y>350</y>
-      <width>191</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -1696,7 +1696,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Ally mastery, prestige frequency, median apm</string>
+     <string/>
     </property>
    </widget>
    <widget class="Line" name="line">
