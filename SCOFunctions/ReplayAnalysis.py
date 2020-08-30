@@ -140,7 +140,7 @@ def unitid(event, killer=False):
     return recycleindex*100000 + index
 
 
-def analyse_replay(filepath, playernames=['']):
+def analyse_replay(filepath, main_player_handles=None):
     """ Analyses the replay and returns the analysis"""
 
     """
@@ -185,13 +185,13 @@ def analyse_replay(filepath, playernames=['']):
     main_player = 1
     main_player_found = False
 
-    if len(playernames)>0: # Check if you can find the name in the list
+    if main_player_handles != None and len(main_player_handles) > 0: # Check if you can find the main player
         for player in replay['players']:
-            for playeriter in playernames:
-                if player['pid'] in [1,2] and main_player_found == False and playeriter.lower() in player.get('name','').lower():
-                    main_player = player['pid']
-                    main_player_found = True
-                    break
+            if player['pid'] in {1,2} and not main_player_found and player['handle'] in main_player_handles:
+                main_player = player['pid']
+                main_player_found = True
+                break
+
 
     # Ally
     ally_player = 1 if main_player == 2 else 2
@@ -685,8 +685,8 @@ def analyse_replay(filepath, playernames=['']):
 
                 # Copy created & lost stats from Dehaka
                 if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
-                    replay_report_dict[unitkey][unit][0] = replay_report_dict[unitkey]['Dehaka'][0]
-                    replay_report_dict[unitkey][unit][1] = replay_report_dict[unitkey]['Dehaka'][1]
+                    replay_report_dict[unitkey][unit][0] = sorted_dict[unitkey]['Dehaka'][0]
+                    replay_report_dict[unitkey][unit][1] = sorted_dict[unitkey]['Dehaka'][1]
 
                 if unit in dont_show_created_lost:
                     replay_report_dict[unitkey][unit][0] = '-'

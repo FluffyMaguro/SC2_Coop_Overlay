@@ -24,12 +24,12 @@ analysis_log_file = truePath('cache_replay_analysis.txt')
 ReplayPosition = 0
 AllReplays = dict()
 player_winrate_data = dict()
-PLAYER_NAMES = []
-CONFIG_PLAYER_NAMES = []
+PLAYER_HANDLES = set() # Set of handles of the main player
+PLAYER_NAMES = set() # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
 
 
-def set_initMessage(colors,duration,unifiedhotkey):
+def set_initMessage(colors, duration, unifiedhotkey):
     """ Modify init message that's sent to new websockets """
     global initMessage
     initMessage['colors'] = colors
@@ -43,47 +43,24 @@ def sendEvent(event):
         OverlayMessages.append(event)
 
 
-def set_PLAYER_NAMES(names):
-    """ Extends global player names variable """
-    global PLAYER_NAMES
-    global CONFIG_PLAYER_NAMES
-    with lock:
-        PLAYER_NAMES.extend(names)
-        CONFIG_PLAYER_NAMES.extend(names)
+def find_PLAYER_HANDLES(ACCOUNTDIR):
+    """ find player handles from the account directory """
+    global PLAYER_HANDLES
 
+    handles = set()
+    for root, directories, files in os.walk(ACCOUNTDIR):
+        for directory in directories:
+            if directory.count('-') >= 3 and not r'\Banks' in root:
+                print(os.path.join(root, directory))
+                handles.add(directory)
 
-def guess_PLAYER_NAMES():
-    """ If no PLAYER_NAMES are set, take the best guess for the preferred player"""
-    global PLAYER_NAMES
-
-    if len(PLAYER_NAMES) > 0:
-        return
-
-    # If we have calculated winrate data for all players, use that. Otherwise check for common players in analysis log.
-    if len(player_winrate_data) > 10:
+    if len(handles) > 0:
+        logger.info(f'Found {len(handles)} player handles: {handles}')
         with lock:
-            PLAYER_NAMES = list(player_winrate_data.keys())[0:3]
-        logger.info(f'Player guess through player_winrate_data: {PLAYER_NAMES}')
-        return
+            PLAYER_HANDLES = handles
+    else:
+        logger.error('No player handles found!')
 
-    # Get all players to the list
-    list_of_players = list()
-    for replay in AllReplays:
-        replay_dict = AllReplays[replay].get('replay_dict',dict())
-        list_of_players.append(replay_dict.get('main',None))
-        list_of_players.append(replay_dict.get('ally',None))
-
-    # Remove nones, sort
-    players = {i:list_of_players.count(i) for i in list_of_players if not i in [None,'None']} #get counts
-    players = {k:v for k,v in sorted(players.items(),key=lambda x:x[1],reverse=True)} #sort
-
-    if len(players) == 0:
-        return
-
-    # Get the three most common names. Replay analysis will check from the first one to the last one if they are ingame.
-    with lock:
-        PLAYER_NAMES = list(players.keys())[0:3]
-    logger.info(f'Player guess through analysis log: {PLAYER_NAMES}')
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -143,7 +120,7 @@ def update_player_winrate_data(replay_dict):
             player_winrate_data[player][result] += 1
 
 
-def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
+def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
@@ -156,22 +133,26 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
 
+    try:
+        find_PLAYER_HANDLES(ACCOUNTDIR)
+    except:
+        logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
+
 
     if PLAYER_WINRATES:
         try:
             time_counter_start = time.time()
             logger.info(f'Starting player winrate analysis')
             player_winrate_data_temp = get_player_winrates(AllReplays)
+            player_names_temp = {p for p in player_winrate_data_temp if player_winrate_data_temp[p][2] in PLAYER_HANDLES}
+
             with lock:
                 player_winrate_data = player_winrate_data_temp
-            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds')
+                PLAYER_NAMES = player_names_temp
+            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds\nPlayer names: {player_names_temp}')
         except:
             logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
 
-    try:
-        guess_PLAYER_NAMES()
-    except:
-        logger.error(f'Error when guessing player names:\n{traceback.format_exc()}')
 
     while True:
         logger.debug('Checking for replays....')
@@ -190,7 +171,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
                         logger.info(f'New replay: {file_path}')
                         replay_dict = dict()
                         try:
-                            replay_dict = analyse_replay(file_path,PLAYER_NAMES)
+                            replay_dict = analyse_replay(file_path,PLAYER_HANDLES)
 
                             # Good output
                             if len(replay_dict) > 1:
@@ -219,7 +200,7 @@ def check_replays(ACCOUNTDIR,AOM_NAME,AOM_SECRETKEY,PLAYER_WINRATES):
         time.sleep(3)
 
 
-def upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict):
+def upload_to_aom(file_path, AOM_NAME, AOM_SECRETKEY, replay_dict):
     """ Function handling uploading the replay on the Aommaster's server"""
 
     # Credentials need to be set up
@@ -334,7 +315,7 @@ def move_in_AllReplays(delta):
     else:
         # Replay_dict is missing, analyse replay
         try:
-            replay_dict = analyse_replay(key,PLAYER_NAMES)
+            replay_dict = analyse_replay(key,PLAYER_HANDLES)
             if len(replay_dict) > 1:
                 sendEvent(replay_dict)
                 with lock:
@@ -460,7 +441,7 @@ def check_for_new_game(PLAYER_NOTES):
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
                 player_names = set()
                 for player in players:
-                    if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in CONFIG_PLAYER_NAMES] + [PLAYER_NAMES[0].lower()]:
+                    if player['id'] in {1,2} and not player['name'].lower() in [p.lower() for p in PLAYER_NAMES]:
                         player_names.add(player['name'])
                         break
 

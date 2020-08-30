@@ -83,18 +83,17 @@ def get_masterises(replay,player):
     return masteries
 
 
-def calculate_commander_data(ReplayData, MainNames):
+def calculate_commander_data(ReplayData, main_handles):
     """ Calculates the number of wins and losses for each commander
-    Returns separate objects for players in MainNames (capitalization not important) and those that are not"""
+    Returns separate objects for players with handles in MainHandles (capitalization not important) and those that are not"""
     CommanderData = dict()
     AllyCommanderData = dict()
-    MainNames = {n.lower() for n in MainNames}
     games = 0
 
     for r in ReplayData:
         for p in {1,2}:
             commander = r['players'][p]['commander']
-            if r['players'][p]['name'].lower() in MainNames:
+            if r['players'][p]['handle'] in main_handles:
                 if not commander in CommanderData:
                     CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
 
@@ -162,11 +161,12 @@ def calculate_commander_data(ReplayData, MainNames):
 class mass_replay_analysis:
     """ Class for mass replay analysis"""
 
-    def __init__(self, main_names):
-        self.main_names = main_names
+    def __init__(self, main_handles):
+        self.main_handles = main_handles
         self.parsed_replays = set()
         self.ReplayData = list()
         self.cachefile = truePath('cache_overallstats')
+        self.finishedLoading = False
 
 
     def load_cache(self):
@@ -202,6 +202,7 @@ class mass_replay_analysis:
         self.load_cache()
         self.add_replays(replays)
         self.save_cache()
+        self.finishedLoading = True
 
 
     def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None):
@@ -246,7 +247,7 @@ class mass_replay_analysis:
         # Analyse
         DifficultyData = calculate_difficulty_data(data)
         MapData = calculate_map_data(data)
-        CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_names)
+        CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
 
         return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 

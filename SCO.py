@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
 from SCOFunctions.MFilePath import truePath, filePath
 from SCOFunctions.MLogging import logclass
-from SCOFunctions.MainFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES, set_PLAYER_NAMES
+from SCOFunctions.MainFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES
 
 
 APPVERSION = 19
@@ -27,7 +27,7 @@ def config_setup():
     """ Config setup """
     if not(os.path.isfile(config_file)):
         with open(config_file,'w') as file:
-            file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nDURATION = 60\nMONITOR = 1\nPLAYER_WINRATES = True\n\nKEY_SHOW = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nPLAYER_NAMES = \nSHOWOVERLAY = True\nLOGGING = False\n\n[PLAYER_NOTES]\nMaguro = Overlay creator""")
+            file.write("""[CONFIG] //Changes take effect the next time you start the app!\n\nDURATION = 60\nMONITOR = 1\nPLAYER_WINRATES = True\n\nKEY_SHOW = Ctrl+*\nKEY_NEWER = Alt+/\nKEY_OLDER = Alt+*\n\nP1COLOR = #0080F8\nP2COLOR = #00D532\nAMONCOLOR = #FF0000\nMASTERYCOLOR = #FFDC87\n\nAOM_NAME = \nAOM_SECRETKEY = \n\nSHOWOVERLAY = True\nLOGGING = False\n\n[PLAYER_NOTES]\nMaguro = Overlay creator""")
     config = configparser.ConfigParser()
     try:
         config.read(config_file)
@@ -198,7 +198,6 @@ def main(startthreads=True):
     config = config_setup()
     ACCOUNTDIR = get_account_dir(get_configvalue(config,'ACCOUNTDIR', None))
     SHOWOVERLAY = get_configvalue(config,'SHOWOVERLAY', True)
-    PLAYER_NAMES = get_configvalue(config,'PLAYER_NAMES', [])
     DURATION = get_configvalue(config,'DURATION', 60)
     KEY_SHOW = get_configvalue(config,'KEY_SHOW', None)
     KEY_HIDE = get_configvalue(config,'KEY_HIDE', None)
@@ -226,10 +225,7 @@ def main(startthreads=True):
         PLAYER_NOTES = dict()
 
     logclass.LOGGING = False if permission_error else LOGGING
-    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{PLAYER_NAMES=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{KEY_PLAYERWINRATES=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n{PLAYER_NOTES=}\n--------')
-
-    # Set player names in SCOFunctions
-    set_PLAYER_NAMES(PLAYER_NAMES)
+    logger.info(f'\n{PORT=}\n{MONITOR=}\n{PLAYER_WINRATES=}\n{SHOWOVERLAY=}\n{KEY_SHOW=}\n{KEY_HIDE=}\n{KEY_OLDER=}\n{KEY_NEWER=}\n{KEY_PLAYERWINRATES=}\n{DURATION=}\n{AOM_NAME=}\nAOM_SECRETKEY set: {bool(AOM_SECRETKEY)}\n{UNIFIEDHOTKEY=}\n{LOGGING=}\n{ACCOUNTDIR=}\n{OWIDTH=}\n{OHEIGHT=}\n{OFFSET=}\n{PLAYER_NOTES=}\n--------')
 
     # Check for a new version
     download_link = new_version()
