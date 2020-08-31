@@ -13,7 +13,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays
 
-logger = logclass('MREP','INFO')
+logger = logclass('MASS','INFO')
 
 
 def parse_replay(file):

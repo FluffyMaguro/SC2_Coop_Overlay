@@ -18,7 +18,7 @@ from SCOFunctions.PlayerWinrateAnalysis import get_player_winrates
 OverlayMessages = [] # Storage for all messages
 globalOverlayMessagesSent = 0 # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
 lock = threading.Lock()
-logger = logclass('SCOF','INFO')
+logger = logclass('MAIN','INFO')
 initMessage = {'initEvent':True,'colors':['null','null','null','null'],'duration':60}
 analysis_log_file = truePath('cache_replay_analysis.txt')
 ReplayPosition = 0
@@ -51,7 +51,6 @@ def find_names_and_handles(ACCOUNTDIR):
     for root, directories, files in os.walk(ACCOUNTDIR):
         for directory in directories:
             if directory.count('-') >= 3 and not r'\Banks' in root:
-                print(os.path.join(root, directory))
                 handles.add(directory)
 
     # Now for names. Add those that have shortcut created in SC2 documents directory
@@ -61,7 +60,6 @@ def find_names_and_handles(ACCOUNTDIR):
             names.add(file.split('_')[0])
 
     return names, handles
-
 
 
 def update_names_and_handles(ACCOUNTDIR):
