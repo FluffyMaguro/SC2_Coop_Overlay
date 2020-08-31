@@ -8,7 +8,7 @@ from s2protocol import versions
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
-logger = logclass('SCOM','INFO')
+logger = logclass('WINR','INFO')
 
 
 def get_player_stats(file, archive=None):

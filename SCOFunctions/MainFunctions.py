@@ -43,10 +43,12 @@ def sendEvent(event):
         OverlayMessages.append(event)
 
 
-def find_PLAYER_HANDLES(ACCOUNTDIR):
-    """ find player handles from the account directory """
+def find_names_and_handles(ACCOUNTDIR):
+    """ find player handles and names from the account directory """
     global PLAYER_HANDLES
+    global PLAYER_NAMES
 
+    # First handles. Add those that have directories created in SC2 documents directory
     handles = set()
     for root, directories, files in os.walk(ACCOUNTDIR):
         for directory in directories:
@@ -61,6 +63,18 @@ def find_PLAYER_HANDLES(ACCOUNTDIR):
     else:
         logger.error('No player handles found!')
 
+    # Now for names. Add those that have shortcut created in SC2 documents directory
+    names = set()
+    for file in os.listdir(os.path.dirname(ACCOUNTDIR)):
+        if file.endswith('.lnk'):
+            names.add(file.split('_')[0])
+
+    if len(names) > 0:
+        logger.info(f'Found {len(names)} player names: {names}')
+        with lock:
+            PLAYER_NAMES = names
+    else:
+        logger.error('No player names found!')
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -134,7 +148,7 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
         ReplayPosition = len(AllReplays)
 
     try:
-        find_PLAYER_HANDLES(ACCOUNTDIR)
+        find_names_and_handles(ACCOUNTDIR)
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
@@ -144,12 +158,10 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
             time_counter_start = time.time()
             logger.info(f'Starting player winrate analysis')
             player_winrate_data_temp = get_player_winrates(AllReplays)
-            player_names_temp = {p for p in player_winrate_data_temp if player_winrate_data_temp[p][2] in PLAYER_HANDLES}
 
             with lock:
                 player_winrate_data = player_winrate_data_temp
-                PLAYER_NAMES = player_names_temp
-            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds\nPlayer names: {player_names_temp}')
+            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds')
         except:
             logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
 

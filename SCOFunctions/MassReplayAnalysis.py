@@ -205,11 +205,12 @@ class mass_replay_analysis:
         self.finishedLoading = True
 
 
-    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None):
+    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None, region_filter=None):
         """ Filters and analyses replays replay data
         `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS 
         `minLength` and `maxLength` in minutes 
-        `difficulty_filter` is a list or set of difficulties to filter away: 'Casual', 'Normal', 'Hard', 'Brutal' or an integer (1-6) for Brutal+ games """
+        `difficulty_filter` is a list or set of difficulties to filter away: 'Casual', 'Normal', 'Hard', 'Brutal' or an integer (1-6) for Brutal+ games 
+        `region_filter is a list or set of regions to filter away: 'NA', 'EU', 'KR', 'CN', 'PTR' """
 
         data = self.ReplayData
 
@@ -240,6 +241,9 @@ class mass_replay_analysis:
                 elif isinstance(difficulty, int):
                     print('filtering away (INT)',difficulty)
                     data = [r for r in data if not difficulty == r['brutal_plus']]
+
+        if region_filter != None:
+            data = [r for r in data if not r['region'] in region_filter] 
 
 
         logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')

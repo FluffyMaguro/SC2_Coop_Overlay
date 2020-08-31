@@ -10,6 +10,7 @@ from SCOFunctions.MLogging import logclass
 logger = logclass('PARS','INFO')
 
 diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
+region_dict = {1:'NA', 2:'EU', 3:'KR', 5:'CN', 98:'PTR'}
 
 
 def get_last_deselect_event(events):
@@ -132,6 +133,8 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
         replay['players'][idx]['name'] = player['m_name'].decode()
         replay['players'][idx]['race']  = player['m_race'].decode()
         replay['players'][idx]['observer']  = False if player['m_observe'] == 0 else True
+        if idx == 0:
+            replay['region'] = region_dict.get(player['m_toon']['m_region'],'')
 
     commander_found = False
     for idx,player in enumerate(detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots']):
