@@ -44,9 +44,7 @@ def sendEvent(event):
 
 
 def find_names_and_handles(ACCOUNTDIR):
-    """ find player handles and names from the account directory """
-    global PLAYER_HANDLES
-    global PLAYER_NAMES
+    """ Finds player handles and names from the account directory """
 
     # First handles. Add those that have directories created in SC2 documents directory
     handles = set()
@@ -56,6 +54,23 @@ def find_names_and_handles(ACCOUNTDIR):
                 print(os.path.join(root, directory))
                 handles.add(directory)
 
+    # Now for names. Add those that have shortcut created in SC2 documents directory
+    names = set()
+    for file in os.listdir(os.path.dirname(ACCOUNTDIR)):
+        if file.endswith('.lnk'):
+            names.add(file.split('_')[0])
+
+    return names, handles
+
+
+
+def update_names_and_handles(ACCOUNTDIR):
+    """ Takes player names and handles, and updates global variables with them"""
+    global PLAYER_HANDLES
+    global PLAYER_NAMES
+
+    names, handles = find_names_and_handles(ACCOUNTDIR)
+
     if len(handles) > 0:
         logger.info(f'Found {len(handles)} player handles: {handles}')
         with lock:
@@ -63,11 +78,6 @@ def find_names_and_handles(ACCOUNTDIR):
     else:
         logger.error('No player handles found!')
 
-    # Now for names. Add those that have shortcut created in SC2 documents directory
-    names = set()
-    for file in os.listdir(os.path.dirname(ACCOUNTDIR)):
-        if file.endswith('.lnk'):
-            names.add(file.split('_')[0])
 
     if len(names) > 0:
         logger.info(f'Found {len(names)} player names: {names}')
@@ -77,19 +87,27 @@ def find_names_and_handles(ACCOUNTDIR):
         logger.error('No player names found!')
 
 
+def find_replays(directory):
+    """ Finds all replays in a directory. Returns a set."""
+
+    AllReplays = set()
+    for root, directories, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.SC2Replay'):
+                file_path = os.path.join(root,file)
+                if len(file_path) > 255:
+                    file_path = '\\\?\\' + file_path
+                file_path = file_path = os.path.normpath(file_path)
+                AllReplays.add(file_path)
+
+    return AllReplays
+
+
 def initialize_AllReplays(ACCOUNTDIR):
     """ Creates a sorted dictionary of all replays with their last modified times """
-    AllReplays = set()
+    
     try:
-        for root, directories, files in os.walk(ACCOUNTDIR):
-            for file in files:
-                if file.endswith('.SC2Replay'):
-                    file_path = os.path.join(root,file)
-                    if len(file_path) > 255:
-                        file_path = '\\\?\\' + file_path
-                    file_path = file_path = os.path.normpath(file_path)
-                    AllReplays.add(file_path)
-
+        AllReplays = find_replays(ACCOUNTDIR)
         # Get dictionary of all replays with their last modification time
         AllReplays = ((rep,os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k:{'created':v} for k,v in sorted(AllReplays,key=lambda x:x[1])}
@@ -148,7 +166,7 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
         ReplayPosition = len(AllReplays)
 
     try:
-        find_names_and_handles(ACCOUNTDIR)
+        update_names_and_handles(ACCOUNTDIR)
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 

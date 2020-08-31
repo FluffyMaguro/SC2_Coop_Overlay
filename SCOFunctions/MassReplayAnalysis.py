@@ -11,6 +11,7 @@ import statistics
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
+from SCOFunctions.MainFunctions import find_names_and_handles, find_replays
 
 logger = logclass('MREP','INFO')
 
@@ -255,3 +256,11 @@ class mass_replay_analysis:
 
         return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 
+
+def mass_replay_analysis_thread(ACCOUNTDIR):
+    """ Main thread for mass replay analysis. Handles all initialization. """
+    names, handles = find_names_and_handles(ACCOUNTDIR)
+    replays = find_replays(ACCOUNTDIR)
+
+    CAnalysis = mass_replay_analysis(handles)
+    CAnalysis.initialize(replays)
