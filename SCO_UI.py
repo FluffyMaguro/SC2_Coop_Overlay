@@ -32,21 +32,25 @@ class UI_TabWidget(object):
         self.CH_StartWithWindows = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, 20, 121, 17))
         self.CH_StartWithWindows.setText("Start with Windows")
+        self.CH_StartWithWindows.setToolTip("The app will start automatically with the Windows")
 
         # Start minimized
         self.CH_StartMinimized = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 50, 101, 17))
         self.CH_StartMinimized.setText("Start minimized")
+        self.CH_StartMinimized.setToolTip("The app will start minimized")
 
         # Enable logging
         self.CH_EnableLogging = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 80, 101, 17))
         self.CH_EnableLogging.setText("Enable logging")
+        self.CH_EnableLogging.setToolTip(f"App logs will be saved into a text file")
 
         # Show player winrate and notes
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 110, 181, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
+        self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified.")
 
         # Duration
         self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
@@ -64,11 +68,13 @@ class UI_TabWidget(object):
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
         self.LA_Monitor.setText("Monitor")
+        self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 171, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
+        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting for example when it's meant to be visible only on stream.")
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -82,6 +88,7 @@ class UI_TabWidget(object):
         self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 55, 150, 23))
         self.BT_ChooseFolder.setText('Choose folder')
+        self.BT_ChooseFolder.setToolTip('Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
         self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
 
         # Info label
@@ -123,6 +130,7 @@ class UI_TabWidget(object):
         self.KEY_ShowHide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 70, 113, 20))
         self.KEY_ShowHide.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
         
         # Show
         self.LA_Show = QtWidgets.QLabel(self.FR_HotkeyFrame)
@@ -132,6 +140,7 @@ class UI_TabWidget(object):
 
         self.KEY_Show = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Show.setGeometry(QtCore.QRect(150, 70, 113, 20))
+        self.KEY_Show.setToolTip('The key for just showing the overlay')
 
         # Hide
         self.LA_Hide = QtWidgets.QLabel(self.FR_HotkeyFrame)
@@ -141,6 +150,7 @@ class UI_TabWidget(object):
         
         self.KEY_Hide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Hide.setGeometry(QtCore.QRect(280, 70, 113, 20))
+        self.KEY_Hide.setToolTip('The key for just hiding the overlay')
 
         # Newer
         self.LA_Newer = QtWidgets.QLabel(self.FR_HotkeyFrame)
@@ -150,6 +160,7 @@ class UI_TabWidget(object):
 
         self.KEY_Newer = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Newer.setGeometry(QtCore.QRect(20, 140, 113, 20))
+        self.KEY_Newer.setToolTip('The key for showing a newer replay than is currently displayed')
 
         # Older
         self.LA_Older = QtWidgets.QLabel(self.FR_HotkeyFrame)
@@ -159,6 +170,7 @@ class UI_TabWidget(object):
 
         self.KEY_Older = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Older.setGeometry(QtCore.QRect(150, 140, 113, 20))
+        self.KEY_Older.setToolTip('The key for showing an older replay than is currently displayed')
 
         # Winrates
         self.LA_Winrates = QtWidgets.QLabel(self.FR_HotkeyFrame)
@@ -168,6 +180,7 @@ class UI_TabWidget(object):
 
         self.KEY_Winrates = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Winrates.setGeometry(QtCore.QRect(280, 140, 113, 20))
+        self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
 
         for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
             item.setStyleSheet("color: #444;")
@@ -240,7 +253,8 @@ class UI_TabWidget(object):
         self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
         self.BT_AomTest.setGeometry(QtCore.QRect(75, 150, 85, 23))
         self.BT_AomTest.clicked.connect(self.validateAOM)
-        self.BT_AomTest.setText("Verify")     
+        self.BT_AomTest.setText("Verify") 
+        self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")    
 
 
         # Version
@@ -527,6 +541,7 @@ class UI_TabWidget(object):
         self.LA_GitHub.setGeometry(QtCore.QRect(70, 20, 131, 41))
         self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">GitHub</a>')
+        self.LA_GitHub.setToolTip('github.com/FluffyMaguro/SC2_Coop_overlay')
 
         # Maguro.one
         self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
@@ -536,6 +551,7 @@ class UI_TabWidget(object):
         self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
         self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 70, 131, 41))
         self.LA_MaguroOne.setText('<a href="www.maguro.one">Maguro.one</a>')
+        self.LA_MaguroOne.setToolTip('www.maguro.one')
 
         # Twitter
         self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
@@ -545,6 +561,7 @@ class UI_TabWidget(object):
         self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
         self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 131, 31))
         self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">Twitter</a>')
+        self.LA_Twitter.setToolTip('twitter.com/FluffyMaguro')
 
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
@@ -554,6 +571,7 @@ class UI_TabWidget(object):
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
         self.LA_Subreddit.setGeometry(QtCore.QRect(290, 20, 161, 31))
         self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
+        self.LA_Subreddit.setToolTip('www.reddit.com/r/starcraft2coop/')
 
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
@@ -563,6 +581,7 @@ class UI_TabWidget(object):
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
         self.LA_BattleNet.setGeometry(QtCore.QRect(290, 70, 141, 31))
         self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
+        self.LA_BattleNet.setToolTip('us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion')
 
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
@@ -572,6 +591,7 @@ class UI_TabWidget(object):
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
         self.LA_Discord.setGeometry(QtCore.QRect(290, 120, 141, 41))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
+        self.LA_Discord.setToolTip('StarCraft 2 Co-op discord')
 
         # Donate
         self.FR_Donate = QtWidgets.QFrame(self.TAB_Links)
