@@ -172,37 +172,46 @@ class UI_TabWidget(object):
         for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
             item.setStyleSheet("color: #444;")
 
-
-       
-        
-        
-        
-        
-        
-        
- 
+      
         # Colors
         self.FR_CustomizeColors = QtWidgets.QFrame(self.TAB_Main)
         self.FR_CustomizeColors.setGeometry(QtCore.QRect(445, 170, 241, 211))
         self.FR_CustomizeColors.setAutoFillBackground(True)
         self.FR_CustomizeColors.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_CustomizeColors.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.LA_Mastery = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_Mastery.setGeometry(QtCore.QRect(20, 160, 47, 13))
-        self.LA_Amon = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_Amon.setGeometry(QtCore.QRect(20, 130, 47, 13))
-        self.LA_P2 = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_P2.setGeometry(QtCore.QRect(20, 100, 47, 13))
+
+        # Customize colors 
         self.LA_CustomizeColors = QtWidgets.QLabel(self.FR_CustomizeColors)
         self.LA_CustomizeColors.setGeometry(QtCore.QRect(0, 10, 241, 20))
         self.LA_CustomizeColors.setStyleSheet("font-weight: bold")
         self.LA_CustomizeColors.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_P1 = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_P1.setGeometry(QtCore.QRect(20, 70, 47, 13))
+
+        # Note
         self.LA_More = QtWidgets.QLabel(self.FR_CustomizeColors)
         self.LA_More.setEnabled(False)
         self.LA_More.setGeometry(QtCore.QRect(0, 19, 241, 31))
         self.LA_More.setAlignment(QtCore.Qt.AlignCenter)
+
+        color_x_offset = 50
+        color_height = 20
+        color_width = 140
+
+        self.LA_P1 = QtWidgets.QPushButton(self.FR_CustomizeColors)
+        self.LA_P1.setGeometry(QtCore.QRect(color_x_offset, 70, color_width, color_height))
+        self.LA_P1.clicked.connect(lambda: self.openColorDialog(self.LA_P1))
+
+        self.LA_P2 = QtWidgets.QPushButton(self.FR_CustomizeColors)
+        self.LA_P2.setGeometry(QtCore.QRect(color_x_offset, 100, color_width, color_height))
+        self.LA_P2.clicked.connect(lambda: self.openColorDialog(self.LA_P2))
+
+        self.LA_Amon = QtWidgets.QPushButton(self.FR_CustomizeColors)
+        self.LA_Amon.setGeometry(QtCore.QRect(color_x_offset, 130, color_width, color_height))
+        self.LA_Amon.clicked.connect(lambda: self.openColorDialog(self.LA_Amon))
+
+        self.LA_Mastery = QtWidgets.QPushButton(self.FR_CustomizeColors)
+        self.LA_Mastery.setGeometry(QtCore.QRect(color_x_offset, 160, color_width, color_height))
+        self.LA_Mastery.clicked.connect(lambda: self.openColorDialog(self.LA_Mastery))
+
 
         # Aom
         self.FR_Aom = QtWidgets.QFrame(self.TAB_Main)
@@ -232,13 +241,6 @@ class UI_TabWidget(object):
         self.BT_AomTest.setGeometry(QtCore.QRect(75, 150, 85, 23))
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify")     
-
-
-
-
-
-
-
 
 
         # Version
@@ -623,16 +625,16 @@ class UI_TabWidget(object):
             'hotkey_newer':'Alt+/',
             'hotkey_older':'Alt+*',
             'hotkey_winrates':'Ctrl+Alt+-',
-            'color_player1':None,
-            'color_player2':None,
-            'color_amon':None,
-            'color_mastery':None,
+            'color_player1':'#0080F8',
+            'color_player2':'#00D532',
+            'color_amon':'#FF0000',
+            'color_mastery':'#FFDC87',
             'aom_account':None,
             'aom_secret_key':None,
             'player_notes':None
             }
 
-        self.settings = self.default_settings
+        self.settings = self.default_settings.copy()
 
         # Try to load base config if there is one         
         try:         
@@ -672,10 +674,14 @@ class UI_TabWidget(object):
         self.ED_AomAccount.setText(self.settings['aom_account'])
         self.ED_AomSecretKey.setText(self.settings['aom_secret_key'])
 
-        
-
-        ### !!!! continue here for other settings and tabs
-        pass
+        self.LA_P1.setText(f"Player 1 | {self.settings['color_player1']}")
+        self.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}")
+        self.LA_P2.setText(f"Player 2 | {self.settings['color_player2']}")
+        self.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}")
+        self.LA_Amon.setText(f"  Amon | {self.settings['color_amon']}")
+        self.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}")
+        self.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
+        self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
 
     def saveSettings(self):
@@ -712,17 +718,15 @@ class UI_TabWidget(object):
         hotkeys = [self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
         hotkeys = [h for h in hotkeys if not h in {None,''}]
         if len(hotkeys) > len(set(hotkeys)):
-            self.sendInfoMessage('Warning: Overlapping hotkeys!',color='red')
-
-        ### !!!! continue here for other settings and tabs
-        pass
+            self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
-        self.BT_ChooseFolder.setText('Choose folder')
-        self.settings = self.default_settings
+        self.settings = self.default_settings.copy()
         self.settings['replay_folder'] = get_account_dir(path=self.settings['replay_folder'])
+        self.settings['aom_account'] = self.ED_AomAccount.text()
+        self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()        
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
@@ -749,7 +753,6 @@ class UI_TabWidget(object):
         self.LA_InfoLabel.setStyleSheet(f'color: {color}')
 
     
-
     def validateAOM(self):
         """ Validates if name/key combination is valid """
         key = self.ED_AomSecretKey.text()
@@ -765,6 +768,18 @@ class UI_TabWidget(object):
         else:
             self.sendInfoMessage('Fill your account name and secret key first!')
 
+
+    def openColorDialog(self, button):
+        """ Color picker. After the color is picked, color is saved into settings, and button updated (text and color) """
+        button_dict = {self.LA_P1:'Player 1', self.LA_P2:'Player 2', self.LA_Amon:'  Amon', self.LA_Mastery:'Mastery'}
+        settings_dict = {self.LA_P1:'color_player1', self.LA_P2:'color_player2', self.LA_Amon:'color_amon', self.LA_Mastery:'color_mastery'}
+
+        color = QtWidgets.QColorDialog.getColor()
+
+        if color.isValid():
+            button.setText(f"{button_dict.get(button,'')} | {color.name()}")
+            button.setStyleSheet(f'background-color: {color.name()};')
+            self.settings[settings_dict[button]] = color.name()
 
 
 
