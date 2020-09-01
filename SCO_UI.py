@@ -8,6 +8,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, filePath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit
+from SCOFunctions.HelperFunctions import get_account_dir
+from SCOFunctions.MainFunctions import find_names_and_handles
 
 
 logger = logclass('SCO','INFO')
@@ -66,6 +68,7 @@ class UI_TabWidget(object):
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
         self.SP_Monitor.setGeometry(QtCore.QRect(250, 50, 42, 22))
         self.SP_Monitor.setObjectName("SP_Monitor")
+        self.SP_Monitor.setMinimum(1)
 
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
@@ -80,30 +83,43 @@ class UI_TabWidget(object):
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 151, 16))
+        self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 280, 16))
         self.LA_AccountFolder.setObjectName("LA_AccountFolder")
-        self.LA_AccountFolder.setText("Specify your replay folder")
+        self.LA_AccountFolder.setText("Specify your StarCraft II folder (StarCraft II/Accounts)")
 
-        self.LA_AccountFolderNote = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_AccountFolderNote.setEnabled(False)
-        self.LA_AccountFolderNote.setGeometry(QtCore.QRect(520, 22, 141, 31))
-        self.LA_AccountFolderNote.setObjectName("LA_AccountFolderNote")
+        self.LA_CurrentReplayFolder = QtWidgets.QLabel(self.TAB_Main)
+        self.LA_CurrentReplayFolder.setEnabled(False)
+        self.LA_CurrentReplayFolder.setGeometry(QtCore.QRect(520, 25, 400, 31))
+        self.LA_CurrentReplayFolder.setObjectName("LA_CurrentReplayFolder")
 
-        self.TBD_FolderChooser = QtWidgets.QLabel(self.TAB_Main)
-        self.TBD_FolderChooser.setGeometry(QtCore.QRect(520, 55, 47, 13))
-        self.TBD_FolderChooser.setObjectName("TBD_FolderChooser")
-        self.TBD_FolderChooser.setText("TBD")
+        self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 55, 150, 23))
+        self.BT_ChooseFolder.setObjectName("BT_ChooseFolder")
+        self.BT_ChooseFolder.setText('Choose folder')
+        self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
+
+        # Info label
+        self.LA_InfoLabel = QtWidgets.QLabel(self.TAB_Main)
+        self.LA_InfoLabel.setGeometry(QtCore.QRect(20, 400, 800, 23))
+        self.LA_InfoLabel.setObjectName("LA_InfoLabel")
 
         # Apply
         self.BT_MainApply = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainApply.setGeometry(QtCore.QRect(520, 110, 75, 23))
+        self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 23))
         self.BT_MainApply.setObjectName("BT_MainApply")
         self.BT_MainApply.setText('Apply')
         self.BT_MainApply.clicked.connect(self.saveSettings)
 
-        ### Hotkey frame ###
+        # Reset
+        self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 23))
+        self.BT_MainReset.setObjectName("BT_MainReset")
+        self.BT_MainReset.setText('Reset')
+        self.BT_MainReset.clicked.connect(self.resetSettings)        
+
+        ### Hotkey frame
         self.FR_HotkeyFrame = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_HotkeyFrame.setGeometry(QtCore.QRect(20, 170, 431, 211))
+        self.FR_HotkeyFrame.setGeometry(QtCore.QRect(20, 170, 411, 211))
         self.FR_HotkeyFrame.setAutoFillBackground(True)
         self.FR_HotkeyFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_HotkeyFrame.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -119,70 +135,73 @@ class UI_TabWidget(object):
 
         # Show/hide
         self.LA_ShowHide = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_ShowHide.setGeometry(QtCore.QRect(30, 40, 111, 20))
+        self.LA_ShowHide.setGeometry(QtCore.QRect(20, 50, 111, 20))
         self.LA_ShowHide.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_ShowHide.setObjectName("LA_ShowHide")
         self.LA_ShowHide.setText("Show / hide")
 
         self.KEY_ShowHide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_ShowHide.setGeometry(QtCore.QRect(30, 60, 113, 20))
+        self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 70, 113, 20))
         self.KEY_ShowHide.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.KEY_ShowHide.setObjectName("KEY_ShowHide")
         
         # Show
         self.LA_Show = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Show.setGeometry(QtCore.QRect(160, 40, 111, 20))
+        self.LA_Show.setGeometry(QtCore.QRect(150, 50, 111, 20))
         self.LA_Show.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Show.setObjectName("LA_Show")
         self.LA_Show.setText("Show only")
 
         self.KEY_Show = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Show.setGeometry(QtCore.QRect(160, 60, 113, 20))
+        self.KEY_Show.setGeometry(QtCore.QRect(150, 70, 113, 20))
         self.KEY_Show.setObjectName("KEY_Show")
 
         # Hide
         self.LA_Hide = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Hide.setGeometry(QtCore.QRect(290, 40, 111, 20))
+        self.LA_Hide.setGeometry(QtCore.QRect(280, 50, 111, 20))
         self.LA_Hide.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Hide.setObjectName("LA_Hide")
         self.LA_Hide.setText("Hide only")
         
         self.KEY_Hide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Hide.setGeometry(QtCore.QRect(290, 60, 113, 20))
+        self.KEY_Hide.setGeometry(QtCore.QRect(280, 70, 113, 20))
         self.KEY_Hide.setObjectName("KEY_Hide")
 
         # Newer
         self.LA_Newer = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Newer.setGeometry(QtCore.QRect(30, 110, 111, 20))
+        self.LA_Newer.setGeometry(QtCore.QRect(20, 120, 111, 20))
         self.LA_Newer.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Newer.setObjectName("LA_Newer")
         self.LA_Newer.setText("Show newer replay")
 
         self.KEY_Newer = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Newer.setGeometry(QtCore.QRect(30, 130, 113, 20))
+        self.KEY_Newer.setGeometry(QtCore.QRect(20, 140, 113, 20))
         self.KEY_Newer.setObjectName("KEY_Newer")
 
         # Older
         self.LA_Older = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Older.setGeometry(QtCore.QRect(160, 110, 111, 20))
+        self.LA_Older.setGeometry(QtCore.QRect(150, 120, 111, 20))
         self.LA_Older.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Older.setObjectName("LA_Older")
         self.LA_Older.setText("Show older replay")
 
         self.KEY_Older = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Older.setGeometry(QtCore.QRect(160, 130, 113, 20))
+        self.KEY_Older.setGeometry(QtCore.QRect(150, 140, 113, 20))
         self.KEY_Older.setObjectName("KEY_Older")
 
         # Winrates
         self.LA_Winrates = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Winrates.setGeometry(QtCore.QRect(290, 110, 111, 20))
+        self.LA_Winrates.setGeometry(QtCore.QRect(280, 120, 111, 20))
         self.LA_Winrates.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrates.setObjectName("LA_Winrates")
         self.LA_Winrates.setText("Show player winrates")
 
         self.KEY_Winrates = CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Winrates.setGeometry(QtCore.QRect(290, 130, 113, 20))
+        self.KEY_Winrates.setGeometry(QtCore.QRect(280, 140, 113, 20))
         self.KEY_Winrates.setObjectName("KEY_Winrates")
+
+        for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
+            item.setStyleSheet("color: #444;")
 
 
        
@@ -195,7 +214,7 @@ class UI_TabWidget(object):
  
         # Colors
         self.FR_CustomizeColors = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_CustomizeColors.setGeometry(QtCore.QRect(460, 170, 241, 211))
+        self.FR_CustomizeColors.setGeometry(QtCore.QRect(445, 170, 241, 211))
         self.FR_CustomizeColors.setAutoFillBackground(True)
         self.FR_CustomizeColors.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_CustomizeColors.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -225,7 +244,7 @@ class UI_TabWidget(object):
 
         # Aom
         self.FR_Aom = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_Aom.setGeometry(QtCore.QRect(710, 170, 241, 211))
+        self.FR_Aom.setGeometry(QtCore.QRect(700, 170, 241, 211))
         self.FR_Aom.setAutoFillBackground(True)
         self.FR_Aom.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Aom.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -249,7 +268,7 @@ class UI_TabWidget(object):
 
         # Version
         self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Version.setGeometry(QtCore.QRect(825, 555, 141, 20))
+        self.LA_Version.setGeometry(QtCore.QRect(825, 560, 141, 20))
         self.LA_Version.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.LA_Version.setObjectName("LA_Version")
         self.LA_Version.setText(f"The app is up to date ({str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
@@ -258,6 +277,8 @@ class UI_TabWidget(object):
         # Finalize main tab
         TabWidget.addTab(self.TAB_Main, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
+
+
 
 
         ### PLAYERS TAB ###
@@ -696,10 +717,10 @@ class UI_TabWidget(object):
         self.IMG_Donate.setObjectName("IMG_Donate")
 
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.LA_Donate.setGeometry(QtCore.QRect(160, 7, 250, 41))
+        self.LA_Donate.setGeometry(QtCore.QRect(185, 7, 250, 41))
         self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_Donate.setObjectName("LA_Donate")
-        self.LA_Donate.setText('<a href="www.google.com">donate if you feel generous</a>')
+        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">donate if you feel generous</a>')
 
         # Styling
         for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate}:
@@ -711,67 +732,42 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
 
-        ### Finalization ###
+        # Finalization
         self.retranslateUi(TabWidget)
         TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
 
-    def saveSettings(self):
-        """ Applies main settings and saves settings in the settings file. """
-
-        self.settings['start_with_windows'] = self.CH_StartWithWindows.isChecked()
-        self.settings['start_minimized'] = self.CH_StartMinimized.isChecked()
-        self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
-        self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
-        self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
-        self.settings['duration'] = self.SP_Duration.value()
-        self.settings['monitor'] = self.SP_Monitor.value()
-
-
-
-        # Save settings
-        try:
-            with open(SETTING_FILE, 'w') as f:
-                json.dump(self.settings, f, indent=2)
-            logger.info('Settings saved')
-        except:
-            logger.error(f'Error while saving settings\n{traceback.format_exc()}')
-
-
-
-
-        ### !!!! continue here for other settings and tabs
-        pass
-
+    ### Methods
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
 
-        # Default values
-        self.settings = {
-                    'start_with_windows':False,
-                    'start_minimized':False,
-                    'enable_logging':False,
-                    'show_player_winrates':True,
-                    'duration':60,
-                    'monitor':1,
-                    'force_hide_overlay':False,  
-                    'replay_folder':None,                  
-                    'hotkey_show/hide':'Ctrl+*',
-                    'hotkey_show':None,
-                    'hotkey_hide':None,
-                    'hotkey_newer':'Alt+/',
-                    'hotkey_older':'Alt+*',
-                    'hotkey_winrates':'Ctrl+Alt+-',
-                    'color_player1':None,
-                    'color_player2':None,
-                    'color_amon':None,
-                    'color_mastery':None,
-                    'aom_account':None,
-                    'aom_secret_key':None,
-                    'player_notes':None
-                    }
+        self.default_settings = {
+            'start_with_windows':False,
+            'start_minimized':False,
+            'enable_logging':False,
+            'show_player_winrates':True,
+            'duration':60,
+            'monitor':1,
+            'force_hide_overlay':False,  
+            'replay_folder':None,                  
+            'hotkey_show/hide':'Ctrl+*',
+            'hotkey_show':None,
+            'hotkey_hide':None,
+            'hotkey_newer':'Alt+/',
+            'hotkey_older':'Alt+*',
+            'hotkey_winrates':'Ctrl+Alt+-',
+            'color_player1':None,
+            'color_player2':None,
+            'color_amon':None,
+            'color_mastery':None,
+            'aom_account':None,
+            'aom_secret_key':None,
+            'player_notes':None
+            }
+
+        self.settings = self.default_settings
 
         # Try to load base config if there is one         
         try:         
@@ -784,8 +780,14 @@ class UI_TabWidget(object):
         except:
             logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
 
+        # Check if account directory valid, update if not
+        self.settings['replay_folder'] = get_account_dir(self.settings['replay_folder'])
 
-        # Update UI elements
+        self.updateUI()
+
+
+    def updateUI(self):
+        """ Update UI elements based on the current settings """
         self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
         self.CH_StartMinimized.setChecked(self.settings['start_minimized'])
         self.CH_EnableLogging.setChecked(self.settings['enable_logging'])
@@ -793,6 +795,14 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
+        self.LA_CurrentReplayFolder.setText(f"Current: {self.settings['replay_folder']}")
+
+        self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
+        self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
+        self.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_hide']))
+        self.KEY_Newer.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_newer']))
+        self.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_older']))
+        self.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_winrates']))
 
 
         
@@ -801,11 +811,84 @@ class UI_TabWidget(object):
         pass
 
 
+    def saveSettings(self):
+        """ Saves main settings in the settings file. """
+        self.settings['start_with_windows'] = self.CH_StartWithWindows.isChecked()
+        self.settings['start_minimized'] = self.CH_StartMinimized.isChecked()
+        self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
+        self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
+        self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
+        self.settings['duration'] = self.SP_Duration.value()
+        self.settings['monitor'] = self.SP_Monitor.value()
+
+        self.settings['hotkey_show/hide'] = self.KEY_ShowHide.keySequence().toString()
+        self.settings['hotkey_show'] = self.KEY_Show.keySequence().toString()
+        self.settings['hotkey_hide'] = self.KEY_Hide.keySequence().toString()
+        self.settings['hotkey_newer'] = self.KEY_Newer.keySequence().toString()
+        self.settings['hotkey_older'] = self.KEY_Older.keySequence().toString()
+        self.settings['hotkey_winrates'] = self.KEY_Winrates.keySequence().toString()
+
+        # Save settings
+        try:
+            with open(SETTING_FILE, 'w') as f:
+                json.dump(self.settings, f, indent=2)
+            logger.info('Settings saved')
+        except:
+            logger.error(f'Error while saving settings\n{traceback.format_exc()}')
+
+        # Warning
+        self.sendInfoMessage('')
+
+        hotkeys = [self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
+        hotkeys = [h for h in hotkeys if not h in {None,''}]
+        if len(hotkeys) > len(set(hotkeys)):
+            self.sendInfoMessage('Warning: Overlapping hotkeys!',color='red')
+
+        ### !!!! continue here for other settings and tabs
+        pass
+
+
+    def resetSettings(self):
+        """ Resets settings to default values and updates UI """
+        self.BT_ChooseFolder.setText('Choose folder')
+        self.settings = self.default_settings
+        self.settings['replay_folder'] = get_account_dir(self.settings['replay_folder'])
+        self.updateUI()
+        self.saveSettings()
+        self.sendInfoMessage('All settings have been reset!')
+
+
+    def findReplayFolder(self):
+        """ Finds and sets account folder """
+        dialog = QtWidgets.QFileDialog()
+        dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+
+        if dialog.exec_():
+            folder = dialog.selectedFiles()[0]
+            if 'StarCraft' in folder and '/Accounts' in folder:
+                self.settings['replay_folder'] = folder
+                self.LA_CurrentReplayFolder.setText(f'Current: {folder}')
+                self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
+
+            else:
+                self.sendInfoMessage('Invalid account folder!', color='red')
+
+
+    def sendInfoMessage(self, message, color='#555'):
+        """ Sends info message. `color` specifies message color"""
+        self.LA_InfoLabel.setText(message)
+        self.LA_InfoLabel.setStyleSheet(f'color: {color}')
+
+    
 
 
 
-    # !!! Remove this as I improve things
+
+
+
+
     def retranslateUi(self, TabWidget):
+        # !!! Remove this as I improve things
         _translate = QtCore.QCoreApplication.translate
         
 
@@ -819,7 +902,7 @@ class UI_TabWidget(object):
         self.LA_CustomizeColors.setText(_translate("TabWidget", "Customize colors"))
         self.LA_P1.setText(_translate("TabWidget", "Player 1"))
         self.LA_More.setText(_translate("TabWidget", "(and more via editing custom.css)"))
-        self.LA_AccountFolderNote.setText(_translate("TabWidget", "(usually unnecessary)"))
+        
         
         self.LA_Name_00.setText(_translate("TabWidget", "Maguro"))
         self.LA_Wins_00.setText(_translate("TabWidget", "3"))

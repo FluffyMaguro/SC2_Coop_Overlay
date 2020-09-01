@@ -44,20 +44,29 @@ def sendEvent(event):
 
 
 def find_names_and_handles(ACCOUNTDIR):
-    """ Finds player handles and names from the account directory """
+    """ Finds player handles and names from the account directory (or its subfolder) """
 
-    # First handles. Add those that have directories created in SC2 documents directory
+    # First walk up as far as possible in-case the user has selected one the of subfolders.
+    folder = ACCOUNTDIR
+    while True:
+        parent = os.path.dirname(folder)
+        if 'StarCraft' in parent:
+            folder = parent
+        else:
+            break
+
+    # Find handles & names
     handles = set()
-    for root, directories, files in os.walk(ACCOUNTDIR):
+    names = set()
+
+    for root, directories, files in os.walk(folder):
         for directory in directories:
             if directory.count('-') >= 3 and not r'\Banks' in root:
                 handles.add(directory)
 
-    # Now for names. Add those that have shortcut created in SC2 documents directory
-    names = set()
-    for file in os.listdir(os.path.dirname(ACCOUNTDIR)):
-        if file.endswith('.lnk'):
-            names.add(file.split('_')[0])
+        for file in files:
+            if file.endswith('.lnk') and '_' in file and '@' in file:
+                names.add(file.split('_')[0])
 
     return names, handles
 
