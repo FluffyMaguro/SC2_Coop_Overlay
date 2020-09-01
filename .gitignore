@@ -1,0 +1,16 @@
+SCO_config.ini
+SCO_log.txt
+SCO.spec
+SCO.exe
+venv/*
+*__pycache__*
+build
+dist
+_testing.py
+cache_replay_analysis.txt
+cache_overallstats
+cache_player_winrates.json
+*.ui
+*.qrc
+Settings.json
+Logs.txt
