@@ -1,10 +1,10 @@
 import os
+import json
 import string
-from pathlib import Path
-
 import requests
-
+from pathlib import Path
 from SCOFunctions.MLogging import logclass
+
 
 # Use ctypes.wintypes only on windows platform
 if os.name == 'nt':
@@ -14,7 +14,21 @@ else:
 
 
 logger = logclass('HELP','INFO')
+version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 
+
+def new_version(current_version):
+    """ Checks for a new version of the app. Returns a download link if a new version available. """
+    try:
+        data = json.loads(requests.get(version_link).text)
+        logger.info(f'This version: {str(current_version)[0]}.{str(current_version)[1:]}. Most current live version: 1.{data["version"]}. ')
+        if data['version'] > current_version:
+            return data['download_link_1']
+        else:
+            return False
+    except:
+        logger.error('Failed to check for the new version')
+        return False
 
 
 def get_account_dir(path=None):

@@ -2,20 +2,21 @@ import os
 import sys
 import json
 import traceback
+import urllib.request
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, filePath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key
 from SCOFunctions.MainFunctions import find_names_and_handles
+from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version
 
 
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 119
+APPVERSION = 1
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -64,6 +65,7 @@ class UI_TabWidget(object):
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
         self.SP_Monitor.setGeometry(QtCore.QRect(250, 50, 42, 22))
         self.SP_Monitor.setMinimum(1)
+        self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
@@ -74,7 +76,7 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 171, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
-        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting for example when it's meant to be visible only on stream.")
+        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen.\nYou can use this setting for example when it's meant to be visible only on stream.")
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -105,7 +107,8 @@ class UI_TabWidget(object):
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 23))
         self.BT_MainReset.setText('Reset')
-        self.BT_MainReset.clicked.connect(self.resetSettings)        
+        self.BT_MainReset.clicked.connect(self.resetSettings)
+        self.BT_MainReset.setToolTip("Reset all settings apart from those for starcraft2coop")
 
         ### Hotkey frame
         self.FR_HotkeyFrame = QtWidgets.QFrame(self.TAB_Main)
@@ -129,7 +132,6 @@ class UI_TabWidget(object):
 
         self.KEY_ShowHide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 70, 113, 20))
-        self.KEY_ShowHide.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
         
         # Show
@@ -198,12 +200,14 @@ class UI_TabWidget(object):
         self.LA_CustomizeColors.setGeometry(QtCore.QRect(0, 10, 241, 20))
         self.LA_CustomizeColors.setStyleSheet("font-weight: bold")
         self.LA_CustomizeColors.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_CustomizeColors.setText("Customize colors")
 
         # Note
         self.LA_More = QtWidgets.QLabel(self.FR_CustomizeColors)
         self.LA_More.setEnabled(False)
         self.LA_More.setGeometry(QtCore.QRect(0, 19, 241, 31))
         self.LA_More.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_More.setText("more via editing custom.css")
 
         color_x_offset = 50
         color_height = 20
@@ -254,7 +258,7 @@ class UI_TabWidget(object):
         self.BT_AomTest.setGeometry(QtCore.QRect(75, 150, 85, 23))
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify") 
-        self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")    
+        self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
 
 
         # Version
@@ -541,7 +545,6 @@ class UI_TabWidget(object):
         self.LA_GitHub.setGeometry(QtCore.QRect(70, 20, 131, 41))
         self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">GitHub</a>')
-        self.LA_GitHub.setToolTip('github.com/FluffyMaguro/SC2_Coop_overlay')
 
         # Maguro.one
         self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
@@ -551,7 +554,6 @@ class UI_TabWidget(object):
         self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
         self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 70, 131, 41))
         self.LA_MaguroOne.setText('<a href="www.maguro.one">Maguro.one</a>')
-        self.LA_MaguroOne.setToolTip('www.maguro.one')
 
         # Twitter
         self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
@@ -561,7 +563,6 @@ class UI_TabWidget(object):
         self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
         self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 131, 31))
         self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">Twitter</a>')
-        self.LA_Twitter.setToolTip('twitter.com/FluffyMaguro')
 
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
@@ -571,7 +572,6 @@ class UI_TabWidget(object):
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
         self.LA_Subreddit.setGeometry(QtCore.QRect(290, 20, 161, 31))
         self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
-        self.LA_Subreddit.setToolTip('www.reddit.com/r/starcraft2coop/')
 
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
@@ -581,7 +581,6 @@ class UI_TabWidget(object):
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
         self.LA_BattleNet.setGeometry(QtCore.QRect(290, 70, 141, 31))
         self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
-        self.LA_BattleNet.setToolTip('us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion')
 
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
@@ -591,27 +590,26 @@ class UI_TabWidget(object):
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
         self.LA_Discord.setGeometry(QtCore.QRect(290, 120, 141, 41))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
-        self.LA_Discord.setToolTip('StarCraft 2 Co-op discord')
 
         # Donate
         self.FR_Donate = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Donate.setGeometry(QtCore.QRect(20, 225, 471, 50))
+        self.FR_Donate.setGeometry(QtCore.QRect(20, 225, 471, 100))
         self.FR_Donate.setAutoFillBackground(True)
         self.FR_Donate.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Donate.setFrameShadow(QtWidgets.QFrame.Plain)
 
         self.IMG_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.IMG_Donate.setGeometry(QtCore.QRect(20, 6, 200, 41))
+        self.IMG_Donate.setGeometry(QtCore.QRect(170, 14, 200, 41))
         self.IMG_Donate.setPixmap(QtGui.QPixmap(filePath("src/paypal.png")))
 
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.LA_Donate.setGeometry(QtCore.QRect(185, 7, 250, 41))
+        self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
         self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">donate if you feel generous</a>')
 
         # Styling
         for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate}:
-            item.setStyleSheet("font-size: 18px; color: blue; text-decoration: underline")
+            item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
 
 
@@ -670,7 +668,70 @@ class UI_TabWidget(object):
         # Check if account directory valid, update if not
         self.settings['replay_folder'] = get_account_dir(self.settings['replay_folder'])
 
+
         self.updateUI()
+        self.check_for_updates()
+
+
+    def check_for_updates(self):
+        """ Checks for updates and changes UI accordingly"""
+        self.new_version = new_version(APPVERSION)
+
+        if not self.new_version:
+            return
+
+        self.LA_Version.setText('New version available!')
+
+        # Create button
+        self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_NewUpdate.setGeometry(QtCore.QRect(785, 493, 157, 40))
+        self.BT_NewUpdate.setText('Download update')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold;')
+        self.BT_NewUpdate.clicked.connect(self.start_download)
+
+        # Check if it's already downloaded
+        save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+
+        if os.path.isfile(save_path):
+            self.update_is_ready_for_install()
+        else:
+            self.PB_download = QtWidgets.QProgressBar(self.TAB_Main) 
+            self.PB_download.setGeometry(786, 534, 190, 10) 
+
+
+    def start_download(self):
+        """ Starts downloading an update"""
+
+        if not os.path.isdir(truePath('Updates')):
+            os.mkdir(truePath('Updates'))
+
+        save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+        urllib.request.urlretrieve(self.new_version, save_path, self.download_progress_bar_updater) 
+
+
+    def download_progress_bar_updater(self, blocknum, blocksize, totalsize):
+        """ Updates the progress bar accordingly"""
+        readed_data = blocknum * blocksize 
+
+        if totalsize > 0: 
+            download_percentage = readed_data * 100 / totalsize 
+            self.PB_download.setValue(int(download_percentage)) 
+            QtWidgets.QApplication.processEvents() 
+
+            if download_percentage >= 100:
+                self.update_is_ready_for_install()
+
+
+    def update_is_ready_for_install(self):
+        """ Changes button text and connect it to another function"""
+        self.BT_NewUpdate.setText('Restart and update')
+        self.BT_NewUpdate.clicked.disconnect()    
+        self.BT_NewUpdate.clicked.connect(self.install_update)
+
+
+    def install_update(self):
+        """ Starts the installation """
+        print('installing update')
 
 
     def updateUI(self):
@@ -810,12 +871,7 @@ class UI_TabWidget(object):
         _translate = QtCore.QCoreApplication.translate
         
 
-        self.LA_Mastery.setText(_translate("TabWidget", "Mastery"))
-        self.LA_Amon.setText(_translate("TabWidget", "Amon"))
-        self.LA_P2.setText(_translate("TabWidget", "Player 2"))
-        self.LA_CustomizeColors.setText(_translate("TabWidget", "Customize colors"))
-        self.LA_P1.setText(_translate("TabWidget", "Player 1"))
-        self.LA_More.setText(_translate("TabWidget", "(and more via editing custom.css)"))
+
         
         
         self.LA_Name_00.setText(_translate("TabWidget", "Maguro"))

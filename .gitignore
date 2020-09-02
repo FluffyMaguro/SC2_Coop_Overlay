@@ -14,3 +14,4 @@ cache_player_winrates.json
 *.qrc
 Settings.json
 Logs.txt
+Updates/*
