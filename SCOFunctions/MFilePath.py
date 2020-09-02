@@ -15,7 +15,7 @@ def truePath(file):
     return path
 
 
-def filePath(file):
+def innerPath(file):
     """ Gets path to a packaged file
     Takes care of cases when it's packaged with pyinstaller.
     """

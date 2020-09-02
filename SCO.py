@@ -10,7 +10,7 @@ import ctypes.wintypes
 import requests
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets, QtGui
 
-from SCOFunctions.MFilePath import truePath, filePath
+from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import check_for_new_game, check_replays, server_thread, keyboard_thread_SHOW, keyboard_thread_HIDE, set_initMessage, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES
 
@@ -238,7 +238,7 @@ def main(startthreads=True):
 
     # Create the system tray
     tray = QtWidgets.QSystemTrayIcon()   
-    tray.setIcon(QtGui.QIcon(filePath('src/OverlayIcon.ico')))
+    tray.setIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
     tray.setVisible(True)
     tray.setToolTip(f'StarCraft Co-op Overlay 1.{APPVERSION}')
 

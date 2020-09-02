@@ -32,6 +32,16 @@ def new_version(current_version):
         return False
 
 
+def archive_is_corrupt(archive):
+    """ Checks if an archive is corrupt"""
+    print(f'Checking: {archive}')
+    test = zipfile.ZipFile(archive).testzip()
+
+    if test == None:
+        return False
+    return True
+
+
 def extract_archive(file, targetdir):
     """ Extracts file to target directory """
     with zipfile.ZipFile(file, 'r') as f:

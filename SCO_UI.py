@@ -8,26 +8,27 @@ import urllib.request
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MLogging import logclass
-from SCOFunctions.MFilePath import truePath, filePath
-from SCOFunctions.MUserInterface import CustomKeySequenceEdit
+from SCOFunctions.MFilePath import truePath, innerPath
+from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget
 from SCOFunctions.MainFunctions import find_names_and_handles
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive
+from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt
 
 
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 1
+APPVERSION = 119
 SETTING_FILE = truePath('Settings.json')
 
 class UI_TabWidget(object):
-    def setupUi(self, TabWidget):
+    def setupUI(self, TabWidget):
         TabWidget.setWindowTitle(f"StarCraft Co-op Overlay ({str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
-        TabWidget.setWindowIcon(QtGui.QIcon(filePath('src/OverlayIcon.ico')))
+        TabWidget.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         TabWidget.setFixedSize(980, 610)
-        self.TAB_Main = QtWidgets.QWidget()
+        TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay {str(APPVERSION)[0]}.{str(APPVERSION)[1:]}')
 
         ### MAIN TAB ###
+        self.TAB_Main = QtWidgets.QWidget()
 
         # Start with Windows
         self.CH_StartWithWindows = QtWidgets.QCheckBox(self.TAB_Main)
@@ -539,7 +540,7 @@ class UI_TabWidget(object):
         # GitHub
         self.IMG_GitHub = QtWidgets.QLabel(self.FR_Links)
         self.IMG_GitHub.setGeometry(QtCore.QRect(20, 20, 41, 41))
-        self.IMG_GitHub.setPixmap(QtGui.QPixmap(filePath("src/github.png")))
+        self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
 
         self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
         self.LA_GitHub.setGeometry(QtCore.QRect(70, 20, 131, 41))
@@ -549,7 +550,7 @@ class UI_TabWidget(object):
         # Maguro.one
         self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
         self.IMG_MaguroOne.setGeometry(QtCore.QRect(20, 70, 31, 41))
-        self.IMG_MaguroOne.setPixmap(QtGui.QPixmap(filePath("src/maguro.jpg")))
+        self.IMG_MaguroOne.setPixmap(QtGui.QPixmap(innerPath("src/maguro.jpg")))
 
         self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
         self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 70, 131, 41))
@@ -558,7 +559,7 @@ class UI_TabWidget(object):
         # Twitter
         self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
         self.IMG_Twitter.setGeometry(QtCore.QRect(20, 120, 41, 51))
-        self.IMG_Twitter.setPixmap(QtGui.QPixmap(filePath("src/twitter.png")))
+        self.IMG_Twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
 
         self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
         self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 131, 31))
@@ -567,7 +568,7 @@ class UI_TabWidget(object):
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
         self.IMG_Reddit.setGeometry(QtCore.QRect(240, 10, 41, 51))
-        self.IMG_Reddit.setPixmap(QtGui.QPixmap(filePath("src/reddit.png")))
+        self.IMG_Reddit.setPixmap(QtGui.QPixmap(innerPath("src/reddit.png")))
 
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
         self.LA_Subreddit.setGeometry(QtCore.QRect(290, 20, 161, 31))
@@ -576,7 +577,7 @@ class UI_TabWidget(object):
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
         self.IMG_BattleNet.setGeometry(QtCore.QRect(240, 60, 41, 51))
-        self.IMG_BattleNet.setPixmap(QtGui.QPixmap(filePath("src/sc2.png")))
+        self.IMG_BattleNet.setPixmap(QtGui.QPixmap(innerPath("src/sc2.png")))
 
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
         self.LA_BattleNet.setGeometry(QtCore.QRect(290, 70, 141, 31))
@@ -585,7 +586,7 @@ class UI_TabWidget(object):
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
         self.IMG_Discord.setGeometry(QtCore.QRect(240, 120, 31, 41))
-        self.IMG_Discord.setPixmap(QtGui.QPixmap(filePath("src/discord.png")))
+        self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
         
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
         self.LA_Discord.setGeometry(QtCore.QRect(290, 120, 141, 41))
@@ -600,7 +601,7 @@ class UI_TabWidget(object):
 
         self.IMG_Donate = QtWidgets.QLabel(self.FR_Donate)
         self.IMG_Donate.setGeometry(QtCore.QRect(170, 14, 200, 41))
-        self.IMG_Donate.setPixmap(QtGui.QPixmap(filePath("src/paypal.png")))
+        self.IMG_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
 
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
         self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
@@ -622,8 +623,6 @@ class UI_TabWidget(object):
         TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
-
-    ### Methods
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
@@ -692,6 +691,7 @@ class UI_TabWidget(object):
         self.BT_NewUpdate.setText('Download update')
         self.BT_NewUpdate.setStyleSheet('font-weight: bold;')
         self.BT_NewUpdate.clicked.connect(self.start_download)
+        self.LA_InfoLabel.move(20, 442)
 
         # Check if it's already downloaded
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
@@ -749,16 +749,25 @@ class UI_TabWidget(object):
 
     def install_update(self):
         """ Starts the installation """
-
+        archive = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
         where_to_extract = truePath('Updates\\New')
         app_folder = truePath('')
+
+        # Check if it's corrupt
+        if archive_is_corrupt(archive) or True:
+            os.remove(archive)
+            self.sendInfoMessage('Archive corrupt. Removing file.', color='red')
+
+            self.BT_NewUpdate.clicked.disconnect()
+            self.BT_NewUpdate.clicked.connect(self.start_download)
+            self.BT_NewUpdate.setText('Download update')
+            return
 
         # Delete previously extracted archive
         if os.path.isdir(where_to_extract):
             shutil.rmtree(where_to_extract)
 
         # Extract archive
-        archive = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
         extract_archive(archive, where_to_extract)
 
         # Create and run install.bat file
@@ -901,7 +910,8 @@ class UI_TabWidget(object):
             self.settings[settings_dict[button]] = color.name()
 
 
-
+    def show_main_window(self):
+        print('showing main window')
 
 
     def retranslateUi(self, TabWidget):
@@ -993,8 +1003,10 @@ class UI_TabWidget(object):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     TabWidget = QtWidgets.QTabWidget()
+    TabWidget = CustomQTabWidget()
+
     ui = UI_TabWidget()
-    ui.setupUi(TabWidget)
+    ui.setupUI(TabWidget)
     ui.loadSettings()
     TabWidget.show()
 
