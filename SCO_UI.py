@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import shutil
 import traceback
 import urllib.request
 
@@ -10,7 +11,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, filePath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit
 from SCOFunctions.MainFunctions import find_names_and_handles
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version
+from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive
 
 
 logger = logclass('SCO','INFO')
@@ -18,7 +19,6 @@ logclass.FILE = truePath("Logs.txt")
 
 APPVERSION = 1
 SETTING_FILE = truePath('Settings.json')
-
 
 class UI_TabWidget(object):
     def setupUi(self, TabWidget):
@@ -668,6 +668,9 @@ class UI_TabWidget(object):
         # Check if account directory valid, update if not
         self.settings['replay_folder'] = get_account_dir(self.settings['replay_folder'])
 
+        # Delete install bat if it's there
+        if os.path.isfile(truePath('install.bat')):
+            os.remove(truePath('install.bat'))
 
         self.updateUI()
         self.check_for_updates()
@@ -731,7 +734,26 @@ class UI_TabWidget(object):
 
     def install_update(self):
         """ Starts the installation """
-        print('installing update')
+
+        where_to_extract = truePath('Updates\\New')
+        app_folder = truePath('')
+
+        # Delete previously extracted archive
+        if os.path.isdir(where_to_extract):
+            shutil.rmtree(where_to_extract)
+
+        # Extract archive
+        archive = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+        extract_archive(archive, where_to_extract)
+
+        # Create and run install.bat file
+        installfile = truePath('install.bat')
+        with open(installfile,'w') as f:
+            f.write(f'@echo off\ntimeout /t 1 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}\\Test" /E\nrmdir /s /q "{where_to_extract}"\n{os.path.join(app_folder, "SCO.exe")}')
+
+        os.startfile(installfile)
+        self.saveSettings()
+        app.quit()
 
 
     def updateUI(self):

@@ -15,3 +15,5 @@ cache_player_winrates.json
 Settings.json
 Logs.txt
 Updates/*
+Test/*
+install.bat

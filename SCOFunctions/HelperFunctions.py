@@ -2,6 +2,7 @@ import os
 import json
 import string
 import requests
+import zipfile
 from pathlib import Path
 from SCOFunctions.MLogging import logclass
 
@@ -29,6 +30,12 @@ def new_version(current_version):
     except:
         logger.error('Failed to check for the new version')
         return False
+
+
+def extract_archive(file, targetdir):
+    """ Extracts file to target directory """
+    with zipfile.ZipFile(file, 'r') as f:
+        f.extractall(targetdir)
 
 
 def get_account_dir(path=None):
