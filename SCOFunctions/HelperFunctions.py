@@ -22,6 +22,21 @@ logger = logclass('HELP','INFO')
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 
 
+def write_permission_granted():
+    """ Returns True if the app can write into its directory """
+    permission_granted = True
+    tfile = truePath('test_permission_file')
+    try:
+        with open(tfile, 'a') as f:
+            f.write('.')
+        os.remove(tfile)
+    except:
+        permission_granted = False
+        logger.info(f'Permission error:\n{traceback.format_exc()}')
+
+    return permission_granted
+
+
 def add_to_startup(Add):
     """ Add to startup if `Add` True, else remove. For non-packaged script returns False."""
     if not getattr(sys, 'frozen', False):

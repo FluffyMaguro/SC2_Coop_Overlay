@@ -11,7 +11,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget
 from SCOFunctions.MainFunctions import find_names_and_handles
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup
+from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
 
 logger = logclass('SCO','INFO')
@@ -19,6 +19,7 @@ logclass.FILE = truePath("Logs.txt")
 
 APPVERSION = 119
 SETTING_FILE = truePath('Settings.json')
+
 
 class UI_TabWidget(object):
     def setupUI(self, TabWidget):
@@ -188,7 +189,6 @@ class UI_TabWidget(object):
         for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
             item.setStyleSheet("color: #444;")
 
-      
         # Colors
         self.FR_CustomizeColors = QtWidgets.QFrame(self.TAB_Main)
         self.FR_CustomizeColors.setGeometry(QtCore.QRect(445, 170, 241, 211))
@@ -230,7 +230,6 @@ class UI_TabWidget(object):
         self.LA_Mastery.setGeometry(QtCore.QRect(color_x_offset, 160, color_width, color_height))
         self.LA_Mastery.clicked.connect(lambda: self.openColorDialog(self.LA_Mastery))
 
-
         # Aom
         self.FR_Aom = QtWidgets.QFrame(self.TAB_Main)
         self.FR_Aom.setGeometry(QtCore.QRect(700, 170, 241, 211))
@@ -260,7 +259,6 @@ class UI_TabWidget(object):
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify") 
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
-
 
         # Version
         self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
@@ -613,10 +611,8 @@ class UI_TabWidget(object):
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
 
-
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
-
 
         # Finalization
         self.retranslateUi(TabWidget)
@@ -681,6 +677,10 @@ class UI_TabWidget(object):
             TabWidget.show_minimize_message()
         else:
             TabWidget.show()
+
+        # Check write permissions
+        if not write_permission_granted:
+            self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color='red')
 
 
     def check_for_updates(self):
@@ -923,10 +923,6 @@ class UI_TabWidget(object):
     def retranslateUi(self, TabWidget):
         # !!! Remove this as I improve things
         _translate = QtCore.QCoreApplication.translate
-        
-
-
-        
         
         self.LA_Name_00.setText(_translate("TabWidget", "Maguro"))
         self.LA_Wins_00.setText(_translate("TabWidget", "3"))

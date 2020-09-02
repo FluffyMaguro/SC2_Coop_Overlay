@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from SCOFunctions.MFilePath import innerPath
  
 
@@ -36,8 +36,6 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.tray_icon.show()
 
         
-
-
     def closeEvent(self, event):
         """ Overriding close event and minimizing instead """
         event.ignore()
@@ -62,3 +60,20 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                 self.show()
 
 
+# class CustomWebView(QtWebEngineWidgets.QWebEngineView):
+#     """ Expanding this class to add javascript after page is loaded. This is used to distinquish main overlay from other overlays (e.g. in OBS)"""
+#     def __init__(self, unified, dll, KEY_SHOW, KEY_HIDE, KEY_NEWER, KEY_OLDER, KEY_PLAYERWINRATES, parent=None):
+#         super().__init__(parent)
+#         self.loadFinished.connect(self.on_load_finished)
+#         self.unified = unified
+#         self.dll = dll
+#         self.KEY_SHOW = KEY_SHOW
+#         self.KEY_HIDE = KEY_HIDE
+#         self.KEY_NEWER = KEY_NEWER
+#         self.KEY_OLDER = KEY_OLDER
+#         self.KEY_PLAYERWINRATES = KEY_PLAYERWINRATES
+
+#     @QtCore.pyqtSlot(bool)
+#     def on_load_finished(self,ok):
+#         if ok:
+#             self.page().runJavaScript(f"showmutators = false; showNotification(); fillhotkeyinfo('{self.KEY_SHOW}','{self.KEY_HIDE}','{self.KEY_NEWER}','{self.KEY_OLDER}','{self.KEY_PLAYERWINRATES}',{'true' if self.unified else 'false'},{'true' if self.dll else 'false'});")
