@@ -627,6 +627,7 @@ class UI_TabWidget(object):
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
+        self.downloading = False
 
         self.default_settings = {
             'start_with_windows':False,
@@ -687,7 +688,7 @@ class UI_TabWidget(object):
 
         # Create button
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_NewUpdate.setGeometry(QtCore.QRect(785, 493, 157, 40))
+        self.BT_NewUpdate.setGeometry(QtCore.QRect(20, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
         self.BT_NewUpdate.setStyleSheet('font-weight: bold;')
         self.BT_NewUpdate.clicked.connect(self.start_download)
@@ -699,11 +700,20 @@ class UI_TabWidget(object):
             self.update_is_ready_for_install()
         else:
             self.PB_download = QtWidgets.QProgressBar(self.TAB_Main) 
-            self.PB_download.setGeometry(786, 534, 190, 10) 
+            self.PB_download.setGeometry(21, 569, 830, 10) 
+            self.PB_download.hide()
 
 
     def start_download(self):
         """ Starts downloading an update"""
+        if self.downloading:
+            return
+
+        self.downloading = True
+        self.BT_NewUpdate.setText('Downloading')
+        self.BT_NewUpdate.setEnabled(False)
+        self.BT_NewUpdate.clicked.disconnect()
+        self.PB_download.show()
 
         if not os.path.isdir(truePath('Updates')):
             os.mkdir(truePath('Updates'))
@@ -723,12 +733,17 @@ class UI_TabWidget(object):
 
             if download_percentage >= 100:
                 self.update_is_ready_for_install()
+                self.downloading = False
 
 
     def update_is_ready_for_install(self):
         """ Changes button text and connect it to another function"""
         self.BT_NewUpdate.setText('Restart and update')
-        self.BT_NewUpdate.clicked.disconnect()    
+        self.BT_NewUpdate.setEnabled(True)
+        try:
+            self.BT_NewUpdate.clicked.disconnect()    
+        except:
+            pass
         self.BT_NewUpdate.clicked.connect(self.install_update)
 
 
@@ -749,10 +764,11 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile,'w') as f:
-            f.write(f'@echo off\ntimeout /t 1 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}\\Test" /E\nrmdir /s /q "{where_to_extract}"\n{os.path.join(app_folder, "SCO.exe")}')
+            f.write(f'@echo off\ntimeout /t 1 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}\\Test" /E\nrmdir /s /q "{where_to_extract}"\n{truePath("SCO.exe")}')
 
-        os.startfile(installfile)
+        shutil.rmtree(truePath('Updates'))
         self.saveSettings()
+        os.startfile(installfile)
         app.quit()
 
 
