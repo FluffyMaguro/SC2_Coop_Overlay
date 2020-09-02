@@ -11,7 +11,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget
 from SCOFunctions.MainFunctions import find_names_and_handles
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt
+from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup
 
 
 logger = logclass('SCO','INFO')
@@ -675,6 +675,13 @@ class UI_TabWidget(object):
         self.updateUI()
         self.check_for_updates()
 
+        # Show TabWidget or not
+        if self.settings['start_minimized']:
+            TabWidget.hide()
+            TabWidget.show_minimize_message()
+        else:
+            TabWidget.show()
+
 
     def check_for_updates(self):
         """ Checks for updates and changes UI accordingly"""
@@ -848,6 +855,9 @@ class UI_TabWidget(object):
         if len(hotkeys) > len(set(hotkeys)):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
+        # Registry
+        add_to_startup(self.settings['start_with_windows'])
+
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
@@ -908,10 +918,6 @@ class UI_TabWidget(object):
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
             button.setStyleSheet(f'background-color: {color.name()};')
             self.settings[settings_dict[button]] = color.name()
-
-
-    def show_main_window(self):
-        print('showing main window')
 
 
     def retranslateUi(self, TabWidget):
@@ -1008,7 +1014,6 @@ if __name__ == "__main__":
     ui = UI_TabWidget()
     ui.setupUI(TabWidget)
     ui.loadSettings()
-    TabWidget.show()
 
     # Save settings before the app is closed
     exit_event = app.exec_()

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from SCOFunctions.MFilePath import innerPath
  
- 
+
 class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
     def __init__(self, parent=None):
         super(CustomKeySequenceEdit, self).__init__(parent)
@@ -39,9 +39,15 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         """ Overriding close event and minimizing instead """
         event.ignore()
         self.hide()
+        self.show_minimize_message()
+
+
+    def show_minimize_message(self):
         self.tray_icon.showMessage(
                 "StarCraft Co-op Overlay",
-                "Application was minimized to tray",
+                "App was minimized into the tray",
                 QtGui.QIcon(innerPath('src/OverlayIcon.ico')),
                 2000
             )
+
+

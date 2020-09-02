@@ -1,10 +1,14 @@
 import os
+import sys
 import json
 import string
 import requests
 import zipfile
+import traceback
 from pathlib import Path
+from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
+from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
 
 
 # Use ctypes.wintypes only on windows platform
@@ -16,6 +20,26 @@ else:
 
 logger = logclass('HELP','INFO')
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
+
+
+def add_to_startup(Add):
+    """ Add to startup if `Add` True, else remove. For non-packaged script returns False."""
+    if not getattr(sys, 'frozen', False):
+        return False
+
+    try:
+        key = 'StarCraft Co-op Overlay'
+        if Add:
+            path = truePath('SCO.exe')
+            logger.info(f'Adding {path} to registry as {key}')
+            reg_add_to_startup(key, path)
+        else:
+            reg_delete_startup_field(key)
+    except:
+        logger.error(f'Failed to edit registry.\n{traceback.format_exc()}')
+
+    finally:
+        return True
 
 
 def new_version(current_version):
