@@ -19,6 +19,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         # Tray
         self.tray_icon = QtWidgets.QSystemTrayIcon()
         self.tray_icon.setIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
+        self.tray_icon.activated.connect(self.tray_activated)
         self.tray_menu = QtWidgets.QMenu()
 
         self.show_action = QtWidgets.QAction("Show")
@@ -33,6 +34,8 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
         self.tray_icon.setContextMenu(self.tray_menu)
         self.tray_icon.show()
+
+        
 
 
     def closeEvent(self, event):
@@ -49,5 +52,13 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                 QtGui.QIcon(innerPath('src/OverlayIcon.ico')),
                 2000
             )
+
+    def tray_activated(self, reason):
+        """ Hides/shows main window when the tray icon is double clicked """
+        if reason == 2:
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show()
 
 
