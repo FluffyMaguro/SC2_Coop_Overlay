@@ -679,8 +679,11 @@ class UI_TabWidget(object):
             TabWidget.show()
 
         # Check write permissions
-        if not write_permission_granted:
+        self.write_permissions = write_permission_granted()
+        if not self.write_permissions:
             self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color='red')
+
+        logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
 
     def check_for_updates(self):
@@ -858,6 +861,10 @@ class UI_TabWidget(object):
         # Registry
         add_to_startup(self.settings['start_with_windows'])
 
+        # Logging
+        logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
+
+
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
@@ -918,6 +925,17 @@ class UI_TabWidget(object):
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
             button.setStyleSheet(f'background-color: {color.name()};')
             self.settings[settings_dict[button]] = color.name()
+
+
+    def start_main_functionality(self):
+        """ Doing the main work of looking for replays, analysing, etc. """
+        logger.info(f'>>> Starting!\n{self.settings}')
+
+
+
+
+
+        pass        
 
 
     def retranslateUi(self, TabWidget):
@@ -1010,6 +1028,7 @@ if __name__ == "__main__":
     ui = UI_TabWidget()
     ui.setupUI(TabWidget)
     ui.loadSettings()
+    ui.start_main_functionality()
 
     # Save settings before the app is closed
     exit_event = app.exec_()
