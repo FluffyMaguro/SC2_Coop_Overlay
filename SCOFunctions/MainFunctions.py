@@ -168,7 +168,7 @@ def update_player_winrate_data(replay_dict):
             player_winrate_data[player][result] += 1
 
 
-def check_replays():
+def initialize_names_handles_winrates():
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
@@ -186,7 +186,7 @@ def check_replays():
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
-
+    player_winrate_data_temp = None
     if SETTINGS['show_player_winrates']:
         try:
             time_counter_start = time.time()
@@ -199,6 +199,12 @@ def check_replays():
         except:
             logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
 
+    return player_winrate_data_temp
+
+
+def check_replays():
+    """ Checks every few seconds for new replays """
+    global AllReplays
 
     while True:
         logger.debug('Checking for replays....')

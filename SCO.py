@@ -11,8 +11,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
-from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
-from SCOFunctions.MainFunctions import resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_OLDER, keyboard_NEWER, keyboard_SHOWHIDE, keyboard_HIDE, keyboard_SHOW, keyboard_PLAYERWINRATES
+from SCOFunctions.MUserInterface import Worker, CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
+from SCOFunctions.MainFunctions import initialize_names_handles_winrates, resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_OLDER, keyboard_NEWER, keyboard_SHOWHIDE, keyboard_HIDE, keyboard_SHOW, keyboard_PLAYERWINRATES
 from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
 
@@ -1032,16 +1032,38 @@ class UI_TabWidget(object):
         # Pass current settings
         update_settings(self.settings)
 
-        # Start threads
-        self.thread_replays = threading.Thread(target=check_replays, daemon=True)
-        self.thread_replays.start()
 
         self.thread_server = threading.Thread(target=server_thread, daemon=True)
         self.thread_server.start()
 
+        # Using PyQt threadpool to get back results from winrate and other analysis
+        self.threadpool = QtCore.QThreadPool()
+        thread_init = Worker(initialize_names_handles_winrates)
+        thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
+        self.threadpool.start(thread_init)
+
+         
+
+    def initialization_of_players_winrates_finished(self, winrate_data):
+        """ What happens after we initialized player names, handles and winrates"""
+
+
+        # Update player winrates UI
+        for player in winrate_data:
+            # !!!! create element in TAB_PLAYERS
+            pass
+
+
+        # Check for new replays
+        # !!!! Change this to a worker, that upon returning result will do some stuff in UI and launches itself again
+        self.thread_replays = threading.Thread(target=check_replays, daemon=True)
+        self.thread_replays.start()
+
+
+        # Show player winrates
         if self.settings['show_player_winrates']:
             self.thread_check_for_newgame = threading.Thread(target=check_for_new_game, daemon=True)
-            self.thread_check_for_newgame.start()            
+            self.thread_check_for_newgame.start()   
 
 
     def set_WebView_size_location(self, monitor):
