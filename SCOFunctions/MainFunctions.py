@@ -27,20 +27,29 @@ player_winrate_data = dict()
 PLAYER_HANDLES = set() # Set of handles of the main player
 PLAYER_NAMES = set() # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
+SETTINGS = dict()
 
 
-def set_initMessage(colors, duration, unifiedhotkey):
-    """ Modify init message that's sent to new websockets """
+def update_settings(d):
+    """ Through this function the main script passes all its settings here """
+    global SETTINGS
     global initMessage
-    initMessage['colors'] = colors
-    initMessage['duration'] = duration
-    initMessage['unifiedhotkey'] = 'true' if unifiedhotkey else 'false'
+
+    SETTINGS = d
+    initMessage['colors'] = [SETTINGS['color_player1'], SETTINGS['color_player2'], SETTINGS['color_amon'], SETTINGS['color_mastery']]
+    initMessage['duration'] = SETTINGS['duration']
 
 
 def sendEvent(event):
     """ Adds event to messages ready to be sent """
     with lock:
         OverlayMessages.append(event)
+
+
+def resend_init_message():
+    """ Resends init message. In case duration of colors have changed. """
+    with lock:
+        OverlayMessages.append(initMessage) 
 
 
 def find_names_and_handles(ACCOUNTDIR):
@@ -159,7 +168,7 @@ def update_player_winrate_data(replay_dict):
             player_winrate_data[player][result] += 1
 
 
-def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
+def check_replays():
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
@@ -168,17 +177,17 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
     session_games = {'Victory':0,'Defeat':0}
 
     with lock:
-        AllReplays = initialize_AllReplays(ACCOUNTDIR)
+        AllReplays = initialize_AllReplays(SETTINGS['account_folder'])
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
 
     try:
-        update_names_and_handles(ACCOUNTDIR)
+        update_names_and_handles(SETTINGS['account_folder'])
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
 
-    if PLAYER_WINRATES:
+    if SETTINGS['show_player_winrates']:
         try:
             time_counter_start = time.time()
             logger.info(f'Starting player winrate analysis')
@@ -195,7 +204,7 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
         logger.debug('Checking for replays....')
         # Check for new replays
         current_time = time.time()
-        for root, directories, files in os.walk(ACCOUNTDIR):
+        for root, directories, files in os.walk(SETTINGS['account_folder']):
             for file in files:
                 file_path = os.path.join(root,file)
                 if len(file_path) > 255:
@@ -231,17 +240,17 @@ def check_replays(ACCOUNTDIR, AOM_NAME, AOM_SECRETKEY, PLAYER_WINRATES):
                             logger.error(traceback.format_exc())
 
                         finally:
-                            upload_to_aom(file_path,AOM_NAME,AOM_SECRETKEY,replay_dict)
+                            upload_to_aom(file_path,replay_dict)
                             break
 
         time.sleep(3)
 
 
-def upload_to_aom(file_path, AOM_NAME, AOM_SECRETKEY, replay_dict):
+def upload_to_aom(file_path, replay_dict):
     """ Function handling uploading the replay on the Aommaster's server"""
 
     # Credentials need to be set up
-    if AOM_NAME == None or AOM_SECRETKEY == None:
+    if SETTINGS['aom_account'] in {'',None} or SETTINGS['aom_secret_key'] in {'',None}:
         return
 
     # Never upload old replays
@@ -253,7 +262,7 @@ def upload_to_aom(file_path, AOM_NAME, AOM_SECRETKEY, replay_dict):
         sendEvent({'uploadEvent':True,'response':'Not valid replay for upload'})
         return
 
-    url = f'https://starcraft2coop.com/scripts/assistant/replay.php?username={AOM_NAME}&secretkey={AOM_SECRETKEY}'
+    url = f"https://starcraft2coop.com/scripts/assistant/replay.php?username={SETTINGS['aom_account']}&secretkey={SETTINGS['aom_secret_key']}"
     try:
         with open(file_path, 'rb') as file:
             response = requests.post(url, files={'file': file})
@@ -314,7 +323,7 @@ async def manager(websocket, path):
             await asyncio.sleep(0.1)
 
 
-def server_thread(PORT):
+def server_thread(PORT=7305):
     """ Creates a websocket server """
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -371,46 +380,57 @@ def move_in_AllReplays(delta):
             move_in_AllReplays(delta)
 
 
-def keyboard_thread_OLDER(OLDER):
+def keyboard_thread_OLDER():
     """ Thread waiting for hotkey for showing older replay"""
     logger.info('Starting keyboard older thread')
     while True:
-        keyboard.wait(OLDER)
+        keyboard.wait(SETTINGS['hotkey_older'])
         move_in_AllReplays(-1)
 
 
-def keyboard_thread_NEWER(NEWER):
+def keyboard_thread_NEWER():
     """ Thread waiting for hotkey for showing newer replay"""
     logger.info('Starting keyboard newer thread')
     while True:
-        keyboard.wait(NEWER)
+        keyboard.wait(SETTINGS['hotkey_newer'])
         move_in_AllReplays(1)
 
 
-def keyboard_thread_HIDE(HIDE):
+def keyboard_thread_SHOWHIDE(KEY):
+    """ Thread waiting for hotkey for showing/hiding overlay"""
+    logger.info('Starting keyboard showhide thread')
+    while True:
+        keyboard.wait(KEY())
+
+        # keyboard.wait(SETTINGS['hotkey_show/hide'])
+        logger.info('Show/Hide event')
+        sendEvent({'showHideEvent': True})
+
+
+def keyboard_thread_HIDE():
     """ Thread waiting for hide hotkey """
     logger.info('Starting keyboard hide thread')
     while True:
-        keyboard.wait(HIDE)
+        keyboard.wait(SETTINGS['hotkey_hide'])
         logger.info('Hide event')
         sendEvent({'hideEvent': True})
 
 
-def keyboard_thread_SHOW(SHOW):
+def keyboard_thread_SHOW():
     """ Thread waiting for show hotkey """
     logger.info('Starting keyboard show thread')
     while True:
-        keyboard.wait(SHOW)
+        keyboard.wait(SETTINGS['hotkey_show'])
         logger.info('Show event')
         sendEvent({'showEvent': True})
 
 
-def keyboard_thread_PLAYERWINRATES(PLAYERWINRATES):
+def keyboard_thread_PLAYERWINRATES():
     global most_recent_playerdata
     """ Thread waiting for player winrate hotkey """
     logger.info('Starting keyboard playerwinrates thread')
     while True:
-        keyboard.wait(PLAYERWINRATES)
+        keyboard.wait(SETTINGS['hotkey_winrates'])
         logger.info('PlayerWinrate key event')
         if most_recent_playerdata:
             logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
@@ -419,7 +439,7 @@ def keyboard_thread_PLAYERWINRATES(PLAYERWINRATES):
             logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
 
-def check_for_new_game(PLAYER_NOTES):
+def check_for_new_game():
     global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
 
@@ -487,9 +507,10 @@ def check_for_new_game(PLAYER_NOTES):
                     # Get player winrate data
                     data = {p:player_winrate_data.get(p,[None]) for p in player_names}
                     # Get player notes
-                    for player in data:
-                        if player.lower() in PLAYER_NOTES:
-                            data[player].append(PLAYER_NOTES[player.lower()])
+                    if not SETTINGS['player_notes'] in {None,''}:
+                        for player in data:
+                            if player.lower() in SETTINGS['player_notes']:
+                                data[player].append(SETTINGS['player_notes'][player.lower()])
 
                     most_recent_playerdata = data
                     logger.info(f'Sending player data event: {data}')

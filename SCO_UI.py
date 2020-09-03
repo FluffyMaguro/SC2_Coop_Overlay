@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import shutil
+import threading
 import traceback
 import urllib.request
 
@@ -10,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
-from SCOFunctions.MainFunctions import find_names_and_handles
+from SCOFunctions.MainFunctions import resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_thread_SHOWHIDE, keyboard_thread_SHOW, keyboard_thread_HIDE, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES
 from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
 
@@ -632,7 +633,7 @@ class UI_TabWidget(object):
             'duration':60,
             'monitor':1,
             'force_hide_overlay':False,  
-            'replay_folder':None,                  
+            'account_folder':None,                  
             'hotkey_show/hide':'Ctrl+*',
             'hotkey_show':None,
             'hotkey_hide':None,
@@ -661,8 +662,13 @@ class UI_TabWidget(object):
         except:
             logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
 
+        # Make sure all keys are here
+        for key in self.default_settings:
+            if key not in self.settings:
+                self.setting[key] = self.default_settings[key]
+
         # Check if account directory valid, update if not
-        self.settings['replay_folder'] = get_account_dir(self.settings['replay_folder'])
+        self.settings['account_folder'] = get_account_dir(self.settings['account_folder'])
 
         # Delete install bat if it's there
         if os.path.isfile(truePath('install.bat')):
@@ -679,8 +685,6 @@ class UI_TabWidget(object):
             TabWidget.show_minimize_message()
         else:
             TabWidget.show()
-
-
 
         # Check write permissions
         self.write_permissions = write_permission_granted()
@@ -804,7 +808,7 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
-        self.LA_CurrentReplayFolder.setText(f"Current: {self.settings['replay_folder']}")
+        self.LA_CurrentReplayFolder.setText(f"Current: {self.settings['account_folder']}")
 
         self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
         self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
@@ -828,6 +832,8 @@ class UI_TabWidget(object):
 
     def saveSettings(self):
         """ Saves main settings in the settings file. """
+        previous_settings = self.settings.copy()
+
         self.settings['start_with_windows'] = self.CH_StartWithWindows.isChecked()
         self.settings['start_minimized'] = self.CH_StartMinimized.isChecked()
         self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
@@ -872,32 +878,73 @@ class UI_TabWidget(object):
         # Logging
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
-        #Update TabWidget for notification
+        # Update TabWidget for notification
         TabWidget.settings = self.settings
+
+        # Update settings for other threads
+        update_settings(self.settings)
+
+        # Compare
+        changed_keys = set()
+        for key in previous_settings:
+            if previous_settings[key] != self.settings[key] and not (previous_settings[key] == None and self.settings[key] == ''):
+                print(f'Changed: {key}: {previous_settings[key]} → {self.settings[key]}')
+                changed_keys.add(key)
+
+        # Resend init message if duration has changed. Colors are handle in color picker.
+        if 'duration' in changed_keys:
+            resend_init_message()
+
+        # Monitor update
+        if 'monitor' in changed_keys and hasattr(self, 'WebView'):
+            self.set_WebView_size_location(self.settings['monitor'])
+
+        # Update keyboard threads
+        self.manage_keyboard_threads(previous_settings)
+
+        
+    def manage_keyboard_threads(self, previous_settings):
+        """ Compares previous settings with current ones, and restarts keyboard threads if necessary"""
+
+        changed_keys = set()
+        for key in {'hotkey_show/hide', 'hotkey_show', 'hotkey_hide', 'hotkey_newer', 'hotkey_older', 'hotkey_winrates'}:
+            if previous_settings[key] != self.settings[key] and not (previous_settings[key] in {None,''} and self.settings[key] in {None,''}):
+                changed_keys.add(key)
+
+        for key in changed_keys:
+            pass
+
 
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
+        previous_settings = self.settings.copy()
         self.settings = self.default_settings.copy()
-        self.settings['replay_folder'] = get_account_dir(path=self.settings['replay_folder'])
+        self.settings['account_folder'] = get_account_dir(path=self.settings['account_folder'])
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()        
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
+        update_settings(self.settings)
+        resend_init_message()
+        self.manage_keyboard_threads(previous_settings)
 
 
     def findReplayFolder(self):
         """ Finds and sets account folder """
         dialog = QtWidgets.QFileDialog()
+        if not self.settings['account_folder'] in {None,''}:
+            dialog.setDirectory(self.settings['account_folder'])
         dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
 
         if dialog.exec_():
             folder = dialog.selectedFiles()[0]
             if 'StarCraft' in folder and '/Accounts' in folder:
-                self.settings['replay_folder'] = folder
+                self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(f'Current: {folder}')
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
+                update_names_and_handles(folder)
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
@@ -935,6 +982,8 @@ class UI_TabWidget(object):
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
             button.setStyleSheet(f'background-color: {color.name()};')
             self.settings[settings_dict[button]] = color.name()
+            update_settings(self.settings)
+            resend_init_message()
 
 
     def start_main_functionality(self):
@@ -942,10 +991,78 @@ class UI_TabWidget(object):
         logger.info(f'>>> Starting!\n{self.settings}')
 
 
+        # Load overlay
+        if not os.path.isfile(truePath('Layouts/Layout.html')):
+            self.sendInfoMessage("Error! Failed to locate the html file", color='red')
+            logger.error("Error! Failed to locate the html file")
+
+        elif self.settings['force_hide_overlay'] or not self.write_permissions:
+            logger.info(f"Not showing overlay on-screen. Force hidden: {self.settings['force_hide_overlay']} | Permissions granted: {self.write_permissions}")
+
+        else:
+            self.WebView = CustomWebView()
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
+            self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+
+            self.WebPage = self.WebView.page()
+            self.WebPage.setBackgroundColor(QtCore.Qt.transparent)
+            self.set_WebView_size_location(self.settings['monitor'])
+
+            self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
+            self.WebView.show()
+
+
+        # Pass current settings
+        update_settings(self.settings)
+
+        # Start threads
+        self.thread_replays = threading.Thread(target=check_replays, daemon=True)
+        self.thread_replays.start()
+
+        self.thread_server = threading.Thread(target=server_thread, daemon=True)
+        self.thread_server.start()
+
+        if not self.settings['hotkey_newer'] in {None,''}:
+            self.thread_newer_replay = threading.Thread(target=keyboard_thread_NEWER, daemon=True)
+            self.thread_newer_replay.start()
+
+        if not self.settings['hotkey_older'] in {None,''}:
+            self.thread_older_replay = threading.Thread(target=keyboard_thread_OLDER, daemon=True)
+            self.thread_older_replay.start()
+
+        if not self.settings['hotkey_show/hide'] in {None,''}:
+            self.thread_showhide = threading.Thread(target=keyboard_thread_SHOWHIDE, daemon=True,  args =(lambda : self.settings['hotkey_show/hide'], ))
+            self.thread_showhide.start()
+
+        if not self.settings['hotkey_show'] in {None,''}:
+            self.thread_show = threading.Thread(target=keyboard_thread_SHOW, daemon=True)
+            self.thread_show.start()
+
+        if not self.settings['hotkey_hide'] in {None,''}:
+            self.thread_hide = threading.Thread(target=keyboard_thread_HIDE, daemon=True)
+            self.thread_hide.start()
+
+        if self.settings['show_player_winrates']:
+            self.thread_check_for_newgame = threading.Thread(target=check_for_new_game, daemon=True)
+            self.thread_check_for_newgame.start()            
+
+            if not self.settings['hotkey_winrates'] in {None,''}:
+                self.thread_winrates = threading.Thread(target=keyboard_thread_PLAYERWINRATES, daemon=True)
+                self.thread_winrates.start()
+
+
+    def set_WebView_size_location(self, monitor):
+        """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
+        sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
+        try:
+            self.WebView.setFixedSize(int(sg.width()*0.5 - 1), int(sg.height()))
+            self.WebView.move(int(sg.width()*0.5 + 1), sg.top())
+            logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
+        except:
+            logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
 
 
 
-        pass        
 
 
     def retranslateUi(self, TabWidget):

@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
 from SCOFunctions.MFilePath import innerPath
- 
+
 
 class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
     def __init__(self, parent=None):
@@ -24,7 +24,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
         self.show_action = QtWidgets.QAction("Show")
         self.show_action.triggered.connect(self.show)
-        self.show_action.setIcon(self.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_TitleBarMaxButton')))
+        self.show_action.setIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         self.tray_menu.addAction(self.show_action)
 
         self.quit_action = QtWidgets.QAction("Quit")
@@ -37,7 +37,8 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
         self.settings = settings
 
-        
+
+    @QtCore.pyqtSlot(bool)    
     def closeEvent(self, event):
         """ Overriding close event and minimizing instead """
         event.ignore()
@@ -51,7 +52,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         setting_dict = {"hotkey_show/hide":"Show/Hide","hotkey_newer":"Newer replay","hotkey_older":"Older replay"}
         for key in setting_dict:
             if key in self.settings and self.settings[key] != '':
-                text += f"\n{self.settings[key]} ⇉ {setting_dict[key]}"
+                text += f"\n{self.settings[key]} → {setting_dict[key]}"
         return text
 
 
@@ -62,6 +63,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                 QtGui.QIcon(innerPath('src/OverlayIcon.ico')),
                 2000
             )
+
 
     def tray_activated(self, reason):
         """ Hides/shows main window when the tray icon is double clicked """

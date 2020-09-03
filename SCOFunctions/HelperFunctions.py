@@ -40,10 +40,10 @@ def write_permission_granted():
 def add_to_startup(Add):
     """ Add to startup. Returns error string or None."""
 
-    if not os.name == 'nt':
+    if not os.name == 'nt' and Add:
         return 'Not a Windows-type OS. Not adding to the startup!'
 
-    if not getattr(sys, 'frozen', False):
+    if not getattr(sys, 'frozen', False) and Add:
         return 'App is not packaged. Not adding to the startup!'
 
     try:
@@ -52,7 +52,8 @@ def add_to_startup(Add):
             path = truePath('SCO.exe')
             logger.info(f'Adding {path} to registry as {key}')
             reg_add_to_startup(key, path)
-        else:
+        elif reg_get_startup_field_value(key) != None:
+            logger.info(f'Removing {path} to registry as {key}')
             reg_delete_startup_field(key)
     except:
         logger.error(f'Failed to edit registry.\n{traceback.format_exc()}')

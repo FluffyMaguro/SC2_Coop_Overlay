@@ -117,7 +117,6 @@ var DURATION = 60;
 var maxUnits = 5;
 var gP1Color = '#0080F8';
 var gP2Color = '#00D532';
-var UNIFIEDHOTKEY = true;
 var toBeShown = false;
 var winrateTime = 12;
 var showingWinrateStats = false;
@@ -316,7 +315,6 @@ function playerWinrate(dat) {
 function initColorsDuration(data) {
     setColors(data['colors'][0], data['colors'][1], data['colors'][2], data['colors'][3]);
     DURATION = data['duration'];
-    UNIFIEDHOTKEY = data['unifiedhotkey'];
 }
 
 
