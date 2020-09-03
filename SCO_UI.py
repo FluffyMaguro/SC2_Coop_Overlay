@@ -859,7 +859,11 @@ class UI_TabWidget(object):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
         # Registry
-        add_to_startup(self.settings['start_with_windows'])
+        out = add_to_startup(self.settings['start_with_windows'])
+        if out != None:
+            self.sendInfoMessage(f'Warning: {out}', color='red')
+            self.settings['start_with_windows'] = False
+            self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
 
         # Logging
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False

@@ -8,14 +8,14 @@ import traceback
 from pathlib import Path
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
-from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
 
 
 # Use ctypes.wintypes only on windows platform
 if os.name == 'nt':
     import ctypes.wintypes
+    from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
 else: 
-    logger.info("Not a Windows operation system, won't use ctypes.wintypes" )
+    logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg" )
 
 
 logger = logclass('HELP','INFO')
@@ -38,9 +38,13 @@ def write_permission_granted():
 
 
 def add_to_startup(Add):
-    """ Add to startup if `Add` True, else remove. For non-packaged script returns False."""
+    """ Add to startup. Returns error string or None."""
+
+    if not os.name == 'nt':
+        return 'Not a Windows-type OS. Not adding to the startup!'
+
     if not getattr(sys, 'frozen', False):
-        return False
+        return 'App is not packaged. Not adding to the startup!'
 
     try:
         key = 'StarCraft Co-op Overlay'
@@ -52,9 +56,10 @@ def add_to_startup(Add):
             reg_delete_startup_field(key)
     except:
         logger.error(f'Failed to edit registry.\n{traceback.format_exc()}')
+        return 'Error when adding the app to registry!'
 
     finally:
-        return True
+        return None
 
 
 def new_version(current_version):
