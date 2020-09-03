@@ -25,7 +25,7 @@ SETTING_FILE = truePath('Settings.json')
 
 class UI_TabWidget(object):
     def setupUI(self, TabWidget):
-        TabWidget.setWindowTitle(f"StarCraft Co-op Overlay ({str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
+        TabWidget.setWindowTitle(f"StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         TabWidget.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         TabWidget.setFixedSize(980, 610)
         TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay {str(APPVERSION)[0]}.{str(APPVERSION)[1:]}')
@@ -106,6 +106,7 @@ class UI_TabWidget(object):
         self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 23))
         self.BT_MainApply.setText('Apply')
         self.BT_MainApply.clicked.connect(self.saveSettings)
+        self.BT_MainApply.setShortcut("Enter")
 
         # Reset
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
@@ -266,7 +267,7 @@ class UI_TabWidget(object):
         self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Version.setGeometry(QtCore.QRect(825, 560, 141, 20))
         self.LA_Version.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
-        self.LA_Version.setText(f"The app is up to date ({str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
+        self.LA_Version.setText(f"The app is up to date (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         self.LA_Version.setEnabled(False)        
 
         # Finalize main tab
