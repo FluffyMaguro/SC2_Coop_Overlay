@@ -40,6 +40,7 @@ with ZipFile(file_name,'w') as zip:
 
 # Cleanup
 os.remove('SCO.spec')
+os.remove('SCO.exe')
 for item in {'build','dist','__pycache__'}:
     shutil.rmtree(item)
 

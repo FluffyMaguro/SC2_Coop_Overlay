@@ -776,7 +776,7 @@ class UI_TabWidget(object):
         app_folder = truePath('')
 
         # Check if it's corrupt
-        if archive_is_corrupt(archive) or True:
+        if archive_is_corrupt(archive):
             os.remove(archive)
             self.sendInfoMessage('Archive corrupt. Removing file.', color='red')
 
@@ -795,9 +795,8 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile,'w') as f:
-            f.write(f'@echo off\ntimeout /t 1 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}\\Test" /E\nrmdir /s /q "{where_to_extract}"\n{truePath("SCO.exe")}')
+            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 5 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 2 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\n"{truePath("SCO.exe")}"')
 
-        shutil.rmtree(truePath('Updates'))
         self.saveSettings()
         os.startfile(installfile)
         app.quit()
