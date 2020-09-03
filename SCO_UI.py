@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
-from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget
+from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
 from SCOFunctions.MainFunctions import find_names_and_handles
 from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
@@ -672,11 +672,15 @@ class UI_TabWidget(object):
         self.check_for_updates()
 
         # Show TabWidget or not
+        TabWidget.settings = self.settings
+
         if self.settings['start_minimized']:
             TabWidget.hide()
             TabWidget.show_minimize_message()
         else:
             TabWidget.show()
+
+
 
         # Check write permissions
         self.write_permissions = write_permission_granted()
@@ -868,6 +872,8 @@ class UI_TabWidget(object):
         # Logging
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
+        #Update TabWidget for notification
+        TabWidget.settings = self.settings
 
 
     def resetSettings(self):

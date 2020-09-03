@@ -120,6 +120,7 @@ var gP2Color = '#00D532';
 var UNIFIEDHOTKEY = true;
 var toBeShown = false;
 var winrateTime = 12;
+var showingWinrateStats = false;
 
 //main functionality
 setColors(null, null, null, null);
@@ -128,8 +129,6 @@ connect_to_socket();
 // DEBUG START
 // debug();
 // document.body.style.backgroundColor = "black";
-// fillhotkeyinfo('Ctrl+*','None','Alt+/','Alt+*',true,false);
-// showNotification();
 // DEBUG END
 
 
@@ -229,15 +228,17 @@ function connect_to_socket() {
         } else if (data['mutatordata'] != null) {
             mutatorInfo(data['data'])
         } else if (data['hideEvent'] != null) {
-            showhide(false)
+            hidestats()
         } else if (data['showEvent'] != null) {
-            showhide(true)
+            showstats()
+        } else if (data['showHideEvent'] != null) {
+            showhide()            
         } else if (data['uploadEvent'] != null) {
             setTimeout(uploadStatus, 1500, data['response'])
         } else if (data['initEvent'] != null) {
             initColorsDuration(data)
         } else if (data['playerEvent'] != null) {
-            playerWinrate(data)
+            showHidePlayerWinrate(data)
         } else {
             console.log('unidentified message')
         }
@@ -264,9 +265,22 @@ function reconnect_to_socket(message) {
     }, 1000);
 }
 
+
+function showHidePlayerWinrate(dat) {
+    if (showingWinrateStats) {
+        showingWinrateStats = false;
+        document.getElementById('playerstats').style.right = '-60vh';
+        document.getElementById('playerstats').style.opacity = '0';
+      } else {
+        playerWinrate(dat)
+      }
+}
+
+
 function playerWinrate(dat) {
     var element = document.getElementById('playerstats');
     var text = '';
+    showingWinrateStats = true;
 
     for (let [key, value] of Object.entries(dat['data'])) {
         // no data
@@ -293,65 +307,11 @@ function playerWinrate(dat) {
     element.style.opacity = '1';
     setTimeout(function() {
         document.getElementById('playerstats').style.right = '-60vh';
-        document.getElementById('playerstats').style.opacity = '0'
+        document.getElementById('playerstats').style.opacity = '0';
+        showingWinrateStats = false;
     }, winrateTime*1000)
 }
 
-function showNotification() {
-    document.getElementById('notification').style.opacity = '1';
-    setTimeout(function() {
-        document.getElementById('notification').style.opacity = '0';
-    }, 6000)
-}
-
-function fillhotkeyinfo(showh, hideh, newh, olderh, playerwinrates, unified, update) {
-    var otherinfo = document.getElementById('otherinfo');
-    var ttext = '';
-    if (update) {
-        ttext = '<p id="update">UPDATE AVAILABLE!</p>';
-    };
-    var text_hide = 'hide';
-    var text_show = 'show';
-    if (unified) {
-        text_hide = 'show/hide';
-        text_show = 'show/hide';
-    }
-
-    var inner_hide = '<span>' + hideh + '</span> &rArr; ' + text_hide;
-    var show_style = '';
-    if (hideh == 'None') {
-        inner_hide = '';
-        show_style = 'colspan="2"';
-        text_show = 'show/hide overlay'
-    }
-    var inner_show = '<span>' + showh + '</span> &rArr; ' + text_show;
-    if (showh == 'None') {
-        inner_show = ''
-    }
-    var inner_newer = '<span>' + newh + '</span> &rArr; newer';
-    if (newh == 'None') {
-        inner_newer = ''
-    }
-    var inner_older = '<span>' + olderh + '</span> &rArr; older';
-    if (olderh == 'None') {
-        inner_older = ''
-    }
-    var inner_playerwinrates = '<span>' + playerwinrates + '</span> &rArr; current partner winrate';
-    if (playerwinrates == 'None') {
-        inner_playerwinrates = ''
-    }
-
-    otherinfo.innerHTML = ttext + '<table><tr><td>' + inner_newer + '</td><td>' + inner_older + '</td></tr><tr><td ' + show_style + '>' + inner_show + '</td><td>' + inner_hide + '</td></tr><tr><td colspan="2">' + inner_playerwinrates + '</td></tr></table>';
-
-    if (update) {
-        document.getElementById('update').style.display = 'block'
-    };
-
-    otherinfo.style.opacity = '1';
-    setTimeout(function() {
-        document.getElementById('otherinfo').style.opacity = 0
-    }, 6000)
-}
 
 function initColorsDuration(data) {
     setColors(data['colors'][0], data['colors'][1], data['colors'][2], data['colors'][3]);
@@ -599,19 +559,11 @@ function postGameStats(data, showing = false) {
     }
 }
 
-function showhide(show) {
-    if (UNIFIEDHOTKEY == 'true') {
-        if (!toBeShown) {
-            showstats()
-        } else {
-            hidestats()
-        }
+function showhide() {
+    if (!toBeShown) {
+        showstats()
     } else {
-        if (show) {
-            showstats()
-        } else {
-            hidestats()
-        }
+        hidestats()
     }
 }
 
