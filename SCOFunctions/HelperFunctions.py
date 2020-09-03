@@ -48,12 +48,12 @@ def add_to_startup(Add):
 
     try:
         key = 'StarCraft Co-op Overlay'
+        path = truePath('SCO.exe')
         if Add:
-            path = truePath('SCO.exe')
             logger.info(f'Adding {path} to registry as {key}')
             reg_add_to_startup(key, path)
         elif reg_get_startup_field_value(key) != None:
-            logger.info(f'Removing {path} to registry as {key}')
+            logger.info(f'Removing {path} from registry as {key}')
             reg_delete_startup_field(key)
     except:
         logger.error(f'Failed to edit registry.\n{traceback.format_exc()}')
