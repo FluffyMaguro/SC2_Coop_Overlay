@@ -6,12 +6,13 @@ import threading
 import traceback
 import urllib.request
 
+import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MUserInterface import CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
-from SCOFunctions.MainFunctions import resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_thread_SHOWHIDE, keyboard_thread_SHOW, keyboard_thread_HIDE, keyboard_thread_NEWER, keyboard_thread_OLDER, keyboard_thread_PLAYERWINRATES
+from SCOFunctions.MainFunctions import resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_OLDER, keyboard_NEWER, keyboard_SHOWHIDE, keyboard_HIDE, keyboard_SHOW, keyboard_PLAYERWINRATES
 from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
 
@@ -693,6 +694,8 @@ class UI_TabWidget(object):
 
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
+        self.manage_keyboard_threads()
+
 
     def check_for_updates(self):
         """ Checks for updates and changes UI accordingly"""
@@ -888,7 +891,7 @@ class UI_TabWidget(object):
         changed_keys = set()
         for key in previous_settings:
             if previous_settings[key] != self.settings[key] and not (previous_settings[key] == None and self.settings[key] == ''):
-                print(f'Changed: {key}: {previous_settings[key]} → {self.settings[key]}')
+                logger.info(f'Changed: {key}: {previous_settings[key]} → {self.settings[key]}')
                 changed_keys.add(key)
 
         # Resend init message if duration has changed. Colors are handle in color picker.
@@ -900,20 +903,34 @@ class UI_TabWidget(object):
             self.set_WebView_size_location(self.settings['monitor'])
 
         # Update keyboard threads
-        self.manage_keyboard_threads(previous_settings)
+        self.manage_keyboard_threads(previous_settings=previous_settings)
 
         
-    def manage_keyboard_threads(self, previous_settings):
-        """ Compares previous settings with current ones, and restarts keyboard threads if necessary"""
+    def manage_keyboard_threads(self, previous_settings=None):
+        """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
+        if `previous_settings` == None, then init hotkeys instead """
+        hotkey_func_dict = {'hotkey_show/hide': keyboard_SHOWHIDE, 'hotkey_show':keyboard_SHOW, 'hotkey_hide':keyboard_HIDE, 'hotkey_newer':keyboard_NEWER, 'hotkey_older':keyboard_OLDER, 'hotkey_winrates':keyboard_PLAYERWINRATES}
+        
+        # Init
+        if previous_settings == None:
+            self.hotkey_hotkey_dict = dict()
+            for key in hotkey_func_dict:
+                if not self.settings[key] in {None,''}:
+                    self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+        # Update
+        else:
+            for key in hotkey_func_dict:
+                # Update current value if the hotkey changed
+                if previous_settings[key] != self.settings[key] and not self.settings[key] in {None,''}:
+                    if key in self.hotkey_hotkey_dict:
+                        keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
+                    self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+                    logger.info(f'Changed hotkey of {key} to {self.settings[key]}')
 
-        changed_keys = set()
-        for key in {'hotkey_show/hide', 'hotkey_show', 'hotkey_hide', 'hotkey_newer', 'hotkey_older', 'hotkey_winrates'}:
-            if previous_settings[key] != self.settings[key] and not (previous_settings[key] in {None,''} and self.settings[key] in {None,''}):
-                changed_keys.add(key)
-
-        for key in changed_keys:
-            pass
-
+                # Remove current hotkey no value
+                elif self.settings[key] in {None,''} and key in self.hotkey_hotkey_dict:
+                    keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
+                    logger.info(f'Removing hotkey of {key}')
 
 
     def resetSettings(self):
@@ -928,7 +945,7 @@ class UI_TabWidget(object):
         self.sendInfoMessage('All settings have been reset!')
         update_settings(self.settings)
         resend_init_message()
-        self.manage_keyboard_threads(previous_settings)
+        self.manage_keyboard_threads(previous_settings=previous_settings)
 
 
     def findReplayFolder(self):
@@ -1022,33 +1039,9 @@ class UI_TabWidget(object):
         self.thread_server = threading.Thread(target=server_thread, daemon=True)
         self.thread_server.start()
 
-        if not self.settings['hotkey_newer'] in {None,''}:
-            self.thread_newer_replay = threading.Thread(target=keyboard_thread_NEWER, daemon=True)
-            self.thread_newer_replay.start()
-
-        if not self.settings['hotkey_older'] in {None,''}:
-            self.thread_older_replay = threading.Thread(target=keyboard_thread_OLDER, daemon=True)
-            self.thread_older_replay.start()
-
-        if not self.settings['hotkey_show/hide'] in {None,''}:
-            self.thread_showhide = threading.Thread(target=keyboard_thread_SHOWHIDE, daemon=True,  args =(lambda : self.settings['hotkey_show/hide'], ))
-            self.thread_showhide.start()
-
-        if not self.settings['hotkey_show'] in {None,''}:
-            self.thread_show = threading.Thread(target=keyboard_thread_SHOW, daemon=True)
-            self.thread_show.start()
-
-        if not self.settings['hotkey_hide'] in {None,''}:
-            self.thread_hide = threading.Thread(target=keyboard_thread_HIDE, daemon=True)
-            self.thread_hide.start()
-
         if self.settings['show_player_winrates']:
             self.thread_check_for_newgame = threading.Thread(target=check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()            
-
-            if not self.settings['hotkey_winrates'] in {None,''}:
-                self.thread_winrates = threading.Thread(target=keyboard_thread_PLAYERWINRATES, daemon=True)
-                self.thread_winrates.start()
 
 
     def set_WebView_size_location(self, monitor):

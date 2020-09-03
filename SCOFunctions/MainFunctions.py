@@ -380,63 +380,42 @@ def move_in_AllReplays(delta):
             move_in_AllReplays(delta)
 
 
-def keyboard_thread_OLDER():
-    """ Thread waiting for hotkey for showing older replay"""
-    logger.info('Starting keyboard older thread')
-    while True:
-        keyboard.wait(SETTINGS['hotkey_older'])
-        move_in_AllReplays(-1)
+def keyboard_OLDER():
+    """ Function for hotkey for showing older replay"""
+    move_in_AllReplays(-1)
 
 
-def keyboard_thread_NEWER():
-    """ Thread waiting for hotkey for showing newer replay"""
-    logger.info('Starting keyboard newer thread')
-    while True:
-        keyboard.wait(SETTINGS['hotkey_newer'])
-        move_in_AllReplays(1)
+def keyboard_NEWER():
+    """ Function for hotkey for showing newer replay"""
+    move_in_AllReplays(1)
 
 
-def keyboard_thread_SHOWHIDE(KEY):
-    """ Thread waiting for hotkey for showing/hiding overlay"""
-    logger.info('Starting keyboard showhide thread')
-    while True:
-        keyboard.wait(KEY())
-
-        # keyboard.wait(SETTINGS['hotkey_show/hide'])
-        logger.info('Show/Hide event')
-        sendEvent({'showHideEvent': True})
+def keyboard_SHOWHIDE():
+    """ TFunction for hotkey for showing/hiding overlay"""
+    logger.info('Show/Hide event')
+    sendEvent({'showHideEvent': True})
 
 
-def keyboard_thread_HIDE():
-    """ Thread waiting for hide hotkey """
-    logger.info('Starting keyboard hide thread')
-    while True:
-        keyboard.wait(SETTINGS['hotkey_hide'])
-        logger.info('Hide event')
-        sendEvent({'hideEvent': True})
+def keyboard_HIDE():
+    """ Function for hide hotkey """
+    logger.info('Hide event')
+    sendEvent({'hideEvent': True})
 
 
-def keyboard_thread_SHOW():
-    """ Thread waiting for show hotkey """
-    logger.info('Starting keyboard show thread')
-    while True:
-        keyboard.wait(SETTINGS['hotkey_show'])
-        logger.info('Show event')
-        sendEvent({'showEvent': True})
+def keyboard_SHOW():
+    """ Function for show hotkey """
+    logger.info('Show event')
+    sendEvent({'showEvent': True})
 
 
-def keyboard_thread_PLAYERWINRATES():
+def keyboard_PLAYERWINRATES():
+    """ Function for player winrate hotkey """
     global most_recent_playerdata
-    """ Thread waiting for player winrate hotkey """
-    logger.info('Starting keyboard playerwinrates thread')
-    while True:
-        keyboard.wait(SETTINGS['hotkey_winrates'])
-        logger.info('PlayerWinrate key event')
-        if most_recent_playerdata:
-            logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
-            sendEvent({'playerEvent': True,'data':most_recent_playerdata})
-        else:
-            logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
+    if most_recent_playerdata:
+        logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
+        sendEvent({'playerEvent': True,'data':most_recent_playerdata})
+    else:
+        logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
 
 def check_for_new_game():
