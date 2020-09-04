@@ -9,11 +9,11 @@ import urllib.request
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import SCOFunctions.MUserInterface as MUI
+import SCOFunctions.MainFunctions as MF
+import SCOFunctions.HelperFunctions as HF
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
-from SCOFunctions.MUserInterface import Worker, CustomKeySequenceEdit, CustomQTabWidget, CustomWebView
-from SCOFunctions.MainFunctions import initialize_names_handles_winrates, resend_init_message, update_names_and_handles, update_settings, find_names_and_handles, check_for_new_game, check_replays, server_thread, keyboard_OLDER, keyboard_NEWER, keyboard_SHOWHIDE, keyboard_HIDE, keyboard_SHOW, keyboard_PLAYERWINRATES
-from SCOFunctions.HelperFunctions import get_account_dir, validate_aom_account_key, new_version, extract_archive, archive_is_corrupt, add_to_startup, write_permission_granted
 
 
 logger = logclass('SCO','INFO')
@@ -135,7 +135,7 @@ class UI_TabWidget(object):
         self.LA_ShowHide.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_ShowHide.setText("Show / hide")
 
-        self.KEY_ShowHide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_ShowHide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 70, 113, 20))
         self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
         
@@ -145,7 +145,7 @@ class UI_TabWidget(object):
         self.LA_Show.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Show.setText("Show only")
 
-        self.KEY_Show = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_Show = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Show.setGeometry(QtCore.QRect(150, 70, 113, 20))
         self.KEY_Show.setToolTip('The key for just showing the overlay')
 
@@ -155,7 +155,7 @@ class UI_TabWidget(object):
         self.LA_Hide.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Hide.setText("Hide only")
         
-        self.KEY_Hide = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_Hide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Hide.setGeometry(QtCore.QRect(280, 70, 113, 20))
         self.KEY_Hide.setToolTip('The key for just hiding the overlay')
 
@@ -165,7 +165,7 @@ class UI_TabWidget(object):
         self.LA_Newer.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Newer.setText("Show newer replay")
 
-        self.KEY_Newer = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_Newer = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Newer.setGeometry(QtCore.QRect(20, 140, 113, 20))
         self.KEY_Newer.setToolTip('The key for showing a newer replay than is currently displayed')
 
@@ -175,7 +175,7 @@ class UI_TabWidget(object):
         self.LA_Older.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Older.setText("Show older replay")
 
-        self.KEY_Older = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_Older = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Older.setGeometry(QtCore.QRect(150, 140, 113, 20))
         self.KEY_Older.setToolTip('The key for showing an older replay than is currently displayed')
 
@@ -185,7 +185,7 @@ class UI_TabWidget(object):
         self.LA_Winrates.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrates.setText("Show player winrates")
 
-        self.KEY_Winrates = CustomKeySequenceEdit(self.FR_HotkeyFrame)
+        self.KEY_Winrates = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Winrates.setGeometry(QtCore.QRect(280, 140, 113, 20))
         self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
 
@@ -670,7 +670,7 @@ class UI_TabWidget(object):
                 self.setting[key] = self.default_settings[key]
 
         # Check if account directory valid, update if not
-        self.settings['account_folder'] = get_account_dir(self.settings['account_folder'])
+        self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
 
         # Delete install bat if it's there
         if os.path.isfile(truePath('install.bat')):
@@ -689,7 +689,7 @@ class UI_TabWidget(object):
             TabWidget.show()
 
         # Check write permissions
-        self.write_permissions = write_permission_granted()
+        self.write_permissions = HF.write_permission_granted()
         if not self.write_permissions:
             self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color='red')
 
@@ -700,7 +700,7 @@ class UI_TabWidget(object):
 
     def check_for_updates(self):
         """ Checks for updates and changes UI accordingly"""
-        self.new_version = new_version(APPVERSION)
+        self.new_version = HF.new_version(APPVERSION)
 
         if not self.new_version:
             return
@@ -776,7 +776,7 @@ class UI_TabWidget(object):
         app_folder = truePath('')
 
         # Check if it's corrupt
-        if archive_is_corrupt(archive):
+        if HF.archive_is_corrupt(archive):
             os.remove(archive)
             self.sendInfoMessage('Archive corrupt. Removing file.', color='red')
 
@@ -790,7 +790,7 @@ class UI_TabWidget(object):
             shutil.rmtree(where_to_extract)
 
         # Extract archive
-        extract_archive(archive, where_to_extract)
+        HF.extract_archive(archive, where_to_extract)
 
         # Create and run install.bat file
         installfile = truePath('install.bat')
@@ -872,7 +872,7 @@ class UI_TabWidget(object):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
         # Registry
-        out = add_to_startup(self.settings['start_with_windows'])
+        out = HF.add_to_startup(self.settings['start_with_windows'])
         if out != None:
             self.sendInfoMessage(f'Warning: {out}', color='red')
             self.settings['start_with_windows'] = False
@@ -885,7 +885,7 @@ class UI_TabWidget(object):
         TabWidget.settings = self.settings
 
         # Update settings for other threads
-        update_settings(self.settings)
+        MF.update_settings(self.settings)
 
         # Compare
         changed_keys = set()
@@ -896,7 +896,7 @@ class UI_TabWidget(object):
 
         # Resend init message if duration has changed. Colors are handle in color picker.
         if 'duration' in changed_keys:
-            resend_init_message()
+            MF.resend_init_message()
 
         # Monitor update
         if 'monitor' in changed_keys and hasattr(self, 'WebView'):
@@ -909,7 +909,7 @@ class UI_TabWidget(object):
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
-        hotkey_func_dict = {'hotkey_show/hide': keyboard_SHOWHIDE, 'hotkey_show':keyboard_SHOW, 'hotkey_hide':keyboard_HIDE, 'hotkey_newer':keyboard_NEWER, 'hotkey_older':keyboard_OLDER, 'hotkey_winrates':keyboard_PLAYERWINRATES}
+        hotkey_func_dict = {'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
         
         # Init
         if previous_settings == None:
@@ -937,14 +937,14 @@ class UI_TabWidget(object):
         """ Resets settings to default values and updates UI """
         previous_settings = self.settings.copy()
         self.settings = self.default_settings.copy()
-        self.settings['account_folder'] = get_account_dir(path=self.settings['account_folder'])
+        self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()        
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
-        update_settings(self.settings)
-        resend_init_message()
+        MF.update_settings(self.settings)
+        MF.resend_init_message()
         self.manage_keyboard_threads(previous_settings=previous_settings)
 
 
@@ -961,7 +961,7 @@ class UI_TabWidget(object):
                 self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(f'Current: {folder}')
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
-                update_names_and_handles(folder)
+                MF.update_names_and_handles(folder)
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
@@ -978,7 +978,7 @@ class UI_TabWidget(object):
         account = self.ED_AomAccount.text()
 
         if key != '' and account != '':
-            response = validate_aom_account_key(account, key)
+            response = HF.validate_aom_account_key(account, key)
 
             if 'Success' in response:
                 self.sendInfoMessage(response, color='green')
@@ -999,8 +999,8 @@ class UI_TabWidget(object):
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
             button.setStyleSheet(f'background-color: {color.name()};')
             self.settings[settings_dict[button]] = color.name()
-            update_settings(self.settings)
-            resend_init_message()
+            MF.update_settings(self.settings)
+            MF.resend_init_message()
 
 
     def start_main_functionality(self):
@@ -1017,7 +1017,7 @@ class UI_TabWidget(object):
             logger.info(f"Not showing overlay on-screen. Force hidden: {self.settings['force_hide_overlay']} | Permissions granted: {self.write_permissions}")
 
         else:
-            self.WebView = CustomWebView()
+            self.WebView = MUI.CustomWebView()
             self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
@@ -1030,15 +1030,15 @@ class UI_TabWidget(object):
 
 
         # Pass current settings
-        update_settings(self.settings)
+        MF.update_settings(self.settings)
 
 
-        self.thread_server = threading.Thread(target=server_thread, daemon=True)
+        self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
         self.thread_server.start()
 
         # Using PyQt threadpool to get back results from winrate and other analysis
         self.threadpool = QtCore.QThreadPool()
-        thread_init = Worker(initialize_names_handles_winrates)
+        thread_init = MUI.Worker(MF.initialize_names_handles_winrates)
         thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
         self.threadpool.start(thread_init)
 
@@ -1056,13 +1056,13 @@ class UI_TabWidget(object):
 
         # Check for new replays
         # !!!! Change this to a worker, that upon returning result will do some stuff in UI and launches itself again
-        self.thread_replays = threading.Thread(target=check_replays, daemon=True)
+        self.thread_replays = threading.Thread(target=MF.check_replays, daemon=True)
         self.thread_replays.start()
 
 
         # Show player winrates
         if self.settings['show_player_winrates']:
-            self.thread_check_for_newgame = threading.Thread(target=check_for_new_game, daemon=True)
+            self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()   
 
 
@@ -1165,7 +1165,7 @@ class UI_TabWidget(object):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     TabWidget = QtWidgets.QTabWidget()
-    TabWidget = CustomQTabWidget()
+    TabWidget = MUI.CustomQTabWidget()
 
     ui = UI_TabWidget()
     ui.setupUI(TabWidget)
