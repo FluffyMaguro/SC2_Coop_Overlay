@@ -113,7 +113,7 @@ class UI_TabWidget(object):
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 23))
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.resetSettings)
-        self.BT_MainReset.setToolTip("Reset all settings apart from those for starcraft2coop")
+        self.BT_MainReset.setToolTip("Reset all settings apart from player notes and settings for starcraft2coop")
 
         ### Hotkey frame
         self.FR_HotkeyFrame = QtWidgets.QFrame(self.TAB_Main)
@@ -275,62 +275,70 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
 
 
-
-
         ### PLAYERS TAB ###
         self.TAB_Players = QtWidgets.QWidget()
 
+        # Controls 
+        self.FR_Winrate_Controls = QtWidgets.QFrame(self.TAB_Players)
+        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 550, TabWidget.frameGeometry().width(), 40))
+        self.FR_Winrate_Controls.setAutoFillBackground(True)
+        self.FR_Winrate_Controls.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.FR_Winrate_Controls.setFrameShadow(QtWidgets.QFrame.Raised)
+
+        self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
+        self.ED_Winrate_Search.setGeometry(QtCore.QRect(55, 7, 746, 20))
+        self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
+        self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
+        self.ED_Winrate_Search.textChanged.connect(self.filter_players)
 
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(10, 10, 961, 561))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, -5, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()-50))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
+
         self.SC_PlayersScrollAreaContents = QtWidgets.QWidget()
         self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 961, 561))
-        self.FR_Player_00 = QtWidgets.QFrame(self.SC_PlayersScrollAreaContents)
-        self.FR_Player_00.setGeometry(QtCore.QRect(10, 40, 841, 41))
-        self.FR_Player_00.setAutoFillBackground(False)
-        self.FR_Player_00.setStyleSheet("")
-        self.FR_Player_00.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Player_00.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.LA_Name_00 = QtWidgets.QLabel(self.FR_Player_00)
-        self.LA_Name_00.setGeometry(QtCore.QRect(20, 10, 47, 21))
-        self.LA_Wins_00 = QtWidgets.QLabel(self.FR_Player_00)
-        self.LA_Wins_00.setGeometry(QtCore.QRect(150, 10, 31, 21))
-        self.LA_Wins_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses_00 = QtWidgets.QLabel(self.FR_Player_00)
-        self.LA_Losses_00.setGeometry(QtCore.QRect(210, 10, 41, 21))
-        self.LA_Losses_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_Note_00 = QtWidgets.QLineEdit(self.FR_Player_00)
-        self.ED_Note_00.setGeometry(QtCore.QRect(410, 10, 281, 21))
-        self.ED_Note_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Winrate_00 = QtWidgets.QLabel(self.FR_Player_00)
-        self.LA_Winrate_00.setGeometry(QtCore.QRect(280, 10, 51, 21))
-        self.LA_Winrate_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LINE_Player_00 = QtWidgets.QFrame(self.FR_Player_00)
-        self.LINE_Player_00.setGeometry(QtCore.QRect(10, 0, 831, 2))
-        self.LINE_Player_00.setFrameShape(QtWidgets.QFrame.HLine)
-        self.LINE_Player_00.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # Heading
         self.FR_WinratesHeading = QtWidgets.QFrame(self.SC_PlayersScrollAreaContents)
-        self.FR_WinratesHeading.setGeometry(QtCore.QRect(10, 10, 841, 31))
+        self.FR_WinratesHeading.setGeometry(QtCore.QRect(40, 10, 841, 31))
         self.FR_WinratesHeading.setStyleSheet("font-weight:bold")
         self.FR_WinratesHeading.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_WinratesHeading.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.LA_Note = QtWidgets.QLabel(self.FR_WinratesHeading)
-        self.LA_Note.setGeometry(QtCore.QRect(410, 0, 281, 31))
-        self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses = QtWidgets.QLabel(self.FR_WinratesHeading)
-        self.LA_Losses.setGeometry(QtCore.QRect(210, 0, 41, 31))
-        self.LA_Winrate = QtWidgets.QLabel(self.FR_WinratesHeading)
-        self.LA_Winrate.setGeometry(QtCore.QRect(280, 0, 51, 31))
-        self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
+   
         self.LA_Name = QtWidgets.QLabel(self.FR_WinratesHeading)
         self.LA_Name.setGeometry(QtCore.QRect(20, 0, 41, 31))
+        self.LA_Name.setText("Name")
+
         self.LA_Wins = QtWidgets.QLabel(self.FR_WinratesHeading)
-        self.LA_Wins.setGeometry(QtCore.QRect(150, 0, 31, 31))
+        self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Wins.setGeometry(QtCore.QRect(210, 0, 50, 31))
+        self.LA_Wins.setText("▼ Wins")
+
+        self.LA_Losses = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Losses.setGeometry(QtCore.QRect(280, 0, 41, 31))
+        self.LA_Losses.setText("Losses")
+
+        self.LA_Winrate = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Winrate.setGeometry(QtCore.QRect(350, 0, 51, 31))
+        self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Winrate.setText("Winrate")
+
+        self.LA_Note = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Note.setGeometry(QtCore.QRect(480, 0, 281, 31))
+        self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Note.setText("Player note (displayed together with winrates)")
+
+        # Finalize player tab
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
         TabWidget.addTab(self.TAB_Players, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
+
+
+        ### GAMES TAB ###
+
         self.TAB_Games = QtWidgets.QWidget()
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
         self.SC_GamesScrollArea.setGeometry(QtCore.QRect(10, 10, 961, 561))
@@ -619,7 +627,7 @@ class UI_TabWidget(object):
 
         # Finalization
         self.retranslateUi(TabWidget)
-        TabWidget.setCurrentIndex(0)
+        TabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
 
@@ -648,7 +656,7 @@ class UI_TabWidget(object):
             'color_mastery':'#FFDC87',
             'aom_account':None,
             'aom_secret_key':None,
-            'player_notes':None
+            'player_notes':dict()
             }
 
         self.settings = self.default_settings.copy()
@@ -837,6 +845,8 @@ class UI_TabWidget(object):
         """ Saves main settings in the settings file. """
         previous_settings = self.settings.copy()
 
+        self.save_playernotes_to_settings()
+
         self.settings['start_with_windows'] = self.CH_StartWithWindows.isChecked()
         self.settings['start_minimized'] = self.CH_StartMinimized.isChecked()
         self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
@@ -939,7 +949,8 @@ class UI_TabWidget(object):
         self.settings = self.default_settings.copy()
         self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
         self.settings['aom_account'] = self.ED_AomAccount.text()
-        self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()        
+        self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
+        self.settings['player_notes'] = previous_settings['player_notes']   
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
@@ -1042,16 +1053,30 @@ class UI_TabWidget(object):
         thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
         self.threadpool.start(thread_init)
 
-         
+
+    def set_WebView_size_location(self, monitor):
+        """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
+        sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
+        try:
+            self.WebView.setFixedSize(int(sg.width()*0.5 - 1), int(sg.height()))
+            self.WebView.move(int(sg.width()*0.5 + 1), sg.top())
+            logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
+        except:
+            logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
+
 
     def initialization_of_players_winrates_finished(self, winrate_data):
         """ What happens after we initialized player names, handles and winrates"""
 
-
-        # Update player winrates UI
-        for player in winrate_data:
-            # !!!! create element in TAB_PLAYERS
-            pass
+        # Create player winrates UI
+        self.player_winrate_UI_dict = dict()
+        for idx, player in enumerate(winrate_data):
+            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), idx, self.SC_PlayersScrollAreaContents)
+            if idx > 100:
+                break
+            # return
+            # Check settings for notes add pass them inside
+        return
 
 
         # Check for new replays
@@ -1066,16 +1091,29 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame.start()   
 
 
-    def set_WebView_size_location(self, monitor):
-        """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
-        sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
-        try:
-            self.WebView.setFixedSize(int(sg.width()*0.5 - 1), int(sg.height()))
-            self.WebView.move(int(sg.width()*0.5 + 1), sg.top())
-            logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
-        except:
-            logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
+    def save_playernotes_to_settings(self):
+        """ Saves player notes from UI to settings dict"""
+        for player in self.player_winrate_UI_dict:
+            if not self.player_winrate_UI_dict[player].get_note() in {None,''}:
+                self.settings['player_notes'][player] = self.player_winrate_UI_dict[player].get_note()
+            elif player in self.settings['player_notes']:
+                del self.settings['player_notes'][player] 
 
+
+
+
+    def filter_players(self):
+        """ Filters only players with string in name or note """
+        text = self.ED_Winrate_Search.text().lower()
+        idx = 0
+        for player in self.player_winrate_UI_dict:
+            note = self.player_winrate_UI_dict[player].get_note().lower()
+            if text in player.lower() or text in note or ('note' in text and not note in {None,''}):
+                self.player_winrate_UI_dict[player].reposition(idx)
+                self.player_winrate_UI_dict[player].show()
+                idx += 1
+            else:
+                self.player_winrate_UI_dict[player].hide()
 
 
 
@@ -1084,16 +1122,7 @@ class UI_TabWidget(object):
         # !!! Remove this as I improve things
         _translate = QtCore.QCoreApplication.translate
         
-        self.LA_Name_00.setText(_translate("TabWidget", "Maguro"))
-        self.LA_Wins_00.setText(_translate("TabWidget", "3"))
-        self.LA_Losses_00.setText(_translate("TabWidget", "3"))
-        self.LA_Winrate_00.setText(_translate("TabWidget", "50%"))
-        self.LA_Note.setText(_translate("TabWidget", "Player note (displayed together with winrates)"))
-        self.LA_Losses.setText(_translate("TabWidget", "Losses"))
-        self.LA_Winrate.setText(_translate("TabWidget", "Winrate"))
-        self.LA_Name.setText(_translate("TabWidget", "Name"))
-        self.LA_Wins.setText(_translate("TabWidget", "Wins"))
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), _translate("TabWidget", "Players"))
+
         self.LA_Map_Name_00.setText(_translate("TabWidget", "Mist Opportunities"))
         self.LA_Map_Result_00.setText(_translate("TabWidget", "Win"))
         self.LA_Map_P1_00.setText(_translate("TabWidget", "Maguro (Kerrigan)"))
