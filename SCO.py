@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
+import SCOFunctions.MassReplayAnalysis as MR
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 
@@ -302,7 +303,7 @@ class UI_TabWidget(object):
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
         self.CH_OnlyTop50.setGeometry(QtCore.QRect(690, 17, 200, 17))
-        self.CH_OnlyTop50.setText("Show top 50 players")
+        self.CH_OnlyTop50.setText("Limit to top 50 players")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
 
@@ -323,8 +324,8 @@ class UI_TabWidget(object):
         self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
         self.WD_WinratesHeading.setGeometry(QtCore.QRect(40, 10, 841, 31))
         self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
-        self.WD_WinratesHeading.setMinimumHeight(31)
-        self.WD_WinratesHeading.setMaximumHeight(31) 
+        self.WD_WinratesHeading.setMinimumHeight(25)
+        self.WD_WinratesHeading.setMaximumHeight(25) 
         self.SC_PlayersScrollAreaContentsLayout.addWidget(self.WD_WinratesHeading)
 
         self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -355,85 +356,85 @@ class UI_TabWidget(object):
         TabWidget.addTab(self.TAB_Players, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
 
+
         ###########################
         ######## GAMES TAB ########
         ###########################
 
         self.TAB_Games = QtWidgets.QWidget()
+
+        # Scroll
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
-        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(10, 10, 961, 561))
+        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()))
         self.SC_GamesScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_GamesScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_GamesScrollArea.setWidgetResizable(True)
+
         self.SC_GamesScrollAreaContent = QtWidgets.QWidget()
         self.SC_GamesScrollAreaContent.setGeometry(QtCore.QRect(0, 0, 961, 561))
-        self.FR_Map_00 = QtWidgets.QFrame(self.SC_GamesScrollAreaContent)
-        self.FR_Map_00.setGeometry(QtCore.QRect(10, 40, 931, 41))
-        self.FR_Map_00.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Map_00.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.LA_Map_Name_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Name_00.setGeometry(QtCore.QRect(20, 10, 91, 21))
-        self.LA_Map_Name_00.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.LA_Map_Result_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Result_00.setGeometry(QtCore.QRect(150, 10, 21, 21))
-        self.LA_Map_Result_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Map_P1_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_P1_00.setGeometry(QtCore.QRect(210, 10, 101, 21))
-        self.LA_Map_P1_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Map_P2_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_P2_00.setGeometry(QtCore.QRect(350, 10, 101, 21))
-        self.LA_Map_P2_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Map_Enemy_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Enemy_00.setGeometry(QtCore.QRect(480, 10, 41, 20))
-        self.LA_Map_Enemy_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.BT_Show_Map_00 = QtWidgets.QPushButton(self.FR_Map_00)
-        self.BT_Show_Map_00.setGeometry(QtCore.QRect(850, 10, 75, 23))
-        self.LA_Map_Length_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Length_00.setGeometry(QtCore.QRect(530, 10, 71, 20))
-        self.LA_Map_Length_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Map_Difficulty_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Difficulty_00.setGeometry(QtCore.QRect(590, 10, 81, 20))
-        self.LA_Map_Difficulty_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.BT_Find_Map_00 = QtWidgets.QPushButton(self.FR_Map_00)
-        self.BT_Find_Map_00.setGeometry(QtCore.QRect(760, 10, 75, 23))
-        self.LINE_Map_00 = QtWidgets.QFrame(self.FR_Map_00)
-        self.LINE_Map_00.setGeometry(QtCore.QRect(10, 0, 921, 2))
-        self.LINE_Map_00.setFrameShape(QtWidgets.QFrame.HLine)
-        self.LINE_Map_00.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.LA_Map_Date_00 = QtWidgets.QLabel(self.FR_Map_00)
-        self.LA_Map_Date_00.setGeometry(QtCore.QRect(660, 10, 81, 20))
-        self.LA_Map_Date_00.setAlignment(QtCore.Qt.AlignCenter)
-        self.FR_RecentGamesHeading = QtWidgets.QFrame(self.SC_GamesScrollAreaContent)
-        self.FR_RecentGamesHeading.setGeometry(QtCore.QRect(10, 10, 931, 31))
-        self.FR_RecentGamesHeading.setStyleSheet("font-weight: bold")
-        self.FR_RecentGamesHeading.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_RecentGamesHeading.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.LA_Difficulty = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.SC_GamesScrollAreaContentLayout = QtWidgets.QVBoxLayout()
+        self.SC_GamesScrollAreaContentLayout.setAlignment(QtCore.Qt.AlignTop)
+        self.SC_GamesScrollAreaContentLayout.setContentsMargins(20,0,0,0)
+
+        # Heading
+        self.WD_RecentGamesHeading = QtWidgets.QWidget(self.SC_GamesScrollAreaContent)
+        self.WD_RecentGamesHeading.setGeometry(QtCore.QRect(10, 10, 931, 22))
+        self.WD_RecentGamesHeading.setStyleSheet("font-weight: bold")
+        self.WD_RecentGamesHeading.setMinimumHeight(25)
+        self.WD_RecentGamesHeading.setMaximumHeight(25) 
+        self.SC_GamesScrollAreaContentLayout.addWidget(self.WD_RecentGamesHeading)
+
+        self.LA_Difficulty = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Difficulty.setGeometry(QtCore.QRect(590, 0, 81, 31))
         self.LA_Difficulty.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Player2 = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Difficulty.setText("Difficulty")
+
+        self.LA_Player2 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Player2.setGeometry(QtCore.QRect(360, 0, 81, 31))
         self.LA_Player2.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Enemy = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Player2.setText("Player 2")
+
+        self.LA_Enemy = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Enemy.setGeometry(QtCore.QRect(480, 0, 41, 31))
         self.LA_Enemy.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Length = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Enemy.setText("Enemy")
+
+        self.LA_Length = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Length.setGeometry(QtCore.QRect(530, 0, 71, 31))
         self.LA_Length.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Map = QtWidgets.QLabel(self.FR_RecentGamesHeading)
-        self.LA_Map.setGeometry(QtCore.QRect(20, 0, 41, 31))
+        self.LA_Length.setText("Length")
+
+        self.LA_Map = QtWidgets.QLabel(self.WD_RecentGamesHeading)
+        self.LA_Map.setGeometry(QtCore.QRect(40, 0, 41, 31))
         self.LA_Map.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.LA_Player1 = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Map.setText("Map")
+
+        self.LA_Player1 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Player1.setGeometry(QtCore.QRect(220, 0, 81, 31))
         self.LA_Player1.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Result = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Player1.setText("Player 1")
+
+        self.LA_Result = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Result.setGeometry(QtCore.QRect(140, 0, 41, 31))
         self.LA_Result.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Date = QtWidgets.QLabel(self.FR_RecentGamesHeading)
+        self.LA_Result.setText("Result")
+
+        self.LA_Date = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Date.setGeometry(QtCore.QRect(660, 0, 81, 31))
         self.LA_Date.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Date.setText("Date")
+      
+        # Finishing
+        self.SC_GamesScrollAreaContent.setLayout(self.SC_GamesScrollAreaContentLayout)
         self.SC_GamesScrollArea.setWidget(self.SC_GamesScrollAreaContent)
         TabWidget.addTab(self.TAB_Games, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Games), "Games")
+
+
+        ###########################
+        ######## STATS TAB ########
+        ###########################
+
         self.TAB_Stats = QtWidgets.QWidget()
         self.FR_Stats = QtWidgets.QFrame(self.TAB_Stats)
         self.FR_Stats.setGeometry(QtCore.QRect(10, 10, 911, 151))
@@ -646,8 +647,8 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
         # Finalization
-        self.retranslateUi(TabWidget)
-        TabWidget.setCurrentIndex(1)
+        self.retranslateUi(TabWidget) # !!! remove later
+        TabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
 
@@ -676,7 +677,8 @@ class UI_TabWidget(object):
             'color_mastery':'#FFDC87',
             'aom_account':None,
             'aom_secret_key':None,
-            'player_notes':dict()
+            'player_notes':dict(),
+            'list_games': 100
             }
 
         self.settings = self.default_settings.copy()
@@ -695,7 +697,7 @@ class UI_TabWidget(object):
         # Make sure all keys are here
         for key in self.default_settings:
             if key not in self.settings:
-                self.setting[key] = self.default_settings[key]
+                self.settings[key] = self.default_settings[key]
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
@@ -989,10 +991,12 @@ class UI_TabWidget(object):
         if dialog.exec_():
             folder = dialog.selectedFiles()[0]
             if 'StarCraft' in folder and '/Accounts' in folder:
+                logger.info(f'Changing accountdir to {folder}')
                 self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(f'Current: {folder}')
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
                 MF.update_names_and_handles(folder)
+                self.CAnalysis.update_accountdir(folder)
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
@@ -1099,20 +1103,36 @@ class UI_TabWidget(object):
         self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
 
-
-        # return
-
-
         # Check for new replays
-        # !!!! Change this to a worker, that upon returning result will do some stuff in UI and launches itself again
-        self.thread_replays = threading.Thread(target=MF.check_replays, daemon=True)
-        self.thread_replays.start()
+        thread_replays = MUI.Worker(MF.check_replays)
+        thread_replays.signals.result.connect(self.check_replays_finished)
+        self.threadpool.start(thread_replays)
 
-
+        # Start mass replay analysis
+        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, self.settings['account_folder'])
+        thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
+        self.threadpool.start(thread_mass_analysis)
+        logger.info('Starting mass replay analysis')
+        
         # Show player winrates
         if self.settings['show_player_winrates']:
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()   
+
+
+    def check_replays_finished(self, replay_dict):
+        """ Launches function again. Adds game to game tab. Updates player winrate data. """
+
+        # Launch thread anew
+        thread_replays = MUI.Worker(MF.check_replays)
+        thread_replays.signals.result.connect(self.check_replays_finished)
+        self.threadpool.start(thread_replays)
+        
+        # Add game to game tab
+        pass
+
+        # Update player winrate data
+        pass
 
 
     def save_playernotes_to_settings(self):
@@ -1142,30 +1162,30 @@ class UI_TabWidget(object):
                 self.player_winrate_UI_dict[player].hide()
 
 
+    def mass_analysis_finished(self, result):
+        self.CAnalysis = result
+
+        # Add games to games tab
+        self.game_UI_dict = dict()
+        for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
+            self.game_UI_dict[game['file']] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)            
+
+
+        # calculate stats for stats tab
+        pass
+
+
+
+
+
+
     def retranslateUi(self, TabWidget):
-        # !!! Remove this as I improve things
+        # !!! Remove this later
         _translate = QtCore.QCoreApplication.translate
         
 
-        self.LA_Map_Name_00.setText(_translate("TabWidget", "Mist Opportunities"))
-        self.LA_Map_Result_00.setText(_translate("TabWidget", "Win"))
-        self.LA_Map_P1_00.setText(_translate("TabWidget", "Maguro (Kerrigan)"))
-        self.LA_Map_P2_00.setText(_translate("TabWidget", "Alfons (Raynor)"))
-        self.LA_Map_Enemy_00.setText(_translate("TabWidget", "Zerg"))
-        self.BT_Show_Map_00.setText(_translate("TabWidget", "Show overlay"))
-        self.LA_Map_Length_00.setText(_translate("TabWidget", "27:58"))
-        self.LA_Map_Difficulty_00.setText(_translate("TabWidget", "Brutal"))
-        self.BT_Find_Map_00.setText(_translate("TabWidget", "Find file"))
-        self.LA_Map_Date_00.setText(_translate("TabWidget", "27-5-2020"))
-        self.LA_Difficulty.setText(_translate("TabWidget", "Difficulty"))
-        self.LA_Player2.setText(_translate("TabWidget", "Player 2"))
-        self.LA_Enemy.setText(_translate("TabWidget", "Enemy"))
-        self.LA_Length.setText(_translate("TabWidget", "Length"))
-        self.LA_Map.setText(_translate("TabWidget", "Map"))
-        self.LA_Player1.setText(_translate("TabWidget", "Player 1"))
-        self.LA_Result.setText(_translate("TabWidget", "Result"))
-        self.LA_Date.setText(_translate("TabWidget", "Date"))
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Games), _translate("TabWidget", "Games"))
+
         self.LA_MaxGamelength.setText(_translate("TabWidget", "Max gamelength (minutes)"))
         self.CH_DiffHard.setText(_translate("TabWidget", "Hard"))
         self.CH_TypeNormal.setText(_translate("TabWidget", "Normal games"))
@@ -1227,5 +1247,6 @@ if __name__ == "__main__":
 
     # Save settings before the app is closed
     exit_event = app.exec_()
+    MF.stop_threads()
     ui.saveSettings()
     sys.exit(exit_event)

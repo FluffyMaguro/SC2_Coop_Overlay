@@ -1,7 +1,7 @@
 import os
 import mpyq
 import json
-from datetime import datetime
+import time
 
 from s2protocol import versions
 from SCOFunctions.SC2Dictionaries import map_names
@@ -100,7 +100,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
-    replay['date'] = datetime.fromtimestamp(os.path.getmtime(file)).strftime("%Y:%m:%d:%H:%M:%S")
+    replay['date'] = time.strftime('%Y:%m:%d:%H:%M:%S', time.gmtime(os.path.getmtime(file)))
 
     if metadata['Title'] in map_names:
         replay['map_name'] = map_names[metadata['Title']]['EN']
@@ -121,6 +121,10 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     else:
         replay['accurate_length'] = replay['length'] - replay['start_time']
         replay['end_time'] = replay['length']
+
+
+    replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
+    replay['form_alength'] = replay['form_alength'] if not replay['form_alength'].startswith('00:') else replay['form_alength'][3:] 
 
     # Add data to players
     replay['players'] = list()

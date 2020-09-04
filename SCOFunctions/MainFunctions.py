@@ -28,6 +28,14 @@ PLAYER_HANDLES = set() # Set of handles of the main player
 PLAYER_NAMES = set() # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
 SETTINGS = dict()
+APP_CLOSING = False
+session_games = {'Victory':0,'Defeat':0} 
+
+
+def stop_threads():
+    """ Sets a variable that lets threads know they should finish early """
+    global APP_CLOSING
+    APP_CLOSING = True
 
 
 def update_settings(d):
@@ -174,8 +182,6 @@ def initialize_names_handles_winrates():
     global ReplayPosition
     global player_winrate_data
 
-    
-
     with lock:
         AllReplays = initialize_AllReplays(SETTINGS['account_folder'])
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
@@ -205,8 +211,7 @@ def initialize_names_handles_winrates():
 def check_replays():
     """ Checks every few seconds for new replays """
     global AllReplays
-
-    session_games = {'Victory':0,'Defeat':0} # make global later???
+    global session_games
 
     while True:
         logger.debug('Checking for replays....')
@@ -230,7 +235,8 @@ def check_replays():
                             # Good output
                             if len(replay_dict) > 1:
                                 logger.debug('Replay analysis result looks good, appending...')
-                                session_games[replay_dict['result']] += 1
+                                with lock:
+                                    session_games[replay_dict['result']] += 1
                                 update_player_winrate_data(replay_dict)
 
                                 sendEvent({**replay_dict,**session_games})
@@ -248,10 +254,17 @@ def check_replays():
                             logger.error(traceback.format_exc())
 
                         finally:
-                            upload_to_aom(file_path,replay_dict)
-                            break
+                            if len(replay_dict) > 1:
+                                upload_to_aom(file_path,replay_dict)
+                                # return just parser 
+                                return replay_dict['parser']
 
-        time.sleep(3)
+
+        # Wait while checking if the thread should end early
+        for i in range(6):
+            time.sleep(0.5)
+            if APP_CLOSING:
+                return None
 
 
 def upload_to_aom(file_path, replay_dict):
@@ -292,6 +305,36 @@ def update_global_overlay_messages(overlayMessagesSent):
     if overlayMessagesSent > globalOverlayMessagesSent:
         with lock:
             globalOverlayMessagesSent = overlayMessagesSent
+
+
+def show_overlay(file):
+    """ Shows overlay. If it wasn't analysed before, analyse now."""
+
+    # Replay already analysed
+    if 'replay_dict' in AllReplays[file]:
+        if AllReplays[file]['replay_dict'] != None:
+            sendEvent(AllReplays[file]['replay_dict'])
+        else:
+            logger.info(f"This replay couldn't be analysed {file}")
+
+    # Replay_dict is missing, analyse replay
+    else:
+        try:
+            replay_dict = analyse_replay(file, PLAYER_HANDLES)
+            if len(replay_dict) > 1:
+                sendEvent(replay_dict)
+                with lock:
+                    AllReplays[file]['replay_dict'] = replay_dict
+                with open(analysis_log_file, 'ab') as file:
+                    file.write((str(replay_dict)+'\n').encode('utf-8'))
+            # No output from analysis
+            else:
+                with lock:
+                    AllReplays[file]['replay_dict'] = None
+        except:
+            logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
+            with lock:
+                AllReplays[file]['replay_dict'] = None
 
 
 async def manager(websocket, path):
@@ -445,6 +488,10 @@ def check_for_new_game():
 
     while True:
         time.sleep(0.5)
+
+        if APP_CLOSING:
+            break
+
         # Skip if winrate data not showing OR no new replay analysed, meaning it's the same game (excluding the first game)
         if len(player_winrate_data) == 0 or len(AllReplays) == last_replay_amount:
             continue

@@ -1,5 +1,5 @@
 """
-This module is used for generating overall stats from a list of replays (and main names distinquishing between the main player and ally players)
+This module is used for generating overall stats from a list of replays (and player handles distinquishing between the main player and ally players)
 
 """
 import os
@@ -162,12 +162,15 @@ def calculate_commander_data(ReplayData, main_handles):
 class mass_replay_analysis:
     """ Class for mass replay analysis"""
 
-    def __init__(self, main_handles):
-        self.main_handles = main_handles
+    def __init__(self, ACCOUNTDIR):
+
+        names, handles = find_names_and_handles(ACCOUNTDIR)
+
+        self.main_handles = handles
+        self.replays = find_replays(ACCOUNTDIR)
         self.parsed_replays = set()
         self.ReplayData = list()
-        self.cachefile = truePath('cache_overallstats')
-        self.finishedLoading = False
+        self.cachefile = truePath('cache_overall_stats')
 
 
     def load_cache(self):
@@ -198,12 +201,28 @@ class mass_replay_analysis:
             pickle.dump(self.ReplayData, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-    def initialize(self, replays):
-        """ Executes full initialization """
-        self.load_cache()
+    def update_accountdir(self, ACCOUNTDIR):
+        """ Updates player handles and checks for new replays in the new accountdir.
+        This doesn't remove replays that are no longer in the directory. """
+        names, handles = find_names_and_handles(ACCOUNTDIR)
+        replays = find_replays(ACCOUNTDIR)
+
+        self.main_handles = handles
         self.add_replays(replays)
         self.save_cache()
-        self.finishedLoading = True
+
+
+    def initialize(self):
+        """ Executes full initialization """
+        self.load_cache()
+        self.add_replays(self.replays)
+        self.save_cache()
+        return True
+
+
+    def get_last_replays(self, number):
+        """ Returns an ordered list of last `number` replays from the newest to the oldest. """
+        return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':','')), reverse=True)[:number]
 
 
     def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None, region_filter=None):
@@ -259,8 +278,7 @@ class mass_replay_analysis:
 
 def mass_replay_analysis_thread(ACCOUNTDIR):
     """ Main thread for mass replay analysis. Handles all initialization. """
-    names, handles = find_names_and_handles(ACCOUNTDIR)
-    replays = find_replays(ACCOUNTDIR)
 
-    CAnalysis = mass_replay_analysis(handles)
-    CAnalysis.initialize(replays)
+    CAnalysis = mass_replay_analysis(ACCOUNTDIR)
+    CAnalysis.initialize()
+    return CAnalysis
