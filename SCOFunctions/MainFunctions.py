@@ -174,7 +174,7 @@ def initialize_names_handles_winrates():
     global ReplayPosition
     global player_winrate_data
 
-    session_games = {'Victory':0,'Defeat':0}
+    
 
     with lock:
         AllReplays = initialize_AllReplays(SETTINGS['account_folder'])
@@ -205,6 +205,8 @@ def initialize_names_handles_winrates():
 def check_replays():
     """ Checks every few seconds for new replays """
     global AllReplays
+
+    session_games = {'Victory':0,'Defeat':0} # make global later???
 
     while True:
         logger.debug('Checking for replays....')
@@ -387,36 +389,35 @@ def move_in_AllReplays(delta):
 
 
 def keyboard_OLDER():
-    """ Function for hotkey for showing older replay"""
+    """ Show older replay"""
     move_in_AllReplays(-1)
 
 
 def keyboard_NEWER():
-    """ Function for hotkey for showing newer replay"""
+    """ Show newer replay"""
     move_in_AllReplays(1)
 
 
 def keyboard_SHOWHIDE():
-    """ TFunction for hotkey for showing/hiding overlay"""
+    """ Show/hide overlay"""
     logger.info('Show/Hide event')
     sendEvent({'showHideEvent': True})
 
 
 def keyboard_HIDE():
-    """ Function for hide hotkey """
+    """ Hide overlay """
     logger.info('Hide event')
     sendEvent({'hideEvent': True})
 
 
 def keyboard_SHOW():
-    """ Function for show hotkey """
+    """ Show overlay """
     logger.info('Show event')
     sendEvent({'showEvent': True})
 
 
 def keyboard_PLAYERWINRATES():
-    """ Function for player winrate hotkey """
-    global most_recent_playerdata
+    """Show/hide winrate & notes """
     if most_recent_playerdata:
         logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
         sendEvent({'playerEvent': True,'data':most_recent_playerdata})
@@ -492,10 +493,10 @@ def check_for_new_game():
                     # Get player winrate data
                     data = {p:player_winrate_data.get(p,[None]) for p in player_names}
                     # Get player notes
-                    if not SETTINGS['player_notes'] in {None,''}:
-                        for player in data:
-                            if player.lower() in SETTINGS['player_notes']:
-                                data[player].append(SETTINGS['player_notes'][player.lower()])
+
+                    for player in data:
+                        if player.lower() in SETTINGS['player_notes']:
+                            data[player].append(SETTINGS['player_notes'][player.lower()])
 
                     most_recent_playerdata = data
                     logger.info(f'Sending player data event: {data}')

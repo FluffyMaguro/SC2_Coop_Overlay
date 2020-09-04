@@ -1100,7 +1100,7 @@ class UI_TabWidget(object):
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
 
 
-        return
+        # return
 
 
         # Check for new replays

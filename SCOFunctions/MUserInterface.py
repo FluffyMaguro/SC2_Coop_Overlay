@@ -145,12 +145,12 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.tray_menu = QtWidgets.QMenu()
         self.tray_menu.setStyleSheet("background-color: #272E3B; color: #fff")
 
-        self.show_action = QtWidgets.QAction("Show")
+        self.show_action = QtWidgets.QAction("   Show ")
         self.show_action.triggered.connect(self.show)
         self.show_action.setIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         self.tray_menu.addAction(self.show_action)
 
-        self.quit_action = QtWidgets.QAction("Quit")
+        self.quit_action = QtWidgets.QAction("   Quit ")
         self.quit_action.setIcon(self.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_DialogCancelButton')))
         self.quit_action.triggered.connect(QtWidgets.qApp.quit)
         self.tray_menu.addAction(self.quit_action)
@@ -161,12 +161,12 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.settings = settings
 
 
-    # @QtCore.pyqtSlot(bool)    
-    # def closeEvent(self, event):
-    #     """ Overriding close event and minimizing instead """
-    #     event.ignore()
-    #     self.hide()
-    #     self.show_minimize_message()
+    @QtCore.pyqtSlot(bool)    
+    def closeEvent(self, event):
+        """ Overriding close event and minimizing instead """
+        event.ignore()
+        self.hide()
+        self.show_minimize_message()
 
 
     def format_close_message(self):
