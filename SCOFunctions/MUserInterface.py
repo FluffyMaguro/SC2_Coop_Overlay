@@ -14,59 +14,61 @@ class PlayerEntry:
         self.winrate = 100*wins/(wins+losses)
         self.note = note
         self.index = index
-        self.parent = parent
 
-        self.frame = QtWidgets.QFrame(parent)
-        self.frame.setGeometry(QtCore.QRect(40, (self.index+1)*40, 860, 41))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        height = 30
+        line_spacing = 7
 
-        self.line = QtWidgets.QFrame(self.frame)
+        self.widget = QtWidgets.QWidget(parent)
+        self.widget.setGeometry(QtCore.QRect(40, (self.index+1)*40, 860, height))
+        self.widget.setMinimumHeight(height)
+        self.widget.setMaximumHeight(height)
+
+        self.line = QtWidgets.QFrame(self.widget)
         self.line.setGeometry(QtCore.QRect(10, 0, 760, 2))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
-        self.la_name = QtWidgets.QLabel(self.frame)
-        self.la_name.setGeometry(QtCore.QRect(20, 10, 150, 21))
+        self.la_name = QtWidgets.QLabel(self.widget)
+        self.la_name.setGeometry(QtCore.QRect(20, line_spacing, 150, 21))
         self.la_name.setText(self.name)
 
-        self.la_wins = QtWidgets.QLabel(self.frame)
-        self.la_wins.setGeometry(QtCore.QRect(220, 10, 31, 21))
+        self.la_wins = QtWidgets.QLabel(self.widget)
+        self.la_wins.setGeometry(QtCore.QRect(220, line_spacing, 31, 21))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(self.wins))
 
-        self.la_losses = QtWidgets.QLabel(self.frame)
-        self.la_losses.setGeometry(QtCore.QRect(280, 10, 41, 21))
+        self.la_losses = QtWidgets.QLabel(self.widget)
+        self.la_losses.setGeometry(QtCore.QRect(280, line_spacing, 41, 21))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
         self.la_losses.setText(str(self.losses))
 
-        self.la_winrate = QtWidgets.QLabel(self.frame)
-        self.la_winrate.setGeometry(QtCore.QRect(350, 10, 51, 21))
+        self.la_winrate = QtWidgets.QLabel(self.widget)
+        self.la_winrate.setGeometry(QtCore.QRect(350, line_spacing, 51, 21))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.la_winrate.setText(f'{self.winrate:.0f}%')
 
-        self.ed_note = QtWidgets.QLineEdit(self.frame)
-        self.ed_note.setGeometry(QtCore.QRect(480, 10, 281, 21))
+        self.ed_note = QtWidgets.QLineEdit(self.widget)
+        self.ed_note.setGeometry(QtCore.QRect(480, line_spacing, 281, 21))
         self.ed_note.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_note.setStyleSheet('color: #444')
         if not self.note in {None,''}:
             self.ed_note.setText(self.note)
 
         # This is necessary only sometimes (when the user is looking at the tab while its updating )
-        for item in {self.frame, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note}:
+        for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note}:
             item.show()
 
     def get_note(self):
         return self.ed_note.text()
 
     def show(self):
-        self.frame.show()
+        self.widget.show()
 
     def hide(self):
-        self.frame.hide()
+        self.widget.hide()
 
     def reposition(self, index):
-        self.frame.move(40,(index+1)*40)
+        self.widget.move(40,(index+1)*40)
 
 
 class WorkerSignals(QtCore.QObject):

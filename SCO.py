@@ -30,7 +30,11 @@ class UI_TabWidget(object):
         TabWidget.setFixedSize(980, 610)
         TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay {str(APPVERSION)[0]}.{str(APPVERSION)[1:]}')
 
-        ### MAIN TAB ###
+
+        ##########################
+        ######## MAIN TAB ########
+        ##########################
+
         self.TAB_Main = QtWidgets.QWidget()
 
         # Start with Windows
@@ -275,69 +279,85 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
 
 
-        ### PLAYERS TAB ###
+        ##############################
+        ######### PLAYERS TAB ########
+        ##############################
+
         self.TAB_Players = QtWidgets.QWidget()
 
         # Controls 
         self.FR_Winrate_Controls = QtWidgets.QFrame(self.TAB_Players)
-        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 550, TabWidget.frameGeometry().width(), 40))
+        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 540, TabWidget.frameGeometry().width(), 60))
         self.FR_Winrate_Controls.setAutoFillBackground(True)
         self.FR_Winrate_Controls.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Winrate_Controls.setFrameShadow(QtWidgets.QFrame.Raised)
 
+        # Search
         self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(55, 7, 746, 20))
+        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 15, 600, 20))
         self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
 
+        # Top 50
+        self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(690, 17, 200, 17))
+        self.CH_OnlyTop50.setText("Show top 50 players")
+        self.CH_OnlyTop50.setChecked(True)
+        self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
+
+        # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, -5, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()-50))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()-70))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
 
         self.SC_PlayersScrollAreaContents = QtWidgets.QWidget()
         self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 961, 561))
+        self.SC_PlayersScrollAreaContentsLayout = QtWidgets.QVBoxLayout()
+        self.SC_PlayersScrollAreaContentsLayout.setAlignment(QtCore.Qt.AlignTop)
+        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(50,0,0,0)
 
         # Heading
-        self.FR_WinratesHeading = QtWidgets.QFrame(self.SC_PlayersScrollAreaContents)
-        self.FR_WinratesHeading.setGeometry(QtCore.QRect(40, 10, 841, 31))
-        self.FR_WinratesHeading.setStyleSheet("font-weight:bold")
-        self.FR_WinratesHeading.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_WinratesHeading.setFrameShadow(QtWidgets.QFrame.Raised)
-   
-        self.LA_Name = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
+        self.WD_WinratesHeading.setGeometry(QtCore.QRect(40, 10, 841, 31))
+        self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
+        self.WD_WinratesHeading.setMinimumHeight(31)
+        self.WD_WinratesHeading.setMaximumHeight(31) 
+        self.SC_PlayersScrollAreaContentsLayout.addWidget(self.WD_WinratesHeading)
+
+        self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Name.setGeometry(QtCore.QRect(20, 0, 41, 31))
         self.LA_Name.setText("Name")
 
-        self.LA_Wins = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Wins.setGeometry(QtCore.QRect(210, 0, 50, 31))
         self.LA_Wins.setText("▼ Wins")
 
-        self.LA_Losses = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Losses.setGeometry(QtCore.QRect(280, 0, 41, 31))
         self.LA_Losses.setText("Losses")
 
-        self.LA_Winrate = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Winrate.setGeometry(QtCore.QRect(350, 0, 51, 31))
         self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrate.setText("Winrate")
 
-        self.LA_Note = QtWidgets.QLabel(self.FR_WinratesHeading)
+        self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Note.setGeometry(QtCore.QRect(480, 0, 281, 31))
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
 
         # Finalize player tab
-        self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
         TabWidget.addTab(self.TAB_Players, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
 
-
-        ### GAMES TAB ###
+        ###########################
+        ######## GAMES TAB ########
+        ###########################
 
         self.TAB_Games = QtWidgets.QWidget()
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
@@ -1043,7 +1063,6 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_settings(self.settings)
 
-
         self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
         self.thread_server.start()
 
@@ -1072,10 +1091,15 @@ class UI_TabWidget(object):
         self.player_winrate_UI_dict = dict()
         for idx, player in enumerate(winrate_data):
             self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), idx, self.SC_PlayersScrollAreaContents)
-            if idx > 100:
-                break
-            # return
-            # Check settings for notes add pass them inside
+            self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
+            
+            if idx > 50:
+                self.player_winrate_UI_dict[player].hide()
+
+        self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
+        self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
+
+
         return
 
 
@@ -1100,22 +1124,22 @@ class UI_TabWidget(object):
                 del self.settings['player_notes'][player] 
 
 
-
-
     def filter_players(self):
         """ Filters only players with string in name or note """
         text = self.ED_Winrate_Search.text().lower()
         idx = 0
         for player in self.player_winrate_UI_dict:
             note = self.player_winrate_UI_dict[player].get_note().lower()
-            if text in player.lower() or text in note or ('note' in text and not note in {None,''}):
+
+            if self.CH_OnlyTop50.isChecked() and idx >= 50:
+                self.player_winrate_UI_dict[player].hide()
+
+            elif text in player.lower() or text in note or ('note' in text and not note in {None,''}):
                 self.player_winrate_UI_dict[player].reposition(idx)
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
             else:
                 self.player_winrate_UI_dict[player].hide()
-
-
 
 
     def retranslateUi(self, TabWidget):
