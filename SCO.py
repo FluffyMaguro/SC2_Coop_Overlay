@@ -295,21 +295,21 @@ class UI_TabWidget(object):
 
         # Search
         self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 15, 600, 20))
+        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 8, 610, 20))
         self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
 
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(690, 17, 200, 17))
-        self.CH_OnlyTop50.setText("Limit to top 50 players")
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 10, 200, 17))
+        self.CH_OnlyTop50.setText("Show max 50 players")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
 
         # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()-70))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width()-5, TabWidget.frameGeometry().height()-70))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
@@ -365,7 +365,7 @@ class UI_TabWidget(object):
 
         # Scroll
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
-        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width(), TabWidget.frameGeometry().height()))
+        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width()-5, TabWidget.frameGeometry().height()))
         self.SC_GamesScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_GamesScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_GamesScrollArea.setWidgetResizable(True)
@@ -374,7 +374,7 @@ class UI_TabWidget(object):
         self.SC_GamesScrollAreaContent.setGeometry(QtCore.QRect(0, 0, 961, 561))
         self.SC_GamesScrollAreaContentLayout = QtWidgets.QVBoxLayout()
         self.SC_GamesScrollAreaContentLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_GamesScrollAreaContentLayout.setContentsMargins(20,0,0,0)
+        self.SC_GamesScrollAreaContentLayout.setContentsMargins(10,0,0,0)
 
         # Heading
         self.WD_RecentGamesHeading = QtWidgets.QWidget(self.SC_GamesScrollAreaContent)

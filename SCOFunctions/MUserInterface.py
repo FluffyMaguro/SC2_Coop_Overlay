@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 import subprocess
@@ -103,7 +104,7 @@ class GameEntry:
         self.la_date.setText(self.date)
 
         self.BT_show = QtWidgets.QPushButton(self.widget)
-        self.BT_show.setGeometry(QtCore.QRect(850, line_spacing, 75, 23))
+        self.BT_show.setGeometry(QtCore.QRect(840, line_spacing, 90, 23))
         self.BT_show.setText("Show overlay")
         self.BT_show.clicked.connect(lambda: show_overlay(self.file))
 
@@ -298,12 +299,12 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.settings = settings
 
 
-    @QtCore.pyqtSlot(bool)    
-    def closeEvent(self, event):
-        """ Overriding close event and minimizing instead """
-        event.ignore()
-        self.hide()
-        self.show_minimize_message()
+    # @QtCore.pyqtSlot(bool)    
+    # def closeEvent(self, event):
+    #     """ Overriding close event and minimizing instead """
+    #     event.ignore()
+    #     self.hide()
+    #     self.show_minimize_message()
 
 
     def format_close_message(self):
