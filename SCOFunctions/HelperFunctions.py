@@ -9,6 +9,9 @@ from pathlib import Path
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
+logger = logclass('HELP','INFO')
+version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
+
 
 # Use ctypes.wintypes only on windows platform
 if os.name == 'nt':
@@ -17,9 +20,6 @@ if os.name == 'nt':
 else: 
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg" )
 
-
-logger = logclass('HELP','INFO')
-version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 
 
 def write_permission_granted():

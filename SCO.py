@@ -629,6 +629,8 @@ class UI_TabWidget(object):
         self.BT_Fastest_VT = QtWidgets.QPushButton(self.GB_FastestMapOverview)
         self.BT_Fastest_VT.setGeometry(QtCore.QRect(10, 15, 171, 20))
         self.BT_Fastest_VT.setObjectName("BT_Fastest_VT")
+
+
         self.BT_Fastest_CoA = QtWidgets.QPushButton(self.GB_FastestMapOverview)
         self.BT_Fastest_CoA.setGeometry(QtCore.QRect(10, 35, 171, 20))
         self.BT_Fastest_CoA.setObjectName("BT_Fastest_CoA")
@@ -1291,12 +1293,21 @@ class UI_TabWidget(object):
             self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
 
         # Update player winrate data
+        new_players = {replay_dict['players'][1]['name'], replay_dict['players'][2]['name']}
         for player in self.player_winrate_UI_dict:
-            if player in {replay_dict['players'][1]['name'], replay_dict['players'][2]['name']} and player in MF.player_winrate_data:
+            if player in new_players and player in MF.player_winrate_data:
                 self.player_winrate_UI_dict[player].update_winrates(MF.player_winrate_data[player])
+                new_players.remove(player)
+
+        # Create new player entry if necessary
+        if len(new_players) > 0:
+            for player in new_players and player in MF.player_winrate_data:
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), idx, self.SC_PlayersScrollAreaContents)
+                self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
 
         # Update mass replay analysis
-        self.CAnalysis.add_parsed_replay(replay_dict)
+        if hasattr(self, 'CAnalysis'):
+            self.CAnalysis.add_parsed_replay(replay_dict)
 
 
     def save_playernotes_to_settings(self):
@@ -1334,7 +1345,6 @@ class UI_TabWidget(object):
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
             self.game_UI_dict[game['file']] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)            
-
 
         # Update stats tab
         player_names = (', ').join(self.CAnalysis.main_names)
