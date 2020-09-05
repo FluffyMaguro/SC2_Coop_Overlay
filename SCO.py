@@ -296,7 +296,7 @@ class UI_TabWidget(object):
 
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 12, 200, 17))
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 13, 200, 17))
         self.CH_OnlyTop50.setText("Show max 50 players")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
@@ -1260,7 +1260,7 @@ class UI_TabWidget(object):
         # Create player winrates UI
         self.player_winrate_UI_dict = dict()
         for idx, player in enumerate(winrate_data):
-            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), idx, self.SC_PlayersScrollAreaContents)
+            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
             self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
             
             if idx > 50:
@@ -1309,7 +1309,7 @@ class UI_TabWidget(object):
         # Create new player entry if necessary
         if len(new_players) > 0:
             for player in new_players and player in MF.player_winrate_data:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), idx, self.SC_PlayersScrollAreaContents)
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
                 self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
 
         # Update mass replay analysis

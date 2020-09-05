@@ -125,13 +125,12 @@ class PlayerEntry:
 
     """
 
-    def __init__(self, name, wins, losses, note, index, parent):
+    def __init__(self, name, wins, losses, note, parent):
         self.name = name
         self.wins = wins
         self.losses = losses
         self.winrate = 100*wins/(wins+losses)
         self.note = note
-        self.index = index
 
         height = 30
         line_spacing = 7
