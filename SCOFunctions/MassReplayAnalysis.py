@@ -67,7 +67,10 @@ def calculate_map_data(ReplayData):
             MapData[r['map_name']]['Fastest']['enemy_race'] = r['enemy_race']
 
     for m in MapData:
-        MapData[m]['average_victory_time'] = statistics.mean(MapData[m]['average_victory_time'])
+        if len(MapData[m]['average_victory_time']) > 0:
+            MapData[m]['average_victory_time'] = statistics.mean(MapData[m]['average_victory_time'])
+        else: 
+            MapData[m]['average_victory_time'] = None
 
     return MapData
 
@@ -166,6 +169,7 @@ class mass_replay_analysis:
 
         names, handles = find_names_and_handles(ACCOUNTDIR)
 
+        self.main_names = names
         self.main_handles = handles
         self.replays = find_replays(ACCOUNTDIR)
         self.parsed_replays = set()
@@ -195,6 +199,13 @@ class mass_replay_analysis:
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
 
+    def add_parsed_replay(self, parsed_data):
+        """ Adds already parsed replay. Format has to be from my S2Parser"""
+        if parsed_data != None and len(parsed_data) > 1 and not parsed_data['file'] in self.parsed_replays:
+            self.ReplayData.append(parsed_data)
+            self.parsed_replays.add(parsed_data['file'])
+
+
     def save_cache(self):
         """ Saves cache """
         with open(self.cachefile,'wb') as f:
@@ -207,6 +218,7 @@ class mass_replay_analysis:
         names, handles = find_names_and_handles(ACCOUNTDIR)
         replays = find_replays(ACCOUNTDIR)
 
+        self.main_names = names
         self.main_handles = handles
         self.add_replays(replays)
         self.save_cache()
@@ -252,17 +264,17 @@ class mass_replay_analysis:
         if maxLength != None:
             data = [r for r in data if r['length'] <= maxLength*60] 
 
-        if difficulty_filter != None:
+        if difficulty_filter != None and len(difficulty_filter) > 0:
+            logger.info(f'{difficulty_filter=}')
             for difficulty in difficulty_filter:
                 if isinstance(difficulty, str):
-                    print('filtering away (STR)',difficulty)
                     data = [r for r in data if not difficulty in r['difficulty'] or r['brutal_plus'] > 0] # Don't filter out B+ if filtering out "Brutal"
 
                 elif isinstance(difficulty, int):
-                    print('filtering away (INT)',difficulty)
                     data = [r for r in data if not difficulty == r['brutal_plus']]
 
-        if region_filter != None:
+        if region_filter != None and len(region_filter) > 0:
+            logger.info(f'{region_filter=}')
             data = [r for r in data if not r['region'] in region_filter] 
 
 

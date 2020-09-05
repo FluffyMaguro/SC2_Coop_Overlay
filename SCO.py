@@ -437,95 +437,152 @@ class UI_TabWidget(object):
 
         self.TAB_Stats = QtWidgets.QWidget()
         self.FR_Stats = QtWidgets.QFrame(self.TAB_Stats)
-        self.FR_Stats.setGeometry(QtCore.QRect(10, 10, 911, 151))
+        self.FR_Stats.setGeometry(QtCore.QRect(10, 0, 964, 151))
         self.FR_Stats.setAutoFillBackground(False)
-        self.FR_Stats.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.FR_Stats.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.FR_Stats.setLineWidth(1)
-        self.FR_Stats.setMidLineWidth(0)
-        self.LA_MaxGamelength = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_MaxGamelength.setGeometry(QtCore.QRect(450, 40, 131, 16))
-        self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MinGamelength.setGeometry(QtCore.QRect(400, 10, 42, 22))
-        self.SP_MinGamelength.setMaximum(1000)
-        self.SP_MinGamelength.setProperty("value", 0)
+
+        # Difficulty
+        self.CH_DiffCasual = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DiffCasual.setGeometry(QtCore.QRect(10, 20, 61, 17))
+        self.CH_DiffCasual.setChecked(True)
+        self.CH_DiffCasual.setText("Casual")
+
+        self.CH_DiffNormal = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DiffNormal.setGeometry(QtCore.QRect(10, 40, 61, 17))
+        self.CH_DiffNormal.setChecked(True)
+        self.CH_DiffNormal.setText("Normal")
+
+        self.CH_DiffHard = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DiffHard.setGeometry(QtCore.QRect(10, 60, 51, 17))
+        self.CH_DiffHard.setChecked(True)
+        self.CH_DiffHard.setText("Hard")
+
+        self.CH_DiffBrutal = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DiffBrutal.setGeometry(QtCore.QRect(10, 80, 51, 17))
+        self.CH_DiffBrutal.setChecked(True)
+        self.CH_DiffBrutal.setText("Brutal")
+
+        self.CH_DiffBrutalPlus = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DiffBrutalPlus.setGeometry(QtCore.QRect(10, 100, 61, 17))
+        self.CH_DiffBrutalPlus.setChecked(True)
+        self.CH_DiffBrutalPlus.setText("Brutal+")
+
+        # Region
+        self.CH_Region_NA = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Region_NA.setGeometry(QtCore.QRect(90, 20, 71, 17))
+        self.CH_Region_NA.setChecked(True)
+        self.CH_Region_NA.setText("Americas")
+
+        self.CH_Region_EU = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Region_EU.setGeometry(QtCore.QRect(90, 40, 71, 17))
+        self.CH_Region_EU.setChecked(True)
+        self.CH_Region_EU.setText("Europe")
+
+        self.CH_Region_KR = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Region_KR.setGeometry(QtCore.QRect(90, 60, 61, 17))
+        self.CH_Region_KR.setChecked(True)
+        self.CH_Region_KR.setText("Asia")
+
+        self.CH_Region_CN = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Region_CN.setGeometry(QtCore.QRect(90, 80, 61, 17))
+        self.CH_Region_CN.setChecked(True)
+        self.CH_Region_CN.setText("China")
+
+        # Type
+        self.CH_TypeNormal = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_TypeNormal.setGeometry(QtCore.QRect(180, 20, 101, 17))
+        self.CH_TypeNormal.setChecked(True)
+        self.CH_TypeNormal.setText("Normal games")
+
+        self.CH_TypeMutation = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_TypeMutation.setGeometry(QtCore.QRect(180, 40, 101, 17))
+        self.CH_TypeMutation.setChecked(True)
+        self.CH_TypeMutation.setText("Mutations")
+
+        # Generate
+        self.BT_Generate = QtWidgets.QPushButton(self.FR_Stats)
+        self.BT_Generate.setGeometry(QtCore.QRect(770, 40, 171, 51))
+        self.BT_Generate.setText("Generate stats")
+        self.BT_Generate.setStyleSheet('font-weight: bold')
+        self.BT_Generate.clicked.connect(self.generate_stats)
+        self.BT_Generate.setEnabled(False)
+
+        # Games found
+        self.LA_GamesFound = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_GamesFound.setEnabled(False)
+        self.LA_GamesFound.setGeometry(QtCore.QRect(570, 110, 381, 20))
+        self.LA_GamesFound.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+
+        # Main names
+        self.LA_IdentifiedPlayers = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_IdentifiedPlayers.setEnabled(False)
+        self.LA_IdentifiedPlayers.setGeometry(QtCore.QRect(570, 125, 381, 20))
+        self.LA_IdentifiedPlayers.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.LA_IdentifiedPlayers.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+
+        # Date
+        self.LA_ReplayDate = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_ReplayDate.setGeometry(QtCore.QRect(480, 20, 101, 16))
+        self.LA_ReplayDate.setStyleSheet('font-weight: bold')
+        self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_ReplayDate.setText("Replay date")
+
+        self.LA_To = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_To.setGeometry(QtCore.QRect(600, 70, 31, 16))
+        self.LA_To.setText("To")
+        self.TM_ToDate = QtWidgets.QDateEdit(self.FR_Stats)
+        self.TM_ToDate.setGeometry(QtCore.QRect(480, 70, 110, 22))
+        self.TM_ToDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2030, 12, 30), QtCore.QTime(0, 0, 0)))
+        self.TM_ToDate.setDisplayFormat("d/M/yyyy")
+
+        self.LA_From = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_From.setGeometry(QtCore.QRect(600, 40, 31, 16))
+        self.LA_From.setText("From")
+        self.TM_FromDate = QtWidgets.QDateEdit(self.FR_Stats)
+        self.TM_FromDate.setGeometry(QtCore.QRect(480, 40, 110, 22))
+        self.TM_FromDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2015, 11, 10), QtCore.QTime(0, 0, 0)))
+        self.TM_FromDate.setDisplayFormat("d/M/yyyy")
+
+        # Game length
+        self.LA_GameLength = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_GameLength.setGeometry(QtCore.QRect(310, 20, 131, 16))
+        self.LA_GameLength.setStyleSheet('font-weight: bold')
+        self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_GameLength.setText("Game length (minutes)")
+
+        self.LA_Maximum = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_Maximum.setGeometry(QtCore.QRect(360, 70, 51, 16))
+        self.LA_Maximum.setText("Maximum")
+
+        self.LA_Minimum = QtWidgets.QLabel(self.FR_Stats)
+        self.LA_Minimum.setGeometry(QtCore.QRect(360, 40, 41, 16))
+        self.LA_Minimum.setText("Minimum")
+
         self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MaxGamelength.setGeometry(QtCore.QRect(400, 40, 42, 22))
+        self.SP_MaxGamelength.setGeometry(QtCore.QRect(310, 70, 42, 22))
         self.SP_MaxGamelength.setMinimum(0)
         self.SP_MaxGamelength.setMaximum(1000)
         self.SP_MaxGamelength.setProperty("value", 0)
-        self.CH_DiffHard = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffHard.setGeometry(QtCore.QRect(10, 50, 101, 17))
-        self.CH_DiffHard.setChecked(True)
-        self.CH_TypeNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeNormal.setGeometry(QtCore.QRect(180, 10, 101, 17))
-        self.CH_TypeNormal.setChecked(True)
-        self.CH_TypeMutation = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeMutation.setGeometry(QtCore.QRect(180, 30, 101, 17))
-        self.CH_TypeMutation.setChecked(True)
-        self.CH_DiffNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffNormal.setGeometry(QtCore.QRect(10, 30, 61, 17))
-        self.CH_DiffNormal.setChecked(True)
-        self.TM_FromDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_FromDate.setGeometry(QtCore.QRect(620, 10, 110, 22))
-        self.TM_FromDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2015, 11, 10), QtCore.QTime(0, 0, 0)))
-        self.TM_ToDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_ToDate.setGeometry(QtCore.QRect(620, 40, 110, 22))
-        self.TM_ToDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2030, 12, 30), QtCore.QTime(0, 0, 0)))
-        self.CH_DiffCasual = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffCasual.setGeometry(QtCore.QRect(10, 10, 61, 17))
-        self.CH_DiffCasual.setChecked(True)
-        self.LA_MinGamelength = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_MinGamelength.setGeometry(QtCore.QRect(450, 10, 131, 16))
-        self.BT_Generate = QtWidgets.QPushButton(self.FR_Stats)
-        self.BT_Generate.setGeometry(QtCore.QRect(770, 120, 131, 31))
-        self.CH_DiffBrutal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutal.setGeometry(QtCore.QRect(10, 70, 51, 17))
-        self.CH_DiffBrutal.setChecked(True)
-        self.LA_FromDate = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_FromDate.setGeometry(QtCore.QRect(740, 10, 61, 16))
-        self.LA_ToDate = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_ToDate.setGeometry(QtCore.QRect(740, 40, 61, 16))
-        self.LA_CurrentAccountNames = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_CurrentAccountNames.setGeometry(QtCore.QRect(10, 130, 741, 20))
-        self.CH_DiffBrutalPlus = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutalPlus.setGeometry(QtCore.QRect(10, 90, 61, 17))
-        self.CH_DiffBrutalPlus.setChecked(True)
-        self.CH_Region_NA = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_NA.setGeometry(QtCore.QRect(90, 10, 71, 17))
-        self.CH_Region_NA.setChecked(True)
-        self.CH_Region_EU = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_EU.setGeometry(QtCore.QRect(90, 30, 71, 17))
-        self.CH_Region_EU.setChecked(True)
-        self.CH_Region_KR = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_KR.setGeometry(QtCore.QRect(90, 50, 61, 17))
-        self.CH_Region_KR.setChecked(True)
-        self.CH_Region_CN = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_CN.setGeometry(QtCore.QRect(90, 70, 61, 17))
-        self.CH_Region_CN.setChecked(True)
-        self.CH_Region_PTR = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_PTR.setGeometry(QtCore.QRect(90, 90, 61, 17))
-        self.CH_Region_PTR.setChecked(True)
-        self.TBD1 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD1.setGeometry(QtCore.QRect(20, 230, 111, 21))
-        self.TBD2 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD2.setGeometry(QtCore.QRect(20, 260, 221, 21))
-        self.TBD4 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD4.setGeometry(QtCore.QRect(20, 290, 311, 21))
-        self.TBD3 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD3.setGeometry(QtCore.QRect(20, 320, 421, 21))
-        self.TBD5 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD5.setGeometry(QtCore.QRect(20, 350, 111, 21))
-        self.TBD6 = QtWidgets.QLabel(self.TAB_Stats)
-        self.TBD6.setGeometry(QtCore.QRect(20, 380, 271, 21))
-        self.line = QtWidgets.QFrame(self.TAB_Stats)
-        self.line.setGeometry(QtCore.QRect(10, 160, 911, 16))
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.FR_Fastest_VT = QtWidgets.QFrame(self.TAB_Stats)
-        self.FR_Fastest_VT.setGeometry(QtCore.QRect(20, 380, 421, 201))
+
+        self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_Stats)
+        self.SP_MinGamelength.setGeometry(QtCore.QRect(310, 40, 42, 22))
+        self.SP_MinGamelength.setMaximum(1000)
+        self.SP_MinGamelength.setProperty("value", 0)
+
+
+
+        ##### RESULTS #####
+        self.TABW_StatResults = QtWidgets.QTabWidget(self.TAB_Stats)
+        self.TABW_StatResults.setGeometry(QtCore.QRect(5, 126, 971, 451))
+        self.TABW_StatResults.setAccessibleDescription("")
+        self.TABW_StatResults.setObjectName("TABW_StatResults")
+        self.TAB_FastestsMaps = QtWidgets.QWidget()
+        self.TAB_FastestsMaps.setObjectName("TAB_FastestsMaps")
+        self.FR_Fastest_VT = QtWidgets.QFrame(self.TAB_FastestsMaps)
+        self.FR_Fastest_VT.setGeometry(QtCore.QRect(10, 20, 741, 381))
         self.FR_Fastest_VT.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Fastest_VT.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.FR_Fastest_VT.setObjectName("FR_Fastest_VT")
         self.LA_Fastest_Map_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_Map_VT.setGeometry(QtCore.QRect(10, 10, 131, 21))
         font = QtGui.QFont()
@@ -533,14 +590,14 @@ class UI_TabWidget(object):
         font.setBold(True)
         font.setWeight(75)
         self.LA_Fastest_Map_VT.setFont(font)
-        self.BT_Fastest_Find_VT = QtWidgets.QPushButton(self.FR_Fastest_VT)
-        self.BT_Fastest_Find_VT.setGeometry(QtCore.QRect(330, 10, 75, 23))
+        self.LA_Fastest_Map_VT.setObjectName("LA_Fastest_Map_VT")
         self.LA_Fastest_P1_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_P1_VT.setGeometry(QtCore.QRect(10, 40, 171, 31))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.LA_Fastest_P1_VT.setFont(font)
+        self.LA_Fastest_P1_VT.setObjectName("LA_Fastest_P1_VT")
         self.LA_Fastest_P2_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_P2_VT.setGeometry(QtCore.QRect(240, 40, 201, 31))
         font = QtGui.QFont()
@@ -548,41 +605,77 @@ class UI_TabWidget(object):
         font.setWeight(75)
         font.setStrikeOut(False)
         self.LA_Fastest_P2_VT.setFont(font)
+        self.LA_Fastest_P2_VT.setObjectName("LA_Fastest_P2_VT")
         self.LA_Fastest_P1Mastery_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_P1Mastery_VT.setGeometry(QtCore.QRect(10, 80, 171, 91))
+        self.LA_Fastest_P1Mastery_VT.setObjectName("LA_Fastest_P1Mastery_VT")
         self.LA_Fastest_TimeRace_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_TimeRace_VT.setGeometry(QtCore.QRect(160, 10, 111, 20))
+        self.LA_Fastest_TimeRace_VT.setObjectName("LA_Fastest_TimeRace_VT")
         self.LA_Fastest_P2Mastery_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_P2Mastery_VT.setGeometry(QtCore.QRect(240, 80, 171, 91))
+        self.LA_Fastest_P2Mastery_VT.setObjectName("LA_Fastest_P2Mastery_VT")
+        self.BT_FastestMap_Show = QtWidgets.QPushButton(self.TAB_FastestsMaps)
+        self.BT_FastestMap_Show.setGeometry(QtCore.QRect(670, 380, 81, 23))
+        self.BT_FastestMap_Show.setStyleSheet("")
+        self.BT_FastestMap_Show.setObjectName("BT_FastestMap_Show")
+        self.BT_FastestMap_Find = QtWidgets.QPushButton(self.TAB_FastestsMaps)
+        self.BT_FastestMap_Find.setGeometry(QtCore.QRect(590, 380, 75, 23))
+        self.BT_FastestMap_Find.setStyleSheet("")
+        self.BT_FastestMap_Find.setObjectName("BT_FastestMap_Find")
+        self.GB_FastestMapOverview = QtWidgets.QGroupBox(self.TAB_FastestsMaps)
+        self.GB_FastestMapOverview.setGeometry(QtCore.QRect(760, 10, 191, 391))
+        self.GB_FastestMapOverview.setObjectName("GB_FastestMapOverview")
+        self.BT_Fastest_VT = QtWidgets.QPushButton(self.GB_FastestMapOverview)
+        self.BT_Fastest_VT.setGeometry(QtCore.QRect(10, 15, 171, 20))
+        self.BT_Fastest_VT.setObjectName("BT_Fastest_VT")
+        self.BT_Fastest_CoA = QtWidgets.QPushButton(self.GB_FastestMapOverview)
+        self.BT_Fastest_CoA.setGeometry(QtCore.QRect(10, 35, 171, 20))
+        self.BT_Fastest_CoA.setObjectName("BT_Fastest_CoA")
+        self.BT_Fastest_MO = QtWidgets.QPushButton(self.GB_FastestMapOverview)
+        self.BT_Fastest_MO.setGeometry(QtCore.QRect(10, 55, 171, 20))
+        self.BT_Fastest_MO.setObjectName("BT_Fastest_MO")
+        self.BT_Fastest_VP = QtWidgets.QPushButton(self.GB_FastestMapOverview)
+        self.BT_Fastest_VP.setGeometry(QtCore.QRect(10, 75, 171, 20))
+        self.BT_Fastest_VP.setObjectName("BT_Fastest_VP")
+        self.TABW_StatResults.addTab(self.TAB_FastestsMaps, "")
+        self.TAB_Maps = QtWidgets.QWidget()
+        self.TAB_Maps.setObjectName("TAB_Maps")
+        self.TBD_Maps = QtWidgets.QLabel(self.TAB_Maps)
+        self.TBD_Maps.setGeometry(QtCore.QRect(20, 10, 221, 21))
+        self.TBD_Maps.setObjectName("TBD_Maps")
+        self.TABW_StatResults.addTab(self.TAB_Maps, "")
+        self.TAB_MyCommanders = QtWidgets.QWidget()
+        self.TAB_MyCommanders.setObjectName("TAB_MyCommanders")
+        self.TBD_MyCommanders = QtWidgets.QLabel(self.TAB_MyCommanders)
+        self.TBD_MyCommanders.setGeometry(QtCore.QRect(10, 10, 311, 21))
+        self.TBD_MyCommanders.setObjectName("TBD_MyCommanders")
+        self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
+        self.TAB_AlliedCommanders = QtWidgets.QWidget()
+        self.TAB_AlliedCommanders.setObjectName("TAB_AlliedCommanders")
+        self.TBD_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
+        self.TBD_AlliedCommanders.setGeometry(QtCore.QRect(10, 10, 421, 21))
+        self.TBD_AlliedCommanders.setObjectName("TBD_AlliedCommanders")
+        self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
+        self.TAB_Difficulty = QtWidgets.QWidget()
+        self.TAB_Difficulty.setObjectName("TAB_Difficulty")
+        self.TBD_Difficulty = QtWidgets.QLabel(self.TAB_Difficulty)
+        self.TBD_Difficulty.setGeometry(QtCore.QRect(10, 10, 191, 21))
+        self.TBD_Difficulty.setObjectName("TBD_Difficulty")
+        self.TABW_StatResults.addTab(self.TAB_Difficulty, "")
+        self.TAB_ProgressionRegions = QtWidgets.QWidget()
+        self.TAB_ProgressionRegions.setObjectName("TAB_ProgressionRegions")
+        self.TBD_ProgressionRegions = QtWidgets.QLabel(self.TAB_ProgressionRegions)
+        self.TBD_ProgressionRegions.setGeometry(QtCore.QRect(10, 10, 321, 31))
+        self.TBD_ProgressionRegions.setObjectName("TBD_ProgressionRegions")
+        self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
+        TabWidget.addTab(self.TAB_Stats, "")
 
 
-        self.LA_MaxGamelength.setText("Max gamelength (minutes)")
-        self.CH_DiffHard.setText("Hard")
-        self.CH_TypeNormal.setText("Normal games")
-        self.CH_TypeMutation.setText("Mutations")
-        self.CH_DiffNormal.setText("Normal")
-        self.TM_FromDate.setDisplayFormat("d/M/yyyy")
-        self.TM_ToDate.setDisplayFormat("d/M/yyyy")
-        self.CH_DiffCasual.setText("Casual")
-        self.LA_MinGamelength.setText("Min gamelength (minutes)")
-        self.BT_Generate.setText("Generate")
-        self.CH_DiffBrutal.setText("Brutal")
-        self.LA_FromDate.setText("From date")
-        self.LA_ToDate.setText("To date")
-        self.LA_CurrentAccountNames.setText("Main players identified as: Maguro, SeaMaguro, Potato")
-        self.CH_DiffBrutalPlus.setText("Brutal+")
-        self.CH_Region_NA.setText("Americas")
-        self.CH_Region_EU.setText("Europe")
-        self.CH_Region_KR.setText("Asia")
-        self.CH_Region_CN.setText("China")
-        self.CH_Region_PTR.setText("PTR")
-        self.TBD1.setText("Difficulty stats")
-        self.TBD2.setText("Map freq, winrate, avg victory time")
-        self.TBD4.setText("Commander games, freq, median APM and winrates")
-        self.TBD3.setText("Ally commander games (corrected), Ally mastery, prestige frequency, median apm")
-        self.TBD5.setText("Fastest map clears")
+
+
+
         self.LA_Fastest_Map_VT.setText("Void Thrashing")
-        self.BT_Fastest_Find_VT.setText("Find file")
         self.LA_Fastest_P1_VT.setText("Maguro (Tychus)\n"
 "Legendary Outlaw (P0)")
         self.LA_Fastest_P2_VT.setText("KingDime (Mengsk)\n"
@@ -600,7 +693,25 @@ class UI_TabWidget(object):
 "15 sdfdsfd\n"
 "0 sdfdsfdf\n"
 "30 sdfdsfd")
-        TabWidget.addTab(self.TAB_Stats, "")
+        self.BT_FastestMap_Show.setText("Show overlay")
+        self.BT_FastestMap_Find.setText("Find file")
+        self.GB_FastestMapOverview.setTitle("Overview")
+        self.BT_Fastest_VT.setText("12:03 - Void Thrashing")
+        self.BT_Fastest_CoA.setText("18:56 - Chain of Ascension")
+        self.BT_Fastest_MO.setText("20:28 -  Mist Opportunities")
+        self.BT_Fastest_VP.setText("22:54 - The Vermillion Problem")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_FastestsMaps), "Fastest maps")
+        self.TBD_Maps.setText("Map freq, winrate, avg victory time")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
+        self.TBD_MyCommanders.setText("Commander games, freq, winrate, median APM")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
+        self.TBD_AlliedCommanders.setText("Frequency (corrected), typical ally mastery, prestige frequency, median apm")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
+        self.TBD_Difficulty.setText("Games and winrate per difficulty")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty stats")
+        self.TBD_ProgressionRegions.setText("# games, winrate per region, max ascension\n"
+"Per commander prestige played at lvl 14-15")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
 
 
@@ -1184,6 +1295,9 @@ class UI_TabWidget(object):
             if player in {replay_dict['players'][1]['name'], replay_dict['players'][2]['name']} and player in MF.player_winrate_data:
                 self.player_winrate_UI_dict[player].update_winrates(MF.player_winrate_data[player])
 
+        # Update mass replay analysis
+        self.CAnalysis.add_parsed_replay(replay_dict)
+
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
@@ -1222,10 +1336,70 @@ class UI_TabWidget(object):
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)            
 
 
-        # calculate stats for stats tab
-        pass
+        # Update stats tab
+        player_names = (', ').join(self.CAnalysis.main_names)
+        self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
+        self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
+        self.BT_Generate.setEnabled(True)
       
 
+    def generate_stats(self):
+        """ Generate stats and passes data to be shown"""
+
+        if not hasattr(self, 'CAnalysis'):
+            logger.error('Mass analysis hasn\'t finished yet')
+            return
+
+        # Filter
+        include_mutations = True if self.CH_TypeMutation.isChecked() else False
+        include_normal_games = True if self.CH_TypeNormal.isChecked() else False
+
+        difficulty_filter = set()
+        if not self.CH_DiffCasual.isChecked():
+            difficulty_filter.add('Casual')
+        if not self.CH_DiffNormal.isChecked():
+            difficulty_filter.add('Normal')
+        if not self.CH_DiffHard.isChecked():
+            difficulty_filter.add('Hard')
+        if not self.CH_DiffBrutal.isChecked():
+            difficulty_filter.add('Brutal')
+        if not self.CH_DiffBrutalPlus.isChecked():
+            difficulty_filter = difficulty_filter.union({1,2,3,4,5,6})
+
+        region_filter = set()
+        if not self.CH_Region_NA.isChecked():
+            region_filter.add('NA')
+        if not self.CH_Region_EU.isChecked():
+            region_filter.add('EU')
+        if not self.CH_Region_KR.isChecked():
+            region_filter.add('KR')
+        if not self.CH_Region_CN.isChecked():
+            region_filter.add('CN')
+
+        mindate = self.TM_FromDate.date().toPyDate().strftime('%Y%m%d%H%M%S')
+        mindate = None if mindate == '20151110000000' else int(mindate)
+        maxdate = self.TM_ToDate.date().toPyDate().strftime('%Y%m%d%H%M%S')
+        maxdate = None if maxdate == '20301230000000' else int(maxdate)
+
+        minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
+        maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
+
+        # Analyse
+        analysis = self.CAnalysis.analyse_replays(
+                                  include_mutations=include_mutations, 
+                                  include_normal_games=include_normal_games, 
+                                  difficulty_filter=difficulty_filter, 
+                                  region_filter=region_filter, 
+                                  mindate=mindate, 
+                                  maxdate=maxdate, 
+                                  minlength=minlength, 
+                                  maxLength=maxLength)
+        
+        self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
+
+
+        # !!! update results
+        pass
 
 
 if __name__ == "__main__":
@@ -1238,8 +1412,9 @@ if __name__ == "__main__":
     ui.loadSettings()
     ui.start_main_functionality()
 
-    # Save settings before the app is closed
+    # Do stuff before the app is closed
     exit_event = app.exec_()
     MF.stop_threads()
     ui.saveSettings()
+    TabWidget.tray_icon.hide()
     sys.exit(exit_event)

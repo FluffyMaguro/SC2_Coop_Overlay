@@ -78,7 +78,7 @@ def find_names_and_handles(ACCOUNTDIR):
 
     for root, directories, files in os.walk(folder):
         for directory in directories:
-            if directory.count('-') >= 3 and not r'\Banks' in root:
+            if directory.count('-') >= 3 and not r'\Banks' in root and not 'Crash' in directory:
                 handles.add(directory)
 
         for file in files:
@@ -550,7 +550,7 @@ def check_for_new_game():
                     sendEvent({'playerEvent': True,'data':data})
 
         except requests.exceptions.ConnectionError:
-            logger.info(f'SC2 request failed. Game not running.')
+            logger.debug(f'SC2 request failed. Game not running.')
 
         except json.decoder.JSONDecodeError:
             logger.info('SC2 request json decoding failed (SC2 is starting or closing)')
