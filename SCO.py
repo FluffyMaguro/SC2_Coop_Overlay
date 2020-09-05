@@ -554,7 +554,54 @@ class UI_TabWidget(object):
         self.LA_Fastest_TimeRace_VT.setGeometry(QtCore.QRect(160, 10, 111, 20))
         self.LA_Fastest_P2Mastery_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
         self.LA_Fastest_P2Mastery_VT.setGeometry(QtCore.QRect(240, 80, 171, 91))
+
+
+        self.LA_MaxGamelength.setText("Max gamelength (minutes)")
+        self.CH_DiffHard.setText("Hard")
+        self.CH_TypeNormal.setText("Normal games")
+        self.CH_TypeMutation.setText("Mutations")
+        self.CH_DiffNormal.setText("Normal")
+        self.TM_FromDate.setDisplayFormat("d/M/yyyy")
+        self.TM_ToDate.setDisplayFormat("d/M/yyyy")
+        self.CH_DiffCasual.setText("Casual")
+        self.LA_MinGamelength.setText("Min gamelength (minutes)")
+        self.BT_Generate.setText("Generate")
+        self.CH_DiffBrutal.setText("Brutal")
+        self.LA_FromDate.setText("From date")
+        self.LA_ToDate.setText("To date")
+        self.LA_CurrentAccountNames.setText("Main players identified as: Maguro, SeaMaguro, Potato")
+        self.CH_DiffBrutalPlus.setText("Brutal+")
+        self.CH_Region_NA.setText("Americas")
+        self.CH_Region_EU.setText("Europe")
+        self.CH_Region_KR.setText("Asia")
+        self.CH_Region_CN.setText("China")
+        self.CH_Region_PTR.setText("PTR")
+        self.TBD1.setText("Difficulty stats")
+        self.TBD2.setText("Map freq, winrate, avg victory time")
+        self.TBD4.setText("Commander games, freq, median APM and winrates")
+        self.TBD3.setText("Ally commander games (corrected), Ally mastery, prestige frequency, median apm")
+        self.TBD5.setText("Fastest map clears")
+        self.LA_Fastest_Map_VT.setText("Void Thrashing")
+        self.BT_Fastest_Find_VT.setText("Find file")
+        self.LA_Fastest_P1_VT.setText("Maguro (Tychus)\n"
+"Legendary Outlaw (P0)")
+        self.LA_Fastest_P2_VT.setText("KingDime (Mengsk)\n"
+"Emperor of the Dominion (P0)")
+        self.LA_Fastest_P1Mastery_VT.setText("30 sfdsf0 nsdfdf\n"
+"15 sfdsfdsfdsf\n"
+"30 sdfdsff\n"
+"15 sdfdsfd\n"
+"0 sdfdsfdf\n"
+"30 sdfdsfd")
+        self.LA_Fastest_TimeRace_VT.setText("11:24, Terran")
+        self.LA_Fastest_P2Mastery_VT.setText("30 sfdsf0 nsdfdf\n"
+"15 sfdsfdsfdsf\n"
+"30 sdfdsff\n"
+"15 sdfdsfd\n"
+"0 sdfdsfdf\n"
+"30 sdfdsfd")
         TabWidget.addTab(self.TAB_Stats, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
 
 
         ### LINKS ###
@@ -647,8 +694,7 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
         # Finalization
-        self.retranslateUi(TabWidget) # !!! remove later
-        TabWidget.setCurrentIndex(2)
+        TabWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
 
@@ -1178,64 +1224,7 @@ class UI_TabWidget(object):
 
         # calculate stats for stats tab
         pass
-
-
-
-
-
-
-    def retranslateUi(self, TabWidget):
-        # !!! Remove this later
-        _translate = QtCore.QCoreApplication.translate
-        
-
-
-        self.LA_MaxGamelength.setText(_translate("TabWidget", "Max gamelength (minutes)"))
-        self.CH_DiffHard.setText(_translate("TabWidget", "Hard"))
-        self.CH_TypeNormal.setText(_translate("TabWidget", "Normal games"))
-        self.CH_TypeMutation.setText(_translate("TabWidget", "Mutations"))
-        self.CH_DiffNormal.setText(_translate("TabWidget", "Normal"))
-        self.TM_FromDate.setDisplayFormat(_translate("TabWidget", "d/M/yyyy"))
-        self.TM_ToDate.setDisplayFormat(_translate("TabWidget", "d/M/yyyy"))
-        self.CH_DiffCasual.setText(_translate("TabWidget", "Casual"))
-        self.LA_MinGamelength.setText(_translate("TabWidget", "Min gamelength (minutes)"))
-        self.BT_Generate.setText(_translate("TabWidget", "Generate"))
-        self.CH_DiffBrutal.setText(_translate("TabWidget", "Brutal"))
-        self.LA_FromDate.setText(_translate("TabWidget", "From date"))
-        self.LA_ToDate.setText(_translate("TabWidget", "To date"))
-        self.LA_CurrentAccountNames.setText(_translate("TabWidget", "Main players identified as: Maguro, SeaMaguro, Potato"))
-        self.CH_DiffBrutalPlus.setText(_translate("TabWidget", "Brutal+"))
-        self.CH_Region_NA.setText(_translate("TabWidget", "Americas"))
-        self.CH_Region_EU.setText(_translate("TabWidget", "Europe"))
-        self.CH_Region_KR.setText(_translate("TabWidget", "Asia"))
-        self.CH_Region_CN.setText(_translate("TabWidget", "China"))
-        self.CH_Region_PTR.setText(_translate("TabWidget", "PTR"))
-        self.TBD1.setText(_translate("TabWidget", "Difficulty stats"))
-        self.TBD2.setText(_translate("TabWidget", "Map freq, winrate, avg victory time"))
-        self.TBD4.setText(_translate("TabWidget", "Commander games, freq, median APM and winrates"))
-        self.TBD3.setText(_translate("TabWidget", "Ally commander games (corrected), Ally mastery, prestige frequency, median apm"))
-        self.TBD5.setText(_translate("TabWidget", "Fastest map clears"))
-        self.LA_Fastest_Map_VT.setText(_translate("TabWidget", "Void Thrashing"))
-        self.BT_Fastest_Find_VT.setText(_translate("TabWidget", "Find file"))
-        self.LA_Fastest_P1_VT.setText(_translate("TabWidget", "Maguro (Tychus)\n"
-"Legendary Outlaw (P0)"))
-        self.LA_Fastest_P2_VT.setText(_translate("TabWidget", "KingDime (Mengsk)\n"
-"Emperor of the Dominion (P0)"))
-        self.LA_Fastest_P1Mastery_VT.setText(_translate("TabWidget", "30 sfdsf0 nsdfdf\n"
-"15 sfdsfdsfdsf\n"
-"30 sdfdsff\n"
-"15 sdfdsfd\n"
-"0 sdfdsfdf\n"
-"30 sdfdsfd"))
-        self.LA_Fastest_TimeRace_VT.setText(_translate("TabWidget", "11:24, Terran"))
-        self.LA_Fastest_P2Mastery_VT.setText(_translate("TabWidget", "30 sfdsf0 nsdfdf\n"
-"15 sfdsfdsfdsf\n"
-"30 sdfdsff\n"
-"15 sdfdsfd\n"
-"0 sdfdsfdf\n"
-"30 sdfdsfd"))
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), _translate("TabWidget", "Stats"))
-        
+      
 
 
 
