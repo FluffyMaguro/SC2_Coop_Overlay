@@ -31,7 +31,6 @@ class UI_TabWidget(object):
         TabWidget.setFixedSize(980, 610)
         TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay {str(APPVERSION)[0]}.{str(APPVERSION)[1:]}')
 
-
         ##########################
         ######## MAIN TAB ########
         ##########################
@@ -275,11 +274,6 @@ class UI_TabWidget(object):
         self.LA_Version.setText(f"The app is up to date (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         self.LA_Version.setEnabled(False)        
 
-        # Finalize main tab
-        TabWidget.addTab(self.TAB_Main, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
-
-
         ##############################
         ######### PLAYERS TAB ########
         ##############################
@@ -352,11 +346,6 @@ class UI_TabWidget(object):
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
 
-        # Finalize player tab
-        TabWidget.addTab(self.TAB_Players, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
-
-
         ###########################
         ######## GAMES TAB ########
         ###########################
@@ -427,9 +416,6 @@ class UI_TabWidget(object):
         # Finishing
         self.SC_GamesScrollAreaContent.setLayout(self.SC_GamesScrollAreaContentLayout)
         self.SC_GamesScrollArea.setWidget(self.SC_GamesScrollAreaContent)
-        TabWidget.addTab(self.TAB_Games, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Games), "Games")
-
 
         ###########################
         ######## STATS TAB ########
@@ -671,10 +657,6 @@ class UI_TabWidget(object):
         self.TBD_ProgressionRegions.setGeometry(QtCore.QRect(10, 10, 321, 31))
         self.TBD_ProgressionRegions.setObjectName("TBD_ProgressionRegions")
         self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
-        TabWidget.addTab(self.TAB_Stats, "")
-
-
-
 
 
         self.LA_Fastest_Map_VT.setText("Void Thrashing")
@@ -714,10 +696,12 @@ class UI_TabWidget(object):
         self.TBD_ProgressionRegions.setText("# games, winrate per region, max ascension\n"
 "Per commander prestige played at lvl 14-15")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
 
 
-        ### LINKS ###
+        ###########################
+        ######## LINKS TAB ########
+        ###########################
+
         self.TAB_Links = QtWidgets.QWidget()
 
         # Links
@@ -803,11 +787,27 @@ class UI_TabWidget(object):
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
 
+
+        ############################
+        ####### FINALIZATION #######
+        ############################
+
+        TabWidget.addTab(self.TAB_Main, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
+
+        TabWidget.addTab(self.TAB_Games, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Games), "Games")
+
+        TabWidget.addTab(self.TAB_Players, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
+
+        TabWidget.addTab(self.TAB_Stats, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
+
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
-        # Finalization
-        TabWidget.setCurrentIndex(3)
+        TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
 
