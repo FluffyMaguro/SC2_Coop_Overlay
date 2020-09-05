@@ -322,7 +322,7 @@ class UI_TabWidget(object):
 
         # Heading
         self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
-        self.WD_WinratesHeading.setGeometry(QtCore.QRect(40, 10, 841, 31))
+        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 10, 841, 31))
         self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
         self.WD_WinratesHeading.setMinimumHeight(25)
         self.WD_WinratesHeading.setMaximumHeight(25) 
@@ -710,7 +710,7 @@ class UI_TabWidget(object):
         self.TBD_AlliedCommanders.setText("Frequency (corrected), typical ally mastery, prestige frequency, median apm")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
         self.TBD_Difficulty.setText("Games and winrate per difficulty")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty stats")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty")
         self.TBD_ProgressionRegions.setText("# games, winrate per region, max ascension\n"
 "Per commander prestige played at lvl 14-15")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
@@ -1330,7 +1330,6 @@ class UI_TabWidget(object):
                 self.player_winrate_UI_dict[player].hide()
 
             elif text in player.lower() or text in note or ('note' in text and not note in {None,''}):
-                self.player_winrate_UI_dict[player].reposition(idx)
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
             else:

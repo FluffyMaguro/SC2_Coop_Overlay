@@ -137,7 +137,7 @@ class PlayerEntry:
         line_spacing = 7
 
         self.widget = QtWidgets.QWidget(parent)
-        self.widget.setGeometry(QtCore.QRect(40, (self.index+1)*40, 860, height))
+        self.widget.setGeometry(QtCore.QRect(0, 0, 860, height))
         self.widget.setMinimumHeight(height)
         self.widget.setMaximumHeight(height)
 
@@ -186,10 +186,6 @@ class PlayerEntry:
 
     def hide(self):
         self.widget.hide()
-
-
-    def reposition(self, index):
-        self.widget.move(40,(index+1)*40)
 
 
     def update_winrates(self, data):
