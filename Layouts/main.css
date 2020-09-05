@@ -12,6 +12,7 @@ body {
 
 #bgdiv {
     position: absolute;
+    display: none;
     height: 100%;
     width: 65vh;
     top: 0px;
@@ -23,7 +24,6 @@ body {
 
 #bgdiv div {
    position: absolute;
-   opacity: inherit;
    width: 100%;
    height: calc(100% - 4.5vh - 3vh);
    background-color: black;

@@ -120,9 +120,11 @@ var gP2Color = '#00D532';
 var toBeShown = false;
 var winrateTime = 12;
 var showingWinrateStats = false;
+var last_shown_file = '';
 
 //main functionality
 setColors(null, null, null, null);
+document.getElementById('bgdiv').style.display = 'block';
 connect_to_socket();
 
 // DEBUG START
@@ -404,11 +406,18 @@ function postGameStatsTimed(data) {
     //This is a wrapper for postGameStats
     //The goal is to nicely update the data if it's already showing
     if ((document.getElementById('stats').style.right != '-50vh') && (document.getElementById('stats').style.right != '')) {
-        document.getElementById('stats').style.opacity = '0';
-        setTimeout(function() {
-            document.getElementById('stats').style.opacity = '1'
-        }, 300);
-        setTimeout(postGameStats, 300, data, showing = true);
+
+        // If we are about to show the same data, hide instead
+        if (last_shown_file == data['filepath']) {
+            hidestats()
+        } else {
+            document.getElementById('stats').style.opacity = '0';
+            setTimeout(function() {
+                document.getElementById('stats').style.opacity = '1'
+            }, 300);
+            setTimeout(postGameStats, 300, data, showing = true);
+        }
+
     } else {
         postGameStats(data);
     }
@@ -456,6 +465,9 @@ function postGameStats(data, showing = false) {
     fill('CMtalent1',data['mainPrestige'])
     fill('CMtalent2',data['allyPrestige'])
     fill('comp', data['comp']);
+
+    // save file name
+    last_shown_file = data['filepath'];
 
     //Bonus objectives
     var bonus_text = '';
