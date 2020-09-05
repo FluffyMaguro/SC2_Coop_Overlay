@@ -99,7 +99,7 @@ class GameEntry:
         self.la_difficulty.setText(self.difficulty)
 
         self.la_date = QtWidgets.QLabel(self.widget)
-        self.la_date.setGeometry(QtCore.QRect(660, line_spacing, 81, 20))
+        self.la_date.setGeometry(QtCore.QRect(663, line_spacing, 81, 20))
         self.la_date.setAlignment(QtCore.Qt.AlignCenter)
         self.la_date.setText(self.date)
 
@@ -137,36 +137,36 @@ class PlayerEntry:
         line_spacing = 7
 
         self.widget = QtWidgets.QWidget(parent)
-        self.widget.setGeometry(QtCore.QRect(0, 0, 860, height))
+        self.widget.setGeometry(QtCore.QRect(0, 0, 931, height))
         self.widget.setMinimumHeight(height)
         self.widget.setMaximumHeight(height)
 
         self.line = QtWidgets.QFrame(self.widget)
-        self.line.setGeometry(QtCore.QRect(10, 0, 760, 2))
+        self.line.setGeometry(QtCore.QRect(10, 0, 921, 2))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.la_name = QtWidgets.QLabel(self.widget)
-        self.la_name.setGeometry(QtCore.QRect(20, line_spacing, 150, 21))
+        self.la_name.setGeometry(QtCore.QRect(40, line_spacing, 150, 21))
         self.la_name.setText(self.name)
 
         self.la_wins = QtWidgets.QLabel(self.widget)
-        self.la_wins.setGeometry(QtCore.QRect(220, line_spacing, 31, 21))
+        self.la_wins.setGeometry(QtCore.QRect(270, line_spacing, 31, 21))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(self.wins))
 
         self.la_losses = QtWidgets.QLabel(self.widget)
-        self.la_losses.setGeometry(QtCore.QRect(280, line_spacing, 41, 21))
+        self.la_losses.setGeometry(QtCore.QRect(330, line_spacing, 41, 21))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
         self.la_losses.setText(str(self.losses))
 
         self.la_winrate = QtWidgets.QLabel(self.widget)
-        self.la_winrate.setGeometry(QtCore.QRect(350, line_spacing, 51, 21))
+        self.la_winrate.setGeometry(QtCore.QRect(400, line_spacing, 51, 21))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.la_winrate.setText(f'{self.winrate:.0f}%')
 
         self.ed_note = QtWidgets.QLineEdit(self.widget)
-        self.ed_note.setGeometry(QtCore.QRect(480, line_spacing, 281, 21))
+        self.ed_note.setGeometry(QtCore.QRect(550, line_spacing, 330, 21))
         self.ed_note.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_note.setStyleSheet('color: #444')
         if not self.note in {None,''}:

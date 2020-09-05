@@ -103,7 +103,7 @@ class UI_TabWidget(object):
 
         # Info label
         self.LA_InfoLabel = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_InfoLabel.setGeometry(QtCore.QRect(20, 400, 800, 23))
+        self.LA_InfoLabel.setGeometry(QtCore.QRect(20, 560, 800, 20))
 
         # Apply
         self.BT_MainApply = QtWidgets.QPushButton(self.TAB_Main)
@@ -289,14 +289,14 @@ class UI_TabWidget(object):
 
         # Search
         self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 8, 610, 20))
+        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 12, 610, 20))
         self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
 
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 10, 200, 17))
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 12, 200, 17))
         self.CH_OnlyTop50.setText("Show max 50 players")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
@@ -312,37 +312,37 @@ class UI_TabWidget(object):
         self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 961, 561))
         self.SC_PlayersScrollAreaContentsLayout = QtWidgets.QVBoxLayout()
         self.SC_PlayersScrollAreaContentsLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(50,0,0,0)
+        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(10,0,0,0)
 
         # Heading
         self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
-        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 10, 841, 31))
+        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 10, 931, 31))
         self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
         self.WD_WinratesHeading.setMinimumHeight(25)
         self.WD_WinratesHeading.setMaximumHeight(25) 
         self.SC_PlayersScrollAreaContentsLayout.addWidget(self.WD_WinratesHeading)
 
         self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Name.setGeometry(QtCore.QRect(20, 0, 41, 31))
+        self.LA_Name.setGeometry(QtCore.QRect(40, 0, 41, 31))
         self.LA_Name.setText("Name")
 
         self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Wins.setGeometry(QtCore.QRect(210, 0, 50, 31))
+        self.LA_Wins.setGeometry(QtCore.QRect(260, 0, 50, 31))
         self.LA_Wins.setText("▼ Wins")
 
         self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses.setGeometry(QtCore.QRect(280, 0, 41, 31))
+        self.LA_Losses.setGeometry(QtCore.QRect(330, 0, 41, 31))
         self.LA_Losses.setText("Losses")
 
         self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Winrate.setGeometry(QtCore.QRect(350, 0, 51, 31))
+        self.LA_Winrate.setGeometry(QtCore.QRect(400, 0, 51, 31))
         self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrate.setText("Winrate")
 
         self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Note.setGeometry(QtCore.QRect(480, 0, 281, 31))
+        self.LA_Note.setGeometry(QtCore.QRect(550, 0, 330, 31))
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
 
@@ -379,7 +379,7 @@ class UI_TabWidget(object):
         self.LA_Difficulty.setText("Difficulty")
 
         self.LA_Player2 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player2.setGeometry(QtCore.QRect(360, 0, 81, 31))
+        self.LA_Player2.setGeometry(QtCore.QRect(363, 0, 81, 31))
         self.LA_Player2.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Player2.setText("Player 2")
 
@@ -399,7 +399,7 @@ class UI_TabWidget(object):
         self.LA_Map.setText("Map")
 
         self.LA_Player1 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player1.setGeometry(QtCore.QRect(220, 0, 81, 31))
+        self.LA_Player1.setGeometry(QtCore.QRect(223, 0, 81, 31))
         self.LA_Player1.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Player1.setText("Player 1")
 
@@ -902,7 +902,6 @@ class UI_TabWidget(object):
         self.BT_NewUpdate.setText('Download update')
         self.BT_NewUpdate.setStyleSheet('font-weight: bold;')
         self.BT_NewUpdate.clicked.connect(self.start_download)
-        self.LA_InfoLabel.move(20, 442)
 
         # Check if it's already downloaded
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
@@ -1000,7 +999,7 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
-        self.LA_CurrentReplayFolder.setText(f"Current: {self.settings['account_folder']}")
+        self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
 
         self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
         self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
@@ -1152,7 +1151,7 @@ class UI_TabWidget(object):
             if 'StarCraft' in folder and '/Accounts' in folder:
                 logger.info(f'Changing accountdir to {folder}')
                 self.settings['account_folder'] = folder
-                self.LA_CurrentReplayFolder.setText(f'Current: {folder}')
+                self.LA_CurrentReplayFolder.setText(folder)
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
                 MF.update_names_and_handles(folder)
                 self.CAnalysis.update_accountdir(folder)
