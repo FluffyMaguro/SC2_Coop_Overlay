@@ -13,13 +13,18 @@ logger = logclass('HELP','INFO')
 version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
 
 
-# Use ctypes.wintypes only on windows platform
-if os.name == 'nt':
+def isWindows():
+    if os.name == 'nt':
+        return True
+    return False
+
+
+# Use ctypes.wintypes and regirsty stuff only on windows platform
+if isWindows():
     import ctypes.wintypes
     from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
 else: 
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg" )
-
 
 
 def write_permission_granted():
@@ -40,7 +45,7 @@ def write_permission_granted():
 def add_to_startup(Add):
     """ Add to startup. Returns error string or None."""
 
-    if not os.name == 'nt' and Add:
+    if not isWindows() and Add:
         return 'Not a Windows-type OS. Not adding to the startup!'
 
     if not getattr(sys, 'frozen', False) and Add:
@@ -101,7 +106,7 @@ def get_account_dir(path=None):
         return path
 
     # On windows use Use ctypes.wintypes
-    if os.name == 'nt':
+    if isWindows():
         CSIDL_PERSONAL = 5       # My Documents
         SHGFP_TYPE_CURRENT = 1   # Get current, not default value
         buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)

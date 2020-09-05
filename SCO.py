@@ -810,6 +810,10 @@ class UI_TabWidget(object):
         TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
+        if not HF.isWindows():
+            self.CH_StartWithWindows.setChecked(False)
+            self.CH_StartWithWindows.setEnabled(False)
+
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
@@ -905,6 +909,10 @@ class UI_TabWidget(object):
 
         # Check if it's already downloaded
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+
+        if not HF.isWindows():
+            self.sendInfoMessage('Update available', color='green')
+            return
 
         if os.path.isfile(save_path):
             self.update_is_ready_for_install()
