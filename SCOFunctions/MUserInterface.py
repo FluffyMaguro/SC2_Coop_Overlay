@@ -13,7 +13,9 @@ logger = logclass('UI','INFO')
 
 
 def find_file(file):
-    subprocess.Popen(f'explorer /select,"{file}"')
+    new_path = os.path.abspath(file)
+    logger.info(f'Finding file {new_path}')
+    subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
 class GameEntry:
@@ -176,14 +178,28 @@ class PlayerEntry:
     def get_note(self):
         return self.ed_note.text()
 
+
     def show(self):
         self.widget.show()
+
 
     def hide(self):
         self.widget.hide()
 
+
     def reposition(self, index):
         self.widget.move(40,(index+1)*40)
+
+
+    def update_winrates(self, data):
+        """ Updates winrate for the player. """
+        self.wins = data[0]
+        self.losses = data[1]
+        self.winrate = 100*self.wins/(self.wins+self.losses)
+
+        self.la_wins.setText(str(self.wins))
+        self.la_losses.setText(str(self.losses))       
+        self.la_winrate.setText(f'{self.winrate:.0f}%')
 
 
 class WorkerSignals(QtCore.QObject):

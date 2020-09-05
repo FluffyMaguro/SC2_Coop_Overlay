@@ -85,7 +85,7 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 171, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
-        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen.\nYou can use this setting for example when it's meant to be visible only on stream.")
+        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream. Requires restart.")
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -129,7 +129,7 @@ class UI_TabWidget(object):
 
         # Label
         self.LA_Hotkeys = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Hotkeys.setGeometry(QtCore.QRect(0, 10, 431, 20))
+        self.LA_Hotkeys.setGeometry(QtCore.QRect(0, 10, 411, 20))
         self.LA_Hotkeys.setStyleSheet("font-weight: bold")
         self.LA_Hotkeys.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Hotkeys.setText("Hotkeys")
@@ -251,19 +251,19 @@ class UI_TabWidget(object):
         self.LA_AomPage.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_AomPage.setText("Settings for starcraft2coop.com")
 
+        self.ED_AomAccount = QtWidgets.QLineEdit(self.FR_Aom)
+        self.ED_AomAccount.setGeometry(QtCore.QRect(62, 70, 121, 20))
+        self.ED_AomAccount.setAlignment(QtCore.Qt.AlignCenter)
+        self.ED_AomAccount.setPlaceholderText("account name")
+
         self.ED_AomSecretKey = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomSecretKey.setGeometry(QtCore.QRect(62, 90, 121, 20))
+        self.ED_AomSecretKey.setGeometry(QtCore.QRect(62, 100, 121, 20))
         self.ED_AomSecretKey.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_AomSecretKey.setPlaceholderText("secret key")
         self.ED_AomSecretKey.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
 
-        self.ED_AomAccount = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomAccount.setGeometry(QtCore.QRect(62, 60, 121, 20))
-        self.ED_AomAccount.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_AomAccount.setPlaceholderText("account name")
-
         self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
-        self.BT_AomTest.setGeometry(QtCore.QRect(75, 150, 85, 23))
+        self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 23))
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify") 
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
@@ -1129,10 +1129,14 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_replays)
         
         # Add game to game tab
-        pass
+        if hasattr(self, 'CAnalysis'):
+            self.game_UI_dict[replay_dict['file']] = MUI.GameEntry(replay_dict, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+            self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
 
         # Update player winrate data
-        pass
+        for player in self.player_winrate_UI_dict:
+            if player in {replay_dict['players'][1]['name'], replay_dict['players'][2]['name']} and player in MF.player_winrate_data:
+                self.player_winrate_UI_dict[player].update_winrates(MF.player_winrate_data[player])
 
 
     def save_playernotes_to_settings(self):
