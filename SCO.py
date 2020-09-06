@@ -1308,9 +1308,10 @@ class UI_TabWidget(object):
 
         # Create new player entry if necessary
         if len(new_players) > 0:
-            for player in new_players and player in MF.player_winrate_data:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
-                self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
+            for player in new_players:
+                if player in MF.player_winrate_data:
+                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, MF.player_winrate_data[player][0], MF.player_winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
+                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
 
         # Update mass replay analysis
         if hasattr(self, 'CAnalysis'):
