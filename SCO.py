@@ -1118,7 +1118,7 @@ class UI_TabWidget(object):
                         self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
                     except:
                         logger.error(traceback.format_exc())
-                        self.sendInfoMessage('Failed to initialize this hotkey! Try a different one.', color='red')
+                        self.sendInfoMessage(f'Failed to initialize hotkey ({key.replace("hotkey_","")})! Try a different one.', color='red')
         # Update
         else:
             for key in hotkey_func_dict:
@@ -1289,7 +1289,7 @@ class UI_TabWidget(object):
         
         # Show player winrates
         if self.settings['show_player_winrates']:
-            thread_check_for_newgame = MUI.Worker(MR.check_for_new_game)
+            thread_check_for_newgame = MUI.Worker(MF.check_for_new_game)
             self.threadpool.start(thread_check_for_newgame)
 
 
