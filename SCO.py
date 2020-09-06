@@ -39,25 +39,25 @@ class UI_TabWidget(object):
 
         # Start with Windows
         self.CH_StartWithWindows = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, 20, 121, 17))
+        self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, 20, 230, 17))
         self.CH_StartWithWindows.setText("Start with Windows")
         self.CH_StartWithWindows.setToolTip("The app will start automatically with the Windows")
 
         # Start minimized
         self.CH_StartMinimized = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 50, 101, 17))
+        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 50, 230, 17))
         self.CH_StartMinimized.setText("Start minimized")
         self.CH_StartMinimized.setToolTip("The app will start minimized")
 
         # Enable logging
         self.CH_EnableLogging = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 80, 101, 17))
+        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 80, 230, 17))
         self.CH_EnableLogging.setText("Enable logging")
         self.CH_EnableLogging.setToolTip(f"App logs will be saved into a text file")
 
         # Show player winrate and notes
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 110, 181, 17))
+        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 110, 230, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
         self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified.")
 
@@ -67,7 +67,8 @@ class UI_TabWidget(object):
 
         self.LA_Duration = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Duration.setGeometry(QtCore.QRect(300, 20, 191, 21))
-        self.LA_Duration.setText("Duration for which overlay is shown")
+        self.LA_Duration.setText("Duration")
+        self.LA_Duration.setToolTip("How long the overlay will show after a new game is analysed.")
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
@@ -82,7 +83,7 @@ class UI_TabWidget(object):
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 171, 17))
+        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 300, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
         self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream. Requires restart.")
 

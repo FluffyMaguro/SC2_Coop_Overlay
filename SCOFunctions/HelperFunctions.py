@@ -51,6 +51,9 @@ def add_to_startup(Add):
     if not getattr(sys, 'frozen', False) and Add:
         return 'App is not packaged. Not adding to the startup!'
 
+    if not isWindows():
+        return
+
     try:
         key = 'StarCraft Co-op Overlay'
         path = truePath('SCO.exe')
