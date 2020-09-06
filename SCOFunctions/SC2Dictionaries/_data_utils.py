@@ -5,12 +5,12 @@ import sys
 import csv
 
 
-def csv_to_dictitems(filename, *, header=1, encoding="ISO-8859-1"):
+def csv_to_dictitems(filename, *, header=1):
     """Read a CSV and return a dictionary of {column1: column2} pairs
     
     `header` defaults to 1, for human readable CSV's, and is ignored.
     """
-    with open(filename, newline='') as fh:
+    with open(filename, newline='', encoding="ISO-8859-1") as fh:
         reader = csv.reader(fh)
         for _ in range(header):
             next(reader)
