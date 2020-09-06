@@ -97,7 +97,7 @@ class UI_TabWidget(object):
         self.LA_CurrentReplayFolder.setGeometry(QtCore.QRect(520, 25, 400, 31))
 
         self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 55, 150, 23))
+        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 55, 150, 25))
         self.BT_ChooseFolder.setText('Choose folder')
         self.BT_ChooseFolder.setToolTip('Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
         self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
@@ -108,14 +108,14 @@ class UI_TabWidget(object):
 
         # Apply
         self.BT_MainApply = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 23))
+        self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 25))
         self.BT_MainApply.setText('Apply')
         self.BT_MainApply.clicked.connect(self.saveSettings)
         self.BT_MainApply.setShortcut("Enter")
 
         # Reset
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 23))
+        self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.resetSettings)
         self.BT_MainReset.setToolTip("Reset all settings apart from player notes and settings for starcraft2coop")
