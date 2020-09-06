@@ -373,6 +373,9 @@ async def manager(websocket, path):
         finally:
             await asyncio.sleep(0.1)
 
+            if APP_CLOSING:
+                break
+
 
 def server_thread(PORT=7305):
     """ Creates a websocket server """

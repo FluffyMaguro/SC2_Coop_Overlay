@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import shutil
-import threading
 import traceback
 import urllib.request
 
@@ -1238,11 +1237,14 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_settings(self.settings)
 
-        self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
-        self.thread_server.start()
-
-        # Using PyQt threadpool to get back results from winrate and other analysis
+        # Start threading
         self.threadpool = QtCore.QThreadPool()
+
+        # Server thread managing websocket connection
+        thread_server = MUI.Worker(MF.server_thread)
+        self.threadpool.start(thread_server)
+
+        # First winrate analysis, other threads after that
         thread_init = MUI.Worker(MF.initialize_names_handles_winrates)
         thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
         self.threadpool.start(thread_init)
