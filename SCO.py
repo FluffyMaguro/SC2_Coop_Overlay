@@ -1115,7 +1115,11 @@ class UI_TabWidget(object):
             self.hotkey_hotkey_dict = dict()
             for key in hotkey_func_dict:
                 if not self.settings[key] in {None,''}:
-                    self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+                    try:
+                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+                    except:
+                        logger.error(traceback.format_exc())
+                        self.sendInfoMessage('Failed to initialize this hotkey! Try a different one.', color='red')
         # Update
         else:
             for key in hotkey_func_dict:
