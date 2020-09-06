@@ -1224,7 +1224,7 @@ class UI_TabWidget(object):
 
         else:
             self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow)
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint)
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
             self.WebPage = self.WebView.page()
@@ -1426,7 +1426,6 @@ class UI_TabWidget(object):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    TabWidget = QtWidgets.QTabWidget()
     TabWidget = MUI.CustomQTabWidget()
 
     ui = UI_TabWidget()

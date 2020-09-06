@@ -327,6 +327,10 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
             if self.isVisible():
                 self.hide()
             else:
+                #Change flags briefly to bring to front
+                self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+                self.show()
+                self.setWindowFlags(QtCore.Qt.Window)
                 self.show()
 
 
