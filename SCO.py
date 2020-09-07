@@ -583,67 +583,6 @@ class UI_TabWidget(object):
         self.TAB_Maps = QtWidgets.QWidget()
 
 
-        # VT
-        self.FR_Fastest_VT = QtWidgets.QFrame(self.TAB_Maps)
-        self.FR_Fastest_VT.setGeometry(QtCore.QRect(10, 20, 741, 381))
-        self.FR_Fastest_VT.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Fastest_VT.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.LA_Fastest_Map_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_Map_VT.setGeometry(QtCore.QRect(10, 10, 131, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.LA_Fastest_Map_VT.setFont(font)
-        self.LA_Fastest_P1_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_P1_VT.setGeometry(QtCore.QRect(10, 40, 171, 31))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.LA_Fastest_P1_VT.setFont(font)
-        self.LA_Fastest_P2_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_P2_VT.setGeometry(QtCore.QRect(240, 40, 201, 31))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        font.setStrikeOut(False)
-        self.LA_Fastest_P2_VT.setFont(font)
-        self.LA_Fastest_P1Mastery_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_P1Mastery_VT.setGeometry(QtCore.QRect(10, 80, 171, 91))
-        self.LA_Fastest_TimeRace_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_TimeRace_VT.setGeometry(QtCore.QRect(160, 10, 111, 20))
-        self.LA_Fastest_P2Mastery_VT = QtWidgets.QLabel(self.FR_Fastest_VT)
-        self.LA_Fastest_P2Mastery_VT.setGeometry(QtCore.QRect(240, 80, 171, 91))
-        self.LA_Fastest_Map_VT.setText("Void Thrashing")
-        self.LA_Fastest_P1_VT.setText("Maguro (Tychus)\n"
-"Legendary Outlaw (P0)")
-        self.LA_Fastest_P2_VT.setText("KingDime (Mengsk)\n"
-"Emperor of the Dominion (P0)")
-        self.LA_Fastest_P1Mastery_VT.setText("30 sfdsf0 nsdfdf\n"
-"15 sfdsfdsfdsf\n"
-"30 sdfdsff\n"
-"15 sdfdsfd\n"
-"0 sdfdsfdf\n"
-"30 sdfdsfd")
-        self.LA_Fastest_TimeRace_VT.setText("11:24, Terran")
-        self.LA_Fastest_P2Mastery_VT.setText("30 sfdsf0 nsdfdf\n"
-"15 sfdsfdsfdsf\n"
-"30 sdfdsff\n"
-"15 sdfdsfd\n"
-"0 sdfdsfdf\n"
-"30 sdfdsfd")
-
-
-        # Buttons
-        self.BT_FastestMap_Find = QtWidgets.QPushButton(self.TAB_Maps)
-        self.BT_FastestMap_Find.setGeometry(QtCore.QRect(290, 380, 75, 23))       
-        self.BT_FastestMap_Find.setText("Find file")
-
-        self.BT_FastestMap_Show = QtWidgets.QPushButton(self.TAB_Maps)
-        self.BT_FastestMap_Show.setGeometry(QtCore.QRect(370, 380, 81, 23))
-        self.BT_FastestMap_Show.setText("Show overlay")
-
-
         # Map Overview
         self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
         self.GB_MapsOverview.setGeometry(QtCore.QRect(510, 8, 460, 420))
@@ -1439,6 +1378,15 @@ class UI_TabWidget(object):
             idx += 1
             self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'])
             self.stats_maps_UI_dict[m].show()
+
+
+        # !!! DEBUG
+
+
+        m = 'Void Thrashing'
+        VT = MUI.FastestMap(self.TAB_Maps, m, fdict=analysis['MapData'][m]['Fastest'])
+        VT.show()
+
 
 
         #!!! Update fastest maps & link buttons

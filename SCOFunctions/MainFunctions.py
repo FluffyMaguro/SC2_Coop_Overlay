@@ -85,6 +85,9 @@ def find_names_and_handles(ACCOUNTDIR):
             if file.endswith('.lnk') and '_' in file and '@' in file:
                 names.add(file.split('_')[0])
 
+    if len(names) == 0 and len(SETTINGS['main_names']) > 0:
+        names = set(SETTINGS['main_names'])
+
     return names, handles
 
 
