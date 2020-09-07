@@ -5,6 +5,7 @@ import shutil
 import threading
 import traceback
 import urllib.request
+from datetime import datetime
 
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -119,6 +120,13 @@ class UI_TabWidget(object):
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.resetSettings)
         self.BT_MainReset.setToolTip("Reset all settings apart from player notes and settings for starcraft2coop")
+
+        # Screenshot
+        self.BT_Screenshot = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_Screenshot.setGeometry(QtCore.QRect(19, 400, 157, 40))
+        self.BT_Screenshot.setText('Take screenshot')
+        self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop')
+        self.BT_Screenshot.clicked.connect(self.save_screenshot)
 
         ### Hotkey frame
         self.FR_HotkeyFrame = QtWidgets.QFrame(self.TAB_Main)
@@ -903,9 +911,9 @@ class UI_TabWidget(object):
 
         # Create button
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_NewUpdate.setGeometry(QtCore.QRect(20, 400, 157, 40))
+        self.BT_NewUpdate.setGeometry(QtCore.QRect(190, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
-        self.BT_NewUpdate.setStyleSheet('font-weight: bold;')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold')
         self.BT_NewUpdate.clicked.connect(self.start_download)
 
         # Check if it's already downloaded
@@ -1362,6 +1370,7 @@ class UI_TabWidget(object):
         player_names = (', ').join(self.CAnalysis.main_names)
         self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
         self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
+        self.generate_stats()
         self.BT_Generate.setEnabled(True)
       
 
@@ -1422,6 +1431,24 @@ class UI_TabWidget(object):
 
         # !!! update results
         pass
+
+
+    def save_screenshot(self):
+        """ Saves screenshot of the overlay and saves it on the desktop"""
+        try:
+            p = QtGui.QImage(self.WebView.grab())
+            height = p.height()*960/1200
+            width = p.height()*650/1200
+            p = p.copy(int(p.width()-width), 20, int(width), int(height))
+            p = p.convertToFormat(QtGui.QImage.Format_RGB888)
+
+            name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'
+            path = os.path.join(os.path.expanduser('~'), 'Desktop', name)
+            p.save(path, 'png')
+            logger.info(f'Taking screenshot! {path}')
+            self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
+        except:
+            logger.error(traceback.format_exc())
 
 
 if __name__ == "__main__":

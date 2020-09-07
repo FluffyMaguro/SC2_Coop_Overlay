@@ -129,9 +129,10 @@ def get_account_dir(path=None):
             return account_path
 
         # One drive location
-        account_path = os.path.join(user_folder,'OneDrive\\Documents\\StarCraft II\\Accounts')
-        if os.path.isdir(account_path):
-            return account_path
+        if hasattr(os.environ, "ONEDRIVE"):
+            account_path = os.path.join(os.environ["ONEDRIVE"], 'Documents\\StarCraft II\\Accounts')
+            if os.path.isdir(account_path):
+                return account_path
 
         # Check in all current user folders
         for root, directories, files in os.walk(user_folder):
