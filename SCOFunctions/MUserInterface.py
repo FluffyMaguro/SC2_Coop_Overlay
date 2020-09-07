@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import traceback
 import subprocess
 
@@ -17,6 +18,115 @@ def find_file(file):
     new_path = os.path.abspath(file)
     logger.info(f'Finding file {new_path}')
     subprocess.Popen(f'explorer /select,"{new_path}"')
+
+
+class MapEntry(QtWidgets.QWidget):
+    """Custom widget for map entry in stats""" 
+    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, button=True, bold=False):
+        super().__init__(parent)
+
+        self.setGeometry(QtCore.QRect(15, y, parent.width()-15, 40))
+        if bold:
+            self.setStyleSheet('font-weight: bold')
+        
+        # Button/label
+        self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
+        if not button:
+            self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
+        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
+        if 'Lock' in name and 'Load' in name:
+            name = "Lock and Load"
+        self.bt_button.setText(name)
+
+        # Average time
+        self.la_average = QtWidgets.QLabel(self)
+        self.la_average.setGeometry(QtCore.QRect(155, 0, 70, 20))
+        self.la_average.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_average.setToolTip('Average victory time')
+        time_average = time_average if time_average != 3599 else '–'
+        if isinstance(time_average, int) or isinstance(time_average, float):
+            self.la_average.setText(time.strftime('%M:%S',time.gmtime(time_average)))
+        else:
+            self.la_average.setText(time_average)
+
+        # Fastest time
+        self.la_fastest = QtWidgets.QLabel(self)
+        self.la_fastest.setGeometry(QtCore.QRect(218, 0, 70, 20))
+        self.la_fastest.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_fastest.setToolTip('Fastest victory time')
+        time_fastest = time_fastest if time_fastest != 3599 else '–'
+        if isinstance(time_fastest, int) or isinstance(time_fastest, float):
+            self.la_fastest.setText(time.strftime('%M:%S',time.gmtime(time_fastest)))
+        else:
+            self.la_fastest.setText(time_fastest)
+      
+        # Wins
+        self.la_wins = QtWidgets.QLabel(self)
+        self.la_wins.setGeometry(QtCore.QRect(280, 0, 50, 20))
+        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_wins.setText(str(wins))
+
+        # Losses
+        self.la_losses = QtWidgets.QLabel(self)
+        self.la_losses.setGeometry(QtCore.QRect(325, 0, 50, 20))
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_losses.setText(str(losses))
+
+        # Winrate
+        self.la_winrate = QtWidgets.QLabel(self)
+        self.la_winrate.setGeometry(QtCore.QRect(380, 0, 50, 20))
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
+        if isinstance(wins, str) or isinstance(losses, str):
+            winrate = 'Winrate'
+        else:
+            winrate = '-'
+            if wins or losses > 0:
+                winrate = f"{100*wins/(wins+losses):.0f}%"
+        self.la_winrate.setText(winrate)
+
+
+class DifficultyEntry(QtWidgets.QWidget):
+    """Custom widget for difficulty entry in stats"""
+
+    def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor="#f1f1f1", parent=None):
+        super().__init__(parent)
+
+        self.setGeometry(QtCore.QRect(x, y, 300, 40))
+
+        self.la_name = QtWidgets.QLabel(self)
+        self.la_name.setGeometry(QtCore.QRect(10, 10, 70, 20))
+        self.la_name.setText(str(name))
+
+        self.la_wins = QtWidgets.QLabel(self)
+        self.la_wins.setGeometry(QtCore.QRect(60, 10, 70, 20))
+        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_wins.setText(str(wins))
+
+        self.la_losses = QtWidgets.QLabel(self)
+        self.la_losses.setGeometry(QtCore.QRect(110, 10, 70, 20))
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_losses.setText(str(losses))
+
+        self.la_winrate = QtWidgets.QLabel(self)
+        self.la_winrate.setGeometry(QtCore.QRect(180, 10, 50, 20))
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_winrate.setText(str(winrate))
+
+        style = ''
+
+        if bold:
+            style += 'font-weight: bold;'
+
+        if bg:
+            style += f'background-color: {bgcolor}'
+
+        self.setStyleSheet(style)
+
+        if line:
+            self.line = QtWidgets.QFrame(self)
+            self.line.setGeometry(QtCore.QRect(0, 30, 235, 2))
+            self.line.setFrameShape(QtWidgets.QFrame.HLine)
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)                 
 
 
 class GameEntry:

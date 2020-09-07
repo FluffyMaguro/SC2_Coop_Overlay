@@ -124,13 +124,18 @@ def get_account_dir(path=None):
     # If we have user folder, try finding the account section
     if os.path.isdir(user_folder):
         # Typical folder location
-        account_path = os.path.join(user_folder,'Documents\\StarCraft II\\Accounts')
+        account_path = os.path.abspath(os.path.join(user_folder,'Documents\\StarCraft II\\Accounts'))
+        if os.path.isdir(account_path):
+            return account_path
+
+        # Mac
+        account_path = os.path.abspath(os.path.join(user_folder,'Library/Application Support/Blizzard/StarCraft II/Accounts'))
         if os.path.isdir(account_path):
             return account_path
 
         # One drive location
         if hasattr(os.environ, "ONEDRIVE"):
-            account_path = os.path.join(os.environ["ONEDRIVE"], 'Documents\\StarCraft II\\Accounts')
+            account_path = os.path.abspath(os.path.join(os.environ["ONEDRIVE"], 'Documents\\StarCraft II\\Accounts'))
             if os.path.isdir(account_path):
                 return account_path
 
@@ -140,7 +145,7 @@ def get_account_dir(path=None):
                 if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
                     account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
                     account_path += 'StarCraft II\\Accounts'
-                    return account_path
+                    return os.path.abspath(account_path)
 
 
     # If we failed to locate the user folder check all available drives
@@ -151,7 +156,7 @@ def get_account_dir(path=None):
                 if 'StarCraft II\\Accounts' in root and not '\\Sandbox\\' in root and file.endswith('.SC2Replay'):
                     account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
                     account_path += 'StarCraft II\\Accounts'
-                    return account_path
+                    return os.path.abspath(account_path)
 
     logger.error('Failed to find any StarCraft II account directory')
     return ''
