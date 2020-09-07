@@ -86,7 +86,7 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 300, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
-        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream. Requires restart.")
+        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -1112,6 +1112,12 @@ class UI_TabWidget(object):
         # Update keyboard threads
         self.manage_keyboard_threads(previous_settings=previous_settings)
 
+        # Show/hide overlay
+        if hasattr(self, 'WebView') and self.settings['force_hide_overlay' ]and self.WebView.isVisible():
+            self.WebView.hide()
+        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay'] and not self.WebView.isVisible():
+            self.WebView.show()
+
         
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
@@ -1221,14 +1227,10 @@ class UI_TabWidget(object):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'>>> Starting!\n{self.settings}')
 
-
         # Load overlay
         if not os.path.isfile(truePath('Layouts/Layout.html')):
             self.sendInfoMessage("Error! Failed to locate the html file", color='red')
             logger.error("Error! Failed to locate the html file")
-
-        elif self.settings['force_hide_overlay'] or not self.write_permissions:
-            logger.info(f"Not showing overlay on-screen. Force hidden: {self.settings['force_hide_overlay']} | Permissions granted: {self.write_permissions}")
 
         else:
             self.WebView = MUI.CustomWebView()
