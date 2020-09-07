@@ -271,7 +271,7 @@ class UI_TabWidget(object):
         self.ED_AomSecretKey.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
 
         self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
-        self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 23))
+        self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 25))
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify") 
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
@@ -342,7 +342,7 @@ class UI_TabWidget(object):
 
         self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses.setGeometry(QtCore.QRect(330, 0, 41, 31))
+        self.LA_Losses.setGeometry(QtCore.QRect(328, 0, 45, 31))
         self.LA_Losses.setText("Losses")
 
         self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -393,7 +393,7 @@ class UI_TabWidget(object):
         self.LA_Player2.setText("Player 2")
 
         self.LA_Enemy = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Enemy.setGeometry(QtCore.QRect(480, 0, 41, 31))
+        self.LA_Enemy.setGeometry(QtCore.QRect(478, 0, 44, 31))
         self.LA_Enemy.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Enemy.setText("Enemy")
 
@@ -437,31 +437,31 @@ class UI_TabWidget(object):
 
         # Difficulty
         self.CH_DiffCasual = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffCasual.setGeometry(QtCore.QRect(10, 20, 61, 17))
+        self.CH_DiffCasual.setGeometry(QtCore.QRect(10, 20, 70, 17))
         self.CH_DiffCasual.setChecked(True)
         self.CH_DiffCasual.setText("Casual")
         self.CH_DiffCasual.stateChanged.connect(self.generate_stats)
 
         self.CH_DiffNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffNormal.setGeometry(QtCore.QRect(10, 40, 61, 17))
+        self.CH_DiffNormal.setGeometry(QtCore.QRect(10, 40, 70, 17))
         self.CH_DiffNormal.setChecked(True)
         self.CH_DiffNormal.setText("Normal")
         self.CH_DiffNormal.stateChanged.connect(self.generate_stats)
 
         self.CH_DiffHard = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffHard.setGeometry(QtCore.QRect(10, 60, 51, 17))
+        self.CH_DiffHard.setGeometry(QtCore.QRect(10, 60, 70, 17))
         self.CH_DiffHard.setChecked(True)
         self.CH_DiffHard.setText("Hard")
         self.CH_DiffHard.stateChanged.connect(self.generate_stats)
 
         self.CH_DiffBrutal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutal.setGeometry(QtCore.QRect(10, 80, 51, 17))
+        self.CH_DiffBrutal.setGeometry(QtCore.QRect(10, 80, 70, 17))
         self.CH_DiffBrutal.setChecked(True)
         self.CH_DiffBrutal.setText("Brutal")
         self.CH_DiffBrutal.stateChanged.connect(self.generate_stats)
 
         self.CH_DiffBrutalPlus = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutalPlus.setGeometry(QtCore.QRect(10, 100, 61, 17))
+        self.CH_DiffBrutalPlus.setGeometry(QtCore.QRect(10, 100, 70, 17))
         self.CH_DiffBrutalPlus.setChecked(True)
         self.CH_DiffBrutalPlus.setText("Brutal+")
         self.CH_DiffBrutalPlus.stateChanged.connect(self.generate_stats)
@@ -493,13 +493,13 @@ class UI_TabWidget(object):
 
         # Type
         self.CH_TypeNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeNormal.setGeometry(QtCore.QRect(180, 20, 101, 17))
+        self.CH_TypeNormal.setGeometry(QtCore.QRect(180, 20, 110, 17))
         self.CH_TypeNormal.setChecked(True)
         self.CH_TypeNormal.setText("Normal games")
         self.CH_TypeNormal.stateChanged.connect(self.generate_stats)
 
         self.CH_TypeMutation = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeMutation.setGeometry(QtCore.QRect(180, 40, 101, 17))
+        self.CH_TypeMutation.setGeometry(QtCore.QRect(180, 40, 110, 17))
         self.CH_TypeMutation.setChecked(True)
         self.CH_TypeMutation.setText("Mutations")
         self.CH_TypeMutation.stateChanged.connect(self.generate_stats)
@@ -545,17 +545,17 @@ class UI_TabWidget(object):
 
         # Game length
         self.LA_GameLength = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_GameLength.setGeometry(QtCore.QRect(310, 20, 131, 16))
+        self.LA_GameLength.setGeometry(QtCore.QRect(310, 20, 150, 16))
         self.LA_GameLength.setStyleSheet('font-weight: bold')
         self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_GameLength.setText("Game length (minutes)")
 
         self.LA_Maximum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Maximum.setGeometry(QtCore.QRect(360, 70, 51, 16))
+        self.LA_Maximum.setGeometry(QtCore.QRect(360, 70, 60, 16))
         self.LA_Maximum.setText("Maximum")
 
         self.LA_Minimum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Minimum.setGeometry(QtCore.QRect(360, 40, 41, 16))
+        self.LA_Minimum.setGeometry(QtCore.QRect(360, 40, 60, 16))
         self.LA_Minimum.setText("Minimum")
 
         self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_Stats)
