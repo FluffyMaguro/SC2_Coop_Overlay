@@ -124,7 +124,7 @@ class UI_TabWidget(object):
         # Screenshot
         self.BT_Screenshot = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_Screenshot.setGeometry(QtCore.QRect(19, 400, 157, 40))
-        self.BT_Screenshot.setText('Take screenshot')
+        self.BT_Screenshot.setText('Overlay screenshot')
         self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop')
         self.BT_Screenshot.clicked.connect(self.save_screenshot)
 
@@ -1232,7 +1232,7 @@ class UI_TabWidget(object):
 
         else:
             self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint)
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
             self.WebPage = self.WebView.page()
@@ -1439,7 +1439,7 @@ class UI_TabWidget(object):
             p = QtGui.QImage(self.WebView.grab())
             height = p.height()*960/1200
             width = p.height()*650/1200
-            p = p.copy(int(p.width()-width), 20, int(width), int(height))
+            p = p.copy(int(p.width()-width), int(p.height()*20/1200), int(width), int(height))
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 
             name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'

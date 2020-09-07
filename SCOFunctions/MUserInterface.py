@@ -64,7 +64,7 @@ class GameEntry:
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)        
 
         self.la_mapname = QtWidgets.QLabel(self.widget)
-        self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 91, 21))
+        self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 120, 21))
         self.la_mapname.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.la_mapname.setText(self.mapname)
 

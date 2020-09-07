@@ -687,8 +687,8 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Copy created & lost stats from Dehaka
                 if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
-                    replay_report_dict[unitkey][unit][0] = sorted_dict[unitkey]['Dehaka'][0]
-                    replay_report_dict[unitkey][unit][1] = sorted_dict[unitkey]['Dehaka'][1]
+                    replay_report_dict[unitkey][unit][0] = sorted_dict['Dehaka'][0]
+                    replay_report_dict[unitkey][unit][1] = sorted_dict['Dehaka'][1]
 
                 if unit in dont_show_created_lost:
                     replay_report_dict[unitkey][unit][0] = '-'
