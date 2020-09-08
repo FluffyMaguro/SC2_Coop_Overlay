@@ -30,41 +30,47 @@ class FastestMap(QtWidgets.QGroupBox):
         self.setGeometry(QtCore.QRect(480, 5, 475, 410))
         self.setTitle('The fastest game')
 
+        # Map frame
+        self.fr_map = QtWidgets.QFrame(self)
+        self.fr_map.setGeometry(QtCore.QRect(1, 22, 473, 87))
+
         # Map name
         self.la_name = QtWidgets.QLabel(self)
-        self.la_name.setGeometry(QtCore.QRect(15, 20, 490, 40))
-        self.la_name.setStyleSheet('font-weight: bold; font-size: 20px')
+        self.la_name.setGeometry(QtCore.QRect(15, 40, 460, 40))
+        self.la_name.setStyleSheet('font-weight: bold; font-size: 20px; color: white')
+
         # Time & enemy race
         self.la_time_race = QtWidgets.QLabel(self)
-        self.la_time_race.setGeometry(QtCore.QRect(15, 48, 200, 20))
+        self.la_time_race.setGeometry(QtCore.QRect(15, 68, 200, 20))
+        self.la_time_race.setStyleSheet('color: white')
 
         # Player 1
         self.la_p1name = QtWidgets.QLabel(self)
-        self.la_p1name.setGeometry(QtCore.QRect(15, 80, 300, 31))
+        self.la_p1name.setGeometry(QtCore.QRect(15, 120, 225, 31))
         self.la_p1name.setStyleSheet('font-weight: bold')
 
         # P1 APM
         self.la_p1apm = QtWidgets.QLabel(self)
-        self.la_p1apm.setGeometry(QtCore.QRect(15, 102, 100, 31))
+        self.la_p1apm.setGeometry(QtCore.QRect(15, 142, 100, 31))
         self.la_p1apm.setEnabled(False)
 
         # Player 2
         self.la_p2name = QtWidgets.QLabel(self)
-        self.la_p2name.setGeometry(QtCore.QRect(245, 80, 201, 31))
+        self.la_p2name.setGeometry(QtCore.QRect(245, 120, 201, 31))
         self.la_p2name.setStyleSheet('font-weight: bold')
 
         # P2 APM
         self.la_p2apm = QtWidgets.QLabel(self)
-        self.la_p2apm.setGeometry(QtCore.QRect(245, 102, 100, 31))
+        self.la_p2apm.setGeometry(QtCore.QRect(245, 142, 100, 31))
         self.la_p2apm.setEnabled(False)
 
         # P1 Mastery
         self.la_p1masteries = QtWidgets.QLabel(self)
-        self.la_p1masteries.setGeometry(QtCore.QRect(15, 145, 250, 91))
+        self.la_p1masteries.setGeometry(QtCore.QRect(15, 185, 225, 91))
 
         # P2 Mastery
         self.la_p2masteries = QtWidgets.QLabel(self)
-        self.la_p2masteries.setGeometry(QtCore.QRect(245, 145, 250, 91))
+        self.la_p2masteries.setGeometry(QtCore.QRect(245, 185, 250, 91))
 
         # Find file button
         self.bt_findfile = QtWidgets.QPushButton(self)
@@ -85,6 +91,13 @@ class FastestMap(QtWidgets.QGroupBox):
 
     def update_data(self, mapname, fdict, handles):
         """ Updates data based on replay dict from S2Parser"""
+
+        image_path = innerPath(f"src/{mapname}.jpg")
+        if os.path.isfile(image_path):
+            self.fr_map.setStyleSheet(f'background-image: url("{image_path}")')
+        else:
+            self.fr_map.setStyleSheet(f'background-image: none')
+
         self.la_name.setText(mapname)
 
         if fdict['length'] < 3600:

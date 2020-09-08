@@ -276,7 +276,7 @@ class mass_replay_analysis:
 
         if region_filter != None and len(region_filter) > 0:
             logger.info(f'{region_filter=}')
-            data = [r for r in data if not r['region'] in region_filter] 
+            data = [r for r in data if not r['region'] in region_filter and r['region'] in {'NA','EU','KR','CN'}] 
 
 
         logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')
