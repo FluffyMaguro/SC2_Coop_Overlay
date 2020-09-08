@@ -38,6 +38,10 @@ class FastestMap(QtWidgets.QGroupBox):
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(15, 40, 460, 40))
         self.la_name.setStyleSheet('font-weight: bold; font-size: 20px; color: white')
+        shadow = QtWidgets.QGraphicsDropShadowEffect() 
+        shadow.setBlurRadius(1)
+        shadow.setOffset(2)
+        self.la_name.setGraphicsEffect(shadow) 
 
         # Time & enemy race
         self.la_time_race = QtWidgets.QLabel(self)
@@ -139,7 +143,8 @@ class FastestMap(QtWidgets.QGroupBox):
         text = ''
         for idx, mastery in enumerate(masterylist):
             fill = '' if mastery > 9 else '  '
-            text += f"{fill}{mastery}  {CommanderMastery[commander][idx]}\n" 
+            style = ' style="color:#aaa"' if mastery == 0 else ''
+            text += f"<span{style}>{fill}{mastery}  {CommanderMastery[commander][idx]}</span><br>" 
         return text
 
 
