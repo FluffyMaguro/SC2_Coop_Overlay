@@ -60,7 +60,6 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     except:
         if try_lastest:
             protocol = versions.latest()
-            logger.info('Trying the lastest protocol')
         else:
             return None
 

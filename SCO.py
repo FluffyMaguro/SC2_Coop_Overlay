@@ -5,6 +5,7 @@ import shutil
 import threading
 import traceback
 import urllib.request
+from functools import partial
 from datetime import datetime
 
 import keyboard
@@ -579,13 +580,12 @@ class UI_TabWidget(object):
         self.TABW_StatResults.setAccessibleDescription("")
 
 
-        ### TAB Fastest maps
+        ### TAB Maps
         self.TAB_Maps = QtWidgets.QWidget()
-
-        # Map Overview
         self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
         self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 460, 420))
         self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', '▼Average', 'Wins', 'Losses', bold=True, button=False)
+        self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
 
@@ -1334,7 +1334,7 @@ class UI_TabWidget(object):
         minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
-        # Analyse
+        ### Analyse
         analysis = self.CAnalysis.analyse_replays(
                                   include_mutations=include_mutations, 
                                   include_normal_games=include_normal_games, 
@@ -1348,8 +1348,9 @@ class UI_TabWidget(object):
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
 
+        ### Map stats
 
-        # Map stats
+        # Delete buttons if not required
         if hasattr(self, 'stats_maps_UI_dict'):
             to_delete = set()
             for item in self.stats_maps_UI_dict:
@@ -1358,34 +1359,37 @@ class UI_TabWidget(object):
 
             for item in to_delete:
                 del self.stats_maps_UI_dict[item]
-
         else:
             self.stats_maps_UI_dict = dict()
 
-
+        # Sort maps
         analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1]['average_victory_time'])}    
 
+        # Add map buttons & update the fastest map
         idx = 0
         for m in analysis['MapData']:
             idx += 1
             self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'])
+            self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
             self.stats_maps_UI_dict[m].show()
 
+        # Try to show the last visible fastest map if it's there
+        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in analysis['MapData'].keys():
+            self.map_link_update(self.last_fastest_map, analysis['MapData'][self.last_fastest_map]['Fastest'])
 
-        # !!! DEBUG
+        elif len(analysis['MapData']) > 0:
+            for m in analysis['MapData']:
+                self.map_link_update(m, analysis['MapData'][m]['Fastest'])
+                break
+
+        # Show/hide the fastest map accordingly
+        if len(analysis['MapData']) == 0:
+            self.QB_FastestMap.hide()
+        else:
+            self.QB_FastestMap.show()
 
 
-        m = 'Void Thrashing'
-        VT = MUI.FastestMap(self.TAB_Maps, m, fdict=analysis['MapData'][m]['Fastest'])
-        VT.show()
-
-
-
-        #!!! Update fastest maps & link buttons
-
-
-
-        # Difficulty stats
+        ### Difficulty stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
             to_delete = set()
             for item in self.stats_difficulty_UI_dict:
@@ -1394,8 +1398,6 @@ class UI_TabWidget(object):
 
             for item in to_delete:
                 del self.stats_difficulty_UI_dict[item]
-
-
         else:
             self.stats_difficulty_UI_dict = dict()
 
@@ -1415,12 +1417,23 @@ class UI_TabWidget(object):
         self.stats_difficulty_UI_dict['All'].show()
 
 
-
-
-
-
-        # !!! update results
+        ### Commander stats
         pass
+
+        ### Ally commander stats
+        pass
+
+        ### Region progression stats
+        pass
+
+
+    def map_link_update(self, mapname=None, fdict=None):
+        """ Updates the fastest map to clicked map """
+        if len(fdict) <= 1:
+            self.QB_FastestMap.hide()
+        else:
+            self.QB_FastestMap.update_data(mapname, fdict, self.CAnalysis.main_handles)
+            self.last_fastest_map = mapname
 
 
     def save_screenshot(self):
@@ -1452,7 +1465,7 @@ if __name__ == "__main__":
 
     # Do stuff before the app is closed
     exit_event = app.exec_()
+    TabWidget.tray_icon.hide()
     MF.stop_threads()
     ui.saveSettings()
-    TabWidget.tray_icon.hide()
     sys.exit(exit_event)

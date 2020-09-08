@@ -21,7 +21,6 @@ def parse_replay(file):
     try:
         return s2_parse_replay(file, try_lastest=False, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
     except:
-        logger.error(file,traceback.format_exc())
         return None
 
 
