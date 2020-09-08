@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
-#from SCOFunctions.SC2Dictionaries import prestige_upgrades, CommanderMastery
+from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 
 logger = logclass('UI','INFO')
@@ -21,70 +21,95 @@ def find_file(file):
     subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
-class FastestMap(QtWidgets.QWidget):
+class FastestMap(QtWidgets.QGroupBox):
     """Custom widget for the fastest map""" 
 
     def __init__(self, parent, mapname, fdict=None):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(0,0, 500, 500))
-
+        self.setGeometry(QtCore.QRect(480, 5, 475, 410))
+        self.setTitle('The fastest game')
 
         # Map name
         self.la_name = QtWidgets.QLabel(self)
-        self.la_name.setGeometry(QtCore.QRect(10, 10, 131, 21))
+        self.la_name.setGeometry(QtCore.QRect(15, 20, 490, 40))
         self.la_name.setStyleSheet('font-weight: bold; font-size: 20px')
         self.la_name.setText(mapname)
 
-        # Time and enemy race
-        self.LA_Fastest_TimeRace_VT = QtWidgets.QLabel(self)
-        self.LA_Fastest_TimeRace_VT.setGeometry(QtCore.QRect(10, 30, 111, 20))
+        # Time & enemy race
+        self.la_time_race = QtWidgets.QLabel(self)
+        self.la_time_race.setGeometry(QtCore.QRect(15, 48, 200, 20))
 
         if fdict['length'] < 3600:
             length = time.strftime('%M:%S',time.gmtime(fdict['length']))
         else:
             length = time.strftime('%H:%M:%S',time.gmtime(fdict['length']))
 
-        self.LA_Fastest_TimeRace_VT.setText(f"{length} | {fdict['enemy_race']}")
+        self.la_time_race.setText(f"{length} | {fdict['enemy_race']}")
 
         # Player 1
         self.la_p1name = QtWidgets.QLabel(self)
-        self.la_p1name.setGeometry(QtCore.QRect(10, 50, 300, 31))
+        self.la_p1name.setGeometry(QtCore.QRect(15, 80, 300, 31))
         self.la_p1name.setStyleSheet('font-weight: bold')
-        prestige = '-'        
+        prestige = prestige_names[fdict['players'][0]['commander']][fdict['players'][0]['prestige']]
         self.la_p1name.setText(f"{fdict['players'][0]['name']} ({fdict['players'][0]['commander']})\n{prestige} (P{fdict['players'][0]['prestige']})")
+
+        # P1 APM
+        self.la_p1apm = QtWidgets.QLabel(self)
+        self.la_p1apm.setGeometry(QtCore.QRect(15, 102, 100, 31))
+        self.la_p1apm.setText(f"{fdict['players'][0]['apm']} APM")
+        self.la_p1apm.setEnabled(False)
 
         # Player 2
         self.la_p2name = QtWidgets.QLabel(self)
-        self.la_p2name.setGeometry(QtCore.QRect(240, 50, 201, 31))
+        self.la_p2name.setGeometry(QtCore.QRect(245, 80, 201, 31))
         self.la_p2name.setStyleSheet('font-weight: bold')
-        prestige = '-'
+        prestige = prestige_names[fdict['players'][1]['commander']][fdict['players'][1]['prestige']]
         self.la_p2name.setText(f"{fdict['players'][1]['name']} ({fdict['players'][1]['commander']})\n{prestige} (P{fdict['players'][1]['prestige']})")
+
+        # P2 APM
+        self.la_p2apm = QtWidgets.QLabel(self)
+        self.la_p2apm.setGeometry(QtCore.QRect(245, 102, 100, 31))
+        self.la_p2apm.setText(f"{fdict['players'][1]['apm']} APM")
+        self.la_p2apm.setEnabled(False)
 
         # P1 Mastery
         self.la_p1masteries = QtWidgets.QLabel(self)
-        self.la_p1masteries.setGeometry(QtCore.QRect(10, 80, 171, 91))
-        self.la_p1masteries.setText(str(fdict['players'][0]['masteries']))
+        self.la_p1masteries.setGeometry(QtCore.QRect(15, 145, 250, 91))
+        self.la_p1masteries.setText(self.format_mastery(fdict['players'][0]['commander'],fdict['players'][0]['masteries']))
 
         # P2 Mastery
         self.la_p2masteries = QtWidgets.QLabel(self)
-        self.la_p2masteries.setGeometry(QtCore.QRect(240, 80, 171, 91))
-        self.la_p2masteries.setText(str(fdict['players'][1]['masteries']))
+        self.la_p2masteries.setGeometry(QtCore.QRect(245, 145, 250, 91))
+        self.la_p2masteries.setText(self.format_mastery(fdict['players'][1]['commander'],fdict['players'][1]['masteries']))
 
         # Find file button
         self.bt_findfile = QtWidgets.QPushButton(self)
-        self.bt_findfile.setGeometry(QtCore.QRect(20, 390, 75, 23))       
+        self.bt_findfile.setGeometry(QtCore.QRect(15, 375, 75, 23))       
         self.bt_findfile.setText("Find file")
         self.bt_findfile.clicked.connect(lambda: find_file(fdict['file']))
 
         # Show overlay button
         self.bt_showoverlay = QtWidgets.QPushButton(self)
-        self.bt_showoverlay.setGeometry(QtCore.QRect(100, 390, 81, 23))
+        self.bt_showoverlay.setGeometry(QtCore.QRect(95, 375, 81, 23))
         self.bt_showoverlay.setText("Show overlay")
         self.bt_showoverlay.clicked.connect(lambda: show_overlay(fdict['file']))
 
-        
+        # Date & difficulty
+        self.la_date_difficulty = QtWidgets.QLabel(self)
+        self.la_date_difficulty.setGeometry(QtCore.QRect(265, 385, 200, 20))
+        self.la_date_difficulty.setAlignment(QtCore.Qt.AlignRight)
+        self.la_date_difficulty.setText(f"{fdict['difficulty']} | {fdict['date'].replace(':','-',2).replace(':',' ',1)}")
+        self.la_date_difficulty.setEnabled(False)
 
+
+    @staticmethod
+    def format_mastery(commander:str, masterylist:list):
+        text = ''
+        for idx, mastery in enumerate(masterylist):
+            fill = '' if mastery > 9 else '  '
+            text += f"{fill}{mastery}  {CommanderMastery[commander][idx]}\n" 
+        return text
 
 
 class MapEntry(QtWidgets.QWidget):

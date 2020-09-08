@@ -582,16 +582,12 @@ class UI_TabWidget(object):
         ### TAB Fastest maps
         self.TAB_Maps = QtWidgets.QWidget()
 
-
         # Map Overview
         self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
-        self.GB_MapsOverview.setGeometry(QtCore.QRect(510, 8, 460, 420))
-
+        self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 460, 420))
         self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', '▼Average', 'Wins', 'Losses', bold=True, button=False)
-        
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
-
 
         ### TAB Difficulty
         self.TAB_Difficulty = QtWidgets.QWidget()
@@ -599,26 +595,21 @@ class UI_TabWidget(object):
         self.TABW_StatResults.addTab(self.TAB_Difficulty, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty")
 
-
         ### TAB Commanders
         self.TAB_MyCommanders = QtWidgets.QWidget()
         self.TBD_MyCommanders = QtWidgets.QLabel(self.TAB_MyCommanders)
         self.TBD_MyCommanders.setGeometry(QtCore.QRect(10, 10, 311, 21))
         self.TBD_MyCommanders.setText("Commander games, freq, winrate, median APM")
-
         self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
-
 
         ### TAB Allied Commanders
         self.TAB_AlliedCommanders = QtWidgets.QWidget()
         self.TBD_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
         self.TBD_AlliedCommanders.setGeometry(QtCore.QRect(10, 10, 421, 21))
         self.TBD_AlliedCommanders.setText("Frequency (corrected), typical ally mastery, prestige frequency, median apm")
-
         self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
-
 
         ### TAB Progression & regions
         self.TAB_ProgressionRegions = QtWidgets.QWidget()
@@ -626,7 +617,6 @@ class UI_TabWidget(object):
         self.TBD_ProgressionRegions.setGeometry(QtCore.QRect(10, 10, 321, 31))
         self.TBD_ProgressionRegions.setText("# games, winrate per region, max ascension\n"
 "Per commander prestige played at lvl 14-15")
-
         self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
 
@@ -791,6 +781,8 @@ class UI_TabWidget(object):
                     json.dump(self.settings, f, indent=2)
         except:
             logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
+            if os.path.isfile(SETTING_FILE):
+                os.replace(SETTING_FILE, f'{SETTING_FILE.replace(".json","")}_corrupted.json')
 
         # Make sure all keys are here
         for key in self.default_settings:
@@ -1370,7 +1362,7 @@ class UI_TabWidget(object):
         else:
             self.stats_maps_UI_dict = dict()
 
-        
+
         analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1]['average_victory_time'])}    
 
         idx = 0

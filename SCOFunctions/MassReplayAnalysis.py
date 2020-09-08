@@ -60,11 +60,13 @@ def calculate_map_data(ReplayData):
             MapData[r['map_name']]['average_victory_time'].append(r['accurate_length'])
 
         # Fastest clears
-        if r['result'] == 'Victory' and r['accurate_length'] < MapData[r['map_name']]['Fastest']['length'] and r['difficulty'][0] == 'Brutal' and r['difficulty'][1] == 'Brutal':
+        if r['result'] == 'Victory' and r['accurate_length'] < MapData[r['map_name']]['Fastest']['length']:
             MapData[r['map_name']]['Fastest']['length'] = r['accurate_length']
             MapData[r['map_name']]['Fastest']['file'] = r['file']
             MapData[r['map_name']]['Fastest']['players'] = r['players'][1:3]
             MapData[r['map_name']]['Fastest']['enemy_race'] = r['enemy_race']
+            MapData[r['map_name']]['Fastest']['date'] = r['date']
+            MapData[r['map_name']]['Fastest']['difficulty'] = r['ext_difficulty']
 
     for m in MapData:
         if len(MapData[m]['average_victory_time']) > 0:
