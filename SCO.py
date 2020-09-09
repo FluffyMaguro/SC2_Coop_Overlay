@@ -505,6 +505,28 @@ class UI_TabWidget(object):
         self.CH_TypeMutation.setText("Mutations")
         self.CH_TypeMutation.stateChanged.connect(self.generate_stats)
 
+        # Sub15 and both mains
+        self.CH_Sub15 = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Sub15.setGeometry(QtCore.QRect(280, 40, 150, 17))
+        self.CH_Sub15.setChecked(True)
+        self.CH_Sub15.setText("Include levels 1-14")
+        self.CH_Sub15.setToolTip("Include games where the main player was level 1-14")
+        self.CH_Sub15.stateChanged.connect(self.generate_stats)
+
+        self.CH_Over15 = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_Over15.setGeometry(QtCore.QRect(280, 60, 150, 17))
+        self.CH_Over15.setChecked(True)
+        self.CH_Over15.setText("Include levels 15+")
+        self.CH_Over15.setToolTip("Include games where the main player was level 15+")
+        self.CH_Over15.stateChanged.connect(self.generate_stats)
+
+        self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DualMain.setGeometry(QtCore.QRect(280, 20, 250, 17))
+        self.CH_DualMain.setChecked(True)
+        self.CH_DualMain.setText("Include games where both players are main (your accounts)")
+        self.CH_DualMain.stateChanged.connect(self.generate_stats)
+
+
         # Games found
         self.LA_GamesFound = QtWidgets.QLabel(self.FR_Stats)
         self.LA_GamesFound.setEnabled(False)
@@ -521,53 +543,53 @@ class UI_TabWidget(object):
 
         # Date
         self.LA_ReplayDate = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_ReplayDate.setGeometry(QtCore.QRect(480, 20, 101, 16))
+        self.LA_ReplayDate.setGeometry(QtCore.QRect(720, 18, 101, 16))
         self.LA_ReplayDate.setStyleSheet('font-weight: bold')
         self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_ReplayDate.setText("Replay date")
 
         self.LA_To = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_To.setGeometry(QtCore.QRect(600, 70, 31, 16))
+        self.LA_To.setGeometry(QtCore.QRect(840, 70, 31, 16))
         self.LA_To.setText("To")
         self.TM_ToDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_ToDate.setGeometry(QtCore.QRect(480, 70, 110, 22))
+        self.TM_ToDate.setGeometry(QtCore.QRect(720, 70, 110, 22))
         self.TM_ToDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2030, 12, 30), QtCore.QTime(0, 0, 0)))
         self.TM_ToDate.setDisplayFormat("d/M/yyyy")
         self.TM_ToDate.dateChanged.connect(self.generate_stats)
 
         self.LA_From = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_From.setGeometry(QtCore.QRect(600, 40, 31, 16))
+        self.LA_From.setGeometry(QtCore.QRect(840, 40, 31, 16))
         self.LA_From.setText("From")
         self.TM_FromDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_FromDate.setGeometry(QtCore.QRect(480, 40, 110, 22))
+        self.TM_FromDate.setGeometry(QtCore.QRect(720, 40, 110, 22))
         self.TM_FromDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2015, 11, 10), QtCore.QTime(0, 0, 0)))
         self.TM_FromDate.setDisplayFormat("d/M/yyyy")
         self.TM_FromDate.dateChanged.connect(self.generate_stats)
 
         # Game length
         self.LA_GameLength = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_GameLength.setGeometry(QtCore.QRect(310, 20, 150, 16))
+        self.LA_GameLength.setGeometry(QtCore.QRect(560, 18, 150, 16))
         self.LA_GameLength.setStyleSheet('font-weight: bold')
         self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_GameLength.setText("Game length (minutes)")
 
         self.LA_Maximum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Maximum.setGeometry(QtCore.QRect(360, 70, 60, 16))
+        self.LA_Maximum.setGeometry(QtCore.QRect(610, 70, 60, 16))
         self.LA_Maximum.setText("Maximum")
 
         self.LA_Minimum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Minimum.setGeometry(QtCore.QRect(360, 40, 60, 16))
+        self.LA_Minimum.setGeometry(QtCore.QRect(610, 40, 60, 16))
         self.LA_Minimum.setText("Minimum")
 
         self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MaxGamelength.setGeometry(QtCore.QRect(310, 70, 42, 22))
+        self.SP_MaxGamelength.setGeometry(QtCore.QRect(560, 70, 42, 22))
         self.SP_MaxGamelength.setMinimum(0)
         self.SP_MaxGamelength.setMaximum(1000)
         self.SP_MaxGamelength.setProperty("value", 0)
         self.SP_MaxGamelength.valueChanged.connect(self.generate_stats)
 
         self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MinGamelength.setGeometry(QtCore.QRect(310, 40, 42, 22))
+        self.SP_MinGamelength.setGeometry(QtCore.QRect(560, 40, 42, 22))
         self.SP_MinGamelength.setMaximum(1000)
         self.SP_MinGamelength.setProperty("value", 0)
         self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
@@ -1420,6 +1442,10 @@ class UI_TabWidget(object):
         minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
+        include_both_main = True if self.CH_DualMain.isChecked() else False
+        sub_15 = True if self.CH_Sub15.isChecked() else False
+        over_15 = True if self.CH_Over15.isChecked() else False
+
         ### Analyse
         analysis = self.CAnalysis.analyse_replays(
                                   include_mutations=include_mutations, 
@@ -1429,7 +1455,11 @@ class UI_TabWidget(object):
                                   mindate=mindate, 
                                   maxdate=maxdate, 
                                   minlength=minlength, 
-                                  maxLength=maxLength)
+                                  maxLength=maxLength,
+                                  sub_15=sub_15,
+                                  over_15=over_15,
+                                  include_both_main=include_both_main
+                                  )
         
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
@@ -1500,7 +1530,7 @@ class UI_TabWidget(object):
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+20, bg=idx%2==1, parent=self.TAB_Difficulty)
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, bg=idx%2==1, parent=self.TAB_Difficulty)
         self.stats_difficulty_UI_dict['All'].show()
 
 

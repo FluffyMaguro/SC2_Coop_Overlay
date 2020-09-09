@@ -238,12 +238,42 @@ class mass_replay_analysis:
         return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':','')), reverse=True)[:number]
 
 
-    def analyse_replays(self, include_mutations=True, include_normal_games=True, mindate=None, maxdate=None, minlength=None, maxLength=None, difficulty_filter=None, region_filter=None):
+    def main_player_is_sub_15(self, replay):
+        """ Returns True if the main player is level 1-14"""
+        for idx in {1,2}:
+            if replay['players'][idx]['handle'] in self.main_handles and replay['players'][idx]['commander_level'] < 15:
+                return True
+        return False
+
+
+    def both_main_players(self, replay):
+        """ Checks if both players are the main players """
+        if replay['players'][1]['handle'] in self.main_handles and replay['players'][2]['handle'] in self.main_handles:
+            return True
+        return False
+
+
+    def analyse_replays(self, 
+                        include_mutations=True, 
+                        include_normal_games=True, 
+                        mindate=None, maxdate=None, 
+                        minlength=None, 
+                        maxLength=None, 
+                        difficulty_filter=None, 
+                        region_filter=None, 
+                        sub_15=True, 
+                        over_15=True,
+                        include_both_main=True,
+                        ):
         """ Filters and analyses replays replay data
         `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS 
         `minLength` and `maxLength` in minutes 
         `difficulty_filter` is a list or set of difficulties to filter away: 'Casual', 'Normal', 'Hard', 'Brutal' or an integer (1-6) for Brutal+ games 
-        `region_filter is a list or set of regions to filter away: 'NA', 'EU', 'KR', 'CN', 'PTR' """
+        `region_filter` is a list or set of regions to filter away: 'NA', 'EU', 'KR', 'CN', 'PTR' 
+        `sub_15` = False if you want to filter out games where the main player was sub-15 commander level
+        `over_15` = False if you want to exclude games where the main player is 15+
+        `include_both_main` = False to exclude games where both players are main players
+        """
 
         data = self.ReplayData
 
@@ -277,6 +307,16 @@ class mass_replay_analysis:
         if region_filter != None and len(region_filter) > 0:
             logger.info(f'{region_filter=}')
             data = [r for r in data if not r['region'] in region_filter and r['region'] in {'NA','EU','KR','CN'}] 
+
+
+        if not sub_15:
+            data = [r for r in data if not self.main_player_is_sub_15(r)]
+
+        if not over_15:
+            data = [r for r in data if self.main_player_is_sub_15(r)]
+
+        if not include_both_main:
+            data = [r for r in data if not self.both_main_players(r)]
 
 
         logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')
