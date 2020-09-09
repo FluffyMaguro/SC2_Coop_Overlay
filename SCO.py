@@ -626,10 +626,13 @@ class UI_TabWidget(object):
 
         self.TAB_TwitchBot = QtWidgets.QWidget()
 
-        self.la_twitch_text = QtWidgets.QLabel(self.TAB_TwitchBot)
+        self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
+        self.qb_twitch_text.setTitle('About the twitch bot')
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 320))
 
+        self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
-        self.la_twitch_text.setGeometry(QtCore.QRect(20, 20, 520, 500))
+        self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 520, 500))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
         self.la_twitch_text.setText("""This is a feature for twitch streamers. It connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. 
@@ -639,7 +642,7 @@ class UI_TabWidget(object):
                                     <a href="https://twitchapps.com/tmi/">generate oauth token</a>. Then fill in those in the Setting.json file as well as locations of your MMTwitchIntegration.SC2Banks 
                                     for different regions or accounts. See <a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">read me</a> for more details. 
                                     <br><br><br>
-                                    <ul><b>Commands for the streamer:</b></ul>
+                                    <u><b>Commands for the streamer:</b></u>
                                     <br><br>
                                     <b>!bank X</b><br> → Switches to bank X (when switching between regions or accounts)<br><br>
                                     <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay)<br><br>
@@ -647,14 +650,18 @@ class UI_TabWidget(object):
                                     """)
 
         self.bt_twitch = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch.setGeometry(QtCore.QRect(20, 330, 100, 25))
+        self.bt_twitch.setGeometry(QtCore.QRect(600, 20, 100, 25))
         self.bt_twitch.setText('Run the bot')
         self.bt_twitch.clicked.connect(self.start_stop_bot)
 
         self.ch_twitch = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch.setGeometry(QtCore.QRect(21, 360, 200, 17))
+        self.ch_twitch.setGeometry(QtCore.QRect(601, 60, 200, 17))
         self.ch_twitch.setText('Start the bot automatically')
 
+        # Info label
+        self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
+        self.LA_InfoTwitch.setGeometry(QtCore.QRect(20, 560, 800, 20))
+        self.LA_InfoTwitch.setStyleSheet('color: red')
 
         ###########################
         ######## LINKS TAB ########
@@ -1246,9 +1253,13 @@ class UI_TabWidget(object):
         # Twitch both
         self.TwitchBot = TwitchBot(self.settings['twitchbot'])
         if self.settings['twitchbot']['auto_start']:
-            self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
-            self.thread_twitch_bot.start()
-            self.bt_twitch.setText('Stop the bot')
+            if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
+                logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
+                self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
+            else:
+                self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
+                self.thread_twitch_bot.start()
+                self.bt_twitch.setText('Stop the bot')
 
 
     def set_WebView_size_location(self, monitor):
@@ -1532,8 +1543,12 @@ class UI_TabWidget(object):
 
     def start_stop_bot(self):
         """ Starts or stops the twitch bot """
+        if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
+            logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
+            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
+            return
 
-        if self.bt_twitch.text() == 'Run the bot':
+        if not self.TwitchBot.RUNNING:
             if not hasattr(self, 'thread_twitch_bot'):
                 self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
                 self.thread_twitch_bot.start()

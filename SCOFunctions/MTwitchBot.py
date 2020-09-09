@@ -166,12 +166,6 @@ class TwitchBot:
 
     def run_bot(self):
         """ Initialize and runs the bot """
-        if len(self.banks) == 0 or self.channel == '' or self.bot_name == '' or self.bot_oauth == '':
-            logger.error(f'Invalid data for the bot\n{self.banks=}\n{self.channel=}\n{self.bot_name=}\n{self.bot_oauth=}')
-            return
-
-        logger.info(f'Starting twitch both with \n{self.channel=}\n{self.bot_name=}\n{self.bot_oauth=}')
-
         self.openSocket()
         self.joinRoom()
         self.RUNNING = True
@@ -188,6 +182,7 @@ class TwitchBot:
         UserCooldown = dict()
         UsersToGreet = {u.lower() for u in set(self.greetings.keys())}
         recently_paused = False
+
 
         def user_on_cooldown(user):
             # Either no cooldown set, or user haven't started any cooldown
