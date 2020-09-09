@@ -14,6 +14,7 @@ cache_player_winrates.json
 *.qrc
 Settings.json
 Logs.txt
+ChatLog.txt
 Updates/*
 Test/*
 install.bat

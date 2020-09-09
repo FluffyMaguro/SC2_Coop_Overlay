@@ -17,7 +17,7 @@ import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
-
+from SCOFunctions.MTwitchBot import TwitchBot
 
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
@@ -120,7 +120,7 @@ class UI_TabWidget(object):
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.resetSettings)
-        self.BT_MainReset.setToolTip("Reset all settings apart from player notes and settings for starcraft2coop")
+        self.BT_MainReset.setToolTip("Reset all settings apart from player notes, settings for starcraft2coop and the twitch bot")
 
         # Screenshot
         self.BT_Screenshot = QtWidgets.QPushButton(self.TAB_Main)
@@ -573,12 +573,10 @@ class UI_TabWidget(object):
         self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
 
 
-
         ##### RESULTS #####
         self.TABW_StatResults = QtWidgets.QTabWidget(self.TAB_Stats)
         self.TABW_StatResults.setGeometry(QtCore.QRect(5, 126, 971, 451))
         self.TABW_StatResults.setAccessibleDescription("")
-
 
         ### TAB Maps
         self.TAB_Maps = QtWidgets.QWidget()
@@ -591,7 +589,7 @@ class UI_TabWidget(object):
 
         ### TAB Difficulty
         self.TAB_Difficulty = QtWidgets.QWidget()
-        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 30, 10, bold=True, line=True, parent=self.TAB_Difficulty)
+        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_Difficulty)
         self.TABW_StatResults.addTab(self.TAB_Difficulty, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty")
 
@@ -621,6 +619,42 @@ class UI_TabWidget(object):
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
 
         self.TABW_StatResults.setCurrentIndex(0)
+
+        ############################
+        ###### TWITCH BOT TAB ######
+        ############################
+
+        self.TAB_TwitchBot = QtWidgets.QWidget()
+
+        self.la_twitch_text = QtWidgets.QLabel(self.TAB_TwitchBot)
+
+        self.la_twitch_text.setWordWrap(True)
+        self.la_twitch_text.setGeometry(QtCore.QRect(20, 20, 520, 500))
+        self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
+        self.la_twitch_text.setOpenExternalLinks(True)
+        self.la_twitch_text.setText("""This is a feature for twitch streamers. It connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. 
+                                    Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
+                                    <br> 
+                                    This panel provides only the most basic control over the bot. To get the bot working, you have to create a new twitch account for your bot and 
+                                    <a href="https://twitchapps.com/tmi/">generate oauth token</a>. Then fill in those in the Setting.json file as well as locations of your MMTwitchIntegration.SC2Banks 
+                                    for different regions or accounts. See <a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">read me</a> for more details. 
+                                    <br><br><br>
+                                    <ul><b>Commands for the streamer:</b></ul>
+                                    <br><br>
+                                    <b>!bank X</b><br> → Switches to bank X (when switching between regions or accounts)<br><br>
+                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay)<br><br>
+                                    <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
+                                    """)
+
+        self.bt_twitch = QtWidgets.QPushButton(self.TAB_TwitchBot)
+        self.bt_twitch.setGeometry(QtCore.QRect(20, 330, 100, 25))
+        self.bt_twitch.setText('Run the bot')
+        self.bt_twitch.clicked.connect(self.start_stop_bot)
+
+        self.ch_twitch = QtWidgets.QCheckBox(self.TAB_TwitchBot)
+        self.ch_twitch.setGeometry(QtCore.QRect(21, 360, 200, 17))
+        self.ch_twitch.setText('Start the bot automatically')
+
 
         ###########################
         ######## LINKS TAB ########
@@ -728,6 +762,9 @@ class UI_TabWidget(object):
         TabWidget.addTab(self.TAB_Stats, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
 
+        TabWidget.addTab(self.TAB_TwitchBot, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_TwitchBot), "Twitch")
+
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
@@ -746,7 +783,7 @@ class UI_TabWidget(object):
         self.default_settings = {
             'start_with_windows':False,
             'start_minimized':False,
-            'enable_logging':False,
+            'enable_logging':True,
             'show_player_winrates':True,
             'duration':60,
             'monitor':1,
@@ -766,7 +803,33 @@ class UI_TabWidget(object):
             'aom_secret_key':None,
             'player_notes':dict(),
             'main_names': list(),
-            'list_games': 100
+            'list_games': 100,
+            'twitchbot' : {
+                           'channel_name': '',
+                           'bot_name': '',
+                           'bot_oauth': '',
+                           'bank_locations': {
+                                              'Default':'',
+                                              'EU':'',
+                                              'NA':'',
+                                              'KR':''
+                                              },
+                           'responses': {
+                                         'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
+                                         'syntax': '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
+                                         'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
+                                         'maguro': 'www.maguro.one',
+                                         'names': 'https://www.maguro.one/p/unit-names.html'
+                                         },
+                           'greetings': {
+                                         'fluffymaguro': 'Hello Maguro!'
+                                         },
+                           'banned_mutators':{'Vertigo', 'Propagators', 'Fatal Attraction'},
+                           'banned_units':{''},                            
+                           'host': 'irc.twitch.tv',
+                           'port': 6667,
+                           'auto_start': False,
+                           }
             }
 
         self.settings = self.default_settings.copy()
@@ -955,6 +1018,8 @@ class UI_TabWidget(object):
         self.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
         self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
+        self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
+
 
     def saveSettings(self):
         """ Saves main settings in the settings file. """
@@ -979,6 +1044,8 @@ class UI_TabWidget(object):
 
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
+
+        self.settings['twitchbot']['auto_start'] = self.ch_twitch.isChecked()
 
         # Save settings
         try:
@@ -1075,7 +1142,8 @@ class UI_TabWidget(object):
         self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
-        self.settings['player_notes'] = previous_settings['player_notes']   
+        self.settings['player_notes'] = previous_settings['player_notes'] 
+        self.settings['twitchbot'] = previous_settings['twitchbot']
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
@@ -1174,6 +1242,13 @@ class UI_TabWidget(object):
         thread_init = MUI.Worker(MF.initialize_names_handles_winrates)
         thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
         self.threadpool.start(thread_init)
+
+        # Twitch both
+        self.TwitchBot = TwitchBot(self.settings['twitchbot'])
+        if self.settings['twitchbot']['auto_start']:
+            self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
+            self.thread_twitch_bot.start()
+            self.bt_twitch.setText('Stop the bot')
 
 
     def set_WebView_size_location(self, monitor):
@@ -1406,14 +1481,15 @@ class UI_TabWidget(object):
         AllDiff = {'Victory':0, 'Defeat':0}
         for difficulty in difficulties:
             if difficulty in analysis['DifficultyData']:
-                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 30, idx*18+30, bg=idx%2==1, parent=self.TAB_Difficulty)
+                line = True if idx+1 == len(analysis['DifficultyData']) else False
+                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 50, idx*18+20, bg=idx%2==1, parent=self.TAB_Difficulty, line=line)
                 self.stats_difficulty_UI_dict[difficulty].show()
                 idx += 1
                 AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 30, idx*18+30, bg=idx%2==1, parent=self.TAB_Difficulty)
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+20, bg=idx%2==1, parent=self.TAB_Difficulty)
         self.stats_difficulty_UI_dict['All'].show()
 
 
@@ -1452,6 +1528,22 @@ class UI_TabWidget(object):
             self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
         except:
             logger.error(traceback.format_exc())
+
+
+    def start_stop_bot(self):
+        """ Starts or stops the twitch bot """
+
+        if self.bt_twitch.text() == 'Run the bot':
+            if not hasattr(self, 'thread_twitch_bot'):
+                self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
+                self.thread_twitch_bot.start()
+            else:
+                self.TwitchBot.RUNNING = True
+            self.bt_twitch.setText('Stop the bot')
+        else:
+            self.TwitchBot.RUNNING = False
+            self.bt_twitch.setText('Run the bot')
+
 
 
 if __name__ == "__main__":
