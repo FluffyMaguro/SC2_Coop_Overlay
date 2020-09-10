@@ -105,8 +105,7 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
 
 
 def names_fallback(handles, replays):
-    """ Finds new main player names from handles and replays.
-    Assumes S2Parser format of replays. """
+    """ Finds new main player names from handles and replays.Assumes S2Parser format of replays. """
 
     shandles = set(handles)
     snames = set()
@@ -180,7 +179,7 @@ def initialize_AllReplays(ACCOUNTDIR):
                             if replay_dict['filepath'] in AllReplays:
                                 AllReplays[replay_dict['filepath']]['replay_dict'] = replay_dict
                     except:
-                        print("Failed to parse a line from replay analysis log\n",traceback.format_exc())
+                        logger.error("Failed to parse a line from replay analysis log\n",traceback.format_exc())
 
     except:
         logger.error(f'Error during replay initialization\n{traceback.format_exc()}')

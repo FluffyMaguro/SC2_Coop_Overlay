@@ -92,6 +92,9 @@ class FastestMap(QtWidgets.QGroupBox):
         self.la_date_difficulty.setAlignment(QtCore.Qt.AlignRight)
         self.la_date_difficulty.setEnabled(False)
 
+        for item in {self.la_name, self.la_time_race, self.la_p1name, self.la_p1apm, self.la_p1masteries,self.la_p2name, self.la_p2apm, self.la_p2masteries, self.la_date_difficulty}:
+            item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
 
     def update_data(self, mapname, fdict, handles):
         """ Updates data based on replay dict from S2Parser"""
@@ -357,9 +360,9 @@ class GameEntry:
         self.BT_file.setText("Find file")
         self.BT_file.clicked.connect(lambda: find_file(self.file))
 
-        # Red losses
-        if self.result == 'Defeat':
-            for item in {self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
+        for item in {self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
+            item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+            if self.result == 'Defeat':
                 item.setStyleSheet('color: red')
 
 
@@ -418,6 +421,10 @@ class PlayerEntry:
         # This is necessary only sometimes (when the user is looking at the tab while its updating )
         for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note}:
             item.show()
+
+        for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate}:
+            item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
 
     def get_note(self):
         return self.ed_note.text()

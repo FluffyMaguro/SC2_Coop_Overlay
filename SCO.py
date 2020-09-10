@@ -663,6 +663,7 @@ class UI_TabWidget(object):
         self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 520, 500))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
+        self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.la_twitch_text.setText("""This is a feature for twitch streamers. It connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. 
                                     Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
