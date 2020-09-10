@@ -8,13 +8,13 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 
 from SCOFunctions.MFilePath import truePath
-from SCOFunctions.SC2Dictionaries import UnitNameDict, MutatorSet
+from SCOFunctions.SC2Dictionaries import UnitNameDict, Mutators
 from SCOFunctions.MLogging import logclass
 
 
 logger = logclass('TWITCH','INFO')
 all_unit_ids = {u.lower() for u in set(UnitNameDict.keys())}
-
+mutator_set = {m.lower() for m in set(Mutators.keys())}
 
 class TwitchBot:
     def __init__(self, twdict):
@@ -301,8 +301,8 @@ class TwitchBot:
                         mutator = following_words.lower().replace(' disable','')
 
                         # Check if the name is correct
-                        if not(mutator in MutatorSet):  
-                            possible_mutator_names = difflib.get_close_matches(mutator, MutatorSet)
+                        if not(mutator in mutator_set):  
+                            possible_mutator_names = difflib.get_close_matches(mutator, mutator_set)
                             # If some matches, propose them
                             add_string = ""
                             if len(possible_mutator_names) > 0:

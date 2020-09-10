@@ -61,7 +61,7 @@ class UI_TabWidget(object):
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 110, 230, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
-        self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified.")
+        self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable.")
 
         # Duration
         self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
@@ -523,7 +523,8 @@ class UI_TabWidget(object):
         self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
         self.CH_DualMain.setGeometry(QtCore.QRect(280, 20, 250, 17))
         self.CH_DualMain.setChecked(True)
-        self.CH_DualMain.setText("Include games where both players are main (your accounts)")
+        self.CH_DualMain.setText("Include multi-box games")
+        self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
         self.CH_DualMain.stateChanged.connect(self.generate_stats)
 
 
@@ -534,6 +535,7 @@ class UI_TabWidget(object):
         self.LA_GamesFound.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
 
+
         # Main names
         self.LA_IdentifiedPlayers = QtWidgets.QLabel(self.FR_Stats)
         self.LA_IdentifiedPlayers.setEnabled(False)
@@ -541,55 +543,59 @@ class UI_TabWidget(object):
         self.LA_IdentifiedPlayers.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.LA_IdentifiedPlayers.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
 
+        # Date time frame
+        self.FR_DateTime = QtWidgets.QFrame(self.FR_Stats)
+        self.FR_DateTime.setGeometry(QtCore.QRect(470, 15, 500, 300))
+
         # Date
-        self.LA_ReplayDate = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_ReplayDate.setGeometry(QtCore.QRect(720, 18, 101, 16))
+        self.LA_ReplayDate = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_ReplayDate.setGeometry(QtCore.QRect(160, 0, 101, 16))
         self.LA_ReplayDate.setStyleSheet('font-weight: bold')
         self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_ReplayDate.setText("Replay date")
 
-        self.LA_To = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_To.setGeometry(QtCore.QRect(840, 70, 31, 16))
+        self.LA_To = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_To.setGeometry(QtCore.QRect(280, 52, 31, 16))
         self.LA_To.setText("To")
-        self.TM_ToDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_ToDate.setGeometry(QtCore.QRect(720, 70, 110, 22))
+        self.TM_ToDate = QtWidgets.QDateEdit(self.FR_DateTime)
+        self.TM_ToDate.setGeometry(QtCore.QRect(160, 52, 110, 22))
         self.TM_ToDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2030, 12, 30), QtCore.QTime(0, 0, 0)))
         self.TM_ToDate.setDisplayFormat("d/M/yyyy")
         self.TM_ToDate.dateChanged.connect(self.generate_stats)
 
-        self.LA_From = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_From.setGeometry(QtCore.QRect(840, 40, 31, 16))
+        self.LA_From = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_From.setGeometry(QtCore.QRect(280, 22, 31, 16))
         self.LA_From.setText("From")
-        self.TM_FromDate = QtWidgets.QDateEdit(self.FR_Stats)
-        self.TM_FromDate.setGeometry(QtCore.QRect(720, 40, 110, 22))
+        self.TM_FromDate = QtWidgets.QDateEdit(self.FR_DateTime)
+        self.TM_FromDate.setGeometry(QtCore.QRect(160, 22, 110, 22))
         self.TM_FromDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2015, 11, 10), QtCore.QTime(0, 0, 0)))
         self.TM_FromDate.setDisplayFormat("d/M/yyyy")
         self.TM_FromDate.dateChanged.connect(self.generate_stats)
 
         # Game length
-        self.LA_GameLength = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_GameLength.setGeometry(QtCore.QRect(560, 18, 150, 16))
+        self.LA_GameLength = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_GameLength.setGeometry(QtCore.QRect(0, 0, 150, 16))
         self.LA_GameLength.setStyleSheet('font-weight: bold')
         self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_GameLength.setText("Game length (minutes)")
 
-        self.LA_Maximum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Maximum.setGeometry(QtCore.QRect(610, 70, 60, 16))
+        self.LA_Maximum = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_Maximum.setGeometry(QtCore.QRect(50, 52, 60, 16))
         self.LA_Maximum.setText("Maximum")
 
-        self.LA_Minimum = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_Minimum.setGeometry(QtCore.QRect(610, 40, 60, 16))
+        self.LA_Minimum = QtWidgets.QLabel(self.FR_DateTime)
+        self.LA_Minimum.setGeometry(QtCore.QRect(50, 22, 60, 16))
         self.LA_Minimum.setText("Minimum")
 
-        self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MaxGamelength.setGeometry(QtCore.QRect(560, 70, 42, 22))
+        self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_DateTime)
+        self.SP_MaxGamelength.setGeometry(QtCore.QRect(0, 52, 42, 22))
         self.SP_MaxGamelength.setMinimum(0)
         self.SP_MaxGamelength.setMaximum(1000)
         self.SP_MaxGamelength.setProperty("value", 0)
         self.SP_MaxGamelength.valueChanged.connect(self.generate_stats)
 
-        self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_Stats)
-        self.SP_MinGamelength.setGeometry(QtCore.QRect(560, 40, 42, 22))
+        self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_DateTime)
+        self.SP_MinGamelength.setGeometry(QtCore.QRect(0, 22, 42, 22))
         self.SP_MinGamelength.setMaximum(1000)
         self.SP_MinGamelength.setProperty("value", 0)
         self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
@@ -1323,8 +1329,10 @@ class UI_TabWidget(object):
         
         # Show player winrates
         if self.settings['show_player_winrates']:
-            thread_check_for_newgame = MUI.Worker(MF.check_for_new_game)
-            self.threadpool.start(thread_check_for_newgame)
+            # thread_check_for_newgame = MUI.Worker(MF.check_for_new_game)
+            # self.threadpool.start(thread_check_for_newgame)
+            self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
+            self.thread_check_for_newgame.start()
 
 
     def check_replays_finished(self, replay_dict):
@@ -1399,7 +1407,7 @@ class UI_TabWidget(object):
         self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
         self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
         self.generate_stats()
-      
+    
 
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""

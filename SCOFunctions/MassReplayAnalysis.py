@@ -11,7 +11,7 @@ import statistics
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.MainFunctions import find_names_and_handles, find_replays
+from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 
 logger = logclass('MASS','INFO')
 
@@ -198,6 +198,10 @@ class mass_replay_analysis:
         self.ReplayData = [r for r in self.ReplayData if r != None]
         self.parsed_replays = self.parsed_replays.union(replays_to_parse)
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
+
+        if len(self.main_names) == 0 and len(self.main_handles) > 0:
+            self.main_names = names_fallback(self.main_handles, self.ReplayData)
+            logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
 
 
     def add_parsed_replay(self, parsed_data):

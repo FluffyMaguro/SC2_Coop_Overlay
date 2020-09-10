@@ -60,7 +60,7 @@ def resend_init_message():
         OverlayMessages.append(initMessage) 
 
 
-def find_names_and_handles(ACCOUNTDIR):
+def find_names_and_handles(ACCOUNTDIR, replays=None):
     """ Finds player handles and names from the account directory (or its subfolder) """
 
     # First walk up as far as possible in-case the user has selected one the of subfolders.
@@ -85,18 +85,49 @@ def find_names_and_handles(ACCOUNTDIR):
             if file.endswith('.lnk') and '_' in file and '@' in file:
                 names.add(file.split('_')[0])
 
+    # Fallbacks for finding player names: settings, replays, winrates
     if len(names) == 0 and len(SETTINGS['main_names']) > 0:
         names = set(SETTINGS['main_names'])
+        logger.info(f'No player names found, falling back to settings: {names}')
+
+    if len(names) == 0 and len(handles) > 0 and replays != None:
+        replays = [v.get('replay_dict', {'parser':None}).get('parser',None) for k,v in replays.items() if v!=None]
+        replays = [r for r in replays if r != None]
+        names = names_fallback(handles, replays)
+        logger.info(f'No player names found, falling back to replays: {names}')
+
+    if len(names) == 0 and len(player_winrate_data) > 0:
+        names = {list(player_winrate_data.keys())[0]}
+        logger.info(f'No player names found, falling back to winrate: {names}')
+
 
     return names, handles
 
 
-def update_names_and_handles(ACCOUNTDIR):
+def names_fallback(handles, replays):
+    """ Finds new main player names from handles and replays.
+    Assumes S2Parser format of replays. """
+
+    shandles = set(handles)
+    snames = set()
+
+    for r in replays:
+        if len(shandles) == 0:
+            break
+        for p in {1,2}:
+            if r['players'][p]['handle'] in shandles:
+                snames.add(r['players'][p]['name'])
+                shandles.remove(r['players'][p]['handle'])
+
+    return snames
+
+
+def update_names_and_handles(ACCOUNTDIR, AllReplays):
     """ Takes player names and handles, and updates global variables with them"""
     global PLAYER_HANDLES
     global PLAYER_NAMES
 
-    names, handles = find_names_and_handles(ACCOUNTDIR)
+    names, handles = find_names_and_handles(ACCOUNTDIR, replays=AllReplays)
 
     if len(handles) > 0:
         logger.info(f'Found {len(handles)} player handles: {handles}')
@@ -190,11 +221,6 @@ def initialize_names_handles_winrates():
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
 
-    try:
-        update_names_and_handles(SETTINGS['account_folder'])
-    except:
-        logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
-
     player_winrate_data_temp = None
     if SETTINGS['show_player_winrates']:
         try:
@@ -207,6 +233,11 @@ def initialize_names_handles_winrates():
             logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds')
         except:
             logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
+
+    try:
+        update_names_and_handles(SETTINGS['account_folder'], AllReplays)
+    except:
+        logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
     return player_winrate_data_temp
 
