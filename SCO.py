@@ -414,7 +414,7 @@ class UI_TabWidget(object):
         self.LA_Player1.setText("Player 1")
 
         self.LA_Result = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Result.setGeometry(QtCore.QRect(140, 0, 41, 31))
+        self.LA_Result.setGeometry(QtCore.QRect(145, 0, 41, 31))
         self.LA_Result.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Result.setText("Result")
 
@@ -623,9 +623,21 @@ class UI_TabWidget(object):
 
         ### TAB Commanders
         self.TAB_MyCommanders = QtWidgets.QWidget()
-        self.TBD_MyCommanders = QtWidgets.QLabel(self.TAB_MyCommanders)
-        self.TBD_MyCommanders.setGeometry(QtCore.QRect(10, 10, 311, 21))
-        self.TBD_MyCommanders.setText("Commander games, freq, winrate, median APM")
+        self.MyCommanderHeading = MUI.MyCommanderEntry('Commander','Frequency' ,'Wins', 'Losses', 'Winrate', 'APM', 0, bold=True, line=True, parent=self.TAB_MyCommanders)
+        self.MyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_MyCommanders)
+        self.MyCommanderComboBoxLabel.setGeometry(QtCore.QRect(450, 10, 100, 21))
+        self.MyCommanderComboBoxLabel.setText('<b>Sort by</b>')
+
+        self.MyCommanderComboBox = QtWidgets.QComboBox(self.TAB_MyCommanders)
+        self.MyCommanderComboBox.setGeometry(QtCore.QRect(450, 30, 100, 21))
+        self.MyCommanderComboBox.addItem('Frequency')
+        self.MyCommanderComboBox.addItem('Wins')
+        self.MyCommanderComboBox.addItem('Lossses')
+        self.MyCommanderComboBox.addItem('Winrate')
+        self.MyCommanderComboBox.addItem('APM')
+        self.MyCommanderComboBox.activated[str].connect(self.my_commander_sort_update)
+
+
         self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
 
@@ -1539,12 +1551,15 @@ class UI_TabWidget(object):
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, bg=idx%2==1, parent=self.TAB_Difficulty)
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, parent=self.TAB_Difficulty)
         self.stats_difficulty_UI_dict['All'].show()
 
 
         ### Commander stats
-        pass
+        self.my_commander_analysis = analysis['CommanderData']
+        self.my_commander_sort_update()
+
+
 
         ### Ally commander stats
         pass
@@ -1552,6 +1567,35 @@ class UI_TabWidget(object):
         ### Region progression stats
         pass
 
+
+
+    def my_commander_sort_update(self):
+        self.sort_my_commanders_by = self.MyCommanderComboBox.currentText()
+        translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency'}
+        self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[self.sort_my_commanders_by]], reverse=True)}
+
+        if hasattr(self, 'stats_mycommander_UI_dict'):
+            to_delete = set()
+            for item in self.stats_mycommander_UI_dict:
+                self.stats_mycommander_UI_dict[item].deleteLater()
+                to_delete.add(item)
+
+            for item in to_delete:
+                del self.stats_mycommander_UI_dict[item]
+        else:
+            self.stats_mycommander_UI_dict = dict()
+
+        idx = 0
+        for co in self.my_commander_analysis:
+            if co == 'any':
+                continue
+            line = True if idx == len(self.my_commander_analysis) - 2 else False
+            self.stats_mycommander_UI_dict[co] = MUI.MyCommanderEntry(co, f"{100*self.my_commander_analysis[co]['Frequency']:.0f}%", self.my_commander_analysis[co]['Victory'], self.my_commander_analysis[co]['Defeat'], f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders, bg=True if idx%2==1 else False, line=line)
+            self.stats_mycommander_UI_dict[co].show()
+            idx += 1
+
+        self.stats_mycommander_UI_dict['any'] = MUI.MyCommanderEntry('Σ', f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", self.my_commander_analysis['any']['Victory'], self.my_commander_analysis['any']['Defeat'], f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders)
+        self.stats_mycommander_UI_dict['any'].show()
 
     def map_link_update(self, mapname=None, fdict=None):
         """ Updates the fastest map to clicked map """

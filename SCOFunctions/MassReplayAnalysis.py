@@ -94,6 +94,7 @@ def calculate_commander_data(ReplayData, main_handles):
     CommanderData = dict()
     AllyCommanderData = dict()
     games = 0
+    CommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
 
     for r in ReplayData:
         for p in {1,2}:
@@ -104,6 +105,8 @@ def calculate_commander_data(ReplayData, main_handles):
 
                 CommanderData[commander][r['result']] += 1
                 CommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
+                CommanderData['any'][r['result']] += 1
+                CommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
                 games += 1
             else:
                 if not commander in AllyCommanderData:
@@ -123,7 +126,7 @@ def calculate_commander_data(ReplayData, main_handles):
     # Main player            
     for commander in CommanderData:
         CommanderData[commander]['Frequency'] = (CommanderData[commander]['Victory'] + CommanderData[commander]['Defeat'])/games
-        CommanderData[commander]['Winrate'] = CommanderData[commander]['Victory']/games
+        CommanderData[commander]['Winrate'] = CommanderData[commander]['Victory']/len(CommanderData[commander]['MedianAPM'])
         CommanderData[commander]['MedianAPM'] = statistics.median(CommanderData[commander]['MedianAPM'])
         
     # Ally

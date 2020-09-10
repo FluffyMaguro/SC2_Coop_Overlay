@@ -266,6 +266,60 @@ class DifficultyEntry(QtWidgets.QWidget):
             self.line.setFrameShadow(QtWidgets.QFrame.Sunken)                 
 
 
+class MyCommanderEntry(QtWidgets.QWidget):
+    """Custom widget for my commander entry in stats"""
+
+    def __init__(self, commander, frequency, wins, losses, winrate, apm, y, bold=False, line=False, bg=False, bgcolor="#f1f1f1", parent=None):
+        super().__init__(parent)
+
+        self.setGeometry(QtCore.QRect(50, y, 400, 40))
+
+        self.la_name = QtWidgets.QLabel(self)
+        self.la_name.setGeometry(QtCore.QRect(10, 10, 75, 20))
+        self.la_name.setText(str(commander))
+
+        self.la_frequency = QtWidgets.QLabel(self)
+        self.la_frequency.setGeometry(QtCore.QRect(85, 10, 70, 20))
+        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_frequency.setText(str(frequency))
+
+        self.la_wins = QtWidgets.QLabel(self)
+        self.la_wins.setGeometry(QtCore.QRect(145, 10, 70, 20))
+        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_wins.setText(str(wins))
+
+        self.la_losses = QtWidgets.QLabel(self)
+        self.la_losses.setGeometry(QtCore.QRect(195, 10, 70, 20))
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_losses.setText(str(losses))
+
+        self.la_winrate = QtWidgets.QLabel(self)
+        self.la_winrate.setGeometry(QtCore.QRect(260, 10, 50, 20))
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_winrate.setText(str(winrate))
+
+        self.la_apm = QtWidgets.QLabel(self)
+        self.la_apm.setGeometry(QtCore.QRect(300, 10, 70, 20))
+        self.la_apm.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_apm.setText(str(apm))
+
+        style = ''
+
+        if bold:
+            style += 'font-weight: bold;'
+
+        if bg:
+            style += f'background-color: {bgcolor}'
+
+        self.setStyleSheet(style)
+
+        if line:
+            self.line = QtWidgets.QFrame(self)
+            self.line.setGeometry(QtCore.QRect(0, 30, 370, 2))
+            self.line.setFrameShape(QtWidgets.QFrame.HLine)
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)     
+
+
 class GameEntry:
     """ 
     Class for UI elements in games tab. 
@@ -311,12 +365,12 @@ class GameEntry:
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)        
 
         self.la_mapname = QtWidgets.QLabel(self.widget)
-        self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 120, 21))
+        self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 125, 21))
         self.la_mapname.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.la_mapname.setText(self.mapname)
 
         self.la_result = QtWidgets.QLabel(self.widget)
-        self.la_result.setGeometry(QtCore.QRect(135, line_spacing, 50, 21))
+        self.la_result.setGeometry(QtCore.QRect(140, line_spacing, 50, 21))
         self.la_result.setAlignment(QtCore.Qt.AlignCenter)
         self.la_result.setText(self.result)
 
