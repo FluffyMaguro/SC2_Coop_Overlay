@@ -221,6 +221,8 @@ class MapEntry(QtWidgets.QWidget):
                 winrate = f"{100*wins/(wins+losses):.0f}%"
         self.la_winrate.setText(winrate)
 
+        self.show()
+
 
 class DifficultyEntry(QtWidgets.QWidget):
     """Custom widget for difficulty entry in stats"""
@@ -263,7 +265,9 @@ class DifficultyEntry(QtWidgets.QWidget):
             self.line = QtWidgets.QFrame(self)
             self.line.setGeometry(QtCore.QRect(0, 30, 235, 2))
             self.line.setFrameShape(QtWidgets.QFrame.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)                 
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.show()
 
 
 class MyCommanderEntry(QtWidgets.QWidget):
@@ -317,7 +321,9 @@ class MyCommanderEntry(QtWidgets.QWidget):
             self.line = QtWidgets.QFrame(self)
             self.line.setGeometry(QtCore.QRect(0, 30, 370, 2))
             self.line.setFrameShape(QtWidgets.QFrame.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)     
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.show()     
 
 
 class GameEntry:

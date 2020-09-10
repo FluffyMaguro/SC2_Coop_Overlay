@@ -1,3 +1,14 @@
+"""
+Main module for StarCraft II Co-op Overlay
+
+Casual chain:
+Setup -> Load Settings -> UI
+                       -> Server manager
+                       -> Twitch bot
+                       -> Initialize winrates & names -> Check replays (loop)
+                                                      -> Player winrates
+                                                      -> Mass replay analysis -> Generate stats
+"""
 import os
 import sys
 import json
@@ -1492,12 +1503,8 @@ class UI_TabWidget(object):
 
         # Delete buttons if not required
         if hasattr(self, 'stats_maps_UI_dict'):
-            to_delete = set()
-            for item in self.stats_maps_UI_dict:
+            for item in self.stats_maps_UI_dict.keys():
                 self.stats_maps_UI_dict[item].deleteLater()
-                to_delete.add(item)
-
-            for item in to_delete:
                 del self.stats_maps_UI_dict[item]
         else:
             self.stats_maps_UI_dict = dict()
@@ -1511,7 +1518,6 @@ class UI_TabWidget(object):
             idx += 1
             self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'])
             self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
-            self.stats_maps_UI_dict[m].show()
 
         # Try to show the last visible fastest map if it's there
         if hasattr(self, 'last_fastest_map') and self.last_fastest_map in analysis['MapData'].keys():
@@ -1531,12 +1537,8 @@ class UI_TabWidget(object):
 
         ### Difficulty stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
-            to_delete = set()
-            for item in self.stats_difficulty_UI_dict:
+            for item in self.stats_difficulty_UI_dict.keys():
                 self.stats_difficulty_UI_dict[item].deleteLater()
-                to_delete.add(item)
-
-            for item in to_delete:
                 del self.stats_difficulty_UI_dict[item]
         else:
             self.stats_difficulty_UI_dict = dict()
@@ -1548,14 +1550,12 @@ class UI_TabWidget(object):
             if difficulty in analysis['DifficultyData']:
                 line = True if idx+1 == len(analysis['DifficultyData']) else False
                 self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 50, idx*18+20, bg=idx%2==1, parent=self.TAB_Difficulty, line=line)
-                self.stats_difficulty_UI_dict[difficulty].show()
                 idx += 1
                 AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
         self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, parent=self.TAB_Difficulty)
-        self.stats_difficulty_UI_dict['All'].show()
 
 
         ### Commander stats
@@ -1578,12 +1578,8 @@ class UI_TabWidget(object):
         self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[sort_my_commanders_by]], reverse=True)}
 
         if hasattr(self, 'stats_mycommander_UI_dict'):
-            to_delete = set()
-            for item in self.stats_mycommander_UI_dict:
+            for item in self.stats_mycommander_UI_dict.keys():
                 self.stats_mycommander_UI_dict[item].deleteLater()
-                to_delete.add(item)
-
-            for item in to_delete:
                 del self.stats_mycommander_UI_dict[item]
         else:
             self.stats_mycommander_UI_dict = dict()
@@ -1594,11 +1590,9 @@ class UI_TabWidget(object):
                 continue
             line = True if idx == len(self.my_commander_analysis) - 2 else False
             self.stats_mycommander_UI_dict[co] = MUI.MyCommanderEntry(co, f"{100*self.my_commander_analysis[co]['Frequency']:.0f}%", self.my_commander_analysis[co]['Victory'], self.my_commander_analysis[co]['Defeat'], f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders, bg=True if idx%2==1 else False, line=line)
-            self.stats_mycommander_UI_dict[co].show()
             idx += 1
 
         self.stats_mycommander_UI_dict['any'] = MUI.MyCommanderEntry('Σ', f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", self.my_commander_analysis['any']['Victory'], self.my_commander_analysis['any']['Defeat'], f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders)
-        self.stats_mycommander_UI_dict['any'].show()
 
 
     def map_link_update(self, mapname=None, fdict=None):

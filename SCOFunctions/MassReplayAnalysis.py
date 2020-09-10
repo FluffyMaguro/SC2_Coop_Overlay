@@ -166,6 +166,31 @@ def calculate_commander_data(ReplayData, main_handles):
     return CommanderData, AllyCommanderData
 
 
+def calculate_region_data(ReplayData, main_handles):
+    """ Calculates region data - frequency, wins, losses, winrate, max ascension level, leveled commanders """
+    dRegion = dict()
+    for r in ReplayData:
+        if not r['region'] in dRegion:
+            dRegion[r['region']] = {'Victory':0,'Defeat':0, 'max_asc':0,'max_com': set()}
+
+        dRegion[r['region']][r['result']] += 1
+
+        for p in {1,2}:
+            if r['players'][p]['handle'] in main_handles:
+                # Add leveled commanders:
+                if r['players'][p]['commander_level'] == 15:
+                    dRegion[r['region']]['max_com'].add(r['players'][p]['commander'])
+                # Track max ascension
+                if r['players'][p]['commander_mastery_level'] > dRegion[r['region']]['max_asc']:
+                    dRegion[r['region']]['max_asc'] == r['players'][p]['commander_mastery_level']
+
+    for region in dRegion:
+        dRegion[region]['winrate'] = dRegion[region]['Victory']/(dRegion[region]['Victory'] + dRegion[region]['Defeat'])
+        dRegion[region]['frequency'] = (dRegion[region]['Victory'] + dRegion[region]['Defeat'])/len(ReplayData)
+
+    return dRegion
+
+
 class mass_replay_analysis:
     """ Class for mass replay analysis"""
 
@@ -332,8 +357,9 @@ class mass_replay_analysis:
         DifficultyData = calculate_difficulty_data(data)
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
+        RegionData = calculate_region_data(data, self.main_handles)
 
-        return {'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
+        return {'RegionData':RegionData, 'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 
 
 def mass_replay_analysis_thread(ACCOUNTDIR):
