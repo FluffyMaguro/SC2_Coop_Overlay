@@ -643,9 +643,12 @@ class UI_TabWidget(object):
 
         ### TAB Allied Commanders
         self.TAB_AlliedCommanders = QtWidgets.QWidget()
-        self.TBD_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
-        self.TBD_AlliedCommanders.setGeometry(QtCore.QRect(10, 10, 421, 21))
-        self.TBD_AlliedCommanders.setText("Frequency (corrected), typical ally mastery, prestige frequency, median apm")
+        self.LA_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
+        self.LA_AlliedCommanders.setGeometry(QtCore.QRect(555, 405, 400, 20))
+        self.LA_AlliedCommanders.setText("* Frequency has been corrected for your commander preferences")
+        self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
+        self.LA_AlliedCommanders.setEnabled(False)
+
         self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
 
@@ -658,7 +661,7 @@ class UI_TabWidget(object):
         self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
 
-        self.TABW_StatResults.setCurrentIndex(0)
+        self.TABW_StatResults.setCurrentIndex(3)
 
         ############################
         ###### TWITCH BOT TAB ######
@@ -1570,9 +1573,9 @@ class UI_TabWidget(object):
 
 
     def my_commander_sort_update(self):
-        self.sort_my_commanders_by = self.MyCommanderComboBox.currentText()
+        sort_my_commanders_by = self.MyCommanderComboBox.currentText()
         translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency'}
-        self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[self.sort_my_commanders_by]], reverse=True)}
+        self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[sort_my_commanders_by]], reverse=True)}
 
         if hasattr(self, 'stats_mycommander_UI_dict'):
             to_delete = set()
@@ -1596,6 +1599,7 @@ class UI_TabWidget(object):
 
         self.stats_mycommander_UI_dict['any'] = MUI.MyCommanderEntry('Σ', f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", self.my_commander_analysis['any']['Victory'], self.my_commander_analysis['any']['Defeat'], f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders)
         self.stats_mycommander_UI_dict['any'].show()
+
 
     def map_link_update(self, mapname=None, fdict=None):
         """ Updates the fastest map to clicked map """
