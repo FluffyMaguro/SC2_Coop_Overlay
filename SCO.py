@@ -746,29 +746,29 @@ class UI_TabWidget(object):
 
         # Links
         self.FR_Links = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Links.setGeometry(QtCore.QRect(20, 20, 471, 191))
+        self.FR_Links.setGeometry(QtCore.QRect(20, 20, 471, 235))
         self.FR_Links.setAutoFillBackground(True)
         self.FR_Links.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Links.setFrameShadow(QtWidgets.QFrame.Plain)
 
-        # GitHub
-        self.IMG_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_GitHub.setGeometry(QtCore.QRect(20, 20, 41, 41))
-        self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
-
-        self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.LA_GitHub.setGeometry(QtCore.QRect(70, 20, 131, 41))
-        self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">GitHub</a>')
 
         # Maguro.one
         self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_MaguroOne.setGeometry(QtCore.QRect(20, 70, 31, 41))
+        self.IMG_MaguroOne.setGeometry(QtCore.QRect(20, 20, 31, 41))
         self.IMG_MaguroOne.setPixmap(QtGui.QPixmap(innerPath("src/maguro.jpg")))
 
         self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 70, 131, 41))
+        self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 20, 131, 41))
         self.LA_MaguroOne.setText('<a href="www.maguro.one">Maguro.one</a>')
+
+        # My discord
+        self.IMG_MDiscord = QtWidgets.QLabel(self.FR_Links)
+        self.IMG_MDiscord.setGeometry(QtCore.QRect(20, 70, 41, 51))
+        self.IMG_MDiscord.setPixmap(QtGui.QPixmap(innerPath("src/mdiscord.png")))
+
+        self.LA_MDiscord = QtWidgets.QLabel(self.FR_Links)
+        self.LA_MDiscord.setGeometry(QtCore.QRect(70, 80, 131, 31))
+        self.LA_MDiscord.setText('<a href="https://discord.gg/FtGdhqD">My discord</a>')
 
         # Twitter
         self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
@@ -776,39 +776,49 @@ class UI_TabWidget(object):
         self.IMG_Twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
 
         self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 131, 31))
-        self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">Twitter</a>')
+        self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 160, 31))
+        self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">@FluffyMaguro</a>')
+
+        # GitHub
+        self.IMG_GitHub = QtWidgets.QLabel(self.FR_Links)
+        self.IMG_GitHub.setGeometry(QtCore.QRect(20, 175, 41, 41))
+        self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
+
+        self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
+        self.LA_GitHub.setGeometry(QtCore.QRect(70, 175, 200, 41))
+        self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">Overlay on GitHub</a>')
 
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Reddit.setGeometry(QtCore.QRect(240, 10, 41, 51))
+        self.IMG_Reddit.setGeometry(QtCore.QRect(250, 10, 41, 51))
         self.IMG_Reddit.setPixmap(QtGui.QPixmap(innerPath("src/reddit.png")))
 
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Subreddit.setGeometry(QtCore.QRect(290, 20, 161, 31))
+        self.LA_Subreddit.setGeometry(QtCore.QRect(300, 20, 161, 31))
         self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
 
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_BattleNet.setGeometry(QtCore.QRect(240, 60, 41, 51))
+        self.IMG_BattleNet.setGeometry(QtCore.QRect(250, 60, 41, 51))
         self.IMG_BattleNet.setPixmap(QtGui.QPixmap(innerPath("src/sc2.png")))
 
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.LA_BattleNet.setGeometry(QtCore.QRect(290, 70, 141, 31))
+        self.LA_BattleNet.setGeometry(QtCore.QRect(300, 70, 141, 31))
         self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
 
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Discord.setGeometry(QtCore.QRect(240, 120, 31, 41))
+        self.IMG_Discord.setGeometry(QtCore.QRect(250, 120, 31, 41))
         self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
         
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Discord.setGeometry(QtCore.QRect(290, 120, 141, 41))
+        self.LA_Discord.setGeometry(QtCore.QRect(300, 120, 141, 41))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
 
         # Donate
         self.FR_Donate = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Donate.setGeometry(QtCore.QRect(20, 225, 471, 100))
+        self.FR_Donate.setGeometry(QtCore.QRect(20, 275, 471, 100))
         self.FR_Donate.setAutoFillBackground(True)
         self.FR_Donate.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Donate.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -823,7 +833,7 @@ class UI_TabWidget(object):
         self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">donate if you feel generous</a>')
 
         # Styling
-        for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate}:
+        for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate, self.LA_MDiscord}:
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
 

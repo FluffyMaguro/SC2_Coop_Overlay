@@ -28,15 +28,15 @@ class AllyCommStats(QtWidgets.QWidget):
         self.setGeometry(QtCore.QRect(470, 50, 500, 410))
 
         # Background
-        self.fr_bg = QtWidgets.QFrame(self)
+        self.fr_bg = QtWidgets.QLabel(self)
         self.fr_bg.setGeometry(QtCore.QRect(0, 0, self.width()-20, 87))
+        self.fr_bg.setStyleSheet(f'background-color: black;')
 
         image_file = truePath(f'Layouts/Commanders/{commander}.png')
         if os.path.isfile(image_file):
-            image_file = image_file.replace('\\', '/')
-            self.fr_bg.setStyleSheet(f'background-color: black; background-image: url("{image_file}")')
-        else:
-            self.fr_bg.setStyleSheet('background-color: black; background-image: none')
+            pixmap = QtGui.QPixmap(image_file)
+            pixmap = pixmap.scaled(self.fr_bg.width(), self.fr_bg.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+            self.fr_bg.setPixmap(pixmap)
        
         # Commander name
         self.la_name = QtWidgets.QLabel(self)
