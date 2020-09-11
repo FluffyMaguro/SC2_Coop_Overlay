@@ -196,17 +196,20 @@ class FastestMap(QtWidgets.QGroupBox):
 
 
 class AllyCommanderEntry(QtWidgets.QWidget):
-    """Custom widget for map entry in stats""" 
+    """Custom widget for ally commander entry in stats""" 
     def __init__(self, commander, frequency, wins, losses, winrate, apm, y, button=True, bold=False, bg=False, bgcolor="#f1f1f1", parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(15, y, 450, 25))
         
         # Button/label
-        self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
-        if not button:
+        if button:
+            self.bt_button = QtWidgets.QPushButton(self)
+            self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
+        else:
+            self.bt_button = QtWidgets.QLabel(self)
+            self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 20))
             self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
-        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
         self.bt_button.setText(commander)
 
         # Frequency
@@ -252,7 +255,6 @@ class AllyCommanderEntry(QtWidgets.QWidget):
         for item in {self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_apm}:
             item.setStyleSheet(style)
 
-        # self.setStyleSheet(style)
         self.show()
 
 

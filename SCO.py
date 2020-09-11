@@ -665,7 +665,7 @@ class UI_TabWidget(object):
         self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
         self.LA_AlliedCommanders.setEnabled(False)
 
-        self.AlliedCommanderHeading = MUI.AllyCommanderEntry('Allied commander', 'Frequency', 'Wins', 'Losses', 'Winrate', 'APM', 0, bold=True, button=False, parent=self.TAB_AlliedCommanders,)
+        self.AlliedCommanderHeading = MUI.AllyCommanderEntry('Allied commander', 'Frequency', 'Wins', 'Losses', 'Winrate', 'APM', 2, bold=True, button=False, parent=self.TAB_AlliedCommanders,)
 
         self.AllyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_AlliedCommanders)
         self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(470, 0, 100, 21))
