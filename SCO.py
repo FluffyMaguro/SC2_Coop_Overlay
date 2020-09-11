@@ -626,6 +626,12 @@ class UI_TabWidget(object):
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
 
+        self.LA_Stats_Wait = QtWidgets.QLabel(self.TAB_Maps)
+        self.LA_Stats_Wait.setGeometry(QtCore.QRect(0, 0, 470, self.TAB_Maps.height()))
+        self.LA_Stats_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
+        self.LA_Stats_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+
+
         ### TAB Difficulty
         self.TAB_Difficulty = QtWidgets.QWidget()
         self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_Difficulty)
@@ -648,17 +654,31 @@ class UI_TabWidget(object):
         self.MyCommanderComboBox.addItem('APM')
         self.MyCommanderComboBox.activated[str].connect(self.my_commander_sort_update)
 
-
         self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
 
         ### TAB Allied Commanders
         self.TAB_AlliedCommanders = QtWidgets.QWidget()
         self.LA_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
-        self.LA_AlliedCommanders.setGeometry(QtCore.QRect(555, 405, 400, 20))
+        self.LA_AlliedCommanders.setGeometry(QtCore.QRect(555, 408, 400, 20))
         self.LA_AlliedCommanders.setText("* Frequency has been corrected for your commander preferences")
         self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
         self.LA_AlliedCommanders.setEnabled(False)
+
+        self.AlliedCommanderHeading = MUI.AllyCommanderEntry('Allied commander', 'Frequency', 'Wins', 'Losses', 'Winrate', 'APM', 0, bold=True, button=False, parent=self.TAB_AlliedCommanders,)
+
+        self.AllyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_AlliedCommanders)
+        self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(470, 0, 100, 21))
+        self.AllyCommanderComboBoxLabel.setText('<b>Sort by</b>')
+
+        self.AllyCommanderComboBox = QtWidgets.QComboBox(self.TAB_AlliedCommanders)
+        self.AllyCommanderComboBox.setGeometry(QtCore.QRect(470, 20, 100, 21))
+        self.AllyCommanderComboBox.addItem('Frequency')
+        self.AllyCommanderComboBox.addItem('Wins')
+        self.AllyCommanderComboBox.addItem('Lossses')
+        self.AllyCommanderComboBox.addItem('Winrate')
+        self.AllyCommanderComboBox.addItem('APM')
+        self.AllyCommanderComboBox.activated[str].connect(self.ally_commander_sort_update)
 
         self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
@@ -1433,6 +1453,7 @@ class UI_TabWidget(object):
         player_names = (', ').join(self.CAnalysis.main_names)
         self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
         self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
+        self.LA_Stats_Wait.deleteLater()
         self.generate_stats()
     
 
@@ -1503,7 +1524,7 @@ class UI_TabWidget(object):
 
         # Delete buttons if not required
         if hasattr(self, 'stats_maps_UI_dict'):
-            for item in self.stats_maps_UI_dict.keys():
+            for item in set(self.stats_maps_UI_dict.keys()):
                 self.stats_maps_UI_dict[item].deleteLater()
                 del self.stats_maps_UI_dict[item]
         else:
@@ -1537,7 +1558,7 @@ class UI_TabWidget(object):
 
         ### Difficulty stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
-            for item in self.stats_difficulty_UI_dict.keys():
+            for item in set(self.stats_difficulty_UI_dict.keys()):
                 self.stats_difficulty_UI_dict[item].deleteLater()
                 del self.stats_difficulty_UI_dict[item]
         else:
@@ -1562,23 +1583,22 @@ class UI_TabWidget(object):
         self.my_commander_analysis = analysis['CommanderData']
         self.my_commander_sort_update()
 
-
-
         ### Ally commander stats
-        pass
-
+        self.ally_commander_analysis = analysis['AllyCommanderData']
+        self.ally_commander_sort_update()
+        
         ### Region progression stats
         pass
 
 
-
     def my_commander_sort_update(self):
+        """ Creates and updates widgets for my commander stats """
         sort_my_commanders_by = self.MyCommanderComboBox.currentText()
         translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency'}
         self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[sort_my_commanders_by]], reverse=True)}
 
         if hasattr(self, 'stats_mycommander_UI_dict'):
-            for item in self.stats_mycommander_UI_dict.keys():
+            for item in set(self.stats_mycommander_UI_dict.keys()):
                 self.stats_mycommander_UI_dict[item].deleteLater()
                 del self.stats_mycommander_UI_dict[item]
         else:
@@ -1589,10 +1609,57 @@ class UI_TabWidget(object):
             if co == 'any':
                 continue
             line = True if idx == len(self.my_commander_analysis) - 2 else False
-            self.stats_mycommander_UI_dict[co] = MUI.MyCommanderEntry(co, f"{100*self.my_commander_analysis[co]['Frequency']:.0f}%", self.my_commander_analysis[co]['Victory'], self.my_commander_analysis[co]['Defeat'], f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders, bg=True if idx%2==1 else False, line=line)
+            self.stats_mycommander_UI_dict[co] = MUI.MyCommanderEntry(co, f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%", self.my_commander_analysis[co]['Victory'], self.my_commander_analysis[co]['Defeat'], f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders, bg=True if idx%2==1 else False, line=line)
             idx += 1
 
         self.stats_mycommander_UI_dict['any'] = MUI.MyCommanderEntry('Σ', f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", self.my_commander_analysis['any']['Victory'], self.my_commander_analysis['any']['Defeat'], f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", idx*18+20, parent=self.TAB_MyCommanders)
+
+
+    def ally_commander_sort_update(self):
+        """ Creates and updates widgets for allu commander stats """
+        sort_commanders_by = self.AllyCommanderComboBox.currentText()
+        translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency'}
+        self.ally_commander_analysis = {k:v for k,v in sorted(self.ally_commander_analysis.items(), key=lambda x:x[1][translate[sort_commanders_by]], reverse=True)}
+
+        if hasattr(self, 'stats_allycommander_UI_dict'):
+            for item in set(self.stats_allycommander_UI_dict.keys()):
+                self.stats_allycommander_UI_dict[item].deleteLater()
+                del self.stats_allycommander_UI_dict[item]
+        else:
+            self.stats_allycommander_UI_dict = dict()
+
+        idx = 0
+        spacing = 21
+        firstCommander = None
+        for co in self.ally_commander_analysis:
+            if co == 'any':
+                continue
+            if firstCommander == None:
+                firstCommander = co
+            self.stats_allycommander_UI_dict[co] = MUI.AllyCommanderEntry(co, f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%", self.ally_commander_analysis[co]['Victory'], self.ally_commander_analysis[co]['Defeat'], f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%", f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}", idx*spacing+23, parent=self.TAB_AlliedCommanders, bg=True if idx%2==1 else False)
+            self.stats_allycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_ally_commander_stats_update, co))
+            idx += 1
+
+        self.stats_allycommander_UI_dict['any'] = MUI.AllyCommanderEntry('Σ', f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%", self.ally_commander_analysis['any']['Victory'], self.ally_commander_analysis['any']['Defeat'], f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%", f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}", idx*spacing+23, parent=self.TAB_AlliedCommanders, button=False)
+
+        # Update details
+        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info != None:
+            self.ally_detailed_info.deleteLater()
+            self.ally_detailed_info = None
+
+        if hasattr(self, 'ally_commander_clicked'):
+            self.ally_detailed_info = MUI.AllyCommStats(self.ally_commander_clicked, parent=self.TAB_AlliedCommanders)
+        elif len(self.ally_commander_analysis) > 1:
+            self.ally_detailed_info = MUI.AllyCommStats(firstCommander, parent=self.TAB_AlliedCommanders)
+
+
+    def detailed_ally_commander_stats_update(self, commander):
+        """ Updates allied commander details"""
+        self.ally_commander_clicked = commander
+        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info != None:
+            self.ally_detailed_info.deleteLater()
+            self.ally_detailed_info = None
+        self.ally_detailed_info = MUI.AllyCommStats(commander, parent=self.TAB_AlliedCommanders)
 
 
     def map_link_update(self, mapname=None, fdict=None):

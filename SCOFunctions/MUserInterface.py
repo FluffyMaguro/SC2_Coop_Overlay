@@ -6,7 +6,7 @@ import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
 
-from SCOFunctions.MFilePath import innerPath
+from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
@@ -19,6 +19,50 @@ def find_file(file):
     new_path = os.path.abspath(file)
     logger.info(f'Finding file {new_path}')
     subprocess.Popen(f'explorer /select,"{new_path}"')
+
+
+class AllyCommStats(QtWidgets.QWidget):
+    """ Widget for detailed stats for allied commander (mastery, prestige)"""
+    def __init__(self, commander, parent=None):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(470, 50, 500, 410))
+
+        # Background
+        self.fr_bg = QtWidgets.QFrame(self)
+        self.fr_bg.setGeometry(QtCore.QRect(0, 0, self.width()-20, 87))
+
+        image_file = truePath(f'Layouts/Commanders/{commander}.png')
+        if os.path.isfile(image_file):
+            image_file = image_file.replace('\\', '/')
+            self.fr_bg.setStyleSheet(f'background-color: black; background-image: url("{image_file}")')
+        else:
+            self.fr_bg.setStyleSheet('background-color: black; background-image: none')
+       
+        # Commander name
+        self.la_name = QtWidgets.QLabel(self)
+        self.la_name.setGeometry(QtCore.QRect(0, 0, self.width()-40, 87))
+        self.la_name.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        self.la_name.setText(str(commander))
+        self.la_name.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
+        shadow = QtWidgets.QGraphicsDropShadowEffect() 
+        shadow.setBlurRadius(1)
+        shadow.setOffset(2)
+        self.la_name.setGraphicsEffect(shadow) 
+        
+        # Frequency
+
+        # Mastery
+
+        # Prestige
+
+        self.show()
+
+
+
+
+
+        
+
 
 
 class FastestMap(QtWidgets.QGroupBox):
@@ -149,6 +193,67 @@ class FastestMap(QtWidgets.QGroupBox):
             style = ' style="color:#aaa"' if mastery == 0 else ''
             text += f"<span{style}>{fill}{mastery}  {CommanderMastery[commander][idx]}</span><br>" 
         return text
+
+
+class AllyCommanderEntry(QtWidgets.QWidget):
+    """Custom widget for map entry in stats""" 
+    def __init__(self, commander, frequency, wins, losses, winrate, apm, y, button=True, bold=False, bg=False, bgcolor="#f1f1f1", parent=None):
+        super().__init__(parent)
+
+        self.setGeometry(QtCore.QRect(15, y, 450, 25))
+        
+        # Button/label
+        self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
+        if not button:
+            self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
+        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
+        self.bt_button.setText(commander)
+
+        # Frequency
+        self.la_frequency = QtWidgets.QLabel(self)
+        self.la_frequency.setGeometry(QtCore.QRect(150, 0, 70, 20))
+        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_frequency.setToolTip('Commander frequency (corrected for your commander choices)')
+        self.la_frequency.setText(str(frequency))
+
+        # Wins
+        self.la_wins = QtWidgets.QLabel(self)
+        self.la_wins.setGeometry(QtCore.QRect(210, 0, 70, 20))
+        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_wins.setText(str(wins))
+      
+        # Losses
+        self.la_losses = QtWidgets.QLabel(self)
+        self.la_losses.setGeometry(QtCore.QRect(275, 0, 55, 20))
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_losses.setText(str(losses))
+
+        # Winrate
+        self.la_winrate = QtWidgets.QLabel(self)
+        self.la_winrate.setGeometry(QtCore.QRect(328, 0, 55, 20))
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_winrate.setText(str(winrate))
+
+        # Apm
+        self.la_apm = QtWidgets.QLabel(self)
+        self.la_apm.setGeometry(QtCore.QRect(380, 0, 50, 20))
+        self.la_apm.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_apm.setToolTip('Median APM')
+        self.la_apm.setText(str(apm))
+
+
+        style = ''
+        if bold:
+            style += 'font-weight: bold;'
+            self.bt_button.setStyleSheet('font-weight: bold')
+        if bg:
+            style += f'background-color: {bgcolor}'
+
+        for item in {self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_apm}:
+            item.setStyleSheet(style)
+
+        # self.setStyleSheet(style)
+        self.show()
 
 
 class MapEntry(QtWidgets.QWidget):

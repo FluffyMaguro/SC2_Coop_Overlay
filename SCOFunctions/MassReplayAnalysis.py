@@ -95,6 +95,7 @@ def calculate_commander_data(ReplayData, main_handles):
     AllyCommanderData = dict()
     games = 0
     CommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
+    AllyCommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
 
     for r in ReplayData:
         for p in {1,2}:
@@ -116,6 +117,9 @@ def calculate_commander_data(ReplayData, main_handles):
                 AllyCommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
                 AllyCommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
 
+                AllyCommanderData['any'][r['result']] += 1
+                AllyCommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
+
                 # Add masteries, use relative values to properly reflect player preferences
                 masteries = get_masterises(r,p)
                 mastery_sum = sum(masteries)/3
@@ -125,43 +129,49 @@ def calculate_commander_data(ReplayData, main_handles):
 
     # Main player            
     for commander in CommanderData:
-        CommanderData[commander]['Frequency'] = (CommanderData[commander]['Victory'] + CommanderData[commander]['Defeat'])/games
-        CommanderData[commander]['Winrate'] = CommanderData[commander]['Victory']/len(CommanderData[commander]['MedianAPM'])
-        CommanderData[commander]['MedianAPM'] = statistics.median(CommanderData[commander]['MedianAPM'])
+        com_games = len(CommanderData[commander]['MedianAPM'])
+        CommanderData[commander]['Frequency'] = 0 if games == 0 else com_games/games
+        CommanderData[commander]['Winrate'] = 0 if com_games == 0 else CommanderData[commander]['Victory']/len(CommanderData[commander]['MedianAPM'])
+        CommanderData[commander]['MedianAPM'] = 0 if com_games == 0 else statistics.median(CommanderData[commander]['MedianAPM'])
         
     # Ally
     would_be_observed_games_total = 0
     for commander in AllyCommanderData:
+        com_games = len(AllyCommanderData[commander]['MedianAPM'])
+
         # Winrate
-        AllyCommanderData[commander]['Winrate'] = AllyCommanderData[commander]['Victory']/(AllyCommanderData[commander]['Victory'] + AllyCommanderData[commander]['Defeat'])
+        AllyCommanderData[commander]['Winrate'] = 0 if com_games == 0 else AllyCommanderData[commander]['Victory']/com_games
 
         # APM
-        AllyCommanderData[commander]['MedianAPM'] = statistics.median(AllyCommanderData[commander]['MedianAPM'])
+        AllyCommanderData[commander]['MedianAPM'] =  0 if com_games == 0 else statistics.median(AllyCommanderData[commander]['MedianAPM'])
 
-        # Mastery (sum list of lists, normalize)
-        mastery_summed = {0:0,1:0,2:0,3:0,4:0,5:0}
-        for i in AllyCommanderData[commander]['Mastery']:
-            for idx,m in enumerate(i):
-                mastery_summed[idx] += m
+        if commander != 'any':
+            # Mastery (sum list of lists, normalize)
+            mastery_summed = {0:0,1:0,2:0,3:0,4:0,5:0}
+            for i in AllyCommanderData[commander]['Mastery']:
+                for idx,m in enumerate(i):
+                    mastery_summed[idx] += m
 
-        # Normalize mastery choices
-        mastery_summed_copy = mastery_summed.copy()
-        for idx,m in enumerate(mastery_summed):
-            divisor = (mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
-            mastery_summed[idx] = 0 if divisor == 0 else mastery_summed[idx]/divisor
+            # Normalize mastery choices
+            mastery_summed_copy = mastery_summed.copy()
+            for idx,m in enumerate(mastery_summed):
+                divisor = (mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
+                mastery_summed[idx] = 0 if divisor == 0 else mastery_summed[idx]/divisor
 
-        AllyCommanderData[commander]['Mastery'] = mastery_summed
+            AllyCommanderData[commander]['Mastery'] = mastery_summed
 
-        # Prestige
-        AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
+            # Prestige
+            AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
 
-        # For ally correct frequency for the main player selecting certain commander (1/(1-f)) factor and rescale
-        would_be_observed_games = (1/(1-CommanderData.get(commander,{'Frequency':0})['Frequency']))*(AllyCommanderData[commander]['Victory'] + AllyCommanderData[commander]['Defeat'])
-        AllyCommanderData[commander]['Frequency'] = would_be_observed_games
-        would_be_observed_games_total += would_be_observed_games
+            # For ally correct frequency for the main player selecting certain commander (1/(1-f)) factor and rescale
+            would_be_observed_games = (1/(1-CommanderData.get(commander,{'Frequency':0})['Frequency'])) * com_games
+            AllyCommanderData[commander]['Frequency'] = would_be_observed_games
+            would_be_observed_games_total += would_be_observed_games
 
+
+    AllyCommanderData['any']['Frequency'] = would_be_observed_games_total
     for commander in AllyCommanderData:
-        AllyCommanderData[commander]['Frequency'] = AllyCommanderData[commander]['Frequency']/would_be_observed_games_total
+        AllyCommanderData[commander]['Frequency'] = 0 if would_be_observed_games_total == 0 else AllyCommanderData[commander]['Frequency']/would_be_observed_games_total
 
     return CommanderData, AllyCommanderData
 

@@ -9,10 +9,10 @@ def truePath(file):
     
     if getattr(sys, 'frozen', False):
         path = os.path.join(pathlib.Path(sys.executable).parent.absolute(),file)
-        return path
+        return os.path.normpath(path)
 
     path = os.path.join(pathlib.Path(__file__).parent.parent.absolute(),file)    
-    return path
+    return os.path.normpath(path)
 
 
 def innerPath(file):
