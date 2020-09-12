@@ -1,12 +1,12 @@
 """
 Main module for StarCraft II Co-op Overlay
 
-Casual chain:
+Causal chain:
 Setup -> Load Settings -> UI
-                       -> Server manager
-                       -> Twitch bot
-                       -> Initialize winrates & names -> Check replays (loop)
-                                                      -> Player winrates
+                       -> Server manager (thread)
+                       -> Twitch bot (thread)
+                       -> Initialize winrates & names -> Check replays (loop of threads)
+                                                      -> Player winrates (thread)
                                                       -> Mass replay analysis -> Generate stats
 """
 import os
@@ -33,7 +33,7 @@ from SCOFunctions.MTwitchBot import TwitchBot
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 119
+APPVERSION = 190
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -533,7 +533,7 @@ class UI_TabWidget(object):
 
         self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
         self.CH_DualMain.setGeometry(QtCore.QRect(280, 20, 250, 17))
-        self.CH_DualMain.setChecked(True)
+        self.CH_DualMain.setChecked(False)
         self.CH_DualMain.setText("Include multi-box games")
         self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
         self.CH_DualMain.stateChanged.connect(self.generate_stats)
@@ -668,11 +668,11 @@ class UI_TabWidget(object):
         self.AlliedCommanderHeading = MUI.AllyCommanderEntry('Allied commander', 'Frequency', 'Wins', 'Losses', 'Winrate', 'APM', 2, bold=True, button=False, parent=self.TAB_AlliedCommanders,)
 
         self.AllyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_AlliedCommanders)
-        self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(470, 0, 100, 21))
+        self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(470, 2, 100, 21))
         self.AllyCommanderComboBoxLabel.setText('<b>Sort by</b>')
 
         self.AllyCommanderComboBox = QtWidgets.QComboBox(self.TAB_AlliedCommanders)
-        self.AllyCommanderComboBox.setGeometry(QtCore.QRect(470, 20, 100, 21))
+        self.AllyCommanderComboBox.setGeometry(QtCore.QRect(470, 22, 100, 21))
         self.AllyCommanderComboBox.addItem('Frequency')
         self.AllyCommanderComboBox.addItem('Wins')
         self.AllyCommanderComboBox.addItem('Lossses')
@@ -685,14 +685,15 @@ class UI_TabWidget(object):
 
         ### TAB Progression & regions
         self.TAB_ProgressionRegions = QtWidgets.QWidget()
-        self.TBD_ProgressionRegions = QtWidgets.QLabel(self.TAB_ProgressionRegions)
-        self.TBD_ProgressionRegions.setGeometry(QtCore.QRect(10, 10, 321, 31))
-        self.TBD_ProgressionRegions.setText("# games, winrate per region, max ascension\n"
-"Per commander prestige played at lvl 14-15")
+
+        # debug
+        self.ProgressionStatsHeading = MUI.RegionStats('region', {'Defeat':'Defeat', 'Victory': 'Victory', 'frequency': 'Frequency','max_asc': 'Ascension level','max_com': 'Maxed commanders','winrate': 'Winrate',  'prestiges': 'Prestiges tried'}, 0, parent=self.TAB_ProgressionRegions)
+        a = MUI.RegionStats('region', {'Defeat':635, 'Victory': 3497, 'frequency': 0.93463,'max_asc': 1000,'max_com': {'Kerrigan', 'Raynor'},'winrate': 0.85304659498,  'prestiges': {('Abathur', 1),('Abathur', 2),('Alarak', 2),('Alarak', 3),}}, 20, parent=self.TAB_ProgressionRegions)
+
         self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
 
-        self.TABW_StatResults.setCurrentIndex(3)
+        self.TABW_StatResults.setCurrentIndex(4)
 
         ############################
         ###### TWITCH BOT TAB ######
@@ -1406,7 +1407,7 @@ class UI_TabWidget(object):
             self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
 
         # Update player winrate data
-        new_players = {replay_dict['players'][1]['name'], replay_dict['players'][2]['name']}
+        new_players = {replay_dict['players'][1]['name'], replay_dict['players'][2].get('name')}
         for player in self.player_winrate_UI_dict:
             if player in new_players and player in MF.player_winrate_data:
                 self.player_winrate_UI_dict[player].update_winrates(MF.player_winrate_data[player])
@@ -1657,10 +1658,10 @@ class UI_TabWidget(object):
             self.ally_detailed_info.deleteLater()
             self.ally_detailed_info = None
 
-        if hasattr(self, 'ally_commander_clicked'):
-            self.ally_detailed_info = MUI.AllyCommStats(self.ally_commander_clicked, parent=self.TAB_AlliedCommanders)
+        if hasattr(self, 'ally_commander_clicked') and self.ally_commander_clicked in self.ally_commander_analysis:
+            self.ally_detailed_info = MUI.AllyCommStats(self.ally_commander_clicked, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
         elif len(self.ally_commander_analysis) > 1:
-            self.ally_detailed_info = MUI.AllyCommStats(firstCommander, parent=self.TAB_AlliedCommanders)
+            self.ally_detailed_info = MUI.AllyCommStats(firstCommander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
 
 
     def detailed_ally_commander_stats_update(self, commander):
@@ -1669,7 +1670,7 @@ class UI_TabWidget(object):
         if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info != None:
             self.ally_detailed_info.deleteLater()
             self.ally_detailed_info = None
-        self.ally_detailed_info = MUI.AllyCommStats(commander, parent=self.TAB_AlliedCommanders)
+        self.ally_detailed_info = MUI.AllyCommStats(commander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
 
 
     def map_link_update(self, mapname=None, fdict=None):

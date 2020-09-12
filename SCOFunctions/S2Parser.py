@@ -112,6 +112,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     replay['length'] = metadata['Duration']
     replay['start_time'] = get_start_time(events)
     replay['last_deselect_event'] = get_last_deselect_event(events)
+    replay['last_deselect_event'] = replay['last_deselect_event'] if replay['last_deselect_event'] != None else replay['length']
     replay['result'] = 'Victory' if metadata['Players'][0]['Result'] == 'Win' or metadata['Players'][1]['Result'] == 'Win' else 'Defeat'
 
     if replay['result'] == 'Victory' and parse_events:

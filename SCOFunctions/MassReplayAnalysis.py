@@ -115,7 +115,10 @@ def calculate_commander_data(ReplayData, main_handles):
 
                 AllyCommanderData[commander][r['result']] += 1
                 AllyCommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
-                AllyCommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
+
+                # Count prestige only after they were released
+                if int(r['date'].replace(':','')) > 20200726000000:
+                    AllyCommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
 
                 AllyCommanderData['any'][r['result']] += 1
                 AllyCommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
@@ -161,7 +164,10 @@ def calculate_commander_data(ReplayData, main_handles):
             AllyCommanderData[commander]['Mastery'] = mastery_summed
 
             # Prestige
-            AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
+            if len(AllyCommanderData[commander]['Prestige']) > 0:
+                AllyCommanderData[commander]['Prestige'] = {i:AllyCommanderData[commander]['Prestige'].count(i)/len(AllyCommanderData[commander]['Prestige']) for i in {0,1,2,3}}
+            else:
+                AllyCommanderData[commander]['Prestige'] = {0:0,1:0,2:0,3:0}
 
             # For ally correct frequency for the main player selecting certain commander (1/(1-f)) factor and rescale
             would_be_observed_games = (1/(1-CommanderData.get(commander,{'Frequency':0})['Frequency'])) * com_games
@@ -293,9 +299,12 @@ class mass_replay_analysis:
 
     def both_main_players(self, replay):
         """ Checks if both players are the main players """
-        if replay['players'][1]['handle'] in self.main_handles and replay['players'][2]['handle'] in self.main_handles:
-            return True
-        return False
+        try:
+            if replay['players'][1]['handle'] in self.main_handles and replay['players'][2]['handle'] in self.main_handles:
+                return True
+            return False
+        except:
+            logger.error(f"{replay}\n{traceback.format_exc()}")
 
 
     def analyse_replays(self, 

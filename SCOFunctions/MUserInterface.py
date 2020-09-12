@@ -21,9 +21,37 @@ def find_file(file):
     subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
+class RegionStats(QtWidgets.QWidget):
+    """Widget for region stats """
+    def __init__(self, region, fdict, y, parent=None):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(0, y, 500, 20))
+
+        self.la_name = QtWidgets.QLabel(self)
+        self.la_name.setGeometry(QtCore.QRect(0, 0, 50, 20))
+        self.la_name.setText(str(region))
+
+        # Frequency
+
+        # Wins
+
+        # Losses
+
+        # Winrate
+
+        # Ascension level
+
+        # Maxed commanders list < 5 or for higher: 2/18 & tooltip
+
+        # Tried prestiges 4/18*3, tooltip
+
+
+
+
+
 class AllyCommStats(QtWidgets.QWidget):
     """ Widget for detailed stats for allied commander (mastery, prestige)"""
-    def __init__(self, commander, parent=None):
+    def __init__(self, commander, fanalysis, parent=None):
         super().__init__(parent)
         self.setGeometry(QtCore.QRect(470, 50, 500, 410))
 
@@ -48,21 +76,65 @@ class AllyCommStats(QtWidgets.QWidget):
         shadow.setBlurRadius(1)
         shadow.setOffset(2)
         self.la_name.setGraphicsEffect(shadow) 
-        
+
         # Frequency
+        self.la_frequency = QtWidgets.QLabel(self)
+        self.la_frequency.setGeometry(QtCore.QRect(230, 98, 150, 25))
+        self.la_frequency.setText(f"Frequency: <b>{100*fanalysis[commander]['Frequency']:.1f}%</b>")
+        self.la_frequency.setAlignment(QtCore.Qt.AlignRight)
+
+        # APM
+        self.la_apm = QtWidgets.QLabel(self)
+        self.la_apm.setGeometry(QtCore.QRect(300, 98, 180, 25))
+        self.la_apm.setText(f"Median APM: <b>{fanalysis[commander]['MedianAPM']:.0f}</b>")
+        self.la_apm.setAlignment(QtCore.Qt.AlignRight)
 
         # Mastery
+        self.la_masteryH = QtWidgets.QLabel(self)
+        self.la_masteryH.setGeometry(QtCore.QRect(5, 90, 300, 30))
+        self.la_masteryH.setText('<h3><u>Mastery popularity</u></h3>')
+
+        self.la_mastery = QtWidgets.QLabel(self)
+        self.la_mastery.setGeometry(QtCore.QRect(5, 120, 300, 200))
+        self.la_mastery.setAlignment(QtCore.Qt.AlignTop)
+        text = ''
+        for idx in fanalysis[commander]['Mastery']:
+            if fanalysis[commander]['Mastery'][idx] == 1:
+                fill = ''
+            elif fanalysis[commander]['Mastery'][idx] >= 0.1:
+                fill = '&nbsp;&nbsp;'
+            else:
+                fill = '&nbsp;&nbsp;&nbsp;&nbsp;'
+            fill = fill if (idx%2 == 1 or idx==0) else '<br>'+fill
+            text += f"{fill}<b>{100*fanalysis[commander]['Mastery'][idx]:.0f}%</b>&nbsp;&nbsp;{CommanderMastery[commander][idx]}<br>"
+
+        self.la_mastery.setText(text)
 
         # Prestige
+        self.la_prestigeH = QtWidgets.QLabel(self)
+        self.la_prestigeH.setGeometry(QtCore.QRect(5, 240, 300, 30))
+        self.la_prestigeH.setText('<h3><u>Prestige popularity</u></h3>')
+        self.la_prestigeH.setToolTip('Prestige popularity is measured only after the patch introduced them')
+
+        self.la_prestige = QtWidgets.QLabel(self)
+        self.la_prestige.setGeometry(QtCore.QRect(5, 270, 300, 200))
+        self.la_prestige.setAlignment(QtCore.Qt.AlignTop)
+        self.la_prestige.setToolTip('Prestige popularity is measured only after the patch introduced them')
+
+        text = ''
+        for idx in fanalysis[commander]['Prestige']:
+            if fanalysis[commander]['Prestige'][idx] == 1:
+                fill = ''
+            elif fanalysis[commander]['Prestige'][idx] >= 0.1:
+                fill = '&nbsp;&nbsp;'
+            else:
+                fill = '&nbsp;&nbsp;&nbsp;&nbsp;'
+
+            text += f"{fill}<b>{100*fanalysis[commander]['Prestige'][idx]:.0f}%</b>&nbsp;&nbsp;(P{idx})&nbsp;{prestige_names[commander][idx]}<br>"
+
+        self.la_prestige.setText(text)
 
         self.show()
-
-
-
-
-
-        
-
 
 
 class FastestMap(QtWidgets.QGroupBox):
@@ -452,13 +524,13 @@ class GameEntry:
             self.p1_name = replay_dict['players'][1]['name']
             self.p1_commander = replay_dict['players'][1]['commander']
             self.p1_handle = replay_dict['players'][1]['handle']
-            self.p2_name = replay_dict['players'][2]['name']
-            self.p2_commander = replay_dict['players'][2]['commander']
-            self.p2_handle = replay_dict['players'][2]['handle']
+            self.p2_name = replay_dict['players'][2].get('name','')
+            self.p2_commander = replay_dict['players'][2].get('commander')
+            self.p2_handle = replay_dict['players'][2].get('handle','')
         else:
-            self.p1_name = replay_dict['players'][2]['name']
-            self.p1_commander = replay_dict['players'][2]['commander']
-            self.p1_handle = replay_dict['players'][2]['handle']
+            self.p1_name = replay_dict['players'][2].get('name')
+            self.p1_commander = replay_dict['players'][2].get('commander')
+            self.p1_handle = replay_dict['players'][2].get('handle')
             self.p2_name = replay_dict['players'][1]['name']
             self.p2_commander = replay_dict['players'][1]['commander']
             self.p2_handle = replay_dict['players'][1]['handle']
