@@ -367,6 +367,12 @@ class UI_TabWidget(object):
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
 
+        # Wait
+        self.LA_Winrates_Wait = QtWidgets.QLabel(self.TAB_Players)
+        self.LA_Winrates_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_PlayersScrollAreaContents.width(), self.SC_PlayersScrollAreaContents.height()))
+        self.LA_Winrates_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
+        self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+
         ###########################
         ######## GAMES TAB ########
         ###########################
@@ -385,6 +391,11 @@ class UI_TabWidget(object):
         self.SC_GamesScrollAreaContentLayout = QtWidgets.QVBoxLayout()
         self.SC_GamesScrollAreaContentLayout.setAlignment(QtCore.Qt.AlignTop)
         self.SC_GamesScrollAreaContentLayout.setContentsMargins(10,0,0,0)
+
+        self.LA_Games_Wait = QtWidgets.QLabel(self.SC_GamesScrollAreaContent)
+        self.LA_Games_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_GamesScrollAreaContent.width(), self.SC_GamesScrollAreaContent.height()))
+        self.LA_Games_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
+        self.LA_Games_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
 
         # Heading
         self.WD_RecentGamesHeading = QtWidgets.QWidget(self.SC_GamesScrollAreaContent)
@@ -917,8 +928,8 @@ class UI_TabWidget(object):
                            'greetings': {
                                          'fluffymaguro': 'Hello Maguro!'
                                          },
-                           'banned_mutators':{'Vertigo', 'Propagators', 'Fatal Attraction'},
-                           'banned_units':{''},                            
+                           'banned_mutators':['Vertigo', 'Propagators', 'Fatal Attraction'],
+                           'banned_units':['',],                            
                            'host': 'irc.twitch.tv',
                            'port': 6667,
                            'auto_start': False,
@@ -1363,6 +1374,7 @@ class UI_TabWidget(object):
         """ What happens after we initialized player names, handles and winrates"""
 
         # Create player winrates UI
+        self.LA_Winrates_Wait.deleteLater()
         self.player_winrate_UI_dict = dict()
         for idx, player in enumerate(winrate_data):
             self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
@@ -1465,6 +1477,7 @@ class UI_TabWidget(object):
         self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
         self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
         self.LA_Stats_Wait.deleteLater()
+        self.LA_Games_Wait.deleteLater()
         self.generate_stats()
     
 

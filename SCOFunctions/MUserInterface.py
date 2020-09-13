@@ -217,6 +217,7 @@ class FastestMap(QtWidgets.QGroupBox):
 
         image_path = innerPath(f"src/{mapname}.jpg")
         if os.path.isfile(image_path):
+            image_path = image_path.replace('\\', '/')
             self.fr_map.setStyleSheet(f'background-image: url("{image_path}")')
         else:
             self.fr_map.setStyleSheet(f'background-image: none')
