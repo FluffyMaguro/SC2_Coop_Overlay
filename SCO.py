@@ -901,6 +901,7 @@ class UI_TabWidget(object):
             'player_notes':dict(),
             'main_names': list(),
             'list_games': 100,
+            'webflag': 'CoverWindow',
             'twitchbot' : {
                            'channel_name': '',
                            'bot_name': '',
@@ -1318,7 +1319,7 @@ class UI_TabWidget(object):
 
         else:
             self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|eval(f"QtCore.Qt.{self.settings['webflag']}")|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
             self.WebPage = self.WebView.page()

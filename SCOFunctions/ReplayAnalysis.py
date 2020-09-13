@@ -448,9 +448,8 @@ def analyse_replay(filepath, main_player_handles=None):
                     killbot_feed[_losing_player] += 1
 
                 # Abathur locusts
-                if _killing_unit_type == 'Locust' and _commander == 'Abathur':
-                    if not _killing_unit_id in AbathurKillLocusts:
-                        _killing_unit_type = 'SwarmHost'
+                if _killing_unit_type == 'Locust' and _commander == 'Abathur' and not _killing_unit_id in AbathurKillLocusts:
+                    _killing_unit_type = 'SwarmHost'
 
                 # Custom kill count
                 if _killing_player in [1,2] and _losing_player in amon_players:
