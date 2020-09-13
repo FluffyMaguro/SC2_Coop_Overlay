@@ -82,6 +82,10 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Get metadata
     metadata = json.loads(archive.read_file('replay.gamemetadata.json'))
 
+    # Messages
+    messages = archive.read_file('replay.message.events')
+    messages = protocol.decode_replay_message_events(messages)
+
     events = list()
     if parse_events:
         # Get game events
@@ -188,6 +192,10 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
         replay['ext_difficulty'] = diff_1
     else:
         replay['ext_difficulty'] = f'{diff_1}/{diff_2}'
+
+    # Messages
+    messages = [m for m in messages if m.get('m_string',None) != None]
+    replay['messages'] = [{'text':m['m_string'].decode(),'player':m['_userid']['m_userId']+1,'time':m['_gameloop']/16} for m in messages]
 
     # Events
     if return_events:

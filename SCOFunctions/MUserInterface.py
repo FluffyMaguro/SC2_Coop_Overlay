@@ -590,6 +590,8 @@ class GameEntry:
         self.length = replay_dict['form_alength']
         self.file = replay_dict['file']
         self.date = replay_dict['date'][:10].replace(':','-')
+        self.chat_showing = False
+        self.message_count = len(replay_dict['messages'])
 
         if replay_dict['players'][1]['handle'] in handles:
             self.p1_name = replay_dict['players'][1]['name']
@@ -661,19 +663,60 @@ class GameEntry:
         self.la_date.setText(self.date)
 
         self.BT_show = QtWidgets.QPushButton(self.widget)
-        self.BT_show.setGeometry(QtCore.QRect(840, line_spacing, 90, 23))
-        self.BT_show.setText("Show overlay")
+        self.BT_show.setGeometry(QtCore.QRect(750, line_spacing, 55, 23))
+        self.BT_show.setText("Overlay")
         self.BT_show.clicked.connect(lambda: show_overlay(self.file))
 
+        self.BT_chat = QtWidgets.QPushButton(self.widget)
+        self.BT_chat.setGeometry(QtCore.QRect(810, line_spacing, 55, 23))          
+        self.BT_chat.setText("Chat")
+        self.BT_chat.clicked.connect(self.show_chat)
+
         self.BT_file = QtWidgets.QPushButton(self.widget)
-        self.BT_file.setGeometry(QtCore.QRect(760, line_spacing, 75, 23))          
-        self.BT_file.setText("Find file")
+        self.BT_file.setGeometry(QtCore.QRect(870, line_spacing, 55, 23))          
+        self.BT_file.setText("File")
         self.BT_file.clicked.connect(lambda: find_file(self.file))
 
+        self.la_chat = QtWidgets.QLabel(self.widget)
+        self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 15*self.message_count))
+        self.la_chat.setAlignment(QtCore.Qt.AlignTop)
+
+        testplayer = 2 if replay_dict['players'][1]['handle'] in handles else 1
+
+        text = ''
+        for message in replay_dict['messages']:
+            color = '#338F00' if message['player'] == testplayer else 'blue'
+            if message['time'] >= 3600:
+                t = time.strftime('%H:%M:%S', time.gmtime(message['time']))
+            else:
+                t = time.strftime('%M:%S', time.gmtime(message['time']))
+            style = f'style="color: {color}"'
+            text += f"<span {style}>{t}&nbsp;&nbsp;<b>{replay_dict['players'][message['player']]['name']}</b>:&nbsp;&nbsp;{message['text']}</span><br>"
+
+        self.la_chat.setText(text)
+        self.la_chat.hide()
+
+        # Styling
         for item in {self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
                 item.setStyleSheet('color: red')
+
+
+    def show_chat(self):
+        """ Shows/hides chat """       
+        if self.chat_showing:
+            self.chat_showing = False
+            height = 30
+            self.la_chat.hide()
+        else:
+            self.chat_showing = True
+            height = 30 + 15*self.message_count
+            self.la_chat.show()
+
+        self.widget.setGeometry(QtCore.QRect(0, 0, self.widget.width(), height))
+        self.widget.setMinimumHeight(height)
+        self.widget.setMaximumHeight(height)
 
 
 class PlayerEntry:

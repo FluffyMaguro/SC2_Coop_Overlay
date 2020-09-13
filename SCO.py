@@ -1392,8 +1392,6 @@ class UI_TabWidget(object):
         
         # Show player winrates
         if self.settings['show_player_winrates']:
-            # thread_check_for_newgame = MUI.Worker(MF.check_for_new_game)
-            # self.threadpool.start(thread_check_for_newgame)
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()
 
