@@ -1263,8 +1263,9 @@ class UI_TabWidget(object):
                 self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(folder)
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
-                MF.update_names_and_handles(folder)
-                self.CAnalysis.update_accountdir(folder)
+                MF.update_names_and_handles(folder, MF.AllReplays)
+                if hasattr(self, 'CAnalysis'):
+                    self.CAnalysis.update_accountdir(folder)
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 

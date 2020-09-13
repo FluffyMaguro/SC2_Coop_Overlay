@@ -697,7 +697,7 @@ class GameEntry:
         self.la_chat.hide()
 
         # Styling
-        for item in {self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
+        for item in {self.la_chat, self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
                 item.setStyleSheet('color: red')

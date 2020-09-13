@@ -240,6 +240,8 @@ def analyse_replay(filepath, main_player_handles=None):
     PrestigeTalents = [None,None,None]
     bonus_timings = list()
     ResearchVesselLandedTiming = None
+    LastBiomassPosition = [0,0,0]
+    AbathurKillLocusts = set()
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -325,9 +327,17 @@ def analyse_replay(filepath, main_player_handles=None):
                 if len(wave_units['units']) > 5:
                     identified_waves[event['_gameloop']/16] = wave_units['units']
 
+            # Abathur biomass for identifying locust
+            if _unit_type == 'BiomassPickup' :
+                LastBiomassPosition = [event['m_x'], event['m_y'], event['_gameloop']]
+
+            if _unit_type == 'Locust' and [event['m_x'], event['m_y'], event['_gameloop']] == LastBiomassPosition:
+                AbathurKillLocusts.add(unitid(event))
+
         # In future ignore some Dark/High Templar deaths caused by Archon merge
         if event['_event'] == 'NNet.Replay.Tracker.SUnitInitEvent' and event['m_unitTypeName'].decode() == "Archon":
             DT_HT_Ignore[event['m_controlPlayerId']] += 2
+
 
         if event['_event'] == 'NNet.Replay.Tracker.SUnitTypeChangeEvent' and unitid(event) in unit_dict:
                 _old_unit_type = unit_dict[unitid(event)][0]
@@ -420,6 +430,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 _killing_player = event['m_killerPlayerId']
                 _killed_unit_type = unit_dict[unitid(event)][0]
                 _losing_player = int(unit_dict[unitid(event)][1])
+                _commander = commander_fallback.get(_killing_player,None)
 
                 # Get killing unit
                 if _killing_unit_id in unit_dict and unitid(event) != None: # We have a killing unit
@@ -430,12 +441,16 @@ def analyse_replay(filepath, main_player_handles=None):
                     But lets use this only rarely. Units killed in transports count for this as well.
                     Other not counted sources: Dusk Wings lifting off, CoD explosion, ...
                     """
-                    _commander = commander_fallback.get(_killing_player,None) #
                     _killing_unit_type = commander_no_units.get(_commander,'NoUnit')
 
                 # Killbot feed
                 if _killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and _losing_player in [1,2]:
                     killbot_feed[_losing_player] += 1
+
+                # Abathur locusts
+                if _killing_unit_type == 'Locust' and _commander == 'Abathur':
+                    if not _killing_unit_id in AbathurKillLocusts:
+                        _killing_unit_type = 'SwarmHost'
 
                 # Custom kill count
                 if _killing_player in [1,2] and _losing_player in amon_players:
