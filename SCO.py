@@ -903,6 +903,7 @@ class UI_TabWidget(object):
             'list_games': 100,
             'right_offset':0,
             'width': 0.5,
+            'height':1,
             'webflag': 'CoverWindow',
             'twitchbot' : {
                            'channel_name': '',
@@ -1360,7 +1361,7 @@ class UI_TabWidget(object):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
         try:
-            self.WebView.setFixedSize(int(sg.width()*self.settings['width'] - 1), int(sg.height()))
+            self.WebView.setFixedSize(int(sg.width()*self.settings['width'] - 1), int(sg.height()*self.settings['height']))
             self.WebView.move(int(sg.width()*(1 - self.settings['width']) + 1 + self.settings['right_offset']), sg.top())
             logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except:
