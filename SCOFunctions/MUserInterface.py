@@ -855,12 +855,12 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.settings = settings
 
 
-    # @QtCore.pyqtSlot(bool)    
-    # def closeEvent(self, event):
-    #     """ Overriding close event and minimizing instead """
-    #     event.ignore()
-    #     self.hide()
-    #     self.show_minimize_message()
+    @QtCore.pyqtSlot(bool)    
+    def closeEvent(self, event):
+        """ Overriding close event and minimizing instead """
+        event.ignore()
+        self.hide()
+        self.show_minimize_message()
 
 
     def format_close_message(self):

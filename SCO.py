@@ -865,7 +865,7 @@ class UI_TabWidget(object):
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
-        TabWidget.setCurrentIndex(3)
+        TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
         if not HF.isWindows():
