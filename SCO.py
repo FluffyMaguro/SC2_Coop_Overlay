@@ -707,8 +707,8 @@ class UI_TabWidget(object):
 
         self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
         self.qb_twitch_text.setTitle('About the twitch bot')
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 360))
-
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 310 if HF.isWindows() else 555))
+        
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
         self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 520, 500))
