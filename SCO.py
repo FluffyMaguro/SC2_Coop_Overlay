@@ -530,21 +530,21 @@ class UI_TabWidget(object):
 
         # Sub15 and both mains
         self.CH_Sub15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Sub15.setGeometry(QtCore.QRect(280, 40, 150, 17))
+        self.CH_Sub15.setGeometry(QtCore.QRect(290, 40, 150, 17))
         self.CH_Sub15.setChecked(True)
         self.CH_Sub15.setText("Include levels 1-14")
         self.CH_Sub15.setToolTip("Include games where the main player was level 1-14")
         self.CH_Sub15.stateChanged.connect(self.generate_stats)
 
         self.CH_Over15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Over15.setGeometry(QtCore.QRect(280, 60, 150, 17))
+        self.CH_Over15.setGeometry(QtCore.QRect(290, 60, 150, 17))
         self.CH_Over15.setChecked(True)
         self.CH_Over15.setText("Include levels 15+")
         self.CH_Over15.setToolTip("Include games where the main player was level 15+")
         self.CH_Over15.stateChanged.connect(self.generate_stats)
 
         self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DualMain.setGeometry(QtCore.QRect(280, 20, 250, 17))
+        self.CH_DualMain.setGeometry(QtCore.QRect(290, 20, 250, 17))
         self.CH_DualMain.setChecked(False)
         self.CH_DualMain.setText("Include multi-box games")
         self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
@@ -707,7 +707,7 @@ class UI_TabWidget(object):
 
         self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
         self.qb_twitch_text.setTitle('About the twitch bot')
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 320))
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 360))
 
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
@@ -730,12 +730,12 @@ class UI_TabWidget(object):
                                     """)
 
         self.bt_twitch = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch.setGeometry(QtCore.QRect(600, 20, 100, 25))
+        self.bt_twitch.setGeometry(QtCore.QRect(600, 30, 100, 25))
         self.bt_twitch.setText('Run the bot')
         self.bt_twitch.clicked.connect(self.start_stop_bot)
 
         self.ch_twitch = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch.setGeometry(QtCore.QRect(601, 60, 200, 17))
+        self.ch_twitch.setGeometry(QtCore.QRect(601, 70, 200, 17))
         self.ch_twitch.setText('Start the bot automatically')
 
         # Info label
