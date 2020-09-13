@@ -373,6 +373,7 @@ class UI_TabWidget(object):
         self.LA_Winrates_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
         self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
 
+
         ###########################
         ######## GAMES TAB ########
         ###########################
@@ -549,14 +550,12 @@ class UI_TabWidget(object):
         self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
         self.CH_DualMain.stateChanged.connect(self.generate_stats)
 
-
         # Games found
         self.LA_GamesFound = QtWidgets.QLabel(self.FR_Stats)
         self.LA_GamesFound.setEnabled(False)
         self.LA_GamesFound.setGeometry(QtCore.QRect(570, 110, 381, 20))
         self.LA_GamesFound.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-
 
         # Main names
         self.LA_IdentifiedPlayers = QtWidgets.QLabel(self.FR_Stats)
@@ -634,20 +633,16 @@ class UI_TabWidget(object):
         self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 460, 420))
         self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', '▼Average', 'Wins', 'Losses', bold=True, button=False)
         self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
-        self.TABW_StatResults.addTab(self.TAB_Maps, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
 
         self.LA_Stats_Wait = QtWidgets.QLabel(self.TAB_Maps)
         self.LA_Stats_Wait.setGeometry(QtCore.QRect(0, 0, 470, self.TAB_Maps.height()))
         self.LA_Stats_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
         self.LA_Stats_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
 
-
-        ### TAB Difficulty
-        self.TAB_Difficulty = QtWidgets.QWidget()
-        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_Difficulty)
-        self.TABW_StatResults.addTab(self.TAB_Difficulty, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Difficulty), "Difficulty")
+        ### TAB Difficulty & Regions
+        self.TAB_DifficultyRegions = QtWidgets.QWidget()
+        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_DifficultyRegions)
+        self.ProgressionStatsHeading = MUI.RegionStats('Region', {'Defeat':'Losses', 'Victory': 'Wins', 'frequency': 'Frequency','max_asc': 'Ascension level','max_com': 'Maxed commanders','winrate': 'Winrate',  'prestiges': 'Prestiges tried'}, 0, parent=self.TAB_DifficultyRegions, bold=True, line=True)
 
         ### TAB Commanders
         self.TAB_MyCommanders = QtWidgets.QWidget()
@@ -665,8 +660,6 @@ class UI_TabWidget(object):
         self.MyCommanderComboBox.addItem('APM')
         self.MyCommanderComboBox.activated[str].connect(self.my_commander_sort_update)
 
-        self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
 
         ### TAB Allied Commanders
         self.TAB_AlliedCommanders = QtWidgets.QWidget()
@@ -691,20 +684,20 @@ class UI_TabWidget(object):
         self.AllyCommanderComboBox.addItem('APM')
         self.AllyCommanderComboBox.activated[str].connect(self.ally_commander_sort_update)
 
+        # Putting it together
+        self.TABW_StatResults.addTab(self.TAB_Maps, "")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
+
         self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
 
-        ### TAB Progression & regions
-        self.TAB_ProgressionRegions = QtWidgets.QWidget()
+        self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
 
-        # debug
-        self.ProgressionStatsHeading = MUI.RegionStats('region', {'Defeat':'Defeat', 'Victory': 'Victory', 'frequency': 'Frequency','max_asc': 'Ascension level','max_com': 'Maxed commanders','winrate': 'Winrate',  'prestiges': 'Prestiges tried'}, 0, parent=self.TAB_ProgressionRegions)
-        a = MUI.RegionStats('region', {'Defeat':635, 'Victory': 3497, 'frequency': 0.93463,'max_asc': 1000,'max_com': {'Kerrigan', 'Raynor'},'winrate': 0.85304659498,  'prestiges': {('Abathur', 1),('Abathur', 2),('Alarak', 2),('Alarak', 3),}}, 20, parent=self.TAB_ProgressionRegions)
+        self.TABW_StatResults.addTab(self.TAB_DifficultyRegions, "")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_DifficultyRegions), "Difficulty and regions")
 
-        self.TABW_StatResults.addTab(self.TAB_ProgressionRegions, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_ProgressionRegions), "Progression and regions")
-
-        self.TABW_StatResults.setCurrentIndex(4)
+        self.TABW_StatResults.setCurrentIndex(0)
 
         ############################
         ###### TWITCH BOT TAB ######
@@ -1580,7 +1573,7 @@ class UI_TabWidget(object):
             self.QB_FastestMap.show()
 
 
-        ### Difficulty stats
+        ### Difficulty stats & region stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
             for item in set(self.stats_difficulty_UI_dict.keys()):
                 self.stats_difficulty_UI_dict[item].deleteLater()
@@ -1594,14 +1587,24 @@ class UI_TabWidget(object):
         for difficulty in difficulties:
             if difficulty in analysis['DifficultyData']:
                 line = True if idx+1 == len(analysis['DifficultyData']) else False
-                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 50, idx*18+20, bg=idx%2==1, parent=self.TAB_Difficulty, line=line)
+                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 50, idx*18+20, bg=idx%2==1, parent=self.TAB_DifficultyRegions, line=line)
                 idx += 1
                 AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, parent=self.TAB_Difficulty)
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, parent=self.TAB_DifficultyRegions)
 
+        # Region stats
+        if hasattr(self, 'stats_region_UI_dict'):
+            for item in set(self.stats_region_UI_dict.keys()):
+                self.stats_region_UI_dict[item].deleteLater()
+                del self.stats_region_UI_dict[item]
+        else:
+            self.stats_region_UI_dict = dict()
+
+        for idx, region in enumerate(analysis['RegionData']):
+            self.stats_region_UI_dict[region] = MUI.RegionStats(region, analysis['RegionData'][region], 20+idx*18, bg=True if idx%2==1 else False, parent=self.TAB_DifficultyRegions)
 
         ### Commander stats
         self.my_commander_analysis = analysis['CommanderData']
@@ -1610,9 +1613,6 @@ class UI_TabWidget(object):
         ### Ally commander stats
         self.ally_commander_analysis = analysis['AllyCommanderData']
         self.ally_commander_sort_update()
-        
-        ### Region progression stats
-        pass
 
 
     def my_commander_sort_update(self):

@@ -23,30 +23,100 @@ def find_file(file):
 
 class RegionStats(QtWidgets.QWidget):
     """Widget for region stats """
-    def __init__(self, region, fdict, y, parent=None):
+    def __init__(self, region, fdict, y, parent=None, bold=False, line=False,  bg=False):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(0, y, 500, 20))
+        self.setGeometry(QtCore.QRect(15, y+20, 700, 20))
+
+        xspacing = 65
+        width = 120
+
+        if bg:
+            self.bg = QtWidgets.QFrame(self)
+            self.bg.setGeometry(QtCore.QRect(35, 2, self.width()-30, 18))
+            self.bg.setAutoFillBackground(True)
 
         self.la_name = QtWidgets.QLabel(self)
-        self.la_name.setGeometry(QtCore.QRect(0, 0, 50, 20))
+        self.la_name.setGeometry(QtCore.QRect(0, 0, width, 20))
         self.la_name.setText(str(region))
 
         # Frequency
+        self.la_frequency = QtWidgets.QLabel(self)
+        self.la_frequency.setGeometry(QtCore.QRect(1*xspacing+2, 0, width, 20))
+        if isinstance(fdict['frequency'], str):
+            self.la_frequency.setText(fdict['frequency'])
+        else:
+            self.la_frequency.setText(f"{100*fdict['frequency']:.0f}%")
 
         # Wins
+        self.la_wins = QtWidgets.QLabel(self)
+        self.la_wins.setGeometry(QtCore.QRect(2*xspacing, 0, width, 20))
+        self.la_wins.setText(str(fdict['Victory']))
 
         # Losses
+        self.la_losses = QtWidgets.QLabel(self)
+        self.la_losses.setGeometry(QtCore.QRect(3*xspacing, 0, width, 20))
+        self.la_losses.setText(str(fdict['Defeat']))
 
         # Winrate
+        self.la_winrate = QtWidgets.QLabel(self)
+        self.la_winrate.setGeometry(QtCore.QRect(4*xspacing, 0, width, 20))
+        if isinstance(fdict['winrate'], str):
+            self.la_winrate.setText(fdict['winrate'])
+        else:
+            self.la_winrate.setText(f"{100*fdict['winrate']:.0f}%")
 
         # Ascension level
-
-        # Maxed commanders list < 5 or for higher: 2/18 & tooltip
+        self.la_asc = QtWidgets.QLabel(self)
+        self.la_asc.setGeometry(QtCore.QRect(5*xspacing+20, 0, width, 20))
+        self.la_asc.setText(str(fdict['max_asc']))
 
         # Tried prestiges 4/18*3, tooltip
+        self.la_prestiges = QtWidgets.QLabel(self)
+        self.la_prestiges.setGeometry(QtCore.QRect(6*xspacing+60, 0, width, 20))
+        if isinstance(fdict['prestiges'], str):
+            self.la_prestiges.setText(fdict['prestiges'])
+        else:
+            total = 0
+            text = ''
+            for idx,co in enumerate(fdict['prestiges']):
+                total += len(fdict['prestiges'][co])
+                prest = {str(i) for i in fdict['prestiges'][co]}
+                prest = ', '.join(prest)
+                if idx+1 != len(fdict['prestiges']):
+                    text += f"{co}: {prest}\n"
+                else:
+                    text += f"{co}: {prest}"
 
+            self.la_prestiges.setText(f"{total}/54")
+            self.la_prestiges.setToolTip(text)
 
+        # Maxed commanders list
+        self.la_commanders = QtWidgets.QLabel(self)
+        self.la_commanders.setGeometry(QtCore.QRect(7*xspacing+95, 0, 160, 20))
+        if isinstance(fdict['max_com'], str):
+            self.la_commanders.setText(fdict['max_com'])
+        else:
+            if len(fdict['max_com']) < 4:
+                self.la_commanders.setText(', '.join(fdict['max_com']))
+            else:
+                self.la_commanders.setText(f"{len(fdict['max_com'])}/18")
 
+            self.la_commanders.setToolTip('\n'.join(fdict['max_com']))
+
+        # Styling
+        if bold:
+            self.setStyleSheet('font-weight: bold')
+
+        for item in {self.la_name, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_asc, self.la_prestiges, self.la_commanders}:
+            item.setAlignment(QtCore.Qt.AlignCenter)
+
+        if line:
+            self.line = QtWidgets.QFrame(self)
+            self.line.setGeometry(QtCore.QRect(34, 19, 660, 2))
+            self.line.setFrameShape(QtWidgets.QFrame.HLine)
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.show()
 
 
 class AllyCommStats(QtWidgets.QWidget):
@@ -410,7 +480,7 @@ class DifficultyEntry(QtWidgets.QWidget):
     def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor="#f1f1f1", parent=None):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(x, y, 300, 40))
+        self.setGeometry(QtCore.QRect(x, y+150, 300, 40))
 
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(10, 10, 70, 20))

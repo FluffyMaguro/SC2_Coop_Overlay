@@ -187,7 +187,7 @@ def calculate_region_data(ReplayData, main_handles):
     dRegion = dict()
     for r in ReplayData:
         if not r['region'] in dRegion:
-            dRegion[r['region']] = {'Victory':0,'Defeat':0, 'max_asc':0,'max_com': set(),'prestiges':set()}
+            dRegion[r['region']] = {'Victory':0,'Defeat':0, 'max_asc':0,'max_com': set(),'prestiges':dict()}
 
         dRegion[r['region']][r['result']] += 1
 
@@ -201,7 +201,10 @@ def calculate_region_data(ReplayData, main_handles):
                     dRegion[r['region']]['max_asc'] = r['players'][p]['commander_mastery_level']
 
                 if r['players'][p]['prestige'] > 0:
-                    dRegion[r['region']]['prestiges'].add((r['players'][p]['commander'],r['players'][p]['prestige']))
+                    if not r['players'][p]['commander'] in dRegion[r['region']]['prestiges']:
+                        dRegion[r['region']]['prestiges'][r['players'][p]['commander']] = set()
+
+                    dRegion[r['region']]['prestiges'][r['players'][p]['commander']].add(r['players'][p]['prestige'])
 
     for region in dRegion:
         dRegion[region]['winrate'] = dRegion[region]['Victory']/(dRegion[region]['Victory'] + dRegion[region]['Defeat'])
