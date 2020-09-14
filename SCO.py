@@ -1757,8 +1757,14 @@ class UI_TabWidget(object):
             path = os.path.normpath(os.path.join(self.settings['screenshot_folder'], name))
 
             p.save(path, 'png')
-            logger.info(f'Taking screenshot! {path}')
-            self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
+            
+            # Files smaller than 10kb consider as empty
+            if os.path.getsize(path) < 10000:
+                self.sendInfoMessage(f'Show overlay before taking screenshot', color='red')
+                os.remove(path)
+            else:
+                logger.info(f'Taking screenshot! {path}')
+                self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
         except:
             logger.error(traceback.format_exc())
 
