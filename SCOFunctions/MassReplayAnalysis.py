@@ -51,7 +51,7 @@ def calculate_map_data(ReplayData):
 
     for r in ReplayData:
         if not r['map_name'] in MapData:
-            MapData[r['map_name']] = {'Victory':0,'Defeat':0,'Fastest':{'length':3599},'average_victory_time':list()}
+            MapData[r['map_name']] = {'Victory':0,'Defeat':0,'Fastest':{'length':999999},'average_victory_time':list()}
 
         MapData[r['map_name']][r['result']] += 1
 
@@ -71,7 +71,7 @@ def calculate_map_data(ReplayData):
         if len(MapData[m]['average_victory_time']) > 0:
             MapData[m]['average_victory_time'] = statistics.mean(MapData[m]['average_victory_time'])
         else: 
-            MapData[m]['average_victory_time'] = 3599
+            MapData[m]['average_victory_time'] = 999999
 
     return MapData
 

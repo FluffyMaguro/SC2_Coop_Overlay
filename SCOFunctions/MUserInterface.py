@@ -424,7 +424,7 @@ class MapEntry(QtWidgets.QWidget):
         self.la_average.setGeometry(QtCore.QRect(155, 0, 70, 20))
         self.la_average.setAlignment(QtCore.Qt.AlignCenter)
         self.la_average.setToolTip('Average victory time')
-        time_average = time_average if time_average != 3599 else '–'
+        time_average = time_average if time_average != 999999 else '–'
         if isinstance(time_average, int) or isinstance(time_average, float):
             if time_average < 3600:
                 self.la_average.setText(time.strftime('%M:%S',time.gmtime(time_average)))
@@ -438,7 +438,7 @@ class MapEntry(QtWidgets.QWidget):
         self.la_fastest.setGeometry(QtCore.QRect(218, 0, 70, 20))
         self.la_fastest.setAlignment(QtCore.Qt.AlignCenter)
         self.la_fastest.setToolTip('Fastest victory time')
-        time_fastest = time_fastest if time_fastest != 3599 else '–'
+        time_fastest = time_fastest if time_fastest != 999999 else '–'
         if isinstance(time_fastest, int) or isinstance(time_fastest, float):
             if time_fastest < 3600:
                 self.la_fastest.setText(time.strftime('%M:%S',time.gmtime(time_fastest)))

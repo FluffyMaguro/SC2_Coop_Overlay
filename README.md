@@ -196,7 +196,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 You don't need to change anything in the config file for normal usage.
 
-Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example [here](https://twitchapps.com/tmi/){:target="_blank"}.
+Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example [here](https://twitchapps.com/tmi/).
 
 
 ```
