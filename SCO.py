@@ -1270,7 +1270,19 @@ class UI_TabWidget(object):
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
                 MF.update_names_and_handles(folder, MF.AllReplays)
                 if hasattr(self, 'CAnalysis'):
+                    self.updating_maps = QtWidgets.QWidget()
+                    self.updating_maps.setWindowTitle('Adding replays')
+                    self.updating_maps.setGeometry(700, 500, 300, 100)
+                    self.updating_maps.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
+                    self.updating_maps_label = QtWidgets.QLabel(self.updating_maps)
+                    self.updating_maps_label.setGeometry(QtCore.QRect(10, 10, 280, 80))
+                    self.updating_maps_label.setText('<b>Please wait</b><br><br>You might need to restart for the game list and stats to update.')
+                    self.updating_maps_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                    self.updating_maps_label.setWordWrap(True)
+                    self.updating_maps.show()
                     self.CAnalysis.update_accountdir(folder)
+                    self.updating_maps.hide()
+
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
