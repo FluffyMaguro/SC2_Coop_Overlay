@@ -1156,9 +1156,10 @@ class UI_TabWidget(object):
         except:
             logger.error(f'Error while saving settings\n{traceback.format_exc()}')
 
-        # Warning
-        self.sendInfoMessage('')
+        # Message
+        self.sendInfoMessage('Settings applied.')
 
+        # Warning
         hotkeys = [self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
         hotkeys = [h for h in hotkeys if not h in {None,''}]
         if len(hotkeys) > len(set(hotkeys)):
@@ -1435,6 +1436,8 @@ class UI_TabWidget(object):
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
+        if not hasattr(self, 'player_winrate_UI_dict'):
+            return
         for player in self.player_winrate_UI_dict:
             if not self.player_winrate_UI_dict[player].get_note() in {None,''}:
                 self.settings['player_notes'][player] = self.player_winrate_UI_dict[player].get_note()

@@ -27,7 +27,7 @@ os.system('cmd /c "pyinstaller.exe --onefile --noconsole -i=src/OverlayIcon.ico 
 os.replace('dist/SCO.exe','SCO.exe')
 
 # Zip
-file_name = f"SC2CoopOverlay (1.x).zip"
+file_name = f"SC2CoopOverlay (x.x).zip"
 
 to_zip = ['SCO.exe','Read me (Github).url']
 to_zip.extend([f'Layouts/{f}' for f in os.listdir('Layouts')])
