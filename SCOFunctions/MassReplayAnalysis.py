@@ -19,7 +19,7 @@ logger = logclass('MASS','INFO')
 def parse_replay(file):
     """ Parse replay with added exceptions and set key-arguments """
     try:
-        return s2_parse_replay(file, try_lastest=True, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
+        return s2_parse_replay(file, try_lastest=False, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
     except:
         return None
 
