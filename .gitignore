@@ -1,5 +1,3 @@
-SCO_config.ini
-SCO_log.txt
 SCO.spec
 SCO.exe
 venv/*
