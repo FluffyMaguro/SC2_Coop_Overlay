@@ -678,7 +678,7 @@ class GameEntry:
         self.BT_file.clicked.connect(lambda: find_file(self.file))
 
         self.la_chat = QtWidgets.QLabel(self.widget)
-        self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 5+15*self.message_count))
+        self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 10+14*self.message_count))
         self.la_chat.setAlignment(QtCore.Qt.AlignTop)
 
         testplayer = 2 if replay_dict['players'][1]['handle'] in handles else 1
@@ -711,7 +711,7 @@ class GameEntry:
             self.la_chat.hide()
         else:
             self.chat_showing = True
-            height = 30 + 15*self.message_count if self.message_count > 0 else 50
+            height = 30 + (10 + 14*self.message_count) if self.message_count > 0 else 50
             self.la_chat.show()
 
         self.widget.setGeometry(QtCore.QRect(0, 0, self.widget.width(), height))

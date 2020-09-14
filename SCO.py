@@ -102,18 +102,29 @@ class UI_TabWidget(object):
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 280, 16))
-        self.LA_AccountFolder.setText("Specify your StarCraft II Account folder")
+        self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 350, 16))
+        self.LA_AccountFolder.setText("Change locations of StarCraft II Account folder and screenshot folder")
+
+        self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 36, 150, 25))
+        self.BT_ChooseFolder.setText('Account folder')
+        self.BT_ChooseFolder.setToolTip('Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
+        self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
 
         self.LA_CurrentReplayFolder = QtWidgets.QLabel(self.TAB_Main)
         self.LA_CurrentReplayFolder.setEnabled(False)
-        self.LA_CurrentReplayFolder.setGeometry(QtCore.QRect(520, 25, 400, 31))
+        self.LA_CurrentReplayFolder.setGeometry(QtCore.QRect(520, 53, 400, 31))
 
-        self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 55, 150, 25))
-        self.BT_ChooseFolder.setText('Choose folder')
-        self.BT_ChooseFolder.setToolTip('Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
-        self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
+        # Screenshot folder
+        self.BT_ScreenshotLocation = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_ScreenshotLocation.setGeometry(QtCore.QRect(520, 90, 150, 25))
+        self.BT_ScreenshotLocation.setText('Screenshot folder')
+        self.BT_ScreenshotLocation.setToolTip('Choose the folder where screenshots are saved')
+        self.BT_ScreenshotLocation.clicked.connect(self.chooseScreenshotFolder)
+
+        self.LA_ScreenshotLocation = QtWidgets.QLabel(self.TAB_Main)
+        self.LA_ScreenshotLocation.setEnabled(False)
+        self.LA_ScreenshotLocation.setGeometry(QtCore.QRect(520, 108, 400, 31))
 
         # Info label
         self.LA_InfoLabel = QtWidgets.QLabel(self.TAB_Main)
@@ -137,7 +148,7 @@ class UI_TabWidget(object):
         self.BT_Screenshot = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_Screenshot.setGeometry(QtCore.QRect(19, 400, 157, 40))
         self.BT_Screenshot.setText('Overlay screenshot')
-        self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop')
+        self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop or chosen location')
         self.BT_Screenshot.clicked.connect(self.save_screenshot)
 
         ### Hotkey frame
@@ -883,8 +894,9 @@ class UI_TabWidget(object):
             'show_player_winrates':True,
             'duration':60,
             'monitor':1,
-            'force_hide_overlay':False,  
-            'account_folder':None,                  
+            'force_hide_overlay':False,
+            'account_folder':None,
+            'screenshot_folder':None,
             'hotkey_show/hide':'Ctrl+*',
             'hotkey_show':None,
             'hotkey_hide':None,
@@ -979,6 +991,10 @@ class UI_TabWidget(object):
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
         self.manage_keyboard_threads()
+
+        # Screenshot folder
+        if self.settings['screenshot_folder'] in {None,''}:
+            self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
 
 
     def check_for_updates(self):
@@ -1098,6 +1114,7 @@ class UI_TabWidget(object):
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
         self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
+        self.LA_ScreenshotLocation.setText(self.settings['screenshot_folder'])
 
         self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
         self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
@@ -1241,6 +1258,7 @@ class UI_TabWidget(object):
         previous_settings = self.settings.copy()
         self.settings = self.default_settings.copy()
         self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
+        self.settings['screenshot_folder'] = previous_settings['screenshot_folder']
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
         self.settings['player_notes'] = previous_settings['player_notes'] 
@@ -1251,6 +1269,20 @@ class UI_TabWidget(object):
         MF.update_settings(self.settings)
         MF.resend_init_message()
         self.manage_keyboard_threads(previous_settings=previous_settings)
+
+
+    def chooseScreenshotFolder(self):
+        """ Changes screenshot folder location """
+        dialog = QtWidgets.QFileDialog()
+        dialog.setDirectory(self.settings['screenshot_folder'])
+        dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+
+        if dialog.exec_():
+            folder = os.path.normpath(dialog.selectedFiles()[0])
+            logger.info(f'Changing screenshot_folder to {folder}')
+            self.LA_ScreenshotLocation.setText(folder)
+            self.settings['screenshot_folder'] = folder
+            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})',color='green')
 
 
     def findReplayFolder(self):
@@ -1722,7 +1754,8 @@ class UI_TabWidget(object):
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 
             name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'
-            path = os.path.join(os.path.expanduser('~'), 'Desktop', name)
+            path = os.path.normpath(os.path.join(self.settings['screenshot_folder'], name))
+
             p.save(path, 'png')
             logger.info(f'Taking screenshot! {path}')
             self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
