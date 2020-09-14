@@ -16,7 +16,7 @@ python SCO.py
 ```
 
 
-![Screenshot](/Screenshots/widescreen.png)
+![Screenshot](/Screenshots/widescreen.jpg)
 
 # How to use
 1. Extract the archive
@@ -28,19 +28,19 @@ python SCO.py
 
 * Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
 
-**Settings**
+**Settings:**
 ![Screenshot](/Screenshots/1_Settings.png)
 
-**List of games you recently played**
+**List of games you recently played:**
 ![Screenshot](/Screenshots/2_Games.png)
 
-**List of players you played with, winrates, notes**
+**List of players you played with:**
 ![Screenshot](/Screenshots/3_Players.png)
 
-**Map statistics**
+**Map statistics:**
 ![Screenshot](/Screenshots/4_Stats_Maps.png)
 
-**Statistics for your allies**
+**Statistics for your allies:**
 ![Screenshot](/Screenshots/5_Stats_AlliedCommanders.png)
 
 **And more...**
@@ -81,6 +81,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - In mixed difficulties, the order reflects which player queued for what difficulty
       - On MM maps commander level isn't shown as 1
       - Minor fixes and tweaks
+
 
 * 1.17 version
 
@@ -189,7 +190,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 You don't need to change anything in the config file for normal usage.
 
-Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example [here](https://twitchapps.com/tmi/)
+Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example <a href="https://twitchapps.com/tmi/" target="_blank">here</a>.
 
 
 ```
@@ -202,6 +203,5 @@ Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example [
       "Local": "C:/Users/Maguro/Documents/StarCraft II/Banks/MMTwitchIntegration.SC2Bank",
       "EU": "C:/Users/Maguro/Documents/StarCraft II/Accounts/452875987/2-S2-1-7503439/Banks/2-S2-1-1174830/MMTwitchIntegration.SC2Bank"
       },
-
    }
 ```
