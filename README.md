@@ -28,19 +28,25 @@ python SCO.py
 
 * Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
 
+# The app
 **Settings:**
+
 ![Screenshot](/Screenshots/1_Settings.png)
 
 **List of games you recently played:**
+
 ![Screenshot](/Screenshots/2_Games.png)
 
 **List of players you played with:**
+
 ![Screenshot](/Screenshots/3_Players.png)
 
 **Map statistics:**
+
 ![Screenshot](/Screenshots/4_Stats_Maps.png)
 
 **Statistics for your allies:**
+
 ![Screenshot](/Screenshots/5_Stats_AlliedCommanders.png)
 
 **And more...**
@@ -75,7 +81,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - Many other tweaks and fixes
 
 
-*  1.18 version
+* 1.18 version
 
       - Commander images are shown in the background of the killbar
       - In mixed difficulties, the order reflects which player queued for what difficulty
@@ -190,7 +196,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 You don't need to change anything in the config file for normal usage.
 
-Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example <a href="https://twitchapps.com/tmi/" target="_blank">here</a>.
+Setup **Twitch bot** in this way. *bot_oauth* has to be generated, for example [here](https://twitchapps.com/tmi/){:target="_blank"}.
 
 
 ```
