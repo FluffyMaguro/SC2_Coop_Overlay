@@ -103,7 +103,7 @@ class UI_TabWidget(object):
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
         self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 350, 16))
-        self.LA_AccountFolder.setText("Change locations of StarCraft II Account folder and screenshot folder")
+        self.LA_AccountFolder.setText("Change locations of StarCraft II account folder and screenshot folder")
 
         self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 36, 150, 25))
@@ -971,6 +971,10 @@ class UI_TabWidget(object):
         if os.path.isfile(truePath('install.bat')):
             os.remove(truePath('install.bat'))
 
+        # Screenshot folder
+        if self.settings['screenshot_folder'] in {None,''}:
+            self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
+
         self.updateUI()
         self.check_for_updates()
 
@@ -992,9 +996,7 @@ class UI_TabWidget(object):
 
         self.manage_keyboard_threads()
 
-        # Screenshot folder
-        if self.settings['screenshot_folder'] in {None,''}:
-            self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
+
 
 
     def check_for_updates(self):
@@ -1757,10 +1759,10 @@ class UI_TabWidget(object):
             path = os.path.normpath(os.path.join(self.settings['screenshot_folder'], name))
 
             p.save(path, 'png')
-            
+
             # Files smaller than 10kb consider as empty
             if os.path.getsize(path) < 10000:
-                self.sendInfoMessage(f'Show overlay before taking screenshot', color='red')
+                self.sendInfoMessage(f'Show overlay before taking screenshot!', color='red')
                 os.remove(path)
             else:
                 logger.info(f'Taking screenshot! {path}')
