@@ -140,6 +140,13 @@ class UI_TabWidget(object):
         self.BT_MainApply.clicked.connect(self.saveSettings)
         self.BT_MainApply.setShortcut("Enter")
 
+        # Debug
+        self.BT_MainDebug = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_MainDebug.setGeometry(QtCore.QRect(867, 430, 75, 25))
+        self.BT_MainDebug.setText('Debug')
+        self.BT_MainDebug.clicked.connect(self.debug_function)
+        self.BT_MainDebug.hide()
+
         # Reset
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
@@ -989,7 +996,7 @@ class UI_TabWidget(object):
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
-        TabWidget.setCurrentIndex(4)
+        TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
         if not HF.isWindows():
@@ -1029,6 +1036,7 @@ class UI_TabWidget(object):
             'right_offset':0,
             'width': 0.5,
             'height':1,
+            'debug_button': False,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
             'twitchbot' : {
@@ -1251,6 +1259,11 @@ class UI_TabWidget(object):
         self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
+        
+        if self.settings['debug_button']:
+            self.BT_MainDebug.show()
+        else:
+            self.BT_MainDebug.hide()
 
         # RNG choices
         if len(self.settings['rng_choices']) > 18:
@@ -1530,8 +1543,8 @@ class UI_TabWidget(object):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
         try:
-            self.WebView.setFixedSize(int(sg.width()*self.settings['width'] - 1), int(sg.height()*self.settings['height']))
-            self.WebView.move(int(sg.width()*(1 - self.settings['width']) + 1 + self.settings['right_offset']), sg.top())
+            self.WebView.setFixedSize(int(sg.width()*self.settings['width']), int(sg.height()*self.settings['height']))
+            self.WebView.move(int(sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), sg.top())
             logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except:
             logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
@@ -1959,6 +1972,12 @@ class UI_TabWidget(object):
             self.FR_RNG_Result_MapRace.setText(race)
         else:
             self.FR_RNG_Result_MapRace.setText('')
+
+
+    def debug_function(self):
+        print('debug')
+        self.settings['height'] = 0.95
+        self.set_WebView_size_location(self.settings['monitor'])
 
 
 if __name__ == "__main__":

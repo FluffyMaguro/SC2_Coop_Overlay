@@ -72,6 +72,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * 2.00 version
 
       - Revamped interface (settings, game list, player list, stats, links)
+      - Integrated commander & map randomizer
       - Integrated control for twitch both to connect to MM maps
       - Bonus objectives show when they were finished
       - New hotkey to show player winrates
