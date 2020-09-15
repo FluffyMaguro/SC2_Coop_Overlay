@@ -1519,6 +1519,8 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_settings(self.settings)
 
+        self.randomize_commander()
+
         self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
         self.thread_server.start()
 
