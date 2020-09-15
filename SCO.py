@@ -26,6 +26,7 @@ import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
+from SCOFunctions.MRandomizer import randomize
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
@@ -716,32 +717,42 @@ class UI_TabWidget(object):
         
         # Generate button
         self.BT_RNG_Generate = QtWidgets.QPushButton(self.TAB_Randomizer)
-        self.BT_RNG_Generate.setGeometry(QtCore.QRect(680, 90, 150, 40))
+        self.BT_RNG_Generate.setGeometry(QtCore.QRect(720, 90, 150, 40))
         self.BT_RNG_Generate.setText('Generate')
         self.BT_RNG_Generate.clicked.connect(self.randomize_commander)
 
         # Description
         self.BT_RNG_Description = QtWidgets.QLabel(self.TAB_Randomizer)
-        self.BT_RNG_Description.setGeometry(QtCore.QRect(330, 20, 510, 60))
+        self.BT_RNG_Description.setGeometry(QtCore.QRect(370, 20, 510, 60))
         self.BT_RNG_Description.setWordWrap(True)
         self.BT_RNG_Description.setEnabled(False)
         self.BT_RNG_Description.setText('This commander randomizer randomly chooses a combination of commander, prestige and masteries.<br>Specify which commanders and prestiges can be picked. Mastery points will be randomized with either all points into one mastery choice, fully random or not at all.')     
 
         # Mastery label
         self.CB_RNG_Mastery_Label = QtWidgets.QLabel(self.TAB_Randomizer)
-        self.CB_RNG_Mastery_Label.setGeometry(QtCore.QRect(330, 80, 200, 20))
+        self.CB_RNG_Mastery_Label.setGeometry(QtCore.QRect(370, 80, 200, 20))
         self.CB_RNG_Mastery_Label.setText('<b>Mastery</b>')
 
         # Mastery combo-box
         self.CB_RNG_Mastery = QtWidgets.QComboBox(self.TAB_Randomizer)
-        self.CB_RNG_Mastery.setGeometry(QtCore.QRect(330, 100, 140, 21))
+        self.CB_RNG_Mastery.setGeometry(QtCore.QRect(370, 100, 140, 21))
         self.CB_RNG_Mastery.addItem('All points into one')
         self.CB_RNG_Mastery.addItem('Fully random mastery')
         self.CB_RNG_Mastery.addItem('No mastery generated')
+
+        # Map
+        self.CB_RNG_Map = QtWidgets.QCheckBox(self.TAB_Randomizer)
+        self.CB_RNG_Map.setGeometry(QtCore.QRect(530, 85, 140, 21))
+        self.CB_RNG_Map.setText('Random map')
+
+        # Race
+        self.CB_RNG_Race = QtWidgets.QCheckBox(self.TAB_Randomizer)
+        self.CB_RNG_Race.setGeometry(QtCore.QRect(530, 105, 140, 21))
+        self.CB_RNG_Race.setText('Random enemy race')        
        
         ### Commanders & prestiges
         self.FR_RNG_GB = QtWidgets.QGroupBox(self.TAB_Randomizer)
-        self.FR_RNG_GB.setGeometry(QtCore.QRect(20, 20, 280, 450))
+        self.FR_RNG_GB.setGeometry(QtCore.QRect(40, 20, 280, 450))
         self.FR_RNG_GB.setTitle('Choose commanders and prestiges')
 
         self.FR_RNG_Commanders = QtWidgets.QFrame(self.FR_RNG_GB)
@@ -778,12 +789,12 @@ class UI_TabWidget(object):
 
         ### Result
         self.FR_RNG_Result = QtWidgets.QGroupBox(self.TAB_Randomizer)
-        self.FR_RNG_Result.setGeometry(QtCore.QRect(330, 150, 500, 320))
+        self.FR_RNG_Result.setGeometry(QtCore.QRect(370, 150, 500, 320))
         self.FR_RNG_Result.setTitle('Result')
 
         # Background
         self.FR_RNG_Result_BG = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_BG.setGeometry(QtCore.QRect(1, 20, self.FR_RNG_Result.width()-2, 87))
+        self.FR_RNG_Result_BG.setGeometry(QtCore.QRect(0, 20, self.FR_RNG_Result.width(), 87))
 
         # Commander name
         self.FR_RNG_Result_CO = QtWidgets.QLabel(self.FR_RNG_Result)
@@ -803,9 +814,14 @@ class UI_TabWidget(object):
         self.FR_RNG_Result_Prestige.setGraphicsEffect(shadow) 
 
         self.FR_RNG_Result_Mastery = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_Mastery.setGeometry(QtCore.QRect(20, 110, 480, 200))
+        self.FR_RNG_Result_Mastery.setGeometry(QtCore.QRect(20, 90, 480, 200))
         self.FR_RNG_Result_Mastery.setStyleSheet('font-size: 13px')
         
+        self.FR_RNG_Result_MapRace = QtWidgets.QLabel(self.FR_RNG_Result)
+        self.FR_RNG_Result_MapRace.setGeometry(QtCore.QRect(10, 290, 480, 20))
+        self.FR_RNG_Result_MapRace.setStyleSheet('font-size: 13px')
+        self.FR_RNG_Result_MapRace.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignBottom)
+
         ############################
         ###### TWITCH BOT TAB ######
         ############################
@@ -1013,7 +1029,7 @@ class UI_TabWidget(object):
             'right_offset':0,
             'width': 0.5,
             'height':1,
-            'rng_choices': None,
+            'rng_choices': dict(),
             'webflag': 'CoverWindow',
             'twitchbot' : {
                            'channel_name': '',
@@ -1073,9 +1089,6 @@ class UI_TabWidget(object):
         # Screenshot folder
         if self.settings['screenshot_folder'] in {None,''}:
             self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
-
-        if self.settings['rng_choices'] == None:
-            self.settings['rng_choices'] = dict()
 
         self.updateUI()
         self.check_for_updates()
@@ -1902,14 +1915,21 @@ class UI_TabWidget(object):
 
     def randomize_commander(self):
         """ Randomizes commander based on current selection """
-        
-        # debug variables
-        commander = 'Abathur'
-        prestige = 0
-        mastery = [30,0,30,0,30,0]
 
+        # Get values
+        mastery_all_in = True if self.CB_RNG_Mastery.currentText() == 'All points into one' else False
+        commander_dict = dict()
+       
+        for co in prestige_names:
+            commander_dict[co] = set()
+            for prest in {0,1,2,3}:
+                if self.RNG_co_dict[(co, prest)].isChecked():
+                    commander_dict[co].add(prest)
+       
+        # Randomize
+        commander, prestige, mastery, mmap, race = randomize(commander_dict, mastery_all_in=mastery_all_in)
 
-        # Update UI
+        # Update image
         self.FR_RNG_Result_BG.setStyleSheet(f'background-color: black;')
         image_file = truePath(f'Layouts/Commanders/{commander}.png')
         if os.path.isfile(image_file):
@@ -1917,15 +1937,28 @@ class UI_TabWidget(object):
             pixmap = pixmap.scaled(self.FR_RNG_Result_BG.width(), self.FR_RNG_Result_BG.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
             self.FR_RNG_Result_BG.setPixmap(pixmap)
 
+        # Commander and prestige
         self.FR_RNG_Result_CO.setText(commander)
         self.FR_RNG_Result_Prestige.setText(f"{prestige_names[commander][prestige]} (P{prestige})")
 
+        # Mastery
+        mastery = mastery if self.CB_RNG_Mastery.currentText() != 'No mastery generated' else [0,0,0,0,0,0]
         mtext = ''
         for idx, m in enumerate(CommanderMastery[commander]):
             fill = '' if mastery[idx] > 9 else '&nbsp;&nbsp;'
             style = ' style="color: #aaa"' if mastery[idx] == 0 else ''
             mtext += f"<span{style}>{fill}<b>{mastery[idx]}</b> {m}</span><br>"
         self.FR_RNG_Result_Mastery.setText(mtext)
+
+        # Map and race
+        if self.CB_RNG_Map.isChecked() and self.CB_RNG_Race.isChecked():
+            self.FR_RNG_Result_MapRace.setText(f"{mmap} | {race}")
+        elif self.CB_RNG_Map.isChecked():
+            self.FR_RNG_Result_MapRace.setText(mmap)
+        elif self.CB_RNG_Race.isChecked():
+            self.FR_RNG_Result_MapRace.setText(race)
+        else:
+            self.FR_RNG_Result_MapRace.setText('')
 
 
 if __name__ == "__main__":

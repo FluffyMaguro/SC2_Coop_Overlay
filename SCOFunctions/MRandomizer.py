@@ -41,4 +41,4 @@ def randomize(commander_dict, mastery_all_in=True):
             else:
                 mastery.append(30 - chosen)
 
-    return (commander, prestige, mastery, mmap, race)
+    return commander, prestige, mastery, mmap, race

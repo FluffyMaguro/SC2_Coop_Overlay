@@ -34,8 +34,11 @@ var last_shown_file = '';
 
 //main functionality
 setColors(null, null, null, null);
-document.getElementById('bgdiv').style.display = 'block';
 connect_to_socket();
+setTimeout(function(){
+        document.getElementById('bgdiv').style.display = 'block';
+        document.getElementById('ibgdiv').style.display = 'block';              
+       }, 500);
 
 // DEBUG START
 // debug();
