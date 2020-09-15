@@ -1036,6 +1036,7 @@ class UI_TabWidget(object):
             'right_offset':0,
             'width': 0.5,
             'height':1,
+            'subtract_height': 1,
             'debug_button': False,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
@@ -1543,7 +1544,7 @@ class UI_TabWidget(object):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
         try:
-            self.WebView.setFixedSize(int(sg.width()*self.settings['width']), int(sg.height()*self.settings['height']))
+            self.WebView.setFixedSize(int(sg.width()*self.settings['width']), int(sg.height()*self.settings['height']) - self.settings['subtract_height'])
             self.WebView.move(int(sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), sg.top())
             logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except:
