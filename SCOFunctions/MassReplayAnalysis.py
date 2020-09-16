@@ -102,13 +102,24 @@ def calculate_commander_data(ReplayData, main_handles):
             commander = r['players'][p]['commander']
             if r['players'][p]['handle'] in main_handles:
                 if not commander in CommanderData:
-                    CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
+                    CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list()}
 
                 CommanderData[commander][r['result']] += 1
                 CommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
                 CommanderData['any'][r['result']] += 1
                 CommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
                 games += 1
+
+                # Count prestige only after they were released
+                if int(r['date'].replace(':','')) > 20200726000000:
+                    CommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
+
+                # Add masteries, use relative values to properly reflect player preferences
+                masteries = get_masterises(r,p)
+                mastery_sum = sum(masteries)/3
+                masteries = [m/mastery_sum for m in masteries] if mastery_sum != 0 else masteries
+                CommanderData[commander]['Mastery'].append(masteries)
+
             else:
                 if not commander in AllyCommanderData:
                     AllyCommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list()}
@@ -136,7 +147,28 @@ def calculate_commander_data(ReplayData, main_handles):
         CommanderData[commander]['Frequency'] = 0 if games == 0 else com_games/games
         CommanderData[commander]['Winrate'] = 0 if com_games == 0 else CommanderData[commander]['Victory']/len(CommanderData[commander]['MedianAPM'])
         CommanderData[commander]['MedianAPM'] = 0 if com_games == 0 else statistics.median(CommanderData[commander]['MedianAPM'])
-        
+
+        if commander != 'any':
+            # Mastery (sum list of lists, normalize)
+            mastery_summed = {0:0,1:0,2:0,3:0,4:0,5:0}
+            for i in CommanderData[commander]['Mastery']:
+                for idx,m in enumerate(i):
+                    mastery_summed[idx] += m    
+
+            # Normalize mastery choices
+            mastery_summed_copy = mastery_summed.copy()
+            for idx,m in enumerate(mastery_summed):
+                divisor = (mastery_summed_copy[(idx//2)*2] + mastery_summed_copy[(idx//2)*2+1])
+                mastery_summed[idx] = 0 if divisor == 0 else mastery_summed[idx]/divisor
+
+            CommanderData[commander]['Mastery'] = mastery_summed  
+
+            # Prestige
+            if len(CommanderData[commander]['Prestige']) > 0:
+                CommanderData[commander]['Prestige'] = {i:CommanderData[commander]['Prestige'].count(i)/len(CommanderData[commander]['Prestige']) for i in {0,1,2,3}}
+            else:
+                CommanderData[commander]['Prestige'] = {0:0,1:0,2:0,3:0}
+
     # Ally
     would_be_observed_games_total = 0
     for commander in AllyCommanderData:
