@@ -892,4 +892,4 @@ class CustomWebView(QtWebEngineWidgets.QWebEngineView):
     @QtCore.pyqtSlot(bool)
     def on_load_finished(self,ok):
         if ok:
-            self.page().runJavaScript(f"showmutators = false;")
+            self.page().runJavaScript(f"do_not_use_websocket = true;")

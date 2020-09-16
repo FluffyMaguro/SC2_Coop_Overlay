@@ -29,7 +29,8 @@ PLAYER_NAMES = set() # Set of names of the main player generated from handles an
 most_recent_playerdata = None
 SETTINGS = dict()
 APP_CLOSING = False
-session_games = {'Victory':0,'Defeat':0} 
+session_games = {'Victory':0,'Defeat':0}
+WEBPAGE = None
 
 
 def stop_threads():
@@ -49,10 +50,45 @@ def update_settings(d):
 
 
 def sendEvent(event):
-    """ Adds event to messages ready to be sent """
+    """ Send message to the overlay """
+
+    # Websocket connection for non-primary overlay
     with lock:
         OverlayMessages.append(event)
 
+    # Send message directly thorugh javascript for the primary overlay.
+    if WEBPAGE == None:
+        return
+        
+    elif event.get('replaydata') != None:
+        data = json.dumps(event)
+        WEBPAGE.runJavaScript(f"postGameStatsTimed({data});")
+
+    elif event.get('mutatordata') != None:
+        data = json.dumps(event)
+        WEBPAGE.runJavaScript(f"mutatorInfo({data['data']})") 
+
+    elif event.get('hideEvent') != None:
+        WEBPAGE.runJavaScript("hidestats()")
+
+    elif event.get('showEvent') != None:
+        WEBPAGE.runJavaScript("showstats()")
+
+    elif event.get('showHideEvent') != None:
+        WEBPAGE.runJavaScript("showhide()")            
+
+    elif event.get('uploadEvent') != None:
+        data = json.dumps(event)
+        WEBPAGE.runJavaScript(f"setTimeout(uploadStatus, 1500, {data['response']}")    
+
+    elif event.get('initEvent') != None:
+        data = json.dumps(event)
+        WEBPAGE.runJavaScript(f"initColorsDuration({data})")
+
+    elif event.get('playerEvent') != None:
+        data = json.dumps(event)
+        WEBPAGE.runJavaScript(f"showHidePlayerWinrate({data})")    
+        
 
 def resend_init_message():
     """ Resends init message. In case duration of colors have changed. """

@@ -1261,7 +1261,7 @@ class UI_TabWidget(object):
         self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
-        
+       
         if self.settings['debug_button']:
             self.BT_MainDebug.show()
         else:
@@ -1516,6 +1516,8 @@ class UI_TabWidget(object):
 
             self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
             self.WebView.show()
+
+            MF.WEBPAGE = self.WebPage
 
 
         # Pass current settings
@@ -2004,8 +2006,11 @@ class UI_TabWidget(object):
 
     def debug_function(self):
         print('debug')
-        self.settings['height'] = 0.95
-        self.set_WebView_size_location(self.settings['monitor'])
+        # self.WebPage.runJavaScript("connect_to_socket();")
+        # self.WebPage.runJavaScript("showhide();")
+        # self.WebView.restart_websocket()
+        # self.settings['height'] = 0.95
+        # self.set_WebView_size_location(self.settings['monitor'])
 
 
 if __name__ == "__main__":

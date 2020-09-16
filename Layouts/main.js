@@ -31,6 +31,7 @@ var toBeShown = false;
 var winrateTime = 12;
 var showingWinrateStats = false;
 var last_shown_file = '';
+var do_not_use_websocket = false;
 
 //main functionality
 setColors(null, null, null, null);
@@ -131,10 +132,16 @@ function connect_to_socket() {
     if (function_is_running) {
         return
     };
+    if (do_not_use_websocket) {
+        return
+     };
     function_is_running = true;
     let socket = new WebSocket("ws://localhost:" + PORT);
     socket.onopen = function(e) {};
     socket.onmessage = function(event) {
+        if (do_not_use_websocket) {
+                return
+             };
         var data = JSON.parse(event.data);
         console.log('New event');
         if (data['replaydata'] != null) {
