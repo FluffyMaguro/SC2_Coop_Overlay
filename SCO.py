@@ -1403,6 +1403,7 @@ class UI_TabWidget(object):
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
         self.settings['player_notes'] = previous_settings['player_notes'] 
         self.settings['twitchbot'] = previous_settings['twitchbot']
+        self.settings['debug_button'] = previous_settings['debug_button']
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
