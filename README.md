@@ -75,11 +75,14 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - Integrated commander & map randomizer
       - Integrated control for twitch both to connect to MM maps
       - Bonus objectives show when they were finished
+      - Easy updating to new versions
+      - App will survive sleep & awake better
+      - Fixes for certain bugs causing crashes and unreponsivness
       - New hotkey to show player winrates
-      - Updated for Zagara mastery changes
-      - Abathur's Swarm Hosts show kills separate from normal Locusts
-      - Map name is reported in English
+      - Map name is always reported in English
       - Improved replay analysis for non-english replays
+      - Updated for Zagara mastery changes
+      - Abathur's Swarm Hosts show kills separate from normal Locusts      
       - Artanis top bar kill counts are more accurate, Unbound Fanatics count towards the top bar
       - Many other tweaks and fixes
 

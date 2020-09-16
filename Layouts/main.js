@@ -140,6 +140,7 @@ function connect_to_socket() {
     socket.onopen = function(e) {};
     socket.onmessage = function(event) {
         if (do_not_use_websocket) {
+                socket.close();
                 return
              };
         var data = JSON.parse(event.data);
