@@ -10,7 +10,7 @@ from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
 logger = logclass('HELP','INFO')
-version_link = 'https://github.com/FluffyMaguro/SC2_Coop_overlay/raw/master/version.txt'
+version_link = 'https://raw.githubusercontent.com/FluffyMaguro/SC2_Coop_overlay/SCO2.0/version.txt'
 
 
 def isWindows():

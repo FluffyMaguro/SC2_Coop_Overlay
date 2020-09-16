@@ -36,7 +36,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 191
+APPVERSION = 192
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1222,7 +1222,7 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile,'w') as f:
-            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 5 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 2 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\n"{truePath("SCO.exe")}"')
+            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\n"{truePath("SCO.exe")}"')
 
         self.saveSettings()
         os.startfile(installfile)
