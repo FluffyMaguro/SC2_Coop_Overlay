@@ -52,8 +52,12 @@ def update_settings(d):
 def sendEvent(event):
     """ Send message to the overlay """
 
-    # Websocket connection for non-primary overlay
+    global globalOverlayMessagesSent
+
     with lock:
+        # Update global messages. So a new socket doesn't get all previous once at once.
+        globalOverlayMessagesSent += 1
+        # Websocket connection for non-primary overlay
         OverlayMessages.append(event)
 
     # Send message directly thorugh javascript for the primary overlay.
@@ -366,16 +370,6 @@ def upload_to_aom(file_path, replay_dict):
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
 
-def update_global_overlay_messages(overlayMessagesSent):
-    """ Updates global overlay messages to the last value
-
-    This is so a newly opened instance of the overlay won't be sent all previous messages at once"""
-    global globalOverlayMessagesSent
-    if overlayMessagesSent > globalOverlayMessagesSent:
-        with lock:
-            globalOverlayMessagesSent = overlayMessagesSent
-
-
 def show_overlay(file):
     """ Shows overlay. If it wasn't analysed before, analyse now."""
 
@@ -416,7 +410,6 @@ async def manager(websocket, path):
             if len(OverlayMessages) > overlayMessagesSent:
                 message = json.dumps(OverlayMessages[overlayMessagesSent])
                 overlayMessagesSent += 1
-                update_global_overlay_messages(overlayMessagesSent)
                 logger.info(f'#{overlayMessagesSent-1} message is being sent through {websocket}')
 
                 try: # Send the message
@@ -426,13 +419,13 @@ async def manager(websocket, path):
                 except asyncio.TimeoutError:
                     logger.error(f'#{overlayMessagesSent-1} message was timed-out.')
                 except websockets.exceptions.ConnectionClosedOK:
-                    logger.error('Websocket connection closed OK!')
+                    logger.info('Websocket connection closed (ok).')
                     break
                 except websockets.exceptions.ConnectionClosedError:
-                    logger.error('Websocket connection closed ERROR!')
+                    logger.info('Websocket connection closed (error).')
                     break
                 except websockets.exceptions.ConnectionClosed:
-                    logger.error('Websocket connection closed!')
+                    logger.info('Websocket connection closed.')
                     break
                 except:
                     logger.error(traceback.format_exc())
