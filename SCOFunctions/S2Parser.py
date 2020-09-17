@@ -103,7 +103,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
-    replay['date'] = time.strftime('%Y:%m:%d:%H:%M:%S', time.gmtime(os.path.getmtime(file)))
+    replay['date'] = time.strftime('%Y:%m:%d:%H:%M:%S', time.localtime(os.path.getmtime(file)))
 
     if metadata['Title'] in map_names:
         replay['map_name'] = map_names[metadata['Title']]['EN']

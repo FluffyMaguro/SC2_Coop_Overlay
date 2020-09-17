@@ -1,4 +1,5 @@
 import datetime
+import traceback
 
 class logclass:
     """ Custom class for logging purposes """
@@ -19,7 +20,11 @@ class logclass:
         time = datetime.datetime.now().strftime("%H:%M:%S") if self.showdate else ''
         ctype = mtype if self.showtype else ''
         msg = f'{time} - {self.name} ({ctype}): {message}'
-        print(msg)
+        try:
+            print(msg)
+        except:
+            print(traceback.format_exc())
+
         if self.LOGGING:
             with open(self.FILE,'ab') as f:
                 f.write(f'{msg}\n'.encode())
