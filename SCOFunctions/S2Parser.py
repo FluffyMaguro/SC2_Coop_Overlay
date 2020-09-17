@@ -11,6 +11,15 @@ logger = logclass('PARS','INFO')
 
 diff_dict = {1:'Casual',2:'Normal',3:'Hard',4:'Brutal'}
 region_dict = {1:'NA', 2:'EU', 3:'KR', 5:'CN', 98:'PTR'}
+valid_protocols = {81102: 81433, 80871: 81433, 76811: 76114}
+protocols = [15405, 16561, 16605, 16755, 16939, 17266, 17326, 18092, 18468, 18574, 19132, 19458, 19595, 19679, 21029, 22612, 23260, 24944, 26490, 27950, 28272, 28667, 32283, 51702, 52910, 53644, 54518, 55505, 55958, 56787, 57507, 58400, 59587, 60196, 60321, 62347, 62848, 63454, 64469, 65094, 65384, 65895, 66668, 67188, 67926, 69232, 70154, 71061, 71523, 71663, 72282, 73286, 73559, 73620, 74071, 74456, 74741, 75025, 75689, 75800, 76052, 76114, 77379, 77535, 77661, 78285, 80669, 80949, 81009, 81433]
+
+
+def find_closest_values(number:int, llist:list, amount=2):
+    """ Finds `amount` of closest numbers in a list to the provided number"""
+    closest = {abs(p-number):p for p in llist}
+    closest = {k:v for k,v in sorted(closest.items())}
+    return list(closest.values())[:amount]
 
 
 def get_last_deselect_event(events):
@@ -54,6 +63,9 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
 
     header = versions.latest().decode_replay_header(contents)
     base_build = header['m_version']['m_baseBuild']
+
+    # If the build is in a known list of protocols that aren't included but work, replace the build by the version that works.
+    base_build = valid_protocols.get(base_build, base_build)
 
     try:
         protocol = versions.build(base_build)

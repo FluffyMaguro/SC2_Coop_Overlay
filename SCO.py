@@ -1097,7 +1097,7 @@ class UI_TabWidget(object):
             os.remove(truePath('install.bat'))
 
         # Screenshot folder
-        if self.settings['screenshot_folder'] in {None,''}:
+        if self.settings['screenshot_folder'] in {None,''} or not os.path.isdir(self.settings['screenshot_folder']):
             self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
 
         self.updateUI()
@@ -1168,7 +1168,7 @@ class UI_TabWidget(object):
             os.mkdir(truePath('Updates'))
 
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
-        urllib.request.urlretrieve(self.new_version, save_path, self.download_progress_bar_updater) 
+        urllib.request.urlretrieve(self.new_version, save_path, self.download_progress_bar_updater)
 
 
     def download_progress_bar_updater(self, blocknum, blocksize, totalsize):

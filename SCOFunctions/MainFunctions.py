@@ -118,7 +118,7 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
 
     for root, directories, files in os.walk(folder):
         for directory in directories:
-            if directory.count('-') >= 3 and not r'\Banks' in root and not 'Crash' in directory:
+            if directory.count('-') >= 3 and not r'\Banks' in root and not 'Crash' in directory and not 'Desync' in directory:
                 handles.add(directory)
 
         for file in files:
@@ -194,7 +194,7 @@ def find_replays(directory):
                 file_path = os.path.join(root,file)
                 if len(file_path) > 255:
                     file_path = '\\\?\\' + file_path
-                file_path = file_path = os.path.normpath(file_path)
+                file_path = os.path.normpath(file_path)
                 AllReplays.add(file_path)
 
     return AllReplays
