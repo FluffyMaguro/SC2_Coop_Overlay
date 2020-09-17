@@ -533,7 +533,7 @@ class GameEntry:
         self.enemy = replay_dict['enemy_race']
         self.length = replay_dict['form_alength']
         self.file = replay_dict['file']
-        self.date = replay_dict['date'][:10].replace(':','-')
+        self.date = replay_dict['date'][:10].replace(':','-') + ' ' + replay_dict['date'][11:16]
         self.chat_showing = False
         self.message_count = len(replay_dict['messages'])
 
@@ -572,37 +572,37 @@ class GameEntry:
         self.la_mapname.setText(self.mapname)
 
         self.la_result = QtWidgets.QLabel(self.widget)
-        self.la_result.setGeometry(QtCore.QRect(140, line_spacing, 50, 21))
+        self.la_result.setGeometry(QtCore.QRect(135, line_spacing, 50, 21))
         self.la_result.setAlignment(QtCore.Qt.AlignCenter)
         self.la_result.setText(self.result)
 
         self.la_p1 = QtWidgets.QLabel(self.widget)
-        self.la_p1.setGeometry(QtCore.QRect(170, line_spacing, 200, 21))
+        self.la_p1.setGeometry(QtCore.QRect(160, line_spacing, 200, 21))
         self.la_p1.setAlignment(QtCore.Qt.AlignCenter)
         self.la_p1.setText(f'{self.p1_name} ({self.p1_commander})')
 
         self.la_p2 = QtWidgets.QLabel(self.widget)
-        self.la_p2.setGeometry(QtCore.QRect(305, line_spacing, 200, 21))
+        self.la_p2.setGeometry(QtCore.QRect(295, line_spacing, 200, 21))
         self.la_p2.setAlignment(QtCore.Qt.AlignCenter)
         self.la_p2.setText(f'{self.p2_name} ({self.p2_commander})')
 
         self.la_enemy = QtWidgets.QLabel(self.widget)
-        self.la_enemy.setGeometry(QtCore.QRect(480, line_spacing, 41, 20))
+        self.la_enemy.setGeometry(QtCore.QRect(475, line_spacing, 41, 20))
         self.la_enemy.setAlignment(QtCore.Qt.AlignCenter)
         self.la_enemy.setText(self.enemy)
 
         self.la_length = QtWidgets.QLabel(self.widget)
-        self.la_length.setGeometry(QtCore.QRect(530, line_spacing, 71, 20))
+        self.la_length.setGeometry(QtCore.QRect(515, line_spacing, 71, 20))
         self.la_length.setAlignment(QtCore.Qt.AlignCenter)
         self.la_length.setText(self.length)
 
         self.la_difficulty = QtWidgets.QLabel(self.widget)
-        self.la_difficulty.setGeometry(QtCore.QRect(590, line_spacing, 81, 20))
+        self.la_difficulty.setGeometry(QtCore.QRect(570, line_spacing, 81, 20))
         self.la_difficulty.setAlignment(QtCore.Qt.AlignCenter)
         self.la_difficulty.setText(self.difficulty)
 
         self.la_date = QtWidgets.QLabel(self.widget)
-        self.la_date.setGeometry(QtCore.QRect(663, line_spacing, 81, 20))
+        self.la_date.setGeometry(QtCore.QRect(645, line_spacing, 101, 20))
         self.la_date.setAlignment(QtCore.Qt.AlignCenter)
         self.la_date.setText(self.date)
 

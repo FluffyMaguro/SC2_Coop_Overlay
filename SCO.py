@@ -428,44 +428,44 @@ class UI_TabWidget(object):
         self.SC_GamesScrollAreaContentLayout.addWidget(self.WD_RecentGamesHeading)
 
         self.LA_Difficulty = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Difficulty.setGeometry(QtCore.QRect(590, 0, 81, 31))
+        self.LA_Difficulty.setGeometry(QtCore.QRect(570, 0, 81, 31))
         self.LA_Difficulty.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Difficulty.setText("Difficulty")
 
         self.LA_Player2 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player2.setGeometry(QtCore.QRect(363, 0, 81, 31))
+        self.LA_Player2.setGeometry(QtCore.QRect(295, 0, 200, 31))
         self.LA_Player2.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Player2.setText("Player 2")
 
         self.LA_Enemy = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Enemy.setGeometry(QtCore.QRect(478, 0, 44, 31))
+        self.LA_Enemy.setGeometry(QtCore.QRect(475, 0, 41, 31))
         self.LA_Enemy.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Enemy.setText("Enemy")
 
         self.LA_Length = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Length.setGeometry(QtCore.QRect(530, 0, 71, 31))
+        self.LA_Length.setGeometry(QtCore.QRect(515, 0, 71, 31))
         self.LA_Length.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Length.setText("Length")
 
         self.LA_Map = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Map.setGeometry(QtCore.QRect(40, 0, 41, 31))
+        self.LA_Map.setGeometry(QtCore.QRect(20, 0, 125, 31))
         self.LA_Map.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.LA_Map.setText("Map")
 
         self.LA_Player1 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player1.setGeometry(QtCore.QRect(223, 0, 81, 31))
+        self.LA_Player1.setGeometry(QtCore.QRect(160, 0, 200, 31))
         self.LA_Player1.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Player1.setText("Player 1")
 
         self.LA_Result = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Result.setGeometry(QtCore.QRect(145, 0, 41, 31))
+        self.LA_Result.setGeometry(QtCore.QRect(135, 0, 50, 31))
         self.LA_Result.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Result.setText("Result")
 
         self.LA_Date = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Date.setGeometry(QtCore.QRect(660, 0, 81, 31))
+        self.LA_Date.setGeometry(QtCore.QRect(645, 0, 101, 31))
         self.LA_Date.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Date.setText("Date")
+        self.LA_Date.setText("Time")
       
         # Finishing
         self.SC_GamesScrollAreaContent.setLayout(self.SC_GamesScrollAreaContentLayout)
