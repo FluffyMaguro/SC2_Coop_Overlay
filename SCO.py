@@ -1621,6 +1621,12 @@ class UI_TabWidget(object):
         if hasattr(self, 'CAnalysis'):
             self.CAnalysis.add_parsed_replay(replay_dict)
 
+        # Show/hide overlay (just to make sure)
+        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
+            self.WebView.hide()
+        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay']:
+            self.WebView.show()
+
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
