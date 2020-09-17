@@ -344,7 +344,20 @@ class mass_replay_analysis:
 
     def calculate_player_winrate_data(self):
         """ Calculates player winrate data """
-        pass
+        winrate_data = dict()
+        for replay in self.ReplayData:
+            for p in {1,2}:
+                player = replay['players'][p]['name']
+                if not player in winrate_data:
+                    winrate_data[player] = [0,0]
+
+                if replay['result'] == 'Victory':
+                    winrate_data[player][0] += 1
+                else:
+                    winrate_data[player][1] += 1
+
+        winrate_data = {k:v for k,v in sorted(winrate_data.items(), key=lambda x:x[1][0], reverse=True)}
+        return winrate_data
 
 
     def analyse_replays(self, 
