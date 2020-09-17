@@ -925,29 +925,29 @@ class UI_TabWidget(object):
 
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Reddit.setGeometry(QtCore.QRect(250, 10, 41, 51))
+        self.IMG_Reddit.setGeometry(QtCore.QRect(250, 20, 41, 41))
         self.IMG_Reddit.setPixmap(QtGui.QPixmap(innerPath("src/reddit.png")))
 
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Subreddit.setGeometry(QtCore.QRect(300, 20, 161, 31))
+        self.LA_Subreddit.setGeometry(QtCore.QRect(300, 20, 161, 41))
         self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
 
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_BattleNet.setGeometry(QtCore.QRect(250, 60, 41, 51))
+        self.IMG_BattleNet.setGeometry(QtCore.QRect(250, 70, 41, 51))
         self.IMG_BattleNet.setPixmap(QtGui.QPixmap(innerPath("src/sc2.png")))
 
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.LA_BattleNet.setGeometry(QtCore.QRect(300, 70, 141, 31))
+        self.LA_BattleNet.setGeometry(QtCore.QRect(300, 80, 131, 31))
         self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
 
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Discord.setGeometry(QtCore.QRect(250, 120, 31, 41))
+        self.IMG_Discord.setGeometry(QtCore.QRect(250, 130, 31, 41))
         self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
         
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Discord.setGeometry(QtCore.QRect(300, 120, 141, 41))
+        self.LA_Discord.setGeometry(QtCore.QRect(300, 130, 141, 31))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
 
         # Donate
