@@ -1602,13 +1602,30 @@ class UI_TabWidget(object):
     def check_replays_finished(self, replay_dict):
         """ Launches function again. Adds game to game tab. Updates player winrate data. """
 
+        # Show/hide overlay (just to make sure)
+        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
+            self.WebView.hide()
+        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay']:
+            self.WebView.show()
+
         # Launch thread anew
         thread_replays = MUI.Worker(MF.check_replays)
         thread_replays.signals.result.connect(self.check_replays_finished)
         self.threadpool.start(thread_replays)
-        
-        # Add game to game tab
+
+        # Delay updating new data to prevent lag when showing the overlay
+        self.timeoutTimer = QtCore.QTimer()
+        self.timeoutTimer.setInterval(1000)
+        self.timeoutTimer.setSingleShot(True)
+        self.timeoutTimer.timeout.connect(self.add_new_game_data)
+        self.timeoutTimer.start()
+
+
+    def add_new_game_data:
+        """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 
+             
         if hasattr(self, 'CAnalysis'):
+            # Add game to game tab
             self.game_UI_dict[replay_dict['file']] = MUI.GameEntry(replay_dict, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
 
@@ -1618,13 +1635,6 @@ class UI_TabWidget(object):
             # Update player tab & set winrate data in MF & generate stats
             self.update_winrate_data()
             self.generate_stats()
-
-
-        # Show/hide overlay (just to make sure)
-        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
-            self.WebView.hide()
-        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay']:
-            self.WebView.show()
 
 
     def save_playernotes_to_settings(self):
