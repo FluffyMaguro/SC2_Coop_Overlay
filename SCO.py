@@ -1944,7 +1944,7 @@ class UI_TabWidget(object):
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 
             name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'
-            path = os.path.normpath(os.path.join(self.settings['screenshot_folder'], name))
+            path = os.path.abspath(os.path.join(self.settings['screenshot_folder'], name))
 
             p.save(path, 'png')
 
