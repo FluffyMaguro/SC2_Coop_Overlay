@@ -258,11 +258,12 @@ class mass_replay_analysis:
 
         self.main_names = names
         self.main_handles = handles
-        self.replays = find_replays(ACCOUNTDIR)
         self.parsed_replays = set()
         self.ReplayData = list()
+        self.ReplayDataAll = list()
         self.cachefile = truePath('cache_overall_stats')
         self.winrate_data = dict()
+        self.current_replays = find_replays(ACCOUNTDIR)
 
 
     def load_cache(self):
@@ -270,9 +271,9 @@ class mass_replay_analysis:
         try:
             if os.path.isfile(self.cachefile):
                 with open(self.cachefile,'rb') as f:
-                    self.ReplayData = pickle.load(f)
+                    self.ReplayDataAll = pickle.load(f)
 
-                self.parsed_replays = {r['file'] for r in self.ReplayData}
+                self.parsed_replays = {r['file'] for r in self.ReplayDataAll}
         except:
             logger.error(traceback.format_exc())
 
@@ -281,27 +282,31 @@ class mass_replay_analysis:
         """ Parses and adds new replays. Doesn't parse already parsed replays. """
         replays_to_parse = {r for r in replays if not r in self.parsed_replays}
         ts = time.time()
-        self.ReplayData = self.ReplayData + list(map(parse_replay, replays_to_parse))
-        self.ReplayData = [r for r in self.ReplayData if r != None]
+        self.ReplayDataAll = self.ReplayDataAll + list(map(parse_replay, replays_to_parse))
+        self.ReplayDataAll = [r for r in self.ReplayDataAll if r != None]
         self.parsed_replays = self.parsed_replays.union(replays_to_parse)
+        self.current_replays = self.current_replays.union(replays_to_parse)
+        self.update_data()
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
         if len(self.main_names) == 0 and len(self.main_handles) > 0:
-            self.main_names = names_fallback(self.main_handles, self.ReplayData)
+            self.main_names = names_fallback(self.main_handles, self.ReplayDataAll)
             logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
 
 
     def add_parsed_replay(self, parsed_data):
         """ Adds already parsed replay. Format has to be from my S2Parser"""
         if parsed_data != None and len(parsed_data) > 1 and not parsed_data['file'] in self.parsed_replays:
-            self.ReplayData.append(parsed_data)
+            self.ReplayDataAll.append(parsed_data)
             self.parsed_replays.add(parsed_data['file'])
+            self.current_replays.add(parsed_data['file'])
+            self.update_data()
 
 
     def save_cache(self):
         """ Saves cache """
         with open(self.cachefile,'wb') as f:
-            pickle.dump(self.ReplayData, f, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
     def update_accountdir(self, ACCOUNTDIR):
@@ -313,13 +318,20 @@ class mass_replay_analysis:
         self.main_names = names
         self.main_handles = handles
         self.add_replays(replays)
+        self.current_replays = replays
+        self.update_data()
         self.save_cache()
+
+
+    def update_data(self):
+        """ Updates current data """
+        self.ReplayData = [r for r in self.ReplayDataAll if r['file'] in self.current_replays]
 
 
     def initialize(self):
         """ Executes full initialization """
         self.load_cache()
-        self.add_replays(self.replays)
+        self.add_replays(self.current_replays)
         self.save_cache()
         return True
 
@@ -387,7 +399,6 @@ class mass_replay_analysis:
         `over_15` = False if you want to exclude games where the main player is 15+
         `include_both_main` = False to exclude games where both players are main players
         """
-
         data = self.ReplayData
 
         if not include_mutations:

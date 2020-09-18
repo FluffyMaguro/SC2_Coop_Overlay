@@ -1454,6 +1454,8 @@ class UI_TabWidget(object):
                     self.updating_maps.show()
                     self.CAnalysis.update_accountdir(folder)
                     self.updating_maps.hide()
+                    self.generate_stats()
+                    self.update_winrate_data()
 
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
@@ -1570,8 +1572,10 @@ class UI_TabWidget(object):
 
     def update_player_tab(self, winrate_data):
         """ Updates player tab based on provide winrate data """
-       
-        self.LA_Winrates_Wait.deleteLater()
+        if self.LA_Winrates_Wait != None:
+            self.LA_Winrates_Wait.deleteLater()
+            self.LA_Winrates_Wait = None
+
         if not hasattr(self, 'player_winrate_UI_dict'):
             self.player_winrate_UI_dict = dict()
 
@@ -1586,6 +1590,10 @@ class UI_TabWidget(object):
                 self.player_winrate_UI_dict[player].hide()
             else:
                 self.player_winrate_UI_dict[player].show()
+
+        for player in self.player_winrate_UI_dict:
+            if not player in winrate_data:
+                self.player_winrate_UI_dict[player].hide()
 
         self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
@@ -1608,9 +1616,7 @@ class UI_TabWidget(object):
             self.CAnalysis.add_parsed_replay(replay_dict)
 
             # Update player tab & set winrate data in MF
-            winrate_data = self.CAnalysis.calculate_player_winrate_data()
-            self.update_player_tab(winrate_data)
-            MF.set_player_winrate_data(winrate_data)
+            self.update_winrate_data()
 
 
         # Show/hide overlay (just to make sure)
@@ -1665,10 +1671,7 @@ class UI_TabWidget(object):
         self.LA_Games_Wait.deleteLater()
         self.generate_stats()
 
-        # Update player tab & set winrate data in MF
-        winrate_data = self.CAnalysis.calculate_player_winrate_data()
-        self.update_player_tab(winrate_data)
-        MF.set_player_winrate_data(winrate_data)
+        self.update_winrate_data()
         MF.check_names_handles()
 
         # Show player winrates
@@ -1676,6 +1679,16 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()
    
+
+    def update_winrate_data(self):
+        """ Update player tab & set winrate data in MF """
+        if hasattr(self, 'CAnalysis'):
+            winrate_data = self.CAnalysis.calculate_player_winrate_data()
+            self.update_player_tab(winrate_data)
+            MF.set_player_winrate_data(winrate_data)
+        else:
+            logger.error('Can\'t update winrate data before mass analysis is finished')
+
 
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""
