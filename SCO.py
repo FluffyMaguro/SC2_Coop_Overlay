@@ -1617,13 +1617,13 @@ class UI_TabWidget(object):
         self.timeoutTimer = QtCore.QTimer()
         self.timeoutTimer.setInterval(1000)
         self.timeoutTimer.setSingleShot(True)
-        self.timeoutTimer.timeout.connect(self.add_new_game_data)
+        self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
 
 
-    def add_new_game_data:
+    def add_new_game_data(self, replay_dict):
         """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 
-             
+
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
             self.game_UI_dict[replay_dict['file']] = MUI.GameEntry(replay_dict, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
