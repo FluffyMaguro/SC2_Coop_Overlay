@@ -6,7 +6,8 @@ import os
 import time
 import pickle
 import traceback
-import statistics 
+import statistics
+import s2protocol
 
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
@@ -20,7 +21,10 @@ def parse_replay(file):
     """ Parse replay with added exceptions and set key-arguments """
     try:
         return s2_parse_replay(file, try_lastest=True, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
+    except s2protocol.decoders.TruncatedError:
+        return None
     except:
+        logger.error(traceback.format_exc())
         return None
 
 
