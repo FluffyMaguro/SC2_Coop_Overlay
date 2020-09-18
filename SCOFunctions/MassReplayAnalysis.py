@@ -262,6 +262,7 @@ class mass_replay_analysis:
         self.parsed_replays = set()
         self.ReplayData = list()
         self.cachefile = truePath('cache_overall_stats')
+        self.winrate_data = dict()
 
 
     def load_cache(self):
@@ -361,6 +362,7 @@ class mass_replay_analysis:
                     winrate_data[player][1] += 1
 
         winrate_data = {k:v for k,v in sorted(winrate_data.items(), key=lambda x:x[1][0], reverse=True)}
+        self.winrate_data = winrate_data
         return winrate_data
 
 

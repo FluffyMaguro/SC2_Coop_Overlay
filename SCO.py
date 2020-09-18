@@ -5,9 +5,9 @@ Causal chain:
 Setup -> Load Settings -> UI
                        -> Server manager (thread)
                        -> Twitch bot (thread)
-                       -> Initialize winrates & names -> Check replays (loop of threads)
-                                                      -> Player winrates (thread)
-                                                      -> Mass replay analysis -> Generate stats
+                       -> Check replays (loop of threads)
+                       -> Mass replay analysis -> Player winrates (thread)
+                                               -> Generate stats (function)
 """
 import os
 import sys
@@ -1528,11 +1528,22 @@ class UI_TabWidget(object):
         self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
         self.thread_server.start()
 
-        # Using PyQt threadpool to get back results from winrate and other analysis
+        # Init replays, names & handles. This should be fast
+        MF.initialize_replays_names_handles()
+
+        # PyQt threadpool
         self.threadpool = QtCore.QThreadPool()
-        thread_init = MUI.Worker(MF.initialize_names_handles_winrates)
-        thread_init.signals.result.connect(self.initialization_of_players_winrates_finished)
-        self.threadpool.start(thread_init)
+
+        # Check for new replays
+        thread_replays = MUI.Worker(MF.check_replays)
+        thread_replays.signals.result.connect(self.check_replays_finished)
+        self.threadpool.start(thread_replays)
+
+        # Start mass replay analysis
+        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, self.settings['account_folder'])
+        thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
+        self.threadpool.start(thread_mass_analysis)
+        logger.info('Starting mass replay analysis')
 
         # Twitch both
         self.TwitchBot = TwitchBot(self.settings['twitchbot'])
@@ -1544,7 +1555,7 @@ class UI_TabWidget(object):
                 self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
                 self.thread_twitch_bot.start()
                 self.bt_twitch.setText('Stop the bot')
-
+        
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
@@ -1557,37 +1568,27 @@ class UI_TabWidget(object):
             logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
 
 
-    def initialization_of_players_winrates_finished(self, winrate_data):
-        """ What happens after we initialized player names, handles and winrates"""
-
-        # Create player winrates UI
+    def update_player_tab(self, winrate_data):
+        """ Updates player tab based on provide winrate data """
+       
         self.LA_Winrates_Wait.deleteLater()
-        self.player_winrate_UI_dict = dict()
+        if not hasattr(self, 'player_winrate_UI_dict'):
+            self.player_winrate_UI_dict = dict()
+
         for idx, player in enumerate(winrate_data):
-            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
-            self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
+            if not player in self.player_winrate_UI_dict:
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
+                self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
+            else:
+                self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])
             
             if idx > 50:
                 self.player_winrate_UI_dict[player].hide()
+            else:
+                self.player_winrate_UI_dict[player].show()
 
         self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
-
-        # Check for new replays
-        thread_replays = MUI.Worker(MF.check_replays)
-        thread_replays.signals.result.connect(self.check_replays_finished)
-        self.threadpool.start(thread_replays)
-
-        # Start mass replay analysis
-        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, self.settings['account_folder'])
-        thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
-        self.threadpool.start(thread_mass_analysis)
-        logger.info('Starting mass replay analysis')
-        
-        # Show player winrates
-        if self.settings['show_player_winrates']:
-            self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
-            self.thread_check_for_newgame.start()
 
 
     def check_replays_finished(self, replay_dict):
@@ -1603,23 +1604,14 @@ class UI_TabWidget(object):
             self.game_UI_dict[replay_dict['file']] = MUI.GameEntry(replay_dict, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
 
-        # Update player winrate data
-        new_players = {replay_dict['players'][1]['name'], replay_dict['players'][2].get('name')}
-        for player in self.player_winrate_UI_dict:
-            if player in new_players and player in MF.player_winrate_data:
-                self.player_winrate_UI_dict[player].update_winrates(MF.player_winrate_data[player])
-                new_players.remove(player)
-
-        # Create new player entry if necessary
-        if len(new_players) > 0:
-            for player in new_players:
-                if player in MF.player_winrate_data:
-                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, MF.player_winrate_data[player][0], MF.player_winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
-                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
-
-        # Update mass replay analysis
-        if hasattr(self, 'CAnalysis'):
+            # Update mass replay analysis
             self.CAnalysis.add_parsed_replay(replay_dict)
+
+            # Update player tab & set winrate data in MF
+            winrate_data = self.CAnalysis.calculate_player_winrate_data()
+            self.update_player_tab(winrate_data)
+            MF.set_player_winrate_data(winrate_data)
+
 
         # Show/hide overlay (just to make sure)
         if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
@@ -1659,7 +1651,7 @@ class UI_TabWidget(object):
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
 
-        # Add games to games tab
+        # Update game tab
         self.game_UI_dict = dict()
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
             self.game_UI_dict[game['file']] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
@@ -1672,7 +1664,18 @@ class UI_TabWidget(object):
         self.LA_Stats_Wait.deleteLater()
         self.LA_Games_Wait.deleteLater()
         self.generate_stats()
-    
+
+        # Update player tab & set winrate data in MF
+        winrate_data = self.CAnalysis.calculate_player_winrate_data()
+        self.update_player_tab(winrate_data)
+        MF.set_player_winrate_data(winrate_data)
+        MF.check_names_handles()
+
+        # Show player winrates
+        if self.settings['show_player_winrates']:
+            self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
+            self.thread_check_for_newgame.start()
+   
 
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""
@@ -1735,7 +1738,6 @@ class UI_TabWidget(object):
                                   )
         
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
-
 
         ### Map stats
 

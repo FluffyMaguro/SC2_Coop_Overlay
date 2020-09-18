@@ -12,7 +12,6 @@ import websockets
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import analyse_replay
-from SCOFunctions.PlayerWinrateAnalysis import get_player_winrates
 
 
 OverlayMessages = [] # Storage for all messages
@@ -227,58 +226,31 @@ def initialize_AllReplays(ACCOUNTDIR):
         return AllReplays
 
 
-def update_player_winrate_data(replay_dict):
-    """ Updates global player_winrate_data with new results"""
-    global player_winrate_data
-
-    result = replay_dict.get('result',None)
-    if result == None:
-        return
-    elif result == 'Victory': # In player_data, victory are on index 0 and losses on index 1
-        result = 0
-    else:
-        result = 1
-
-    main = replay_dict.get('main',None)
-    ally = replay_dict.get('ally',None)
-
-    for player in [main,ally]:
-        with lock:
-            if not player in player_winrate_data:
-                player_winrate_data[player] = [0,0]
-            player_winrate_data[player][result] += 1
+def set_player_winrate_data(winrate_data):
+    with lock:
+        player_winrate_data = winrate_data.copy()
 
 
-def initialize_names_handles_winrates():
+def initialize_replays_names_handles():
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
-    global player_winrate_data
 
     with lock:
         AllReplays = initialize_AllReplays(SETTINGS['account_folder'])
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
 
-    player_winrate_data_temp = None
-    if SETTINGS['show_player_winrates']:
-        try:
-            time_counter_start = time.time()
-            logger.info(f'Starting player winrate analysis')
-            player_winrate_data_temp = get_player_winrates(AllReplays)
+    check_names_handles()
 
-            with lock:
-                player_winrate_data = player_winrate_data_temp
-            logger.info(f'Player winrate analysis completed in {time.time()-time_counter_start:.1f} seconds')
-        except:
-            logger.error(f'Error when initializing player winrate data:\n{traceback.format_exc()}')
+    return None
 
+
+def check_names_handles():
     try:
         update_names_and_handles(SETTINGS['account_folder'], AllReplays)
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
-
-    return player_winrate_data_temp
 
 
 def check_replays():
@@ -310,7 +282,6 @@ def check_replays():
                                 logger.debug('Replay analysis result looks good, appending...')
                                 with lock:
                                     session_games[replay_dict['result']] += 1
-                                update_player_winrate_data(replay_dict)
 
                                 sendEvent({**replay_dict,**session_games})
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
