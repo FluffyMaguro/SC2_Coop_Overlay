@@ -164,9 +164,7 @@ def update_names_and_handles(ACCOUNTDIR, AllReplays):
     """ Takes player names and handles, and updates global variables with them"""
     global PLAYER_HANDLES
     global PLAYER_NAMES
-
     names, handles = find_names_and_handles(ACCOUNTDIR, replays=AllReplays)
-
     if len(handles) > 0:
         logger.info(f'Found {len(handles)} player handles: {handles}')
         with lock:
@@ -185,8 +183,7 @@ def update_names_and_handles(ACCOUNTDIR, AllReplays):
 
 def find_replays(directory):
     """ Finds all replays in a directory. Returns a set."""
-
-    AllReplays = set()
+    replays = set()
     for root, directories, files in os.walk(directory):
         for file in files:
             if file.endswith('.SC2Replay'):
@@ -194,9 +191,9 @@ def find_replays(directory):
                 if len(file_path) > 255:
                     file_path = '\\\?\\' + file_path
                 file_path = os.path.normpath(file_path)
-                AllReplays.add(file_path)
+                replays.add(file_path)
 
-    return AllReplays
+    return replays
 
 
 def initialize_AllReplays(ACCOUNTDIR):
@@ -242,7 +239,6 @@ def initialize_replays_names_handles():
         ReplayPosition = len(AllReplays)
 
     check_names_handles()
-
     return None
 
 
@@ -267,6 +263,7 @@ def check_replays():
                 file_path = os.path.join(root,file)
                 if len(file_path) > 255:
                     file_path = '\\\?\\' + file_path
+                file_path = os.path.normpath(file_path)
                 if file.endswith('.SC2Replay') and not(file_path in AllReplays):
                     with lock:
                         AllReplays[file_path] = {'created':os.path.getmtime(file_path)}

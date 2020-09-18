@@ -36,7 +36,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 192
+APPVERSION = 193
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -2026,12 +2026,10 @@ class UI_TabWidget(object):
 
 
     def debug_function(self):
-        print('debug')
-        # self.WebPage.runJavaScript("connect_to_socket();")
-        # self.WebPage.runJavaScript("showhide();")
-        # self.WebView.restart_websocket()
-        # self.settings['height'] = 0.95
-        # self.set_WebView_size_location(self.settings['monitor'])
+        print('debug - resetting keyboard')
+        import keyboard
+        keyboard.clear_all_hotkeys()
+        self.manage_keyboard_threads()
 
 
 if __name__ == "__main__":
