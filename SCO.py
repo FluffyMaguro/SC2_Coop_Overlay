@@ -1615,8 +1615,9 @@ class UI_TabWidget(object):
             # Update mass replay analysis
             self.CAnalysis.add_parsed_replay(replay_dict)
 
-            # Update player tab & set winrate data in MF
+            # Update player tab & set winrate data in MF & generate stats
             self.update_winrate_data()
+            self.generate_stats()
 
 
         # Show/hide overlay (just to make sure)
