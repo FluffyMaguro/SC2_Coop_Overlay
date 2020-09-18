@@ -525,7 +525,6 @@ def check_for_new_game():
 
         # Skip if winrate data not showing OR no new replay analysed, meaning it's the same game (excluding the first game)
         if len(player_winrate_data) == 0 or len(AllReplays) == last_replay_amount:
-            logger.error(f'No winrate data {len(player_winrate_data)}')
             continue
 
         # When we get a new replay, mark the time

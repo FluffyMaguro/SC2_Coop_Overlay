@@ -2035,6 +2035,11 @@ class UI_TabWidget(object):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    if HF.isWindows():
+        font = QtGui.QFont()
+        font.fromString('MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0')
+        app.setFont(font)
+
     TabWidget = MUI.CustomQTabWidget()
 
     ui = UI_TabWidget()
