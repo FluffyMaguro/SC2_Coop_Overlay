@@ -177,62 +177,62 @@ class UI_TabWidget(object):
 
         # Show/hide
         self.BT_ShowHide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_ShowHide.setGeometry(QtCore.QRect(19, 40, 115, 25))
+        self.BT_ShowHide.setGeometry(QtCore.QRect(19, 50, 115, 25))
         self.BT_ShowHide.setText("Show / hide")
         self.BT_ShowHide.clicked.connect(MF.keyboard_SHOWHIDE)
 
         self.KEY_ShowHide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 70, 113, 20))
+        self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 80, 113, 20))
         self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
         
         # Show
         self.BT_Show = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Show.setGeometry(QtCore.QRect(149, 40, 115, 25))
+        self.BT_Show.setGeometry(QtCore.QRect(149, 50, 115, 25))
         self.BT_Show.setText("Show")
         self.BT_Show.clicked.connect(MF.keyboard_SHOW)
 
         self.KEY_Show = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Show.setGeometry(QtCore.QRect(150, 70, 113, 20))
+        self.KEY_Show.setGeometry(QtCore.QRect(150, 80, 113, 20))
         self.KEY_Show.setToolTip('The key for just showing the overlay')
 
         # Hide
         self.BT_Hide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Hide.setGeometry(QtCore.QRect(279, 40, 115, 25))
+        self.BT_Hide.setGeometry(QtCore.QRect(279, 50, 115, 25))
         self.BT_Hide.setText("Hide")
         self.BT_Hide.clicked.connect(MF.keyboard_HIDE)
         
         self.KEY_Hide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Hide.setGeometry(QtCore.QRect(280, 70, 113, 20))
+        self.KEY_Hide.setGeometry(QtCore.QRect(280, 80, 113, 20))
         self.KEY_Hide.setToolTip('The key for just hiding the overlay')
 
         # Newer
         self.BT_Newer = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Newer.setGeometry(QtCore.QRect(19, 110, 115, 25))
+        self.BT_Newer.setGeometry(QtCore.QRect(19, 120, 115, 25))
         self.BT_Newer.setText("Show newer replay")
         self.BT_Newer.clicked.connect(MF.keyboard_NEWER)
 
         self.KEY_Newer = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Newer.setGeometry(QtCore.QRect(20, 140, 113, 20))
+        self.KEY_Newer.setGeometry(QtCore.QRect(20, 150, 113, 20))
         self.KEY_Newer.setToolTip('The key for showing a newer replay than is currently displayed')
 
         # Older
         self.BT_Older = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Older.setGeometry(QtCore.QRect(149, 110, 115, 25))
+        self.BT_Older.setGeometry(QtCore.QRect(149, 120, 115, 25))
         self.BT_Older.setText("Show older replay")
         self.BT_Older.clicked.connect(MF.keyboard_OLDER)
 
         self.KEY_Older = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Older.setGeometry(QtCore.QRect(150, 140, 113, 20))
+        self.KEY_Older.setGeometry(QtCore.QRect(150, 150, 113, 20))
         self.KEY_Older.setToolTip('The key for showing an older replay than is currently displayed')
 
         # Winrates
         self.BT_Winrates = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Winrates.setGeometry(QtCore.QRect(279, 110, 115, 25))
+        self.BT_Winrates.setGeometry(QtCore.QRect(279, 120, 115, 25))
         self.BT_Winrates.setText("Show player info")
         self.BT_Winrates.clicked.connect(MF.keyboard_PLAYERWINRATES)
 
         self.KEY_Winrates = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Winrates.setGeometry(QtCore.QRect(280, 140, 113, 20))
+        self.KEY_Winrates.setGeometry(QtCore.QRect(280, 150, 113, 20))
         self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
 
         for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
