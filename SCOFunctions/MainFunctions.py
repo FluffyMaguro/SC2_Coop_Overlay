@@ -254,6 +254,7 @@ def check_replays():
     """ Checks every few seconds for new replays """
     global AllReplays
     global session_games
+    global ReplayPosition
 
     while True:
         logger.debug('Checking for replays....')

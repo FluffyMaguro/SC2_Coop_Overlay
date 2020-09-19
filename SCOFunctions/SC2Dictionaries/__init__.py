@@ -536,7 +536,6 @@ amon_player_ids = {
 
 Mutators = {
     "Random": "Applies a random Mutator that has not yet been chosen for this game.",
-    "Boom Bots": "Uncaring automatons carry a nuclear payload toward your base. One player must discern the disarming sequence and the other player must enter it.",
     "Walking Infested": "Enemy units spawn Infested Terran upon death in numbers according to the unit&apos;s life.",
     "Outbreak": "Enemy Infested Terrans spawn continuously around the map.",
     "Darkness": "Previously explored areas remain blacked out on the minimap while outside of player vision.",

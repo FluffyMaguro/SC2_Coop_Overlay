@@ -100,7 +100,7 @@ class TwitchBot:
         try:
             self.s.send(f"{messageTemp}\r\n".encode("utf-8"))
         except BrokenPipeError:
-            self.s = self.openSocket()
+            self.openSocket()
             self.s.send("{messageTemp}\r\n".encode("utf-8"))
 
 
