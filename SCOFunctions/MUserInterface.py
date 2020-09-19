@@ -669,11 +669,8 @@ class PlayerEntry:
 
     """
 
-    def __init__(self, name, wins, losses, note, parent):
-        self.name = name
-        self.wins = wins
-        self.losses = losses
-        self.winrate = 100*wins/(wins+losses)
+    def __init__(self, player, winrate_data, note, parent):
+        self.name = player
         self.note = note
 
         height = 30
@@ -694,22 +691,34 @@ class PlayerEntry:
         self.la_name.setText(self.name)
 
         self.la_wins = QtWidgets.QLabel(self.widget)
-        self.la_wins.setGeometry(QtCore.QRect(270, line_spacing, 31, 21))
+        self.la_wins.setGeometry(QtCore.QRect(170, line_spacing, 31, 21))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.la_wins.setText(str(self.wins))
 
         self.la_losses = QtWidgets.QLabel(self.widget)
-        self.la_losses.setGeometry(QtCore.QRect(330, line_spacing, 41, 21))
+        self.la_losses.setGeometry(QtCore.QRect(230, line_spacing, 41, 21))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.la_losses.setText(str(self.losses))
 
         self.la_winrate = QtWidgets.QLabel(self.widget)
-        self.la_winrate.setGeometry(QtCore.QRect(400, line_spacing, 51, 21))
+        self.la_winrate.setGeometry(QtCore.QRect(300, line_spacing, 51, 21))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
-        self.la_winrate.setText(f'{self.winrate:.0f}%')
+
+        self.la_apm = QtWidgets.QLabel(self.widget)
+        self.la_apm.setGeometry(QtCore.QRect(370, line_spacing, 51, 21))
+        self.la_apm.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_apm.setToolTip("Median APM")
+
+        self.la_commander = QtWidgets.QLabel(self.widget)
+        self.la_commander.setGeometry(QtCore.QRect(425, line_spacing, 81, 21))
+        self.la_commander.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_commander.setToolTip("The most played commander")
+
+        self.la_frequency = QtWidgets.QLabel(self.widget)
+        self.la_frequency.setGeometry(QtCore.QRect(510, line_spacing, 51, 21))
+        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_frequency.setToolTip("The most played commander frequency")
 
         self.ed_note = QtWidgets.QLineEdit(self.widget)
-        self.ed_note.setGeometry(QtCore.QRect(550, line_spacing, 330, 21))
+        self.ed_note.setGeometry(QtCore.QRect(580, line_spacing, 300, 21))
         self.ed_note.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_note.setStyleSheet('color: #444')
         if not self.note in {None,''}:
@@ -721,6 +730,9 @@ class PlayerEntry:
 
         for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate}:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
+
+        self.update_winrates(winrate_data)
 
 
     def get_note(self):
@@ -742,8 +754,11 @@ class PlayerEntry:
         self.winrate = 100*self.wins/(self.wins+self.losses)
 
         self.la_wins.setText(str(self.wins))
-        self.la_losses.setText(str(self.losses))       
+        self.la_losses.setText(str(self.losses))
         self.la_winrate.setText(f'{self.winrate:.0f}%')
+        self.la_apm.setText(f'{data[2]:.0f}')
+        self.la_commander.setText(str(data[3]))  
+        self.la_frequency.setText(f'{100*data[4]:.0f}%')
 
 
 class WorkerSignals(QtCore.QObject):

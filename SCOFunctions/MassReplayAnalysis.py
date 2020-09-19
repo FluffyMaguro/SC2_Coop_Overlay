@@ -296,7 +296,14 @@ class mass_replay_analysis:
 
     def add_parsed_replay(self, parsed_data):
         """ Adds already parsed replay. Format has to be from my S2Parser"""
-        if parsed_data != None and len(parsed_data) > 1 and not parsed_data['file'] in self.parsed_replays:
+        if parsed_data != None and \
+            len(parsed_data) > 1 and \
+            not parsed_data['file'] in self.parsed_replays and \
+            not '[MM]' in parsed_data['file'] and \
+            parsed_data['isBlizzard'] and \
+            len(replay['players']) > 2 and \
+            replay['players'][1].get('commander') != None:
+
             self.ReplayDataAll.append(parsed_data)
             self.parsed_replays.add(parsed_data['file'])
             self.current_replays.add(parsed_data['file'])
@@ -366,13 +373,33 @@ class mass_replay_analysis:
             for p in {1,2}:
                 player = replay['players'][p]['name']
                 if not player in winrate_data:
-                    winrate_data[player] = [0,0]
+                    winrate_data[player] = [0,0,list(),list(),0] # Wins, losses, apm, commander, commander frequency
 
                 if replay['result'] == 'Victory':
                     winrate_data[player][0] += 1
                 else:
                     winrate_data[player][1] += 1
 
+                winrate_data[player][2].append(replay['players'][p]['apm'])
+                winrate_data[player][3].append(replay['players'][p]['commander'])
+
+
+        for player in winrate_data:
+            # Median APM
+            if len(winrate_data[player][2]) > 0:
+                winrate_data[player][2] = statistics.median(winrate_data[player][2])
+            else:
+                winrate_data[player][2] = 0
+
+            # Commander mode and frequency
+            if len(winrate_data[player][3]) > 0:
+                mode = statistics.mode(winrate_data[player][3])
+                winrate_data[player][4] = winrate_data[player][3].count(mode)/len(winrate_data[player][3])
+                winrate_data[player][3] = mode
+            else:
+                winrate_data[player][3] = ''
+                
+        # Sort by wins
         winrate_data = {k:v for k,v in sorted(winrate_data.items(), key=lambda x:x[1][0], reverse=True)}
         self.winrate_data = winrate_data
         return winrate_data

@@ -475,7 +475,7 @@ def keyboard_NEWER():
 
 def keyboard_SHOWHIDE():
     """ Show/hide overlay"""
-    logger.info('Show/Hide event')
+    logger.info('Show-Hide event')
     sendEvent({'showHideEvent': True})
 
 

@@ -370,21 +370,39 @@ class UI_TabWidget(object):
 
         self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Wins.setGeometry(QtCore.QRect(260, 0, 50, 31))
+        self.LA_Wins.setGeometry(QtCore.QRect(160, 0, 50, 31))
         self.LA_Wins.setText("▼ Wins")
 
         self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses.setGeometry(QtCore.QRect(328, 0, 45, 31))
+        self.LA_Losses.setGeometry(QtCore.QRect(230, 0, 45, 31))
         self.LA_Losses.setText("Losses")
 
         self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Winrate.setGeometry(QtCore.QRect(400, 0, 51, 31))
+        self.LA_Winrate.setGeometry(QtCore.QRect(300, 0, 51, 31))
         self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrate.setText("Winrate")
 
+        self.LA_PL_APM = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_APM.setGeometry(QtCore.QRect(370, 0, 51, 31))
+        self.LA_PL_APM.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_PL_APM.setText("APM")
+        self.LA_PL_APM.setToolTip("Median APM")
+
+        self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Commander.setGeometry(QtCore.QRect(425, 0, 81, 31))
+        self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_PL_Commander.setText("Commander")
+        self.LA_PL_Commander.setToolTip("The most played commander")
+
+        self.LA_PL_Frequency = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Frequency.setGeometry(QtCore.QRect(495, 0, 81, 31))
+        self.LA_PL_Frequency.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_PL_Frequency.setText("Freq")
+        self.LA_PL_Frequency.setToolTip("The most played commander frequency")
+
         self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Note.setGeometry(QtCore.QRect(550, 0, 330, 31))
+        self.LA_Note.setGeometry(QtCore.QRect(580, 0, 300, 31))
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
 
@@ -1581,7 +1599,7 @@ class UI_TabWidget(object):
 
         for idx, player in enumerate(winrate_data):
             if not player in self.player_winrate_UI_dict:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player][0], winrate_data[player][1], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
                 self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
             else:
                 self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])

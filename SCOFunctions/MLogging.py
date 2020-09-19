@@ -23,7 +23,10 @@ class logclass:
         try:
             print(msg)
         except:
-            print(traceback.format_exc())
+            try:
+                print(traceback.format_exc())
+            except:
+                pass
 
         if self.LOGGING:
             with open(self.FILE,'ab') as f:
