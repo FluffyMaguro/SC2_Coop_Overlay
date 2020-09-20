@@ -301,8 +301,8 @@ class mass_replay_analysis:
             not parsed_data['file'] in self.parsed_replays and \
             not '[MM]' in parsed_data['file'] and \
             parsed_data['isBlizzard'] and \
-            len(replay['players']) > 2 and \
-            replay['players'][1].get('commander') != None:
+            len(parsed_data['players']) > 2 and \
+            parsed_data['players'][1].get('commander') != None:
 
             self.ReplayDataAll.append(parsed_data)
             self.parsed_replays.add(parsed_data['file'])
