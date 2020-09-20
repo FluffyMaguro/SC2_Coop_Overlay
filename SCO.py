@@ -139,7 +139,6 @@ class UI_TabWidget(object):
         self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 25))
         self.BT_MainApply.setText('Apply')
         self.BT_MainApply.clicked.connect(self.saveSettings)
-        self.BT_MainApply.setShortcut("Enter")
 
         # Debug
         self.BT_MainDebug = QtWidgets.QPushButton(self.TAB_Main)
@@ -147,6 +146,10 @@ class UI_TabWidget(object):
         self.BT_MainDebug.setText('Debug')
         self.BT_MainDebug.clicked.connect(self.debug_function)
         self.BT_MainDebug.hide()
+
+        self.ED_Debug = QtWidgets.QLineEdit(self.TAB_Main)
+        self.ED_Debug.setGeometry(QtCore.QRect(410, 433, 450, 20))
+        self.ED_Debug.hide()
 
         # Reset
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
@@ -179,7 +182,7 @@ class UI_TabWidget(object):
         # Show/hide
         self.BT_ShowHide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
         self.BT_ShowHide.setGeometry(QtCore.QRect(19, 50, 115, 25))
-        self.BT_ShowHide.setText("Show / hide")
+        self.BT_ShowHide.setText("Show / Hide")
         self.BT_ShowHide.clicked.connect(MF.keyboard_SHOWHIDE)
 
         self.KEY_ShowHide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
@@ -393,13 +396,13 @@ class UI_TabWidget(object):
         self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_PL_Commander.setGeometry(QtCore.QRect(425, 0, 81, 31))
         self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Commander.setText("Commander")
+        self.LA_PL_Commander.setText("#1 COM")
         self.LA_PL_Commander.setToolTip("The most played commander")
 
         self.LA_PL_Frequency = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_PL_Frequency.setGeometry(QtCore.QRect(495, 0, 81, 31))
         self.LA_PL_Frequency.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Frequency.setText("Freq")
+        self.LA_PL_Frequency.setText("Frequency")
         self.LA_PL_Frequency.setToolTip("The most played commander frequency")
 
         self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -1058,6 +1061,7 @@ class UI_TabWidget(object):
             'height':1,
             'subtract_height': 1,
             'debug_button': False,
+            'fixed_font_size': True,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
             'twitchbot' : {
@@ -1107,6 +1111,13 @@ class UI_TabWidget(object):
         for key in self.default_settings:
             if key not in self.settings:
                 self.settings[key] = self.default_settings[key]
+
+        # Update fix font size
+        if HF.isWindows() and self.settings['fixed_font_size']:
+            scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+            font = QtGui.QFont()
+            font.fromString(f'MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0')
+            app.setFont(font)
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
@@ -1283,8 +1294,11 @@ class UI_TabWidget(object):
        
         if self.settings['debug_button']:
             self.BT_MainDebug.show()
+            self.BT_MainDebug.setShortcut("Enter")
+            self.ED_Debug.show()
         else:
             self.BT_MainDebug.hide()
+            self.ED_Debug.hide()
 
         # RNG choices
         if len(self.settings['rng_choices']) > 18:
@@ -2056,28 +2070,29 @@ class UI_TabWidget(object):
 
 
     def debug_function(self):
-        print('debug - resetting keyboard')
+        """ Debug function """
+        text = self.ED_Debug.text()
 
-        keyboard.unhook_all()
+        if text == 'test':
+            keyboard.unhook_all()
+            keyboard._listener = keyboard._KeyboardListener()
+            keyboard._listener.start_if_necessary()
+            self.manage_keyboard_threads()
+            self.sendInfoMessage(f'Trying to reset keyboard!', color='blue')
+            return  
 
-        ### Perhaps reset listener first?
-        # keyboard._listener = keyboard._KeyboardListener()
-
-        ### This likely won't help alone
-        keyboard._listener.start_if_necessary()
-        self.manage_keyboard_threads()
+        try:
+            eval(text)
+            self.sendInfoMessage(f'Executing: {text}', color='blue')
+        except:
+            print(traceback.format_exc())
+            self.sendInfoMessage(f'Failed at executing: {text}', color='red')
+        finally:
+            self.ED_Debug.setText('')
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-
-    if HF.isWindows():
-        scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
-        font = QtGui.QFont()
-        font.fromString(f'MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0')
-        app.setFont(font)
-
-        
+    app = QtWidgets.QApplication(sys.argv)        
     TabWidget = MUI.CustomQTabWidget()
 
     ui = UI_TabWidget()

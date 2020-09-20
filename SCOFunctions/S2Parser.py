@@ -4,6 +4,7 @@ import json
 import time
 
 from s2protocol import versions
+from s2protocol.build import game_version as protocol_build
 from SCOFunctions.SC2Dictionaries import map_names
 from SCOFunctions.MLogging import logclass
 
@@ -42,7 +43,7 @@ def get_start_time(events):
     return 0
 
 
-def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=False, withoutRecoverEnabled=False, return_raw=False, return_events=False):
+def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=False, withoutRecoverEnabled=False, return_raw=False, return_events=False, try_closest=False):
     """ Function parsing the replay and returning a replay class
 
     `try_lastest=False` doesn't try the lastest protocol version
@@ -69,9 +70,14 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
 
     try:
         protocol = versions.build(base_build)
+        used_build = base_build
     except:
-        if try_lastest:
+        if try_closest:
+            used_build = find_closest_values(base_build, valid_protocols)[0]
+            protocol = versions.build(used_build)
+        elif try_lastest:
             protocol = versions.latest()
+            used_build = protocol_build().split('.')[-2]
         else:
             return None
 
@@ -115,6 +121,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
+    replay['build'] = {'replay_build': base_build, 'protocol_build': used_build}
     replay['date'] = time.strftime('%Y:%m:%d:%H:%M:%S', time.localtime(os.path.getmtime(file)))
 
     if metadata['Title'] in map_names:
