@@ -12,6 +12,7 @@ Setup -> Load Settings -> UI
 import os
 import sys
 import json
+import ctypes
 import shutil
 import threading
 import traceback
@@ -2056,18 +2057,27 @@ class UI_TabWidget(object):
 
     def debug_function(self):
         print('debug - resetting keyboard')
-        import keyboard
-        keyboard.clear_all_hotkeys()
+
+        keyboard.unhook_all()
+
+        ### Perhaps reset listener first?
+        # keyboard._listener = keyboard._KeyboardListener()
+
+        ### This likely won't help alone
+        keyboard._listener.start_if_necessary()
         self.manage_keyboard_threads()
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+
     if HF.isWindows():
+        scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
         font = QtGui.QFont()
-        font.fromString('MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0')
+        font.fromString(f'MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0')
         app.setFont(font)
 
+        
     TabWidget = MUI.CustomQTabWidget()
 
     ui = UI_TabWidget()
