@@ -14,6 +14,7 @@ import sys
 import json
 import ctypes
 import shutil
+import platform
 import threading
 import traceback
 import urllib.request
@@ -1115,7 +1116,12 @@ class UI_TabWidget(object):
 
         # Update fix font size
         if HF.isWindows() and self.settings['fixed_font_size']:
-            scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+            scaleFactor = 1
+            if not 'Windows-7' in platform.platform():
+                try:
+                    scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+                except:
+                    logger.error(traceback.format_exc())
             font = QtGui.QFont()
             font.fromString(f'MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0')
             app.setFont(font)
