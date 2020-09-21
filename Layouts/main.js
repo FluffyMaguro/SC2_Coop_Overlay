@@ -35,8 +35,8 @@ var do_not_use_websocket = false;
 
 //main functionality
 setColors(null, null, null, null);
-connect_to_socket();
 setTimeout(function(){
+        connect_to_socket();                  
         document.getElementById('bgdiv').style.display = 'block';
         document.getElementById('ibgdiv').style.display = 'block';              
        }, 500);
