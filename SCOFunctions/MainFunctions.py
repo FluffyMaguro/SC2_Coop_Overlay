@@ -82,7 +82,7 @@ def sendEvent(event):
 
     elif event.get('uploadEvent') != None:
         data = json.dumps(event)
-        WEBPAGE.runJavaScript(f"setTimeout(uploadStatus, 1500, {data['response']}")    
+        WEBPAGE.runJavaScript(f"setTimeout(uploadStatus, 1500, '{event['response']}')")    
 
     elif event.get('initEvent') != None:
         data = json.dumps(event)
