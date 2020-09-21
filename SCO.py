@@ -27,6 +27,7 @@ import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
+from SCOFunctions.MAwoken import wait_for_wake
 from SCOFunctions.MRandomizer import randomize
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
@@ -149,6 +150,7 @@ class UI_TabWidget(object):
 
         self.ED_Debug = QtWidgets.QLineEdit(self.TAB_Main)
         self.ED_Debug.setGeometry(QtCore.QRect(410, 433, 450, 20))
+        self.ED_Debug.setPlaceholderText('write code here')
         self.ED_Debug.hide()
 
         # Reset
@@ -1580,6 +1582,11 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_mass_analysis)
         logger.info('Starting mass replay analysis')
 
+        # Check for the PC to be awoken from sleep
+        thread_awakening = MUI.Worker(wait_for_wake)
+        thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
+        self.threadpool.start(thread_awakening)
+
         # Twitch both
         self.TwitchBot = TwitchBot(self.settings['twitchbot'])
         if self.settings['twitchbot']['auto_start']:
@@ -1601,6 +1608,27 @@ class UI_TabWidget(object):
             logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except:
             logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
+
+
+    def pc_waken_from_sleep(self):
+        """ This function is run when the PC is awoken """
+        logger.info('The PC just awaken!')
+        thread_awakening = MUI.Worker(wait_for_wake)
+        thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
+        self.threadpool.start(thread_awakening)
+        self.reset_keyboard_thread()
+
+
+    def reset_keyboard_thread(self):
+        """ Resets keyboard thread"""
+        try:
+            keyboard.unhook_all()
+            keyboard._listener = keyboard._KeyboardListener()
+            keyboard._listener.start_if_necessary()
+            self.manage_keyboard_threads()
+            logger.info(f'Reseting keyboard thread')
+        except:
+            logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 
 
     def update_player_tab(self, winrate_data):
@@ -2073,22 +2101,17 @@ class UI_TabWidget(object):
         """ Debug function """
         text = self.ED_Debug.text()
 
-        if text == 'test':
-            keyboard.unhook_all()
-            keyboard._listener = keyboard._KeyboardListener()
-            keyboard._listener.start_if_necessary()
-            self.manage_keyboard_threads()
-            self.sendInfoMessage(f'Trying to reset keyboard!', color='blue')
-            return  
+        if text == 'keyboard':
+            self.reset_keyboard_thread()
+            return 
 
         try:
+            print(f'Executing: {text}')
             eval(text)
             self.sendInfoMessage(f'Executing: {text}', color='blue')
         except:
             print(traceback.format_exc())
             self.sendInfoMessage(f'Failed at executing: {text}', color='red')
-        finally:
-            self.ED_Debug.setText('')
 
 
 if __name__ == "__main__":
