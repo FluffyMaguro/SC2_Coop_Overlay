@@ -1166,7 +1166,7 @@ class UI_TabWidget(object):
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_NewUpdate.setGeometry(QtCore.QRect(190, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
-        self.BT_NewUpdate.setStyleSheet('font-weight: bold')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #2EB32E')
         self.BT_NewUpdate.clicked.connect(self.start_download)
 
         # Check if it's already downloaded
@@ -1253,7 +1253,7 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile,'w') as f:
-            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\n"{truePath("SCO.exe")}"')
+            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\n"{truePath("SCO.exe")}"\necho Installation completed...')
 
         self.saveSettings()
         os.startfile(installfile)
