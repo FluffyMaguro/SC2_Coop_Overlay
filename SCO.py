@@ -27,7 +27,6 @@ import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
-from SCOFunctions.MAwoken import wait_for_wake
 from SCOFunctions.MRandomizer import randomize
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
@@ -1583,7 +1582,7 @@ class UI_TabWidget(object):
         logger.info('Starting mass replay analysis')
 
         # Check for the PC to be awoken from sleep
-        thread_awakening = MUI.Worker(wait_for_wake)
+        thread_awakening = MUI.Worker(MF.wait_for_wake)
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
 
@@ -1610,10 +1609,12 @@ class UI_TabWidget(object):
             logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
 
 
-    def pc_waken_from_sleep(self):
+    def pc_waken_from_sleep(self, diff):
         """ This function is run when the PC is awoken """
-        logger.info('The PC just awaken!')
-        thread_awakening = MUI.Worker(wait_for_wake)
+        if diff == None:
+            return
+        logger.info(f'The computer just awoke! ({diff:.0f} seconds)')
+        thread_awakening = MUI.Worker(MF.wait_for_wake)
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
         self.reset_keyboard_thread()

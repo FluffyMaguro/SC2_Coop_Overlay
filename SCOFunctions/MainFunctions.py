@@ -500,6 +500,28 @@ def keyboard_PLAYERWINRATES():
         logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
 
+def wait_for_wake():
+    """
+    The goal of this function is to detect when a PC was awaken from sleeping.
+    It will be checking time, and if there is a big discrepancy, it will return it.
+    This function will be run on a separate thread.
+    """
+
+    while True:
+        start = time.time()
+
+        # Wait 5s
+        for i in range(10):
+            time.sleep(0.5)
+            if APP_CLOSING:
+                return None
+
+        # Check the difference
+        diff = time.time() - start
+        if diff > 7:
+            return diff - 5
+
+
 def check_for_new_game():
     global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
