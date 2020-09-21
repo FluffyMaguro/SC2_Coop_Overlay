@@ -2101,7 +2101,6 @@ class UI_TabWidget(object):
     def debug_function(self):
         """ Debug function """
         text = self.ED_Debug.text()
-
         if text == 'keyboard':
             self.reset_keyboard_thread()
             return 
