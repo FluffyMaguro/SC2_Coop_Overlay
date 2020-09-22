@@ -6,6 +6,7 @@ import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
 
+import SCOFunctions.MainFunctions as MF
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
@@ -908,3 +909,4 @@ class CustomWebView(QtWebEngineWidgets.QWebEngineView):
     def on_load_finished(self,ok):
         if ok:
             self.page().runJavaScript(f"do_not_use_websocket = true;")
+            MF.resend_init_message()

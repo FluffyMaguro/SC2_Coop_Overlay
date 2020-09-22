@@ -95,8 +95,7 @@ def sendEvent(event):
 
 def resend_init_message():
     """ Resends init message. In case duration of colors have changed. """
-    with lock:
-        OverlayMessages.append(initMessage) 
+    sendEvent(initMessage)
 
 
 def find_names_and_handles(ACCOUNTDIR, replays=None):
