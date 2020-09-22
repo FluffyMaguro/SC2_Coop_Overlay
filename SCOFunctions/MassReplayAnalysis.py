@@ -12,6 +12,7 @@ import s2protocol
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
+from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 
 logger = logclass('MASS','INFO')
@@ -346,6 +347,22 @@ class mass_replay_analysis:
     def get_last_replays(self, number):
         """ Returns an ordered list of last `number` replays from the newest to the oldest. """
         return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':','')), reverse=True)[:number]
+
+
+    def run_full_analysis(self):
+        """ 
+        Here we will run the full analysis on replays and add them to replay data.
+        
+        """
+
+        # !!! pick few replays from self.ReplayData
+
+        out = analyse_replay(r['file'])
+        del out['parser']
+        r['full'] = out
+        r['length'] = out['length']
+
+        # !!! save data
 
 
     def main_player_is_sub_15(self, replay):
