@@ -603,10 +603,9 @@ def check_for_new_game():
                     # Get player winrate data
                     data = {p:player_winrate_data.get(p,[None]) for p in player_names}
                     # Get player notes
-
                     for player in data:
-                        if player.lower() in SETTINGS['player_notes']:
-                            data[player].append(SETTINGS['player_notes'][player.lower()])
+                        if player in SETTINGS['player_notes']:
+                            data[player].append(SETTINGS['player_notes'][player])
 
                     most_recent_playerdata = data
                     logger.info(f'Sending player data event: {data}')
