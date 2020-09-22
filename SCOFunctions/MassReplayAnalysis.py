@@ -350,20 +350,34 @@ class mass_replay_analysis:
 
 
     def run_full_analysis(self):
-        """ 
-        Here we will run the full analysis on replays and add them to replay data.
-        
-        """
+        """ Run full analysis on all replays """
+        idx = 0
+        for r in self.ReplayDataAll:
+            # Save cache every now and then
+            if idx >= 10:
+                idx = 0
+                self.save_cache()
 
-        # !!! pick few replays from self.ReplayData
+            # Analyze those that are not fully parsed yet
+            if not 'comp' in r:
+                idx += 1
+                out = analyse_replay(r['file'])
+                r['length'] = out['length']
+                r['bonus'] = out['bonus']
+                r['comp'] = out['comp']
+                r['amon_units'] = out['amonUnits']
 
-        out = analyse_replay(r['file'])
-        del out['parser']
-        r['full'] = out
-        r['length'] = out['length']
+                main = out['positions']['main']
+                for p in {1,2}:
+                    r['players'][p]['kills'] = r['mainkills'] if p == main else r['allykills']
+                    r['players'][p]['icons'] = r['mainIcons'] if p == main else r['allyIcons']
+                    r['players'][p]['units'] = r['mainUnits'] if p == main else r['allyUnits']
 
-        # !!! save data
-
+                # Debug
+                from pprint import pprint
+                pprint(r)
+                break
+                
 
     def main_player_is_sub_15(self, replay):
         """ Returns True if the main player is level 1-14"""

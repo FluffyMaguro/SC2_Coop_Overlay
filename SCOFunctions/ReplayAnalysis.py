@@ -208,6 +208,7 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['ally'] = replay['players'][ally_player].get('name','None')
     replay_report_dict['mainAPM'] = replay['players'][main_player].get('apm',0)
     replay_report_dict['allyAPM'] = replay['players'][ally_player].get('apm',0)
+    replay_report_dict['positions'] = {'main':main_player, 'ally':ally_player}
 
     # Difficulty
     diff_1 = replay['difficulty'][0]
