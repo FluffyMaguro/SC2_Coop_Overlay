@@ -302,25 +302,41 @@ class mass_replay_analysis:
             logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
 
 
-    def add_parsed_replay(self, parsed_data):
+    def add_parsed_replay(self, full_data):
         """ Adds already parsed replay. Format has to be from my S2Parser"""
+        parsed_data = full_data.get('parser')
+
         if parsed_data != None and \
             len(parsed_data) > 1 and \
-            not parsed_data['file'] in self.parsed_replays and \
             not '[MM]' in parsed_data['file'] and \
             parsed_data['isBlizzard'] and \
             len(parsed_data['players']) > 2 and \
             parsed_data['players'][1].get('commander') != None:
 
-            from pprint import pprint
-            print('Adding parsed data:')
-            pprint(parsed_data)
+            parsed_data = self.format_data(full_data)
 
             with lock:
                 self.ReplayDataAll.append(parsed_data)
                 self.parsed_replays.add(parsed_data['file'])
                 self.current_replays.add(parsed_data['file'])
                 self.update_data()
+
+
+    @staticmethod
+    def format_data(full_data):
+        """ Formats data returned by replay analysis into a single datastructure used here"""
+        parsed_data = full_data['parser']
+        parsed_data['accurate_length'] = full_data['length']*1.4
+        parsed_data['bonus'] = full_data['bonus']
+        parsed_data['comp'] = full_data['comp']
+        parsed_data['amon_units'] = full_data['amonUnits']
+
+        main = full_data['positions']['main']
+        for p in {1,2}:
+            parsed_data['players'][p]['kills'] = full_data['mainkills'] if p == main else full_data['allykills']
+            parsed_data['players'][p]['icons'] = full_data['mainIcons'] if p == main else full_data['allyIcons']
+            parsed_data['players'][p]['units'] = full_data['mainUnits'] if p == main else full_data['allyUnits']
+        return parsed_data
 
 
     def save_cache(self):
@@ -374,29 +390,21 @@ class mass_replay_analysis:
                 self.save_cache()
                 print('saving...')
 
+            # Interrupt the analysis if the app is closing
             if self.closing:
                 self.save_cache()
                 return
 
             # Analyze those that are not fully parsed yet
             if not 'comp' in r:
-                out = analyse_replay(r['file'])
-                if len(out) == 0:
+                full_data = analyse_replay(r['file'])
+                if len(full_data) == 0:
                     continue
 
                 # Update data
                 idx += 1
                 with lock:
-                    r['accurate_length'] = out['length']*1.4
-                    r['bonus'] = out['bonus']
-                    r['comp'] = out['comp']
-                    r['amon_units'] = out['amonUnits']
-
-                    main = out['positions']['main']
-                    for p in {1,2}:
-                        r['players'][p]['kills'] = out['mainkills'] if p == main else out['allykills']
-                        r['players'][p]['icons'] = out['mainIcons'] if p == main else out['allyIcons']
-                        r['players'][p]['units'] = out['mainUnits'] if p == main else out['allyUnits']
+                    r.update(self.format_data(full_data))
         
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
 

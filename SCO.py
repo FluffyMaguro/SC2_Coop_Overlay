@@ -1695,8 +1695,8 @@ class UI_TabWidget(object):
 
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
-            self.game_UI_dict[replay_dict['file']] = MUI.GameEntry(replay_dict, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['file']].widget)     
+            self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+            self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['parser']['file']].widget)     
 
             # Update mass replay analysis
             self.CAnalysis.add_parsed_replay(replay_dict)
@@ -1768,11 +1768,14 @@ class UI_TabWidget(object):
 
     def full_analysis_finished(self):
         self.generate_stats()
+
+        # !!! update some UI
         pass
    
    
     def stop_full_analysis(self):
-        self.CAnalysis.closing = True
+        if hasattr(self, 'CAnalysis'):
+            self.CAnalysis.closing = True
 
 
     def update_winrate_data(self):

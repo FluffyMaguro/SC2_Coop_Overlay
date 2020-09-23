@@ -299,7 +299,7 @@ def check_replays():
                             if len(replay_dict) > 1:
                                 upload_to_aom(file_path,replay_dict)
                                 # return just parser 
-                                return replay_dict['parser']
+                                return replay_dict
 
 
         # Wait while checking if the thread should end early
