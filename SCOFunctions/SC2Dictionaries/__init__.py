@@ -534,6 +534,24 @@ amon_player_ids = {
  }
 
 
+bonus_objectives = {
+ 'Chain of Ascension': 2,
+ 'Cradle of Death': 2,
+ 'Dead of Night': 1,
+ 'Lock & Load': 1,
+ 'Malwarfare':2,
+ 'Miner Evacuation': 2,
+ 'Mist Opportunities': 2,
+ 'Oblivion Express': 2,
+ 'Part and Parcel': 2,
+ 'Rifts to Korhal': 2,
+ 'Scythe of Amon': 3,
+ 'Temple of the Past': 3,
+ 'The Vermillion Problem': 1,
+ 'Void Launch': 3,
+ 'Void Thrashing': 1
+ }
+
 Mutators = {
     "Random": "Applies a random Mutator that has not yet been chosen for this game.",
     "Walking Infested": "Enemy units spawn Infested Terran upon death in numbers according to the unit&apos;s life.",

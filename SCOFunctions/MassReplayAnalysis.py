@@ -15,6 +15,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
+from SCOFunctions.SC2Dictionaries import bonus_objectives
 
 logger = logclass('MASS','INFO')
 lock = threading.Lock()
@@ -58,9 +59,13 @@ def calculate_map_data(ReplayData):
 
     for r in ReplayData:
         if not r['map_name'] in MapData:
-            MapData[r['map_name']] = {'Victory':0,'Defeat':0,'Fastest':{'length':999999},'average_victory_time':list()}
+            MapData[r['map_name']] = {'Victory':0,'Defeat':0,'Fastest':{'length':999999},'average_victory_time':list(),'bonus':list()}
 
         MapData[r['map_name']][r['result']] += 1
+
+        # Append a fraction of bonus completed
+        if 'bonus' in r:
+            MapData[r['map_name']]['bonus'].append(len(r['bonus'])/bonus_objectives[r['map_name']])
 
         if r['result'] == 'Victory':
             MapData[r['map_name']]['average_victory_time'].append(r['accurate_length'])
@@ -81,6 +86,9 @@ def calculate_map_data(ReplayData):
             MapData[m]['average_victory_time'] = statistics.mean(MapData[m]['average_victory_time'])
         else: 
             MapData[m]['average_victory_time'] = 999999
+
+        if len(MapData[m]['bonus']) > 1:
+            MapData[m]['bonus'] = sum(MapData[m]['bonus'])/len(MapData[m]['bonus'])
 
     return MapData
 
@@ -103,20 +111,26 @@ def calculate_commander_data(ReplayData, main_handles):
     CommanderData = dict()
     AllyCommanderData = dict()
     games = 0
-    CommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
-    AllyCommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list()}
+    CommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'KillFraction': list()}
+    AllyCommanderData['any'] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'KillFraction': list()}
 
     for r in ReplayData:
+        total_kills = r['players'][1].get('kills',0) + r['players'][2].get('kills',0)
         for p in {1,2}:
             commander = r['players'][p]['commander']
             if r['players'][p]['handle'] in main_handles:
                 if not commander in CommanderData:
-                    CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list()}
+                    CommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list(),'KillFraction': list()}
 
                 CommanderData[commander][r['result']] += 1
                 CommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
                 CommanderData['any'][r['result']] += 1
                 CommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
+
+                if total_kills > 0:
+                    CommanderData[commander]['KillFraction'].append(r['players'][p]['kills']/total_kills)
+                    CommanderData['any']['KillFraction'].append(r['players'][p]['kills']/total_kills)
+
                 games += 1
 
                 # Count prestige only after they were released
@@ -131,10 +145,13 @@ def calculate_commander_data(ReplayData, main_handles):
 
             else:
                 if not commander in AllyCommanderData:
-                    AllyCommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list()}
+                    AllyCommanderData[commander] = {'Victory':0,'Defeat':0,'MedianAPM':list(),'Prestige':list(),'Mastery':list(),'KillFraction': list()}
 
                 AllyCommanderData[commander][r['result']] += 1
                 AllyCommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
+                if total_kills > 0:
+                    AllyCommanderData[commander]['KillFraction'].append(r['players'][p]['kills']/total_kills)
+                    AllyCommanderData['any']['KillFraction'].append(r['players'][p]['kills']/total_kills)
 
                 # Count prestige only after they were released
                 if int(r['date'].replace(':','')) > 20200726000000:
@@ -156,6 +173,10 @@ def calculate_commander_data(ReplayData, main_handles):
         CommanderData[commander]['Frequency'] = 0 if games == 0 else com_games/games
         CommanderData[commander]['Winrate'] = 0 if com_games == 0 else CommanderData[commander]['Victory']/len(CommanderData[commander]['MedianAPM'])
         CommanderData[commander]['MedianAPM'] = 0 if com_games == 0 else statistics.median(CommanderData[commander]['MedianAPM'])
+
+        # Fraction kills
+        if len(CommanderData[commander]['KillFraction']) > 0:
+            CommanderData[commander]['KillFraction'] = statistrics.median(CommanderData[commander]['KillFraction'])
 
         if commander != 'any':
             # Mastery (sum list of lists, normalize)
@@ -183,6 +204,10 @@ def calculate_commander_data(ReplayData, main_handles):
     for commander in AllyCommanderData:
         com_games = len(AllyCommanderData[commander]['MedianAPM'])
 
+        # Fraction kills
+        if len(AllyCommanderData[commander]['KillFraction']) > 0:
+            AllyCommanderData[commander]['KillFraction'] = statistrics.median(AllyCommanderData[commander]['KillFraction'])
+        
         # Winrate
         AllyCommanderData[commander]['Winrate'] = 0 if com_games == 0 else AllyCommanderData[commander]['Victory']/com_games
 
@@ -252,6 +277,12 @@ def calculate_region_data(ReplayData, main_handles):
         dRegion[region]['frequency'] = (dRegion[region]['Victory'] + dRegion[region]['Defeat'])/len(ReplayData)
 
     return dRegion
+
+
+def calculate_unit_stats(ReplayData):
+    """ Calculates stats for each unit type for player, allies and Amon.
+    This includes number of kills, created and lost for all unit types and sum"""
+    pass
 
 
 class mass_replay_analysis:
