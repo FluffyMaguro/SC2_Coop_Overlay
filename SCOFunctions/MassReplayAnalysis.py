@@ -396,16 +396,21 @@ class mass_replay_analysis:
                 return
 
             # Analyze those that are not fully parsed yet
-            if not 'comp' in r:
+            if not 'full_analysis' in r:
                 full_data = analyse_replay(r['file'])
+                full_data['full_analysis'] = True
                 if len(full_data) == 0:
+                    with lock:
+                        r['full_analysis'] = False
                     continue
 
                 # Update data
                 idx += 1
                 with lock:
                     r.update(self.format_data(full_data))
-        
+
+        if idx > 0:
+            self.save_cache()
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
 
 

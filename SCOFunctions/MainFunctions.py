@@ -27,6 +27,7 @@ PLAYER_HANDLES = set() # Set of handles of the main player
 PLAYER_NAMES = set() # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
 SETTINGS = dict()
+CAnalysis = None
 APP_CLOSING = False
 session_games = {'Victory':0,'Defeat':0}
 WEBPAGE = None
@@ -359,6 +360,9 @@ def show_overlay(file):
                     AllReplays[file]['replay_dict'] = replay_dict
                 with open(analysis_log_file, 'ab') as file:
                     file.write((str(replay_dict)+'\n').encode('utf-8'))
+                if CAnalysis != None:
+                    CAnalysis.add_parsed_replay(replay_dict)  
+                    
             # No output from analysis
             else:
                 with lock:
@@ -450,6 +454,8 @@ def move_in_AllReplays(delta):
                     AllReplays[key]['replay_dict'] = replay_dict
                 with open(analysis_log_file, 'ab') as file:
                     file.write((str(replay_dict)+'\n').encode('utf-8'))
+                if CAnalysis != None:
+                    CAnalysis.add_parsed_replay(replay_dict)  
             else:
                 # No output from analysis
                 with lock:

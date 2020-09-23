@@ -38,7 +38,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 200
+APPVERSION = 210
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1753,6 +1753,7 @@ class UI_TabWidget(object):
 
         self.update_winrate_data()
         MF.check_names_handles()
+        MF.CAnalysis = self.CAnalysis
 
         # Show player winrates
         if self.settings['show_player_winrates']:
