@@ -1066,6 +1066,7 @@ class UI_TabWidget(object):
             'fixed_font_size': True,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
+            'full_analysis': True,
             'twitchbot' : {
                            'channel_name': '',
                            'bot_name': '',
@@ -1757,7 +1758,22 @@ class UI_TabWidget(object):
         if self.settings['show_player_winrates']:
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()
+
+        # Run full analysis
+        if self.settings['full_analysis']:
+            thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
+            thread_full_analysis.signals.result.connect(self.full_analysis_finished)
+            self.threadpool.start(thread_full_analysis)
+
+
+    def full_analysis_finished(self):
+        self.generate_stats()
+        pass
    
+   
+    def stop_full_analysis(self):
+        self.CAnalysis.closing = True
+
 
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """
@@ -2132,6 +2148,7 @@ if __name__ == "__main__":
     # Do stuff before the app is closed
     exit_event = app.exec_()
     TabWidget.tray_icon.hide()
+    ui.stop_full_analysis()
     MF.stop_threads()
     ui.saveSettings()
     sys.exit(exit_event)

@@ -8,6 +8,7 @@ import pickle
 import traceback
 import statistics
 import s2protocol
+import threading
 
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
@@ -16,6 +17,7 @@ from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 
 logger = logclass('MASS','INFO')
+lock = threading.Lock()
 
 
 def parse_replay(file):
@@ -265,6 +267,7 @@ class mass_replay_analysis:
         self.cachefile = truePath('cache_overall_stats')
         self.winrate_data = dict()
         self.current_replays = find_replays(ACCOUNTDIR)
+        self.closing = False
 
 
     def load_cache(self):
@@ -283,11 +286,15 @@ class mass_replay_analysis:
         """ Parses and adds new replays. Doesn't parse already parsed replays. """
         replays_to_parse = {r for r in replays if not r in self.parsed_replays}
         ts = time.time()
-        self.ReplayDataAll = self.ReplayDataAll + list(map(parse_replay, replays_to_parse))
-        self.ReplayDataAll = [r for r in self.ReplayDataAll if r != None]
-        self.parsed_replays = self.parsed_replays.union(replays_to_parse)
-        self.current_replays = self.current_replays.union(replays_to_parse)
-        self.update_data()
+        out = self.ReplayDataAll + list(map(parse_replay, replays_to_parse))
+        out = [r for r in self.ReplayDataAll if r != None]
+
+        with lock:
+            self.ReplayDataAll = out
+            self.parsed_replays = self.parsed_replays.union(replays_to_parse)
+            self.current_replays = self.current_replays.union(replays_to_parse)
+            self.update_data()
+
         logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
         if len(self.main_names) == 0 and len(self.main_handles) > 0:
@@ -305,16 +312,22 @@ class mass_replay_analysis:
             len(parsed_data['players']) > 2 and \
             parsed_data['players'][1].get('commander') != None:
 
-            self.ReplayDataAll.append(parsed_data)
-            self.parsed_replays.add(parsed_data['file'])
-            self.current_replays.add(parsed_data['file'])
-            self.update_data()
+            from pprint import pprint
+            print('Adding parsed data:')
+            pprint(parsed_data)
+
+            with lock:
+                self.ReplayDataAll.append(parsed_data)
+                self.parsed_replays.add(parsed_data['file'])
+                self.current_replays.add(parsed_data['file'])
+                self.update_data()
 
 
     def save_cache(self):
         """ Saves cache """
-        with open(self.cachefile,'wb') as f:
-            pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
+        with lock:
+            with open(self.cachefile,'wb') as f:
+                pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
     def update_accountdir(self, ACCOUNTDIR):
@@ -351,33 +364,42 @@ class mass_replay_analysis:
 
     def run_full_analysis(self):
         """ Run full analysis on all replays """
+        logger.info('Starting full analysis!')
+        start = time.time()
         idx = 0
         for r in self.ReplayDataAll:
             # Save cache every now and then
-            if idx >= 10:
+            if idx >= 20:
                 idx = 0
                 self.save_cache()
+                print('saving...')
+
+            if self.closing:
+                self.save_cache()
+                return
 
             # Analyze those that are not fully parsed yet
             if not 'comp' in r:
-                idx += 1
                 out = analyse_replay(r['file'])
-                r['length'] = out['length']
-                r['bonus'] = out['bonus']
-                r['comp'] = out['comp']
-                r['amon_units'] = out['amonUnits']
+                if len(out) == 0:
+                    continue
 
-                main = out['positions']['main']
-                for p in {1,2}:
-                    r['players'][p]['kills'] = r['mainkills'] if p == main else r['allykills']
-                    r['players'][p]['icons'] = r['mainIcons'] if p == main else r['allyIcons']
-                    r['players'][p]['units'] = r['mainUnits'] if p == main else r['allyUnits']
+                # Update data
+                idx += 1
+                with lock:
+                    r['accurate_length'] = out['length']*1.4
+                    r['bonus'] = out['bonus']
+                    r['comp'] = out['comp']
+                    r['amon_units'] = out['amonUnits']
 
-                # Debug
-                from pprint import pprint
-                pprint(r)
-                break
-                
+                    main = out['positions']['main']
+                    for p in {1,2}:
+                        r['players'][p]['kills'] = out['mainkills'] if p == main else out['allykills']
+                        r['players'][p]['icons'] = out['mainIcons'] if p == main else out['allyIcons']
+                        r['players'][p]['units'] = out['mainUnits'] if p == main else out['allyUnits']
+        
+        logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
+
 
     def main_player_is_sub_15(self, replay):
         """ Returns True if the main player is level 1-14"""
