@@ -6,7 +6,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 
 **Download links:**
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.00/SC2CoopOverlay.2.00.zip)
-* [Mega](https://mega.nz/file/088kTQ7D#J0JS4H3pcRid1fW_m4Wad1JS5i4fXvby8KyMB33Lpzs)
+* [Mega](https://mega.nz/file/NtslxICC#ncK4ispvOsSvwfVs4ZaAsuIZcEkR-A7Vnzk6PVtydHI)
 * Or run the script with Python 3.8 or newer:
 
 ```
