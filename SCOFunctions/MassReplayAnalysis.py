@@ -268,6 +268,7 @@ class mass_replay_analysis:
         self.winrate_data = dict()
         self.current_replays = find_replays(ACCOUNTDIR)
         self.closing = False
+        self.full_analysis_label = None
 
 
     def load_cache(self):
@@ -287,7 +288,7 @@ class mass_replay_analysis:
         replays_to_parse = {r for r in replays if not r in self.parsed_replays}
         ts = time.time()
         out = self.ReplayDataAll + list(map(parse_replay, replays_to_parse))
-        out = [r for r in self.ReplayDataAll if r != None]
+        out = [r for r in out if r != None]
 
         with lock:
             self.ReplayDataAll = out
@@ -380,6 +381,16 @@ class mass_replay_analysis:
 
     def run_full_analysis(self):
         """ Run full analysis on all replays """
+        self.closing = False
+
+        # Get current status & updated
+        fully_parsed = 0
+        for r in self.ReplayDataAll:
+            if 'full_analysis' in r or 'comp' in r:
+                fully_parsed += 1
+        self.full_analysis_label.setText(f'Running – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+
+        # Start 
         logger.info('Starting full analysis!')
         start = time.time()
         idx = 0
@@ -396,7 +407,7 @@ class mass_replay_analysis:
                 return
 
             # Analyze those that are not fully parsed yet
-            if not 'full_analysis' in r:
+            if not 'full_analysis' in r and not 'comp' in r:
                 full_data = analyse_replay(r['file'])
                 full_data['full_analysis'] = True
                 if len(full_data) == 0:
@@ -406,11 +417,14 @@ class mass_replay_analysis:
 
                 # Update data
                 idx += 1
+                fully_parsed +=1
                 with lock:
                     r.update(self.format_data(full_data))
+                    self.full_analysis_label.setText(f'Running – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
         if idx > 0:
             self.save_cache()
+        self.full_analysis_label.setText(f'Full analysis completed! – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
 
 

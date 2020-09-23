@@ -726,6 +726,20 @@ class UI_TabWidget(object):
         self.AllyCommanderComboBox.addItem('APM')
         self.AllyCommanderComboBox.activated[str].connect(self.ally_commander_sort_update)
 
+        # Full analysis
+        self.TAB_FullAnalysis = QtWidgets.QWidget()
+        self.CH_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
+        self.CH_FA_run.setGeometry(QtCore.QRect(10, 10, 80, 25))
+        self.CH_FA_run.setText('Run')
+
+        self.CH_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
+        self.CH_FA_stop.setGeometry(QtCore.QRect(120, 10, 80, 25))
+        self.CH_FA_stop.clicked.connect(self.stop_full_analysis)
+        self.CH_FA_stop.setText('Stop')
+
+        self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
+        self.CH_FA_status.setGeometry(QtCore.QRect(10, 50, 200, 20))
+
         # Putting it together
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
@@ -738,6 +752,9 @@ class UI_TabWidget(object):
 
         self.TABW_StatResults.addTab(self.TAB_DifficultyRegions, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_DifficultyRegions), "Difficulty and regions")
+
+        self.TABW_StatResults.addTab(self.TAB_FullAnalysis, "")
+        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_FullAnalysis), "Full analysis")
 
         self.TABW_StatResults.setCurrentIndex(0)
 
@@ -1066,7 +1083,7 @@ class UI_TabWidget(object):
             'fixed_font_size': True,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
-            'full_analysis': True,
+            'full_analysis': False,
             'twitchbot' : {
                            'channel_name': '',
                            'bot_name': '',
@@ -1760,11 +1777,19 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()
 
-        # Run full analysis
+        # Connect & run full analysis if set
+        self.CH_FA_run.clicked.connect(self.run_f_analysis)
         if self.settings['full_analysis']:
-            thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
-            thread_full_analysis.signals.result.connect(self.full_analysis_finished)
-            self.threadpool.start(thread_full_analysis)
+            self.run_f_analysis()
+
+
+    def run_f_analysis(self):
+        """ runs full analysis """
+        self.settings['full_analysis'] = True
+        self.CAnalysis.full_analysis_label = self.CH_FA_status
+        thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
+        thread_full_analysis.signals.result.connect(self.full_analysis_finished)
+        self.threadpool.start(thread_full_analysis)
 
 
     def full_analysis_finished(self):
