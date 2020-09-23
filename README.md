@@ -4,6 +4,8 @@ This app looks for recent replays from StarCraft II Co-op, parses them and shows
  
 The overlay can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications. It's fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
+For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
+
 **Download links:**
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.00/SC2CoopOverlay.2.00.zip)
 * [Mega](https://mega.nz/file/NtslxICC#ncK4ispvOsSvwfVs4ZaAsuIZcEkR-A7Vnzk6PVtydHI)
