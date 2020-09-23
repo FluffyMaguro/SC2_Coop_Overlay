@@ -75,6 +75,8 @@ def calculate_map_data(ReplayData):
             MapData[r['map_name']]['Fastest']['difficulty'] = r['ext_difficulty']
 
     for m in MapData:
+        MapData[m]['frequency'] = (MapData[m]['Victory'] + MapData[m]['Defeat']) / len(ReplayData)
+        MapData[m]['winrate'] =  MapData[m]['Victory'] / (MapData[m]['Victory'] + MapData[m]['Defeat'])
         if len(MapData[m]['average_victory_time']) > 0:
             MapData[m]['average_victory_time'] = statistics.mean(MapData[m]['average_victory_time'])
         else: 

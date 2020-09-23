@@ -673,7 +673,22 @@ class UI_TabWidget(object):
         self.TAB_Maps = QtWidgets.QWidget()
         self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
         self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 460, 420))
-        self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', '▼Average', 'Wins', 'Losses', bold=True, button=False)
+        self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', 'Average', 'Wins', 'Losses', 'Freq', bold=True, button=False)
+        
+        self.MapsComboBoxLabel = QtWidgets.QLabel(self.TAB_Maps)
+        self.MapsComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
+        self.MapsComboBoxLabel.setText('<b>Sort by</b>')
+
+        self.MapsComboBox = QtWidgets.QComboBox(self.TAB_Maps)
+        self.MapsComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
+        self.MapsComboBox.addItem('Average time')
+        self.MapsComboBox.addItem('Fastest time')
+        self.MapsComboBox.addItem('Frequency')
+        self.MapsComboBox.addItem('Wins')
+        self.MapsComboBox.addItem('Losses')
+        self.MapsComboBox.addItem('Winrate')
+        self.MapsComboBox.activated[str].connect(self.generate_stats)
+
         self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
 
         self.LA_Stats_Wait = QtWidgets.QLabel(self.TAB_Maps)
@@ -1909,13 +1924,20 @@ class UI_TabWidget(object):
             self.stats_maps_UI_dict = dict()
 
         # Sort maps
-        analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1]['average_victory_time'])}    
+        sort_by = self.MapsComboBox.currentText()
+        trans_dict = {'Frequency':'frequency','Wins':'Victory','Losses':'Defeat','Winrate':'winrate','Average time':'average_victory_time',}
+        trans_dict_reverse = {'Frequency':True,'Wins':True,'Losses':True,'Winrate':True,'Average time':False}
+        
+        if sort_by == 'Fastest time':
+            analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1]['Fastest']['length'])}
+        else: 
+            analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1][trans_dict[sort_by]], reverse=trans_dict_reverse[sort_by])}
 
         # Add map buttons & update the fastest map
         idx = 0
         for m in analysis['MapData']:
             idx += 1
-            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'])
+            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'], analysis['MapData'][m]['frequency'], bg=idx%2 == 0)
             self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
 
         # Try to show the last visible fastest map if it's there

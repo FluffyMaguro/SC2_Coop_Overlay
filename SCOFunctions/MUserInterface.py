@@ -208,23 +208,22 @@ class CommanderStats(QtWidgets.QWidget):
         self.show()
 
 
-class FastestMap(QtWidgets.QGroupBox):
+class FastestMap(QtWidgets.QWidget):
     """Custom widget for the fastest map""" 
 
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(480, 5, 475, 410))
-        self.setTitle('The fastest game')
+        self.setGeometry(QtCore.QRect(485, 48, 485, 380))
 
         # Map frame
         self.fr_map = QtWidgets.QFrame(self)
-        self.fr_map.setGeometry(QtCore.QRect(1, 22, 473, 87))
+        self.fr_map.setGeometry(QtCore.QRect(0, 2, 473, 87))
 
         # Map name
         self.la_name = QtWidgets.QLabel(self)
-        self.la_name.setGeometry(QtCore.QRect(15, 40, 460, 40))
-        self.la_name.setStyleSheet('font-weight: bold; font-size: 20px; color: white')
+        self.la_name.setGeometry(QtCore.QRect(15, 20, 460, 40))
+        self.la_name.setStyleSheet('font-weight: bold; font-size: 24px; color: white')
         shadow = QtWidgets.QGraphicsDropShadowEffect() 
         shadow.setBlurRadius(1)
         shadow.setOffset(2)
@@ -232,45 +231,45 @@ class FastestMap(QtWidgets.QGroupBox):
 
         # Time & enemy race
         self.la_time_race = QtWidgets.QLabel(self)
-        self.la_time_race.setGeometry(QtCore.QRect(15, 68, 200, 20))
+        self.la_time_race.setGeometry(QtCore.QRect(15, 48, 200, 20))
         self.la_time_race.setStyleSheet('color: white')
 
         # Player 1
         self.la_p1name = QtWidgets.QLabel(self)
-        self.la_p1name.setGeometry(QtCore.QRect(15, 120, 225, 31))
+        self.la_p1name.setGeometry(QtCore.QRect(10, 100, 225, 31))
         self.la_p1name.setStyleSheet('font-weight: bold')
 
         # P1 APM
         self.la_p1apm = QtWidgets.QLabel(self)
-        self.la_p1apm.setGeometry(QtCore.QRect(15, 142, 100, 31))
+        self.la_p1apm.setGeometry(QtCore.QRect(10, 125, 100, 31))
         self.la_p1apm.setEnabled(False)
 
         # Player 2
         self.la_p2name = QtWidgets.QLabel(self)
-        self.la_p2name.setGeometry(QtCore.QRect(245, 120, 201, 31))
+        self.la_p2name.setGeometry(QtCore.QRect(245, 100, 201, 31))
         self.la_p2name.setStyleSheet('font-weight: bold')
 
         # P2 APM
         self.la_p2apm = QtWidgets.QLabel(self)
-        self.la_p2apm.setGeometry(QtCore.QRect(245, 142, 100, 31))
+        self.la_p2apm.setGeometry(QtCore.QRect(245, 125, 100, 31))
         self.la_p2apm.setEnabled(False)
 
         # P1 Mastery
         self.la_p1masteries = QtWidgets.QLabel(self)
-        self.la_p1masteries.setGeometry(QtCore.QRect(15, 185, 225, 91))
+        self.la_p1masteries.setGeometry(QtCore.QRect(10, 165, 225, 91))
 
         # P2 Mastery
         self.la_p2masteries = QtWidgets.QLabel(self)
-        self.la_p2masteries.setGeometry(QtCore.QRect(245, 185, 250, 91))
+        self.la_p2masteries.setGeometry(QtCore.QRect(245, 165, 250, 91))
 
         # Find file button
         self.bt_findfile = QtWidgets.QPushButton(self)
-        self.bt_findfile.setGeometry(QtCore.QRect(15, 375, 75, 23))       
+        self.bt_findfile.setGeometry(QtCore.QRect(10, 325, 75, 23))       
         self.bt_findfile.setText("Find file")
 
         # Show overlay button
         self.bt_showoverlay = QtWidgets.QPushButton(self)
-        self.bt_showoverlay.setGeometry(QtCore.QRect(95, 375, 81, 23))
+        self.bt_showoverlay.setGeometry(QtCore.QRect(95, 325, 81, 23))
         self.bt_showoverlay.setText("Show overlay")
 
         # Date & difficulty
@@ -307,12 +306,12 @@ class FastestMap(QtWidgets.QGroupBox):
             p1, p2 = 1, 0
 
         prestige = prestige_names[fdict['players'][p1]['commander']][fdict['players'][p1]['prestige']]
-        self.la_p1name.setText(f"{fdict['players'][p1]['name']} ({fdict['players'][p1]['commander']})\n{prestige} (P{fdict['players'][p1]['prestige']})")
+        self.la_p1name.setText(f"<h3>{fdict['players'][p1]['name']} ({fdict['players'][p1]['commander']})<br>{prestige} (P{fdict['players'][p1]['prestige']})</h3>")
         self.la_p1apm.setText(f"{fdict['players'][p1]['apm']} APM")
         self.la_p1masteries.setText(self.format_mastery(fdict['players'][p1]['commander'],fdict['players'][p1]['masteries']))
 
         prestige = prestige_names[fdict['players'][p2]['commander']][fdict['players'][p2]['prestige']]
-        self.la_p2name.setText(f"{fdict['players'][p2]['name']} ({fdict['players'][p2]['commander']})\n{prestige} (P{fdict['players'][p2]['prestige']})") 
+        self.la_p2name.setText(f"<h3>{fdict['players'][p2]['name']} ({fdict['players'][p2]['commander']})<br>{prestige} (P{fdict['players'][p2]['prestige']})</h3>") 
         self.la_p2apm.setText(f"{fdict['players'][p2]['apm']} APM")
         self.la_p2masteries.setText(self.format_mastery(fdict['players'][p2]['commander'],fdict['players'][p2]['masteries']))
 
@@ -404,39 +403,47 @@ class CommanderEntry(QtWidgets.QWidget):
 
 class MapEntry(QtWidgets.QWidget):
     """Custom widget for map entry in stats""" 
-    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, button=True, bold=False):
+    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, frequency, button=True, bold=False, bg=False, bgcolor="#f1f1f1"):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(15, y, parent.width()-15, 40))
+        self.setGeometry(QtCore.QRect(7, y-6, parent.width()-10, 40))
         if bold:
             self.setStyleSheet('font-weight: bold')
         
         # Button/label
         self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
+        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
         if not button:
             self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
-        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
+            self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 20))
+        
         if 'Lock' in name and 'Load' in name:
             name = "Lock and Load"
         self.bt_button.setText(name)
 
         # Average time
         self.la_average = QtWidgets.QLabel(self)
-        self.la_average.setGeometry(QtCore.QRect(155, 0, 70, 20))
+        
         self.la_average.setAlignment(QtCore.Qt.AlignCenter)
         self.la_average.setToolTip('Average victory time')
         time_average = time_average if time_average != 999999 else '–'
         if isinstance(time_average, int) or isinstance(time_average, float):
+            self.la_average.setGeometry(QtCore.QRect(150, 0, 66, 20))
             if time_average < 3600:
                 self.la_average.setText(time.strftime('%M:%S',time.gmtime(time_average)))
             else:
                 self.la_average.setText(time.strftime('%H:%M:%S',time.gmtime(time_average)))
+
+        elif time_average == '–':
+            self.la_average.setGeometry(QtCore.QRect(150, 0, 66, 20))
         else:
+            self.la_average.setGeometry(QtCore.QRect(147, 0, 70, 20))
             self.la_average.setText(time_average)
+            
 
         # Fastest time
         self.la_fastest = QtWidgets.QLabel(self)
-        self.la_fastest.setGeometry(QtCore.QRect(218, 0, 70, 20))
+        self.la_fastest.setGeometry(QtCore.QRect(201, 0, 70, 20))
         self.la_fastest.setAlignment(QtCore.Qt.AlignCenter)
         self.la_fastest.setToolTip('Fastest victory time')
         time_fastest = time_fastest if time_fastest != 999999 else '–'
@@ -447,22 +454,31 @@ class MapEntry(QtWidgets.QWidget):
                 self.la_fastest.setText(time.strftime('%H:%M:%S',time.gmtime(time_fastest)))
         else:
             self.la_fastest.setText(time_fastest)
-      
+
+        # Frequency    
+        self.la_frequency = QtWidgets.QLabel(self)
+        self.la_frequency.setGeometry(QtCore.QRect(250, 0, 70, 20))
+        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)  
+        if isinstance(frequency, str):
+            self.la_frequency.setText(frequency)
+        else:
+            self.la_frequency.setText(f'{100*frequency:.0f}%')
+
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
-        self.la_wins.setGeometry(QtCore.QRect(280, 0, 50, 20))
+        self.la_wins.setGeometry(QtCore.QRect(303, 0, 50, 20))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_wins.setText(str(wins))
 
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
-        self.la_losses.setGeometry(QtCore.QRect(325, 0, 50, 20))
+        self.la_losses.setGeometry(QtCore.QRect(346, 0, 54, 20))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_losses.setText(str(losses))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
-        self.la_winrate.setGeometry(QtCore.QRect(380, 0, 50, 20))
+        self.la_winrate.setGeometry(QtCore.QRect(400, 0, 50, 20))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
         if isinstance(wins, str) or isinstance(losses, str):
             winrate = 'Winrate'
@@ -473,6 +489,10 @@ class MapEntry(QtWidgets.QWidget):
         self.la_winrate.setText(winrate)
 
         self.show()
+
+        if bg:
+            for item in {self.la_average, self.la_fastest, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate}:
+                item.setStyleSheet(f'background-color: {bgcolor}')
 
 
 class DifficultyEntry(QtWidgets.QWidget):
