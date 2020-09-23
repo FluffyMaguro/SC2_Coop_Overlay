@@ -728,17 +728,28 @@ class UI_TabWidget(object):
 
         # Full analysis
         self.TAB_FullAnalysis = QtWidgets.QWidget()
-        self.CH_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
-        self.CH_FA_run.setGeometry(QtCore.QRect(10, 10, 80, 25))
-        self.CH_FA_run.setText('Run')
 
-        self.CH_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
-        self.CH_FA_stop.setGeometry(QtCore.QRect(120, 10, 80, 25))
-        self.CH_FA_stop.clicked.connect(self.stop_full_analysis)
-        self.CH_FA_stop.setText('Stop')
+        self.CH_FA_description = QtWidgets.QLabel(self.TAB_FullAnalysis)
+        self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
+        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take an hour or more and the application will be less responsive.</b>')
+        self.CH_FA_description.setWordWrap(True)    
+
+        self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
+        self.BT_FA_run.setGeometry(QtCore.QRect(10, 85, 80, 25))
+        self.BT_FA_run.setText('Run')
+
+        self.BT_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
+        self.BT_FA_stop.setGeometry(QtCore.QRect(105, 85, 80, 25))
+        self.BT_FA_stop.clicked.connect(self.stop_full_analysis)
+        self.BT_FA_stop.setText('Stop')
+
+        self.CH_FA_atstart = QtWidgets.QCheckBox(self.TAB_FullAnalysis)
+        self.CH_FA_atstart.setGeometry(QtCore.QRect(11, 115, 300, 25))
+        self.CH_FA_atstart.clicked.connect(self.stop_full_analysis)
+        self.CH_FA_atstart.setText('Continue full analysis at start')
 
         self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
-        self.CH_FA_status.setGeometry(QtCore.QRect(10, 50, 200, 20))
+        self.CH_FA_status.setGeometry(QtCore.QRect(10, 140, 300, 20))
 
         # Putting it together
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
@@ -1083,7 +1094,7 @@ class UI_TabWidget(object):
             'fixed_font_size': True,
             'rng_choices': dict(),
             'webflag': 'CoverWindow',
-            'full_analysis': False,
+            'full_analysis_atstart': False,
             'twitchbot' : {
                            'channel_name': '',
                            'bot_name': '',
@@ -1175,6 +1186,8 @@ class UI_TabWidget(object):
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
         self.manage_keyboard_threads()
+
+        self.full_analysis_running = False
 
 
     def check_for_updates(self):
@@ -1316,6 +1329,7 @@ class UI_TabWidget(object):
         self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
+        self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
        
         if self.settings['debug_button']:
             self.BT_MainDebug.show()
@@ -1356,6 +1370,8 @@ class UI_TabWidget(object):
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
         self.settings['twitchbot']['auto_start'] = self.ch_twitch.isChecked()
+
+        self.settings['full_analysis_atstart'] = self.CH_FA_atstart.isChecked()
 
         # RNG choices
         for co in prestige_names:
@@ -1778,14 +1794,18 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame.start()
 
         # Connect & run full analysis if set
-        self.CH_FA_run.clicked.connect(self.run_f_analysis)
-        if self.settings['full_analysis']:
+        self.BT_FA_run.clicked.connect(self.run_f_analysis)
+        if self.settings['full_analysis_atstart']:
             self.run_f_analysis()
 
 
     def run_f_analysis(self):
         """ runs full analysis """
-        self.settings['full_analysis'] = True
+        if self.full_analysis_running:
+            logger.error('Full analysis is already running')
+            return
+
+        self.full_analysis_running = True
         self.CAnalysis.full_analysis_label = self.CH_FA_status
         thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
         thread_full_analysis.signals.result.connect(self.full_analysis_finished)
@@ -1794,6 +1814,7 @@ class UI_TabWidget(object):
 
     def full_analysis_finished(self):
         self.generate_stats()
+        self.CH_FA_atstart.setChecked(True)
 
         # !!! update some UI
         pass
@@ -1802,6 +1823,7 @@ class UI_TabWidget(object):
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
             self.CAnalysis.closing = True
+            self.full_analysis_running = False
 
 
     def update_winrate_data(self):

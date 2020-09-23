@@ -1,13 +1,12 @@
 # StarCraft II Coop Overlay (SCO)
 
-This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. Or it can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications.
-
-The overlay is fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
+This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. The newly added user interface also provides additional information about games, players and other various statistics. New features were added including commander randomizer or twitch bot for integration with my SC2 arcade maps.
+ 
+The overlay can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications. It's fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/1.18/SC2CoopOverlay.1.18.zip)
-* [Mega](https://mega.nz/file/cwcU0SYS#Jj28ans99l1yAWOpsngPw68JbuUgnHU8B8wMi4DI9j0)
-* [Google-drive](https://drive.google.com/file/d/1dZF-gajEJr153oqZL4L7Ds5apdR3ZWAD/view)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.00/SC2CoopOverlay.2.00.zip)
+* [Mega](https://mega.nz/file/088kTQ7D#J0JS4H3pcRid1fW_m4Wad1JS5i4fXvby8KyMB33Lpzs)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -28,7 +27,8 @@ python SCO.py
 
 ![Screenshot](./Screenshots/Display.jpg)
 
-* Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
+5. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
+
 
 # The app
 **Settings:**
