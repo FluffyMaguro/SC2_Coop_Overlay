@@ -1,0 +1,20 @@
+SCO.spec
+SCO.exe
+venv/*
+*__pycache__*
+build
+dist
+_testing.py
+cache_replay_analysis.txt
+cache_overall_stats
+cache_player_winrates.json
+*.ui
+*.qrc
+Settings.json
+Logs.txt
+ChatLog.txt
+Updates/*
+Test/*
+install.bat
+.DS_Store
+SC2CoopOverlay (x.x).zip

@@ -1,9 +1,0 @@
-MutatorAmonArtanis
-MutatorAmonDehaka
-MutatorAmonKarax
-MutatorAmonKerrigan
-MutatorAmonNova
-MutatorAmonRaynor
-MutatorAmonTychus
-MutatorAmonZagara
-MutatorAmonZeratul
