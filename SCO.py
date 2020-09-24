@@ -1470,7 +1470,7 @@ class UI_TabWidget(object):
         elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay'] and not self.WebView.isVisible():
             self.WebView.show()
 
-        
+
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
@@ -1707,6 +1707,39 @@ class UI_TabWidget(object):
             logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 
 
+    def put_player_first(self, player):
+        """ Moves a player to the top spot in the player tab.
+        Returns the last player on top (if any) to its position. """
+
+        if not hasattr(self, 'player_winrate_UI_dict'):
+            return
+
+        # Return the old player
+        if hasattr(self, 'last_ally_player'):
+            w = self.player_winrate_UI_dict[self.last_ally_player]
+            self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
+            
+            # Find the position where to put it back
+            wins = w.wins
+            for idx, pplayer in enumerate(self.player_winrate_UI_dict):
+                if wins >= self.player_winrate_UI_dict[pplayer].wins and idx > 0:
+                    self.SC_PlayersScrollAreaContentsLayout.insertWidget(idx+1, w.widget)
+                    break
+
+            # Color back
+            for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
+                item.setStyleSheet('color:black')
+    
+        # New player to top
+        if player in self.player_winrate_UI_dict:
+            self.last_ally_player = player
+            w = self.player_winrate_UI_dict[player]
+            self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
+            self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
+            for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
+                item.setStyleSheet('color:blue; font-weight: bold')
+
+
     def update_player_tab(self, winrate_data):
         """ Updates player tab based on provide winrate data """
         if self.LA_Winrates_Wait != None:
@@ -1757,11 +1790,12 @@ class UI_TabWidget(object):
         self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
 
+
     def RNG_Overlay_changed(self):
         if self.FR_RNG_Overlay.isChecked():
-            commander, prestige = self.randomize_commander()
-            MF.RNG_COMMANDER = {'Commander':commander, 'Prestige':prestige}
+            self.randomize_commander()
             self.saveSettings()
+
 
     def add_new_game_data(self, replay_dict):
         """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 
@@ -1779,6 +1813,13 @@ class UI_TabWidget(object):
             # Update player tab & set winrate data in MF & generate stats
             self.update_winrate_data()
             self.generate_stats()
+
+            # Put the last player on top of player tab
+            for player in {1,2}:
+                name = replay_dict['parser']['players'][player]['name']
+                if not replay_dict['parser']['players'][player]['handle'] in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
+                    self.put_player_first(name)
+                    break
 
 
     def save_playernotes_to_settings(self):
@@ -2219,7 +2260,7 @@ class UI_TabWidget(object):
         else:
             self.FR_RNG_Result_MapRace.setText('')
 
-        return commander, prestige_names[commander][prestige]
+        MF.RNG_COMMANDER = {'Commander':commander, 'Prestige':prestige_names[commander][prestige]}
 
 
     def debug_function(self):
