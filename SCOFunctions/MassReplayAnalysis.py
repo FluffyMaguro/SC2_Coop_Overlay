@@ -63,12 +63,12 @@ def calculate_map_data(ReplayData):
 
         MapData[r['map_name']][r['result']] += 1
 
-        # Append a fraction of bonus completed
-        if 'bonus' in r:
-            MapData[r['map_name']]['bonus'].append(len(r['bonus'])/bonus_objectives[r['map_name']])
-
         if r['result'] == 'Victory':
             MapData[r['map_name']]['average_victory_time'].append(r['accurate_length'])
+
+            # Append a fraction of bonus completed
+            if 'bonus' in r:
+                MapData[r['map_name']]['bonus'].append(len(r['bonus'])/bonus_objectives[r['map_name']])
 
         # Fastest clears
         if r['result'] == 'Victory' and r['accurate_length'] < MapData[r['map_name']]['Fastest']['length']:
@@ -176,7 +176,7 @@ def calculate_commander_data(ReplayData, main_handles):
 
         # Fraction kills
         if len(CommanderData[commander]['KillFraction']) > 0:
-            CommanderData[commander]['KillFraction'] = statistrics.median(CommanderData[commander]['KillFraction'])
+            CommanderData[commander]['KillFraction'] = statistics.median(CommanderData[commander]['KillFraction'])
 
         if commander != 'any':
             # Mastery (sum list of lists, normalize)
@@ -206,7 +206,7 @@ def calculate_commander_data(ReplayData, main_handles):
 
         # Fraction kills
         if len(AllyCommanderData[commander]['KillFraction']) > 0:
-            AllyCommanderData[commander]['KillFraction'] = statistrics.median(AllyCommanderData[commander]['KillFraction'])
+            AllyCommanderData[commander]['KillFraction'] = statistics.median(AllyCommanderData[commander]['KillFraction'])
         
         # Winrate
         AllyCommanderData[commander]['Winrate'] = 0 if com_games == 0 else AllyCommanderData[commander]['Victory']/com_games
@@ -282,7 +282,9 @@ def calculate_region_data(ReplayData, main_handles):
 def calculate_unit_stats(ReplayData):
     """ Calculates stats for each unit type for player, allies and Amon.
     This includes number of kills, created and lost for all unit types and sum"""
-    pass
+
+    return None
+
 
 
 class mass_replay_analysis:
@@ -590,8 +592,9 @@ class mass_replay_analysis:
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
         RegionData = calculate_region_data(data, self.main_handles)
+        UnitData = calculate_unit_stats(data)
 
-        return {'RegionData':RegionData, 'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
+        return {'UnitData':UnitData, 'RegionData':RegionData, 'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 
 
 def mass_replay_analysis_thread(ACCOUNTDIR):

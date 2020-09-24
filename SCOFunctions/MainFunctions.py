@@ -516,15 +516,15 @@ def wait_for_wake():
         start = time.time()
 
         # Wait 5s
-        for i in range(10):
+        for i in range(20):
             time.sleep(0.5)
             if APP_CLOSING:
                 return None
 
         # Check the difference
         diff = time.time() - start
-        if diff > 7:
-            return diff - 5
+        if diff > 20:
+            return diff - 10
 
 
 def check_for_new_game():
@@ -562,7 +562,7 @@ def check_for_new_game():
 
         try:
             # Request player data from the game
-            resp = requests.get('http://localhost:6119/game', timeout=4).json()
+            resp = requests.get('http://localhost:6119/game', timeout=6).json()
             players = resp.get('players',list())
 
             # Check if we have players in, and it's not a replay
