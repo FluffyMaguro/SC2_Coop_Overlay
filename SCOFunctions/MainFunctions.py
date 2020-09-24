@@ -31,6 +31,7 @@ CAnalysis = None
 APP_CLOSING = False
 session_games = {'Victory':0,'Defeat':0}
 WEBPAGE = None
+RNG_COMMANDER = dict()
 
 
 def stop_threads():
@@ -282,7 +283,14 @@ def check_replays():
                                 with lock:
                                     session_games[replay_dict['result']] += 1
 
-                                sendEvent({**replay_dict,**session_games})
+                                # What to send
+                                out = replay_dict.copy()
+                                if SETTINGS.get('show_session',False):
+                                    out.update(session_games)
+                                if SETTINGS.get('show_random_on_overlay',False) and len(RNG_COMMANDER) > 0:
+                                    out.update(RNG_COMMANDER)
+                                sendEvent(out)
+
                                 with open(analysis_log_file, 'ab') as file: #save into a text file
                                     file.write((str(replay_dict)+'\n').encode('utf-8'))
                             # No output

@@ -63,19 +63,25 @@ class UI_TabWidget(object):
 
         # Start minimized
         self.CH_StartMinimized = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 50, 230, 17))
+        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 45, 230, 17))
         self.CH_StartMinimized.setText("Start minimized")
         self.CH_StartMinimized.setToolTip("The app will start minimized")
 
         # Enable logging
         self.CH_EnableLogging = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 80, 230, 17))
+        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 70, 230, 17))
         self.CH_EnableLogging.setText("Enable logging")
         self.CH_EnableLogging.setToolTip(f"App logs will be saved into a text file")
 
+        # Show session hidden
+        self.CH_ShowSession = QtWidgets.QCheckBox(self.TAB_Main)
+        self.CH_ShowSession.setGeometry(QtCore.QRect(20, 95, 300, 17))
+        self.CH_ShowSession.setText("Show session stats")
+        self.CH_ShowSession.setToolTip("Shows how many games you played and won in the current session on the overaly")
+
         # Show player winrate and notes
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 110, 230, 17))
+        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 120, 230, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
         self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable.")
 
@@ -90,18 +96,18 @@ class UI_TabWidget(object):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 50, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(250, 60, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(300, 60, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 110, 300, 17))
+        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 120, 300, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
         self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
 
@@ -897,6 +903,14 @@ class UI_TabWidget(object):
         self.FR_RNG_Result_MapRace.setStyleSheet('font-size: 13px')
         self.FR_RNG_Result_MapRace.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignBottom)
 
+        # Overlay checkbox
+        self.FR_RNG_Overlay = QtWidgets.QCheckBox(self.TAB_Randomizer)
+        self.FR_RNG_Overlay.setGeometry(QtCore.QRect(465, 480, 400, 17))
+        self.FR_RNG_Overlay.setText('Show next random commander with prestige on the overlay')
+        self.FR_RNG_Overlay.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.FR_RNG_Overlay.clicked.connect(self.RNG_Overlay_changed)
+
+
         ############################
         ###### TWITCH BOT TAB ######
         ############################
@@ -1084,6 +1098,8 @@ class UI_TabWidget(object):
             'duration':60,
             'monitor':1,
             'force_hide_overlay':False,
+            'show_session': True,
+            'show_random_on_overlay': False,
             'account_folder':None,
             'screenshot_folder':None,
             'hotkey_show/hide':'Ctrl+*',
@@ -1323,6 +1339,8 @@ class UI_TabWidget(object):
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
         self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
         self.LA_ScreenshotLocation.setText(self.settings['screenshot_folder'])
+        self.CH_ShowSession.setChecked(self.settings['show_session'])
+        self.FR_RNG_Overlay.setChecked(self.settings['show_random_on_overlay'])
 
         self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
         self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
@@ -1372,6 +1390,7 @@ class UI_TabWidget(object):
         self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
         self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
         self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
+        self.settings['show_session'] = self.CH_ShowSession.isChecked()
         self.settings['duration'] = self.SP_Duration.value()
         self.settings['monitor'] = self.SP_Monitor.value()
 
@@ -1387,6 +1406,7 @@ class UI_TabWidget(object):
         self.settings['twitchbot']['auto_start'] = self.ch_twitch.isChecked()
 
         self.settings['full_analysis_atstart'] = self.CH_FA_atstart.isChecked()
+        self.settings['show_random_on_overlay'] = self.FR_RNG_Overlay.isChecked()
 
         # RNG choices
         for co in prestige_names:
@@ -1737,9 +1757,16 @@ class UI_TabWidget(object):
         self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
 
+    def RNG_Overlay_changed(self):
+        if self.FR_RNG_Overlay.isChecked():
+            commander, prestige = self.randomize_commander()
+            MF.RNG_COMMANDER = {'Commander':commander, 'Prestige':prestige}
+            self.saveSettings()
 
     def add_new_game_data(self, replay_dict):
         """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 
+
+        self.RNG_Overlay_changed()
 
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
@@ -2191,6 +2218,8 @@ class UI_TabWidget(object):
             self.FR_RNG_Result_MapRace.setText(race)
         else:
             self.FR_RNG_Result_MapRace.setText('')
+
+        return commander, prestige_names[commander][prestige]
 
 
     def debug_function(self):

@@ -585,9 +585,6 @@ def analyse_replay(filepath, main_player_handles=None):
                     
                     logger.debug(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------')
 
-
-
-
                 # Add deaths    
                 if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1: # Don't count deaths on game init
                     if _killed_unit_type in unit_type_dict_main:

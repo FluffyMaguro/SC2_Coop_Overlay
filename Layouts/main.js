@@ -118,7 +118,9 @@ function debug() {
             'Hybrid Dominator': [1, 1, 1, 0.0]
         },
         'Victory':5,
-        'Defeat':2
+        'Defeat':2,
+        'Commander': 'Alarak',
+        'Prestige': 'Shadow of Death'
 
     };
     // data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
@@ -429,6 +431,12 @@ function postGameStats(data, showing = false) {
         fill('session', '');
     };
 
+    if (data['Commander'] != null) {
+        fill('rng', 'Randomized commander: ' + data['Commander'] + ' (' +  data['Prestige'] + ')');
+    } else {
+        fill('rng', '');
+    };    
+
     if (data['extension'] > 0) {
         fill('brutal', 'weekly/custom')
     } else if (data['B+'] > 0) {
@@ -505,8 +513,10 @@ function hidestats() {
     document.getElementById('bgdiv').style.opacity = '0';
     document.getElementById('loader').style.opacity = '0';
     document.getElementById('session').style.opacity = '0';
+    document.getElementById('rng').style.opacity = '0';
     setTimeout(function() {
         document.getElementById('session').innerHTML = '';
+        document.getElementById('rng').innerHTML = '';
         document.getElementById('loader').style.opacity = '0';
         document.getElementById('loader').innerHTML = ''
     }, 1000)
@@ -516,7 +526,7 @@ function showstats() {
     toBeShown = true;
     document.getElementById('stats').style.right = '2vh';
     document.getElementById('bgdiv').style.opacity = '1';
-    setTimeout(function(){document.getElementById('session').style.opacity = '0.6'},1000)
+    setTimeout(function(){document.getElementById('session').style.opacity = '0.6'; document.getElementById('rng').style.opacity = '1'},1000)
 
 }
 

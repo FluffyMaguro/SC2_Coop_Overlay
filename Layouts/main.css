@@ -329,6 +329,14 @@ body {
     color: white;
 }
 
+#rng {
+    font-size: 1.6vh;      
+    height: 2vh;
+    color: white;
+    opacity: 0;
+    transition: opacity 1s;
+}   
+
 #session {
     height: 2vh;
     color: white;
