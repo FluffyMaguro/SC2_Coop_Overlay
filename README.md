@@ -29,7 +29,8 @@ python SCO.py
 
 ![Screenshot](./Screenshots/Display.jpg)
 
-5. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
+5. Use hotkeys or buttons in the app to control the overlay. It will show automatically after each game as well.
+6. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
 
 
 # The app

@@ -569,7 +569,7 @@ def analyse_replay(filepath, main_player_handles=None):
                    ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10 and _killing_player in {1,2}) or \
                    ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8 and _killing_player in {1,2}) or \
                    ('Cradle of Death' in replay['map_name'] and 'LogisticsHeadquarters' == _killed_unit_type and _losing_player == 3) or \
-                   ('Part and Parcel' in replay['map_name'] and 'Caboose' == _killed_unit_type and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99) and not (event['m_x'] == 38 and event['m_y'] == 178)) or \
+                   ('Part and Parcel' in replay['map_name'] and _killed_unit_type in {'Caboose','TarsonisEngine'} and not round(event['_gameloop']/16 - START_TIME,0) in bonus_timings and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99) and not (event['m_x'] == 38 and event['m_y'] == 178)) or \
                    ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7 and event['m_x'] < 196) or \
                    ('Mist Opportunities' in replay['map_name'] and 'COOPTerrazineTank' == _killed_unit_type and _losing_player == 3 and _killing_player in {1,2}) or \
                    ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'} and _losing_player == 9 and _killing_player in {1,2}) or \
@@ -579,11 +579,14 @@ def analyse_replay(filepath, main_player_handles=None):
 
                     # Time offset for Cradle of Death as the explosion is delayed
                     if 'Cradle of Death' in replay['map_name']: 
-                        bonus_timings.append(event['_gameloop']/16 - START_TIME - 8)
+                        bonus_timings.append(round(event['_gameloop']/16 - START_TIME - 8,0))
                     else:
-                        bonus_timings.append(event['_gameloop']/16 - START_TIME)
+                        bonus_timings.append(round(event['_gameloop']/16 - START_TIME,0))
                     
                     logger.debug(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------')
+
+
+
 
                 # Add deaths    
                 if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1: # Don't count deaths on game init
