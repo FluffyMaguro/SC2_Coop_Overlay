@@ -1120,6 +1120,7 @@ class UI_TabWidget(object):
             'right_offset':0,
             'width': 0.5,
             'height':1,
+            'font_scale':1,
             'subtract_height': 1,
             'debug_button': False,
             'fixed_font_size': True,
@@ -1183,7 +1184,12 @@ class UI_TabWidget(object):
                 except:
                     logger.error(traceback.format_exc())
             font = QtGui.QFont()
-            font.fromString(f'MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0')
+            font.fromString(f"MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0")
+            app.setFont(font)
+
+        if self.settings['font_scale'] != 1:
+            font = app.font()
+            font.setPointSize(font.pointSize()*self.settings['font_scale'])
             app.setFont(font)
 
         # Check if account directory valid, update if not
@@ -1736,6 +1742,7 @@ class UI_TabWidget(object):
             w = self.player_winrate_UI_dict[player]
             self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
             self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
+            w.widget.show()
             for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
                 item.setStyleSheet('color:blue; font-weight: bold')
 
@@ -1792,10 +1799,10 @@ class UI_TabWidget(object):
 
 
     def RNG_Overlay_changed(self):
+        self.saveSettings()
         if self.FR_RNG_Overlay.isChecked():
             self.randomize_commander()
-            self.saveSettings()
-
+            
 
     def add_new_game_data(self, replay_dict):
         """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 

@@ -423,7 +423,7 @@ class mass_replay_analysis:
         for r in self.ReplayDataAll:
             if 'full_analysis' in r or 'comp' in r:
                 fully_parsed += 1
-        self.full_analysis_label.setText(f'Running – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+        self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
         # Start 
         logger.info('Starting full analysis!')
@@ -455,11 +455,11 @@ class mass_replay_analysis:
                 fully_parsed +=1
                 with lock:
                     r.update(self.format_data(full_data))
-                    self.full_analysis_label.setText(f'Running – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+                    self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
         if idx > 0:
             self.save_cache()
-        self.full_analysis_label.setText(f'Full analysis completed! – {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+        self.full_analysis_label.setText(f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
 
 

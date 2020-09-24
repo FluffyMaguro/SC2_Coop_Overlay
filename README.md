@@ -69,7 +69,7 @@ python SCO.py
 * Close the app by right clicking the icon in the system tray and clicking "Quit"
 * The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay).
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
-* On MacOS try running the script with "`sudo python3 sco.py`" after installing required packages
+* On MacOS or Linux run the script with "`sudo python3 SCO.py`" after installing required packages. It has been successfully tested on both MacOS and Linux, however every distribution and OS version has its own quirks.
 * The app connects to the internet only at start to look for a new version, or if you setup automatic replay upload by filling in accout name and password.
 * The app is not in conflict with Blizzard's Terms of Service. It uses official Blizzard's library (s2protocol) to parse replays, and what information StarCraft II provides while running.
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
@@ -234,4 +234,16 @@ Default it 100 games.
 
 ```
 "list_games": 100,
+```
+You can change the **offset from the right side of the monitor**.
+Negative values mean more to the left.
+
+```
+"right_offset": 0,
+```
+
+You can change the **font size** by a relative scaling factor. Default is 1.
+
+```
+"font_scale": 1,
 ```
