@@ -22,6 +22,59 @@ def find_file(file):
     subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
+class CommKillFractions(QtWidgets.QWidget):
+    """Widget for fractional kills of commanders """
+    def __init__(self, analysis, parent=None):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(600, 10, 700, 500))
+        
+
+        self.desc = QtWidgets.QLabel(self)
+        self.desc.setGeometry(QtCore.QRect(0, 0, 300, 20))
+        self.desc.setText('<b>Typical commander kill fractions</>')
+
+        data = analysis['CommanderData'].copy()
+        data = {k:v for k,v in sorted(data.items(), key=lambda x:x[1]['KillFraction'], reverse=True)}
+        an = data.pop('any')
+        data['Average'] = an
+
+        self.elements = dict()
+        self.elements['main_heading'] = QtWidgets.QLabel(self)
+        self.elements['main_heading'].setGeometry(QtCore.QRect(100, 22, 150, 17))
+        self.elements['main_heading'].setText('Main')
+
+        self.elements['ally_heading'] = QtWidgets.QLabel(self)
+        self.elements['ally_heading'].setGeometry(QtCore.QRect(150, 22, 150, 17))
+        self.elements['ally_heading'].setText('Ally')
+
+        for idx, commander in enumerate(data):
+            self.elements[(commander, 'name')] = QtWidgets.QLabel(self)
+            self.elements[(commander, 'name')].setGeometry(QtCore.QRect(0, idx*17+40, 150, 17))
+            self.elements[(commander, 'name')].setText(commander)
+
+            self.elements[(commander, 'main')] = QtWidgets.QLabel(self)
+            self.elements[(commander, 'main')].setGeometry(QtCore.QRect(100, idx*17+40, 150, 17))
+            self.elements[(commander, 'main')].setText(f"{100*data[commander]['KillFraction']:.0f}%")
+
+            self.elements[(commander, 'ally')] = QtWidgets.QLabel(self)
+            self.elements[(commander, 'ally')].setGeometry(QtCore.QRect(150, idx*17+40, 150, 17))
+            self.elements[(commander, 'ally')].setText(f"{100*analysis['AllyCommanderData'].get(commander if commander != 'Average' else 'any',{'KillFraction':0})['KillFraction']:.0f}%")
+
+            style = ''
+            if not idx%2:
+                style = 'background-color: #f1f1f1;'
+            if commander == 'Average':
+                style += ' font-weight: bold'
+            if style != '':
+                self.elements[(commander, 'name')].setStyleSheet(style)
+                self.elements[(commander, 'main')].setStyleSheet(style)
+                self.elements[(commander, 'ally')].setStyleSheet(style)
+
+
+        self.show()
+
+
+
 class RegionStats(QtWidgets.QWidget):
     """Widget for region stats """
     def __init__(self, region, fdict, y, parent=None, bold=False, line=False,  bg=False):

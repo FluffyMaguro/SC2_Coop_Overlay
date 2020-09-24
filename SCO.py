@@ -404,7 +404,7 @@ class UI_TabWidget(object):
         self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_PL_Commander.setGeometry(QtCore.QRect(425, 0, 81, 31))
         self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Commander.setText("#1 COM")
+        self.LA_PL_Commander.setText("#1 Com")
         self.LA_PL_Commander.setToolTip("The most played commander")
 
         self.LA_PL_Frequency = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -752,7 +752,7 @@ class UI_TabWidget(object):
 
         self.CH_FA_description = QtWidgets.QLabel(self.TAB_FullAnalysis)
         self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
-        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take an hour or more and the application will be less responsive.</b>')
+        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take few hours and the application will be less responsive.</b>')
         self.CH_FA_description.setWordWrap(True)    
 
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
@@ -1744,7 +1744,7 @@ class UI_TabWidget(object):
             self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
             w.widget.show()
             for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
-                item.setStyleSheet('color:blue; font-weight: bold')
+                item.setStyleSheet('color:blue')
 
 
     def update_player_tab(self, winrate_data):
@@ -1905,9 +1905,6 @@ class UI_TabWidget(object):
     def full_analysis_finished(self):
         self.generate_stats()
         self.CH_FA_atstart.setChecked(True)
-
-        # !!! update some UI
-        pass
    
    
     def stop_full_analysis(self):
@@ -2071,6 +2068,12 @@ class UI_TabWidget(object):
         ### Ally commander stats
         self.ally_commander_analysis = analysis['AllyCommanderData']
         self.ally_commander_sort_update()
+
+        ### Kill fractions
+        if self.CAnalysis.full_analysis_finished:
+            if hasattr(self, 'WD_KillFractions'):
+                self.WD_KillFractions.deleteLater()
+            self.WD_KillFractions = MUI.CommKillFractions(analysis, parent=self.TAB_FullAnalysis)
 
 
     def my_commander_sort_update(self):

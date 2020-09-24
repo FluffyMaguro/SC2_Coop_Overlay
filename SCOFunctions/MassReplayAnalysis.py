@@ -304,6 +304,7 @@ class mass_replay_analysis:
         self.current_replays = find_replays(ACCOUNTDIR)
         self.closing = False
         self.full_analysis_label = None
+        self.full_analysis_finished = False
 
 
     def load_cache(self):
@@ -461,7 +462,7 @@ class mass_replay_analysis:
             self.save_cache()
         self.full_analysis_label.setText(f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
-
+        self.full_analysis_finished = True
 
     def main_player_is_sub_15(self, replay):
         """ Returns True if the main player is level 1-14"""
@@ -592,7 +593,7 @@ class mass_replay_analysis:
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
         RegionData = calculate_region_data(data, self.main_handles)
-        UnitData = calculate_unit_stats(data)
+        UnitData = None if not self.full_analysis_finished else calculate_unit_stats(data)
 
         return {'UnitData':UnitData, 'RegionData':RegionData, 'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 
