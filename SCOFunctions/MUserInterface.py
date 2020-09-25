@@ -14,70 +14,13 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 
 logger = logclass('UI','INFO')
+background_color = "#f1f1f1"
 
 
 def find_file(file):
     new_path = os.path.abspath(file)
     logger.info(f'Finding file {new_path}')
     subprocess.Popen(f'explorer /select,"{new_path}"')
-
-
-class CommKillFractions(QtWidgets.QWidget):
-    """Widget for fractional kills of commanders """
-    def __init__(self, analysis, parent=None):
-        super().__init__(parent)
-        self.setGeometry(QtCore.QRect(650, 20, 700, 500))
-        self.setToolTip('What percent of total kills the commander typically gets')
-        
-        self.desc = QtWidgets.QLabel(self)
-        self.desc.setGeometry(QtCore.QRect(0, 0, 175, 20))
-        self.desc.setText('<b>Typical percent of total kills</>')
-        self.desc.setAlignment(QtCore.Qt.AlignCenter)
-        
-
-        data = analysis['CommanderData'].copy()
-        data = {k:v for k,v in sorted(data.items(), key=lambda x:x[1]['KillFraction'], reverse=True)}
-        an = data.pop('any')
-        data['Average'] = an
-
-        self.elements = dict()
-        self.elements['main_heading'] = QtWidgets.QLabel(self)
-        self.elements['main_heading'].setGeometry(QtCore.QRect(60, 22, 70, 17))
-        self.elements['main_heading'].setText('Main')
-        self.elements['main_heading'].setAlignment(QtCore.Qt.AlignCenter)
-
-        self.elements['ally_heading'] = QtWidgets.QLabel(self)
-        self.elements['ally_heading'].setGeometry(QtCore.QRect(120, 22, 70, 17))
-        self.elements['ally_heading'].setText('Ally')
-        self.elements['ally_heading'].setAlignment(QtCore.Qt.AlignCenter)
-
-        for idx, commander in enumerate(data):
-            self.elements[(commander, 'name')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'name')].setGeometry(QtCore.QRect(0, idx*17+40, 70, 17))
-            self.elements[(commander, 'name')].setText(commander)
-
-            self.elements[(commander, 'main')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'main')].setGeometry(QtCore.QRect(60, idx*17+40, 70, 17))
-            self.elements[(commander, 'main')].setText(f"{100*data[commander]['KillFraction']:.0f}%")
-            self.elements[(commander, 'main')].setAlignment(QtCore.Qt.AlignCenter)
-
-            self.elements[(commander, 'ally')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'ally')].setGeometry(QtCore.QRect(120, idx*17+40, 70, 17))
-            self.elements[(commander, 'ally')].setText(f"{100*analysis['AllyCommanderData'].get(commander if commander != 'Average' else 'any',{'KillFraction':0})['KillFraction']:.0f}%")
-            self.elements[(commander, 'ally')].setAlignment(QtCore.Qt.AlignCenter)
-
-            style = ''
-            if not idx%2:
-                style = 'background-color: #f1f1f1;'
-            if commander == 'Average':
-                style += ' font-weight: bold'
-            if style != '':
-                self.elements[(commander, 'name')].setStyleSheet(style)
-                self.elements[(commander, 'main')].setStyleSheet(style)
-                self.elements[(commander, 'ally')].setStyleSheet(style)
-
-        self.show()
-
 
 
 class RegionStats(QtWidgets.QWidget):
@@ -182,11 +125,11 @@ class CommanderStats(QtWidgets.QWidget):
     """ Widget for detailed stats for allied commander (mastery, prestige)"""
     def __init__(self, commander, fanalysis, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(470, 50, 500, 410))
+        self.setGeometry(QtCore.QRect(485, 50, 500, 410))
 
         # Background
         self.fr_bg = QtWidgets.QLabel(self)
-        self.fr_bg.setGeometry(QtCore.QRect(0, 0, self.width()-20, 87))
+        self.fr_bg.setGeometry(QtCore.QRect(0, 0, 473, 87))
         self.fr_bg.setStyleSheet(f'background-color: black;')
 
         image_file = truePath(f'Layouts/Commanders/{commander}.png')
@@ -208,13 +151,13 @@ class CommanderStats(QtWidgets.QWidget):
 
         # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
-        self.la_frequency.setGeometry(QtCore.QRect(230, 98, 150, 25))
+        self.la_frequency.setGeometry(QtCore.QRect(220, 98, 150, 25))
         self.la_frequency.setText(f"Frequency: <b>{100*fanalysis[commander]['Frequency']:.1f}%</b>")
         self.la_frequency.setAlignment(QtCore.Qt.AlignRight)
 
         # APM
         self.la_apm = QtWidgets.QLabel(self)
-        self.la_apm.setGeometry(QtCore.QRect(300, 98, 180, 25))
+        self.la_apm.setGeometry(QtCore.QRect(290, 98, 180, 25))
         self.la_apm.setText(f"Median APM: <b>{fanalysis[commander]['MedianAPM']:.0f}</b>")
         self.la_apm.setAlignment(QtCore.Qt.AlignRight)
 
@@ -398,7 +341,7 @@ class FastestMap(QtWidgets.QWidget):
 
 class CommanderEntry(QtWidgets.QWidget):
     """Custom widget for ally commander entry in stats""" 
-    def __init__(self, commander, frequency, wins, losses, winrate, apm, y, button=True, bold=False, bg=False, bgcolor="#f1f1f1", parent=None):
+    def __init__(self, commander, frequency, wins, losses, winrate, apm, percent, y, button=True, bold=False, bg=False, bgcolor=background_color, parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(15, y, 450, 25))
@@ -415,36 +358,47 @@ class CommanderEntry(QtWidgets.QWidget):
 
         # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
-        self.la_frequency.setGeometry(QtCore.QRect(150, 0, 70, 20))
+        self.la_frequency.setGeometry(QtCore.QRect(150, 0, 60, 20))
         self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
         self.la_frequency.setToolTip('Commander frequency (corrected for your commander choices)')
         self.la_frequency.setText(str(frequency))
 
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
-        self.la_wins.setGeometry(QtCore.QRect(210, 0, 70, 20))
+        self.la_wins.setGeometry(QtCore.QRect(200, 0, 50, 20))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(wins))
       
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
-        self.la_losses.setGeometry(QtCore.QRect(275, 0, 55, 20))
+        self.la_losses.setGeometry(QtCore.QRect(240, 0, 60, 20))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_losses.setText(str(losses))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
-        self.la_winrate.setGeometry(QtCore.QRect(328, 0, 55, 20))
+        self.la_winrate.setGeometry(QtCore.QRect(300, 0, 55, 20))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_winrate.setText(str(winrate))
 
         # Apm
         self.la_apm = QtWidgets.QLabel(self)
-        self.la_apm.setGeometry(QtCore.QRect(380, 0, 50, 20))
+        self.la_apm.setGeometry(QtCore.QRect(352, 0, 50, 20))
         self.la_apm.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_apm.setToolTip('Median APM')
         self.la_apm.setText(str(apm))
 
+        # Kill percent
+        self.la_killpercent = QtWidgets.QLabel(self)
+        self.la_killpercent.setGeometry(QtCore.QRect(395, 0, 60, 20))
+        self.la_killpercent.setAlignment(QtCore.Qt.AlignCenter)  
+        percent = str(percent) if percent != '0%' else '–'
+        self.la_killpercent.setText(percent)
+
+        if percent == '–':
+            self.la_killpercent.setToolTip('Typical percent of total kills<br>Run full analysis for this statistic')
+        else:
+            self.la_killpercent.setToolTip('Typical percent of total kills')
 
         style = ''
         if bold:
@@ -453,7 +407,7 @@ class CommanderEntry(QtWidgets.QWidget):
         if bg:
             style += f'background-color: {bgcolor}'
 
-        for item in {self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_apm}:
+        for item in {self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_apm, self.la_killpercent}:
             item.setStyleSheet(style)
 
         self.show()
@@ -461,19 +415,19 @@ class CommanderEntry(QtWidgets.QWidget):
 
 class MapEntry(QtWidgets.QWidget):
     """Custom widget for map entry in stats""" 
-    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, frequency, button=True, bold=False, bg=False, bgcolor="#f1f1f1"):
+    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, frequency, bonus, button=True, bold=False, bg=False, bgcolor=background_color):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(7, y-6, parent.width()-10, 40))
+        self.setGeometry(QtCore.QRect(7, y-6, parent.width(), 40))
         if bold:
             self.setStyleSheet('font-weight: bold')
         
         # Button/label
         self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
-        self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 25))
+        self.bt_button.setGeometry(QtCore.QRect(0, 0, 135, 25))
         if not button:
             self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
-            self.bt_button.setGeometry(QtCore.QRect(0, 0, 150, 20))
+            self.bt_button.setGeometry(QtCore.QRect(0, 0, 135, 20))
         
         if 'Lock' in name and 'Load' in name:
             name = "Lock and Load"
@@ -486,22 +440,22 @@ class MapEntry(QtWidgets.QWidget):
         self.la_average.setToolTip('Average victory time')
         time_average = time_average if time_average != 999999 else '–'
         if isinstance(time_average, int) or isinstance(time_average, float):
-            self.la_average.setGeometry(QtCore.QRect(150, 0, 66, 20))
+            self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
             if time_average < 3600:
                 self.la_average.setText(time.strftime('%M:%S',time.gmtime(time_average)))
             else:
                 self.la_average.setText(time.strftime('%H:%M:%S',time.gmtime(time_average)))
 
         elif time_average == '–':
-            self.la_average.setGeometry(QtCore.QRect(150, 0, 66, 20))
+            self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
         else:
-            self.la_average.setGeometry(QtCore.QRect(147, 0, 70, 20))
+            self.la_average.setGeometry(QtCore.QRect(131, 0, 60, 24))
             self.la_average.setText(time_average)
             
 
         # Fastest time
         self.la_fastest = QtWidgets.QLabel(self)
-        self.la_fastest.setGeometry(QtCore.QRect(201, 0, 70, 20))
+        self.la_fastest.setGeometry(QtCore.QRect(178, 0, 70, 24))
         self.la_fastest.setAlignment(QtCore.Qt.AlignCenter)
         self.la_fastest.setToolTip('Fastest victory time')
         time_fastest = time_fastest if time_fastest != 999999 else '–'
@@ -515,7 +469,7 @@ class MapEntry(QtWidgets.QWidget):
 
         # Frequency    
         self.la_frequency = QtWidgets.QLabel(self)
-        self.la_frequency.setGeometry(QtCore.QRect(250, 0, 70, 20))
+        self.la_frequency.setGeometry(QtCore.QRect(235, 0, 50, 24))
         self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)  
         if isinstance(frequency, str):
             self.la_frequency.setText(frequency)
@@ -524,19 +478,19 @@ class MapEntry(QtWidgets.QWidget):
 
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
-        self.la_wins.setGeometry(QtCore.QRect(303, 0, 50, 20))
+        self.la_wins.setGeometry(QtCore.QRect(275, 0, 50, 24))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_wins.setText(str(wins))
 
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
-        self.la_losses.setGeometry(QtCore.QRect(346, 0, 54, 20))
+        self.la_losses.setGeometry(QtCore.QRect(316, 0, 54, 24))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
         self.la_losses.setText(str(losses))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
-        self.la_winrate.setGeometry(QtCore.QRect(400, 0, 50, 20))
+        self.la_winrate.setGeometry(QtCore.QRect(367, 0, 50, 24))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
         if isinstance(wins, str) or isinstance(losses, str):
             winrate = 'Winrate'
@@ -546,17 +500,31 @@ class MapEntry(QtWidgets.QWidget):
                 winrate = f"{100*wins/(wins+losses):.0f}%"
         self.la_winrate.setText(winrate)
 
+        # Bonus
+        self.la_bonus = QtWidgets.QLabel(self)
+        self.la_bonus.setGeometry(QtCore.QRect(415, 0, 50, 24))
+        self.la_bonus.setAlignment(QtCore.Qt.AlignCenter)
+        if bonus == 0:
+            self.la_bonus.setText('–')
+            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.<br>Run full analysis for this statistic')
+        elif isinstance(bonus, int) or isinstance(bonus, float):
+            self.la_bonus.setText(f'{100*bonus:.0f}%')
+            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.')
+        else:
+            self.la_bonus.setText(str(bonus))
+            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.')
+
         self.show()
 
         if bg:
-            for item in {self.la_average, self.la_fastest, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate}:
+            for item in {self.la_average, self.la_fastest, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_bonus}:
                 item.setStyleSheet(f'background-color: {bgcolor}')
 
 
 class DifficultyEntry(QtWidgets.QWidget):
     """Custom widget for difficulty entry in stats"""
 
-    def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor="#f1f1f1", parent=None):
+    def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor=background_color, parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(x, y+150, 300, 40))

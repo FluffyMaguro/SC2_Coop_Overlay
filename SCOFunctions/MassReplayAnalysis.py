@@ -87,8 +87,11 @@ def calculate_map_data(ReplayData):
         else: 
             MapData[m]['average_victory_time'] = 999999
 
-        if len(MapData[m]['bonus']) > 1:
+        if len(MapData[m]['bonus']) > 0:
             MapData[m]['bonus'] = sum(MapData[m]['bonus'])/len(MapData[m]['bonus'])
+        else:
+            MapData[m]['bonus'] = 0
+
 
     return MapData
 
@@ -332,7 +335,9 @@ def _process_dict_amon(unit_data: dict):
         total['lost'] += unit_data[unit]['lost']
         total['kills'] += unit_data[unit]['kills']
 
-    total['KD'] = total['kills'] / total['lost']
+    total['KD'] = 0
+    if total['lost'] > 0:
+        total['KD'] = total['kills'] / total['lost']
 
     # Sort 
     unit_data['sum'] = total
@@ -369,7 +374,10 @@ def _process_dict(unit_data: dict):
             total['kills'] += unit_data[commander][unit]['kills']
 
         # Sum K/D
-        total['KD'] = total['kills'] / total['lost']
+        if total['lost'] > 0:
+            total['KD'] = total['kills'] / total['lost']
+        else:
+            total['KD'] = 0
 
         # Sort by kills
         unit_data[commander] = {k:v for k,v in sorted(unit_data[commander].items(), key= lambda x:x[1]['kills'], reverse=True)}

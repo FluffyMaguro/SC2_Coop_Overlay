@@ -157,7 +157,7 @@ prestige_names = {
              2: 'Knowledge Seeker',
              3: 'Herald of the Void'}}
 
-
+# Unit types present in different waves. Each enemy comp has a list of waves based on tech level.
 UnitCompDict = {
 'Brooding Corruption':  [{'Zergling'},
                          {'Mutalisk', 'Zergling'},
@@ -293,7 +293,7 @@ UnitCompDict = {
                               {'ArbiterMP', 'Dragoon', 'HighTemplar', 'Zealot'},
                               {'ArbiterMP','Archon','Dragoon','HighTemplar','Reaver','Zealot'}]}
 
-
+# Different map names: local_name : {english_name, editor_name}
 map_names = {
  'Apunta y carga': {'EN': 'Lock & Load', 'ID': 'AC_UlnarLocks'},
  'Archange mécanique': {'EN': 'Part and Parcel', 'ID': 'AC_PartAndParcel'},
@@ -514,7 +514,7 @@ map_names = {
  '하늘이 무너져도': {'EN': 'The Sky is Falling', 'ID': 'AC_KorhalSkyGuard'},
  '핵심 부품': {'EN': 'Part and Parcel', 'ID': 'AC_PartAndParcel'}}
 
-
+# Which players are on Amon's side
 amon_player_ids = {
  'Chain of Ascension': {3,4,5,6,9,10},
  'Cradle of Death': {3,4,5,6},
@@ -533,7 +533,7 @@ amon_player_ids = {
  'Void Thrashing': {3,4,5}
  }
 
-
+# Number of bonus objectives per mission
 bonus_objectives = {
  'Chain of Ascension': 2,
  'Cradle of Death': 2,
