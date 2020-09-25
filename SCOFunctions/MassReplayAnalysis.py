@@ -177,6 +177,8 @@ def calculate_commander_data(ReplayData, main_handles):
         # Fraction kills
         if len(CommanderData[commander]['KillFraction']) > 0:
             CommanderData[commander]['KillFraction'] = statistics.median(CommanderData[commander]['KillFraction'])
+        else:
+            CommanderData[commander]['KillFraction'] = 0
 
         if commander != 'any':
             # Mastery (sum list of lists, normalize)
@@ -207,7 +209,9 @@ def calculate_commander_data(ReplayData, main_handles):
         # Fraction kills
         if len(AllyCommanderData[commander]['KillFraction']) > 0:
             AllyCommanderData[commander]['KillFraction'] = statistics.median(AllyCommanderData[commander]['KillFraction'])
-        
+        else:
+            AllyCommanderData[commander]['KillFraction'] = 0
+
         # Winrate
         AllyCommanderData[commander]['Winrate'] = 0 if com_games == 0 else AllyCommanderData[commander]['Victory']/com_games
 
@@ -279,12 +283,120 @@ def calculate_region_data(ReplayData, main_handles):
     return dRegion
 
 
-def calculate_unit_stats(ReplayData):
+def _add_units(unit_data: dict, r: dict, p: int):
+    """ Add units to the dictionary"""
+    commander = r['players'][p]['commander']
+    if not commander in unit_data:
+        unit_data[commander] = dict()
+
+    for unit in r['players'][p]['units']:
+        if not unit in unit_data[commander]:
+            unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':list()}
+
+        # Add unit [created, lost, kills]
+        names = {0 :'created', 1: 'lost', 2: 'kills'}
+        for i in range(3):
+            if not isinstance(r['players'][p]['units'][unit][i], str):
+                unit_data[commander][unit][names[i]] += r['players'][p]['units'][unit][i]
+
+        # Add kill fraction
+        if r['players'][p]['kills'] > 0:
+            unit_data[commander][unit]['kill_percentage'].append(r['players'][p]['units'][unit][2]/r['players'][p]['kills'])
+
+
+def _add_units_amon(unit_data: dict, r: dict):
+    """ Add units from the replay into amon's dictionary"""
+    for unit in r['amon_units']:
+        if not unit in unit_data:
+            unit_data[unit] = {'created': 0, 'lost': 0, 'kills': 0}
+
+        names = {0 :'created', 1: 'lost', 2: 'kills'}
+        for i in range(3):
+            if isinstance(r['amon_units'][unit][i], int) or isinstance(r['amon_units'][unit][i], float):
+                unit_data[unit][names[i]] += r['amon_units'][unit][i]
+
+
+def _process_dict_amon(unit_data: dict):
+    """ Sorts and calculates KD for Amon's dictionary"""
+    # Calculate K/D
+    total = {'created': 0, 'lost': 0, 'kills': 0}
+
+    for unit in unit_data:
+        if unit_data[unit]['lost'] > 0:
+            unit_data[unit]['KD'] = unit_data[unit]['kills'] / unit_data[unit]['lost']
+        else:
+            unit_data[unit]['KD'] = 0
+
+        # Add total
+        total['created'] += unit_data[unit]['created']
+        total['lost'] += unit_data[unit]['lost']
+        total['kills'] += unit_data[unit]['kills']
+
+    total['KD'] = total['kills'] / total['lost']
+
+    # Sort 
+    unit_data['sum'] = total
+    unit_data = {k:v for k,v in sorted(unit_data.items(), key=lambda x:x[1]['created'], reverse=True)}
+    
+    # I need to return here because it's sorted. In case of commander dicts, the sorting is in inner dictionaries and is passed
+    return unit_data
+
+
+def _process_dict(unit_data: dict):
+    """ Calculates median kill percentages, K/D, and sorts the dict"""
+    for commander in unit_data:
+        total = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':1}
+                                       
+        for unit in unit_data[commander]:
+            if unit == 'sum':
+                continue
+
+            # Calculate median of kills
+            if len(unit_data[commander][unit]['kill_percentage']) > 0:
+                unit_data[commander][unit]['kill_percentage'] = statistics.median(unit_data[commander][unit]['kill_percentage'])
+            else:
+                unit_data[commander][unit]['kill_percentage'] = 0
+
+            # Calculate K/D
+            if unit_data[commander][unit]['lost'] > 0:
+                unit_data[commander][unit]['KD'] = unit_data[commander][unit]['kills']/unit_data[commander][unit]['lost']
+            else:
+                unit_data[commander][unit]['KD'] = None
+
+            # Sum
+            total['created'] += unit_data[commander][unit]['created']
+            total['lost'] += unit_data[commander][unit]['lost']
+            total['kills'] += unit_data[commander][unit]['kills']
+
+        # Sum K/D
+        total['KD'] = total['kills'] / total['lost']
+
+        # Sort by kills
+        unit_data[commander] = {k:v for k,v in sorted(unit_data[commander].items(), key= lambda x:x[1]['kills'], reverse=True)}
+        unit_data[commander]['sum'] = total
+
+
+def calculate_unit_stats(ReplayData, main_handles):
     """ Calculates stats for each unit type for player, allies and Amon.
     This includes number of kills, created and lost for all unit types and sum"""
 
-    return None
+    main_unit_data = dict()
+    ally_unit_data = dict()
+    amon_unit_data = dict()
 
+    for r in ReplayData:
+        _add_units_amon(amon_unit_data, r)
+        for p in {1,2}:
+            if r['players'][p]['handle'] in main_handles:
+                _add_units(main_unit_data, r, p)
+            else:
+                _add_units(ally_unit_data, r, p)
+
+    _process_dict(main_unit_data)
+    _process_dict(ally_unit_data)
+    amon_unit_data = _process_dict_amon(amon_unit_data)
+
+    return {'main':main_unit_data, 'ally': ally_unit_data, 'amon': amon_unit_data}
 
 
 class mass_replay_analysis:
@@ -593,7 +705,7 @@ class mass_replay_analysis:
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
         RegionData = calculate_region_data(data, self.main_handles)
-        UnitData = None if not self.full_analysis_finished else calculate_unit_stats(data)
+        UnitData = None if not self.full_analysis_finished else calculate_unit_stats(data, self.main_handles)
 
         return {'UnitData':UnitData, 'RegionData':RegionData, 'DifficultyData':DifficultyData,'MapData':MapData,'CommanderData':CommanderData,'AllyCommanderData':AllyCommanderData, 'games': len(data)}
 

@@ -26,12 +26,14 @@ class CommKillFractions(QtWidgets.QWidget):
     """Widget for fractional kills of commanders """
     def __init__(self, analysis, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(600, 10, 700, 500))
+        self.setGeometry(QtCore.QRect(650, 20, 700, 500))
+        self.setToolTip('What percent of total kills the commander typically gets')
         
-
         self.desc = QtWidgets.QLabel(self)
-        self.desc.setGeometry(QtCore.QRect(0, 0, 300, 20))
-        self.desc.setText('<b>Typical commander kill fractions</>')
+        self.desc.setGeometry(QtCore.QRect(0, 0, 175, 20))
+        self.desc.setText('<b>Typical percent of total kills</>')
+        self.desc.setAlignment(QtCore.Qt.AlignCenter)
+        
 
         data = analysis['CommanderData'].copy()
         data = {k:v for k,v in sorted(data.items(), key=lambda x:x[1]['KillFraction'], reverse=True)}
@@ -40,25 +42,29 @@ class CommKillFractions(QtWidgets.QWidget):
 
         self.elements = dict()
         self.elements['main_heading'] = QtWidgets.QLabel(self)
-        self.elements['main_heading'].setGeometry(QtCore.QRect(100, 22, 150, 17))
+        self.elements['main_heading'].setGeometry(QtCore.QRect(60, 22, 70, 17))
         self.elements['main_heading'].setText('Main')
+        self.elements['main_heading'].setAlignment(QtCore.Qt.AlignCenter)
 
         self.elements['ally_heading'] = QtWidgets.QLabel(self)
-        self.elements['ally_heading'].setGeometry(QtCore.QRect(150, 22, 150, 17))
+        self.elements['ally_heading'].setGeometry(QtCore.QRect(120, 22, 70, 17))
         self.elements['ally_heading'].setText('Ally')
+        self.elements['ally_heading'].setAlignment(QtCore.Qt.AlignCenter)
 
         for idx, commander in enumerate(data):
             self.elements[(commander, 'name')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'name')].setGeometry(QtCore.QRect(0, idx*17+40, 150, 17))
+            self.elements[(commander, 'name')].setGeometry(QtCore.QRect(0, idx*17+40, 70, 17))
             self.elements[(commander, 'name')].setText(commander)
 
             self.elements[(commander, 'main')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'main')].setGeometry(QtCore.QRect(100, idx*17+40, 150, 17))
+            self.elements[(commander, 'main')].setGeometry(QtCore.QRect(60, idx*17+40, 70, 17))
             self.elements[(commander, 'main')].setText(f"{100*data[commander]['KillFraction']:.0f}%")
+            self.elements[(commander, 'main')].setAlignment(QtCore.Qt.AlignCenter)
 
             self.elements[(commander, 'ally')] = QtWidgets.QLabel(self)
-            self.elements[(commander, 'ally')].setGeometry(QtCore.QRect(150, idx*17+40, 150, 17))
+            self.elements[(commander, 'ally')].setGeometry(QtCore.QRect(120, idx*17+40, 70, 17))
             self.elements[(commander, 'ally')].setText(f"{100*analysis['AllyCommanderData'].get(commander if commander != 'Average' else 'any',{'KillFraction':0})['KillFraction']:.0f}%")
+            self.elements[(commander, 'ally')].setAlignment(QtCore.Qt.AlignCenter)
 
             style = ''
             if not idx%2:
@@ -69,7 +75,6 @@ class CommKillFractions(QtWidgets.QWidget):
                 self.elements[(commander, 'name')].setStyleSheet(style)
                 self.elements[(commander, 'main')].setStyleSheet(style)
                 self.elements[(commander, 'ally')].setStyleSheet(style)
-
 
         self.show()
 
@@ -515,7 +520,7 @@ class MapEntry(QtWidgets.QWidget):
         if isinstance(frequency, str):
             self.la_frequency.setText(frequency)
         else:
-            self.la_frequency.setText(f'{100*frequency:.0f}%')
+            self.la_frequency.setText(f'{100*frequency:.1f}%')
 
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
