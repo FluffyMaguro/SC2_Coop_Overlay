@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. The newly added user interface also provides additional information about games, players and other various statistics. New features were added including commander randomizer or twitch bot for integration with my SC2 arcade maps.
+This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. The newly added user interface also provides additional information about games, players and other various statistics generated from user's replays. New features were added including commander randomizer or twitch bot for integration with my SC2 arcade maps.
  
 The overlay can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications. It's fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
 
@@ -23,14 +23,15 @@ python SCO.py
 
 # How to use
 1. Extract the archive
-2. Run the executable
-3. The app will show after few seconds
-4. In StarCraft II set display mode to Windowed fullscreen (borderless)
+2. Run the executable (SCO.exe)
+4. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
+5. Use hotkeys or buttons in the app to control the overlay. It will show automatically after each game as well.
+5. In StarCraft II set display mode to Windowed fullscreen (borderless)
 
 ![Screenshot](./Screenshots/Display.jpg)
 
-5. Use hotkeys or buttons in the app to control the overlay. It will show automatically after each game as well.
-6. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
+
+
 
 
 # The app
