@@ -15,7 +15,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
-from SCOFunctions.SC2Dictionaries import bonus_objectives
+from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units
 
 logger = logclass('MASS','INFO')
 lock = threading.Lock()
@@ -292,6 +292,15 @@ def _add_units(unit_data: dict, r: dict, p: int):
     if not commander in unit_data:
         unit_data[commander] = dict()
 
+    # Count kills done by mind-controlled units
+    mc_unit_bonus_kills = 0
+    if commander in mc_units and mc_units[commander] in r['players'][p]['units']:
+        for unit in r['players'][p]['units']:
+            # If unit wasn't created, but still got kills
+            if r['players'][p]['units'][unit][0] == 0 or (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Tychus' and unit == 'Auto-Turret'):
+                mc_unit_bonus_kills += r['players'][p]['units'][unit][2]
+
+    # Go over units
     for unit in r['players'][p]['units']:
         if not unit in unit_data[commander]:
             unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':list()}
@@ -303,10 +312,16 @@ def _add_units(unit_data: dict, r: dict, p: int):
                 unit_data[commander][unit][names[i]] += r['players'][p]['units'][unit][i]
             else:
                 unit_data[commander][unit][names[i]] = r['players'][p]['units'][unit][i]
-                # print(f'{unit} adding string to for {commander}')
 
-        # Add kill fraction
-        if r['players'][p]['kills'] > 0:
+        # Add bonus kills to mind-controlling unit
+        if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
+            unit_data[commander][unit]['kills'] += mc_unit_bonus_kills
+            kills_ingame = r['players'][p]['units'][unit][2] + mc_unit_bonus_kills
+            unit_data[commander][unit]['kill_percentage'].append(kills_ingame/r['players'][p]['kills'])
+            mc_unit_bonus_kills = 0            
+
+        # Calculate kill fraction for the rest
+        elif r['players'][p]['kills'] > 0:
             unit_data[commander][unit]['kill_percentage'].append(r['players'][p]['units'][unit][2]/r['players'][p]['kills'])
 
 
@@ -351,7 +366,7 @@ def _process_dict_amon(unit_data: dict):
 
 
 def _process_dict(unit_data: dict):
-    """ Calculates median kill percentages, K/D, and sorts the dict"""
+    """ Calculates median kill percentages, K/D, lost_percent"""
     for commander in unit_data:
         total = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':1}
                                        
@@ -371,7 +386,17 @@ def _process_dict(unit_data: dict):
             else:
                 unit_data[commander][unit]['KD'] = None
 
+            # Calculate lost percent
+            if not isinstance(unit_data[commander][unit]['created'], str) and not isinstance(unit_data[commander][unit]['lost'], str) and unit_data[commander][unit]['created'] > 0:
+                unit_data[commander][unit]['lost_percent'] = unit_data[commander][unit]['lost']/unit_data[commander][unit]['created']
+            else:
+                unit_data[commander][unit]['lost_percent'] = None
+
             # Sum
+            if unit in {'Mecha Infestor','Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
+                continue
+            if commander != 'Tychus' and unit == 'Auto-Turret':
+                continue
             for item in {'created', 'lost', 'kills'}:
                 if not isinstance(unit_data[commander][unit][item], str):
                     total[item] += unit_data[commander][unit][item]
@@ -382,8 +407,12 @@ def _process_dict(unit_data: dict):
         else:
             total['KD'] = 0
 
-        # Sort by kills
-        unit_data[commander] = {k:v for k,v in sorted(unit_data[commander].items(), key= lambda x:x[1]['kills'], reverse=True)}
+        # Sum lost percent
+        if total['created'] > 0:
+            total['lost_percent'] = total['lost'] / total['created']
+        else:
+            total['lost_percent'] = 0
+
         unit_data[commander]['sum'] = total
 
 

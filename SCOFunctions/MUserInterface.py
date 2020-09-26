@@ -27,7 +27,7 @@ def find_file(file):
 def fi(number):
     """ Formats integer to have spaces inbetween thousands"""
     if isinstance(number, int):
-        return '{:,}'.format(number).replace(',', ' ')
+        return f'{number:,}'.replace(',', ' ')
     else:
         return str(number)
 
@@ -40,51 +40,97 @@ class UnitStats(QtWidgets.QWidget):
         self.unit_data = unit_data
 
         self.heading_main = QtWidgets.QLabel(self)
-        self.heading_main.setGeometry(QtCore.QRect(10, 2, 100, 20))
+        self.heading_main.setGeometry(QtCore.QRect(20, 2, 100, 20))
         self.heading_main.setText('<b>Main</b>')
         self.heading_main.setAlignment(QtCore.Qt.AlignCenter)
 
         self.heading_ally = QtWidgets.QLabel(self)
-        self.heading_ally.setGeometry(QtCore.QRect(120, 2, 100, 20))
+        self.heading_ally.setGeometry(QtCore.QRect(130, 2, 100, 20))
         self.heading_ally.setText('<b>Ally</b>')
         self.heading_ally.setAlignment(QtCore.Qt.AlignCenter)
 
         self.elements = dict()
         for idx, commander in enumerate(sorted(unit_data['main'].keys())):
             self.elements[('button','main',commander)] = QtWidgets.QPushButton(self)
-            self.elements[('button','main',commander)].setGeometry(QtCore.QRect(10, idx*22+20, 100, 25))
+            self.elements[('button','main',commander)].setGeometry(QtCore.QRect(20, idx*22+20, 100, 25))
             self.elements[('button','main',commander)].setText(commander)
-            self.elements[('button','main',commander)].clicked.connect(partial(self.update_units, commander, main=True))
+            self.elements[('button','main',commander)].clicked.connect(partial(self.update_units, commander=commander, main=True))
 
         for idx, commander in enumerate(sorted(unit_data['ally'].keys())):
             self.elements[('button','ally',commander)] = QtWidgets.QPushButton(self)
-            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(120, idx*22+20, 100, 25))
+            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(130, idx*22+20, 100, 25))
             self.elements[('button','ally',commander)].setText(commander)
-            self.elements[('button','ally',commander)].clicked.connect(partial(self.update_units, commander, main=False))
-
+            self.elements[('button','ally',commander)].clicked.connect(partial(self.update_units, commander=commander, main=False))
 
         self.WD_units = QtWidgets.QGroupBox(self)
         self.WD_units.setGeometry(QtCore.QRect(250, 10, self.width()-250, self.height()-20))
         self.WD_units.setTitle('Unit stats')
 
+        self.left_offset = 10
+        self.top_offset = 40
+
         self.heading = dict()
-        for idx, item in enumerate(['Unit','Created','Lost','Kills','K/D', 'Kills%']):
+        for idx, item in enumerate(['Unit','Created','Lost','Lost%','Kills','K/D','Kills%']):
             self.heading[item] = QtWidgets.QLabel(self.WD_units)
-            self.heading[item].setGeometry(QtCore.QRect(20 if item == 'Unit' else 120+idx*60, 17, 60, 17))
+            self.heading[item].setGeometry(QtCore.QRect(self.left_offset+20 if item == 'Unit' else self.left_offset+120+idx*60, self.top_offset-18, 60, 17))
             self.heading[item].setText(f"<b>{item}</b>") 
             if item != 'Unit':
                 self.heading[item].setAlignment(QtCore.Qt.AlignRight)
+            if item == 'Kills%':
+                self.heading[item].setToolTip(f"Typical percent of total kills")
+            elif item == 'K/D':
+                self.heading[item].setToolTip(f"Kill / death ratio")
+            elif item == 'Lost%':
+                self.heading[item].setToolTip('Units lost / created')
             self.heading[item].hide()
+
+        self.note =  QtWidgets.QLabel(self.WD_units)
+        self.note.setGeometry(QtCore.QRect(self.WD_units.width()-410, self.WD_units.height()-20, 400, 20))
+        self.note.setAlignment(QtCore.Qt.AlignRight)
+        self.note.setText('* Kills from mind-controlled units are counted towards casters')
+        self.note.setEnabled(False)
+
+        self.sortby_label = QtWidgets.QLabel(self)
+        self.sortby_label.setGeometry(QtCore.QRect(830, 28, 100, 21))
+        self.sortby_label.setText('<b>Sort by</b>')
+        self.sortby_label.hide()
+
+        self.sortby = QtWidgets.QComboBox(self)
+        self.sortby.setGeometry(QtCore.QRect(830, 48, 100, 21))
+        self.sortby.addItem('Created')
+        self.sortby.addItem('Lost')
+        self.sortby.addItem('Lost%')
+        self.sortby.addItem('Kills')
+        self.sortby.addItem('K/D')
+        self.sortby.addItem('Kills%')
+        self.sortby.setCurrentIndex(3)
+        self.sortby.activated[str].connect(partial(self.update_units, commander=None, main=None))
+        self.sortby.hide()
 
         self.show()
 
 
-    def update_units(self, commander, main=True):
+    def update_units(self, commander=None, main=True):
         """ Updates unit stats for given commander and main/ally"""
-        which = 'main' if main else 'ally'
-        self.WD_units.setTitle(f'Unit stats – {commander} ({which})')
 
-        # Clean old ones
+        # Init variables. None values are coming from sort and will use self.attributes. Filled values come from buttons.
+        if main == None:
+            which = self.which
+        else:
+            which = 'main' if main else 'ally'
+            self.which = which
+
+        if commander == None:
+            commander = self.commander
+        else:
+            self.commander = commander
+
+        # Show sort & update title
+        self.WD_units.setTitle(f'Unit stats ({which}) – {commander}')
+        self.sortby.show()
+        self.sortby_label.show()
+      
+        # Clean old elements
         if hasattr(self, 'units') and len(self.units) > 0:
             for u in self.units:
                 self.units[u].deleteLater()
@@ -99,23 +145,30 @@ class UnitStats(QtWidgets.QWidget):
         for item in self.heading:
             self.heading[item].show()
 
+        # Sort
+        sortby = self.sortby.currentText()
+        sortby = {'Created': 'created','Lost': 'lost','Lost%': 'lost_percent','Kills': 'kills','K/D': 'KD','Kills%': 'kill_percentage'}[sortby]
+
+        def sortingf(x):
+            if x[0] == 'sum':
+                return -1
+            elif isinstance(x[1][sortby], int) or isinstance(x[1][sortby], float):
+                return x[1][sortby]
+            return 0
+
+        self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=sortingf, reverse=True)}
+
         # Create lines for UnitStats
-        top_offset = 35
         idx = -1
-
-        ### Add units from MC-ed units to MC units. I might not be doing this because median kill percentage is off.
-
-        # mc_units = {'Tychus':'Vega','Vorazun':'Dark Archon','Zeratul':'Dark Archon','Karax':'Energizer','Stukov':'Aleksander'}
-        # if commander in {'Tychus','Vorazun','Zeratul','Karax','Stukov'} and mc_units[commander] in self.unit_data[which][commander]:
-        #     for unit in self.unit_data[which][commander]:
-        #         if self.unit_data[which][commander][unit]['created'] == 0 :
-        #             self.unit_data[which][commander][mc_units[commander]]['kills'] += self.unit_data[which][commander][unit]['kills']
-
-
         for unit in self.unit_data[which][commander]:
             # Don't workers and other unlikely units to get kills, their created/lost numbers would be very off
-            if unit in {'Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
+            if unit in {'Mecha Infestor','Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
                 continue
+
+            # Not sure what happened here, but Disruptors were created for Karax. Brood Queen is from gift mutator.
+            if (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Stukov' and unit == 'Brood Queen') or (commander != 'Tychus' and unit == 'Auto-Turret'):
+                continue
+
             # Don't show mind controlled units
             if self.unit_data[which][commander][unit]['created'] == 0 or (commander in {'Tychus','Vorazun','Zeratul','Abathur'} and unit in {'Broodling','Infested Terran'}):
                 continue
@@ -123,28 +176,39 @@ class UnitStats(QtWidgets.QWidget):
             idx += 1
             if not idx % 2:
                 self.units[('bg', unit)] = QtWidgets.QFrame(self.WD_units)
-                self.units[('bg', unit)].setGeometry(QtCore.QRect(15, top_offset-1+idx*17, 480, 17))
+                self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset+15, self.top_offset-1+idx*17, 530, 17))
                 self.units[('bg', unit)].setStyleSheet(f'background-color: {background_color}')
 
             self.units[('name', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('name', unit)].setGeometry(QtCore.QRect(20, top_offset+idx*17, 150, 17))
-            name =  unit if unit != 'sum' else 'Σ'
+            self.units[('name', unit)].setGeometry(QtCore.QRect(self.left_offset+20, self.top_offset+idx*17, 150, 17))
+            name = unit if unit != 'sum' else 'Σ'
             self.units[('name', unit)].setText(str(name)) 
 
             self.units[('created', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('created', unit)].setGeometry(QtCore.QRect(180, top_offset+idx*17, 60, 17))
+            self.units[('created', unit)].setGeometry(QtCore.QRect(self.left_offset+180, self.top_offset+idx*17, 60, 17))
             self.units[('created', unit)].setText(fi(self.unit_data[which][commander][unit]['created'])) 
 
             self.units[('lost', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('lost', unit)].setGeometry(QtCore.QRect(240, top_offset+idx*17, 60, 17))
+            self.units[('lost', unit)].setGeometry(QtCore.QRect(self.left_offset+240, self.top_offset+idx*17, 60, 17))
             self.units[('lost', unit)].setText(fi(self.unit_data[which][commander][unit]['lost'])) 
 
+            self.units[('lost_percent', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset+300, self.top_offset+idx*17, 60, 17))
+
+            if self.unit_data[which][commander][unit]['lost_percent'] != None:
+                lost_percent = f"{100*self.unit_data[which][commander][unit]['lost_percent']:.0f}%"
+            else:
+                lost_percent = '-'
+            self.units[('lost_percent', unit)].setText(lost_percent)
+            self.units[('lost_percent', unit)].setToolTip('Units lost / created')
+
             self.units[('kills', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('kills', unit)].setGeometry(QtCore.QRect(300, top_offset+idx*17, 60, 17))
+            self.units[('kills', unit)].setGeometry(QtCore.QRect(self.left_offset+360, self.top_offset+idx*17, 60, 17))
             self.units[('kills', unit)].setText(fi(self.unit_data[which][commander][unit]['kills'])) 
 
             self.units[('KD', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('KD', unit)].setGeometry(QtCore.QRect(360, top_offset+idx*17, 60, 17))
+            self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset+420, self.top_offset+idx*17, 60, 17))
+            self.units[('KD', unit)].setToolTip(f"Kill / death ratio")
             kd = self.unit_data[which][commander][unit]['KD']
             if kd != None:
                 self.units[('KD', unit)].setText(f"{kd:.1f}")
@@ -152,7 +216,7 @@ class UnitStats(QtWidgets.QWidget):
                 self.units[('KD', unit)].setText("-")
 
             self.units[('percent', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('percent', unit)].setGeometry(QtCore.QRect(420, top_offset+idx*17, 60, 17))
+            self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset+480, self.top_offset+idx*17, 60, 17))
             percent = self.unit_data[which][commander][unit]['kill_percentage']
             percent = percent if percent != None else 0
             self.units[('percent', unit)].setText(f"{100*percent:.1f}%")
@@ -161,6 +225,8 @@ class UnitStats(QtWidgets.QWidget):
         for unit in self.units:
             if not unit[0] in {'name','bg'}:
                 self.units[unit].setAlignment(QtCore.Qt.AlignRight)
+            if unit[1] == 'sum':
+                self.units[unit].setStyleSheet('font-weight: bold')
             self.units[unit].show()
 
 

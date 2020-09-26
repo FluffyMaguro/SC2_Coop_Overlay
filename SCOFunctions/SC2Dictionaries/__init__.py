@@ -552,6 +552,9 @@ bonus_objectives = {
  'Void Thrashing': 1
  }
 
+# Mind-controlling units. In mass replay analysis kills of MC-ed units are added to these.
+mc_units = {'Tychus':'Vega','Vorazun':'Dark Archon','Zeratul':'Dark Archon','Karax':'Energizer','Stukov':'Aleksander'}
+
 Mutators = {
     "Random": "Applies a random Mutator that has not yet been chosen for this game.",
     "Walking Infested": "Enemy units spawn Infested Terran upon death in numbers according to the unit&apos;s life.",
