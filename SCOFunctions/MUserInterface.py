@@ -23,6 +23,39 @@ def find_file(file):
     subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
+class UnitStats(QtWidgets.QWidget):
+    """ Widget for unit stats """
+    def __init__(self, unit_data, parent=None):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(0, 0, parent.width(), parent.height()))
+
+        self.heading_main = QtWidgets.QLabel(self)
+        self.heading_main.setGeometry(QtCore.QRect(10, 2, 100, 20))
+        self.heading_main.setText('<b>Main</b>')
+        self.heading_main.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.heading_ally = QtWidgets.QLabel(self)
+        self.heading_ally.setGeometry(QtCore.QRect(115, 2, 100, 20))
+        self.heading_ally.setText('<b>Ally</b>')
+        self.heading_ally.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.elements = dict()
+        for idx, commander in enumerate(sorted(unit_data['main'].keys())):
+            self.elements[('button','main',commander)] = QtWidgets.QPushButton(self)
+            self.elements[('button','main',commander)].setGeometry(QtCore.QRect(10, idx*22+20, 100, 25))
+            self.elements[('button','main',commander)].setText(commander)
+
+        for idx, commander in enumerate(sorted(unit_data['ally'].keys())):
+            self.elements[('button','ally',commander)] = QtWidgets.QPushButton(self)
+            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(115, idx*22+20, 100, 25))
+            self.elements[('button','ally',commander)].setText(commander)
+
+
+
+        self.show()
+
+
+
 class RegionStats(QtWidgets.QWidget):
     """Widget for region stats """
     def __init__(self, region, fdict, y, parent=None, bold=False, line=False,  bg=False):

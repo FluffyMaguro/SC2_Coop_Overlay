@@ -2078,7 +2078,7 @@ class UI_TabWidget(object):
 
 
     def update_unit_stats(self, unit_data):
-        """ """
+        """ Update unit stats """
 
         # Create tab if it's not there yey
         if not hasattr(self, 'TAB_CommUnitStats'):
@@ -2086,8 +2086,11 @@ class UI_TabWidget(object):
             self.TABW_StatResults.addTab(self.TAB_CommUnitStats, "")
             self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_CommUnitStats), "Unit stats")
 
-        for commander in unit_data['main']:
-            pass
+        # Recreate the widget
+        if hasattr(self, 'WD_unit_stats'):
+            self.WD_unit_stats.deleteLater()
+
+        self.WD_unit_stats = MUI.UnitStats(unit_data, parent=self.TAB_CommUnitStats)
 
 
     def my_commander_sort_update(self):
