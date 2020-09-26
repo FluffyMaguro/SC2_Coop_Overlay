@@ -573,8 +573,18 @@ def check_for_new_game():
             resp = requests.get('http://localhost:6119/game', timeout=6).json()
             players = resp.get('players',list())
 
+
+            # Don't show in if all players are type user - versus game
+            all_users = True
+            for player in players:
+                if player['type'] != 'user':
+                    all_users == False
+
+            if all_users:
+                continue
+
             # Check if we have players in, and it's not a replay
-            if len(players) > 0 and not resp.get('isReplay',True):
+            if len(players) > 2 and not resp.get('isReplay',True):
                 # If the last time is the same, then we are in menus. Otherwise in-game.
 
                 if last_game_time == None or resp['displayTime'] == 0:
