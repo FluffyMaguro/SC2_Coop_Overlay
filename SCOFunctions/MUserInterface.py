@@ -104,11 +104,21 @@ class UnitStats(QtWidgets.QWidget):
         self.sortby.addItem('Kills')
         self.sortby.addItem('K/D')
         self.sortby.addItem('Kills%')
-        self.sortby.setCurrentIndex(3)
+        self.sortby.setCurrentIndex(4)
         self.sortby.activated[str].connect(partial(self.update_units, commander=None, main=None))
         self.sortby.hide()
 
         self.show()
+
+
+    @staticmethod
+    def sortingf(x, sortby=None):
+        """ Sorting function for units"""
+        if x[0] == 'sum':
+            return -1
+        elif isinstance(x[1][sortby], int) or isinstance(x[1][sortby], float):
+            return x[1][sortby]
+        return 0
 
 
     def update_units(self, commander=None, main=True):
@@ -150,17 +160,10 @@ class UnitStats(QtWidgets.QWidget):
         sortby = self.sortby.currentText()
         sortby = {'Name':'Name','Created': 'created','Lost': 'lost','Lost%': 'lost_percent','Kills': 'kills','K/D': 'KD','Kills%': 'kill_percentage'}[sortby]
 
-        def sortingf(x):
-            if x[0] == 'sum':
-                return -1
-            elif isinstance(x[1][sortby], int) or isinstance(x[1][sortby], float):
-                return x[1][sortby]
-            return 0
-
         if sortby == 'Name':
             self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items())}
         else:
-            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=sortingf, reverse=True)}
+            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=partial(self.sortingf, sortby=sortby), reverse=True)}
 
         # Create lines for UnitStats
         idx = -1
