@@ -1,4 +1,4 @@
-Unit,AddKillsTo
+0Unit,AddKillsTo
 AbathurSymbioteBrutalisk,Brutalisk
 AbathurSymbioteLeviathan,Leviathan
 HHGriffon,Assault Galleon
@@ -46,3 +46,22 @@ SuperGaryStetmann,Gary
 CommanderPrestigeZeratulTornadoesTornado,Zeratul
 CommanderPrestigeArtanisOrbitalStrikesArchonEnergy,Artanis' Top Bar
 CommanderPrestigeArtanisOrbitalStrikesArchon,Artanis' Top Bar
+BrutaliskCocoonRavager,Ravager
+BrutaliskCocoonRoachVile,Roach
+RavagerCocoon,Roach
+RavagerAbathurCocoon,Roach
+RavagerVileAbathurCocoon,Roach
+DevourerCocoonMP,Mutalisk
+LeviathanCocoon,Mutalisk
+GuardianCocoonMP,Mutalisk
+GuardianCocoon,Mutalisk
+BroodLordStetmannCocoon,Mecha Corruptor
+StukovAleksanderCrashed,Aleksander
+HotSSplitterlingMedium,Baneling
+LurkerEgg,Hydralisk
+LurkerMPEgg,Hydralisk
+HydraliskLurkerEgg,Hydralisk
+TorrasqueCorpse,Ultralisk
+DehakaMutaliskReviveEgg,Primal Mutalisk
+ThorWreckage,Thor
+ThorWreckageSwann,Thor

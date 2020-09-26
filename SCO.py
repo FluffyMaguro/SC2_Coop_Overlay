@@ -720,7 +720,7 @@ class UI_TabWidget(object):
         self.MyCommanderComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
         self.MyCommanderComboBox.addItem('Frequency')
         self.MyCommanderComboBox.addItem('Wins')
-        self.MyCommanderComboBox.addItem('Lossses')
+        self.MyCommanderComboBox.addItem('Losses')
         self.MyCommanderComboBox.addItem('Winrate')
         self.MyCommanderComboBox.addItem('APM')
         self.MyCommanderComboBox.addItem('Kills')
@@ -744,7 +744,7 @@ class UI_TabWidget(object):
         self.AllyCommanderComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
         self.AllyCommanderComboBox.addItem('Frequency')
         self.AllyCommanderComboBox.addItem('Wins')
-        self.AllyCommanderComboBox.addItem('Lossses')
+        self.AllyCommanderComboBox.addItem('Losses')
         self.AllyCommanderComboBox.addItem('Winrate')
         self.AllyCommanderComboBox.addItem('APM')
         self.AllyCommanderComboBox.addItem('Kills')
@@ -761,15 +761,16 @@ class UI_TabWidget(object):
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
         self.BT_FA_run.setGeometry(QtCore.QRect(10, 85, 80, 25))
         self.BT_FA_run.setText('Run')
+        self.BT_FA_run.setEnabled(False)
 
         self.BT_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
         self.BT_FA_stop.setGeometry(QtCore.QRect(105, 85, 80, 25))
         self.BT_FA_stop.clicked.connect(self.stop_full_analysis)
         self.BT_FA_stop.setText('Stop')
+        self.BT_FA_stop.setEnabled(False)
 
         self.CH_FA_atstart = QtWidgets.QCheckBox(self.TAB_FullAnalysis)
         self.CH_FA_atstart.setGeometry(QtCore.QRect(11, 115, 300, 25))
-        self.CH_FA_atstart.clicked.connect(self.stop_full_analysis)
         self.CH_FA_atstart.setText('Continue full analysis at start')
 
         self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
@@ -1887,6 +1888,7 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame.start()
 
         # Connect & run full analysis if set
+        self.BT_FA_run.setEnabled(True)
         self.BT_FA_run.clicked.connect(self.run_f_analysis)
         if self.settings['full_analysis_atstart']:
             self.run_f_analysis()
@@ -1898,6 +1900,8 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
 
+        self.BT_FA_run.setEnabled(False)
+        self.BT_FA_stop.setEnabled(True)
         self.full_analysis_running = True
         self.CAnalysis.full_analysis_label = self.CH_FA_status
         thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
@@ -1905,15 +1909,18 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_full_analysis)
 
 
-    def full_analysis_finished(self):
+    def full_analysis_finished(self, finished_completely):
         self.generate_stats()
-        self.CH_FA_atstart.setChecked(True)
+        if finished_completely:
+            self.CH_FA_atstart.setChecked(True)
    
    
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
             self.CAnalysis.closing = True
             self.full_analysis_running = False
+            self.BT_FA_run.setEnabled(True)
+            self.BT_FA_stop.setEnabled(False)
 
 
     def update_winrate_data(self):
@@ -2086,17 +2093,18 @@ class UI_TabWidget(object):
             self.TABW_StatResults.addTab(self.TAB_CommUnitStats, "")
             self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_CommUnitStats), "Unit stats")
 
-        # Recreate the widget
-        if hasattr(self, 'WD_unit_stats'):
-            self.WD_unit_stats.deleteLater()
+        # Update units widget
+        if not hasattr(self, 'WD_unit_stats'):
+            self.WD_unit_stats = MUI.UnitStats(unit_data, parent=self.TAB_CommUnitStats)
+        else:
+            self.WD_unit_stats.unit_data = unit_data
+            self.WD_unit_stats.update_units()
 
-        self.WD_unit_stats = MUI.UnitStats(unit_data, parent=self.TAB_CommUnitStats)
-
-
+        
     def my_commander_sort_update(self):
         """ Creates and updates widgets for my commander stats """
         sort_my_commanders_by = self.MyCommanderComboBox.currentText()
-        translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
+        translate = {'APM':'MedianAPM','Winrate':'Winrate','Losses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
         self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[sort_my_commanders_by]], reverse=True)}
 
         if hasattr(self, 'stats_mycommander_UI_dict'):
@@ -2143,7 +2151,7 @@ class UI_TabWidget(object):
     def ally_commander_sort_update(self):
         """ Creates and updates widgets for allu commander stats """
         sort_commanders_by = self.AllyCommanderComboBox.currentText()
-        translate = {'APM':'MedianAPM','Winrate':'Winrate','Lossses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
+        translate = {'APM':'MedianAPM','Winrate':'Winrate','Losses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
         self.ally_commander_analysis = {k:v for k,v in sorted(self.ally_commander_analysis.items(), key=lambda x:x[1][translate[sort_commanders_by]], reverse=True)}
 
         if hasattr(self, 'stats_allycommander_UI_dict'):

@@ -3,6 +3,7 @@ import sys
 import time
 import traceback
 import subprocess
+from functools import partial
 
 from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
 
@@ -23,11 +24,20 @@ def find_file(file):
     subprocess.Popen(f'explorer /select,"{new_path}"')
 
 
+def fi(number):
+    """ Formats integer to have spaces inbetween thousands"""
+    if isinstance(number, int):
+        return '{:,}'.format(number).replace(',', ' ')
+    else:
+        return str(number)
+
+
 class UnitStats(QtWidgets.QWidget):
     """ Widget for unit stats """
     def __init__(self, unit_data, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(0, 0, parent.width(), parent.height()))
+        self.setGeometry(QtCore.QRect(0, 0, 950, 430))
+        self.unit_data = unit_data
 
         self.heading_main = QtWidgets.QLabel(self)
         self.heading_main.setGeometry(QtCore.QRect(10, 2, 100, 20))
@@ -35,7 +45,7 @@ class UnitStats(QtWidgets.QWidget):
         self.heading_main.setAlignment(QtCore.Qt.AlignCenter)
 
         self.heading_ally = QtWidgets.QLabel(self)
-        self.heading_ally.setGeometry(QtCore.QRect(115, 2, 100, 20))
+        self.heading_ally.setGeometry(QtCore.QRect(120, 2, 100, 20))
         self.heading_ally.setText('<b>Ally</b>')
         self.heading_ally.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -44,16 +54,114 @@ class UnitStats(QtWidgets.QWidget):
             self.elements[('button','main',commander)] = QtWidgets.QPushButton(self)
             self.elements[('button','main',commander)].setGeometry(QtCore.QRect(10, idx*22+20, 100, 25))
             self.elements[('button','main',commander)].setText(commander)
+            self.elements[('button','main',commander)].clicked.connect(partial(self.update_units, commander, main=True))
 
         for idx, commander in enumerate(sorted(unit_data['ally'].keys())):
             self.elements[('button','ally',commander)] = QtWidgets.QPushButton(self)
-            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(115, idx*22+20, 100, 25))
+            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(120, idx*22+20, 100, 25))
             self.elements[('button','ally',commander)].setText(commander)
+            self.elements[('button','ally',commander)].clicked.connect(partial(self.update_units, commander, main=False))
 
 
+        self.WD_units = QtWidgets.QGroupBox(self)
+        self.WD_units.setGeometry(QtCore.QRect(250, 10, self.width()-250, self.height()-20))
+        self.WD_units.setTitle('Unit stats')
+
+        self.heading = dict()
+        for idx, item in enumerate(['Unit','Created','Lost','Kills','K/D', 'Kills%']):
+            self.heading[item] = QtWidgets.QLabel(self.WD_units)
+            self.heading[item].setGeometry(QtCore.QRect(20 if item == 'Unit' else 120+idx*60, 17, 60, 17))
+            self.heading[item].setText(f"<b>{item}</b>") 
+            if item != 'Unit':
+                self.heading[item].setAlignment(QtCore.Qt.AlignRight)
+            self.heading[item].hide()
 
         self.show()
 
+
+    def update_units(self, commander, main=True):
+        """ Updates unit stats for given commander and main/ally"""
+        which = 'main' if main else 'ally'
+        self.WD_units.setTitle(f'Unit stats – {commander} ({which})')
+
+        # Clean old ones
+        if hasattr(self, 'units') and len(self.units) > 0:
+            for u in self.units:
+                self.units[u].deleteLater()
+
+        self.units = dict()
+
+        # Return if no data
+        if not commander in self.unit_data[which]:
+            return
+
+        # Show heading
+        for item in self.heading:
+            self.heading[item].show()
+
+        # Create lines for UnitStats
+        top_offset = 35
+        idx = -1
+
+        ### Add units from MC-ed units to MC units. I might not be doing this because median kill percentage is off.
+
+        # mc_units = {'Tychus':'Vega','Vorazun':'Dark Archon','Zeratul':'Dark Archon','Karax':'Energizer','Stukov':'Aleksander'}
+        # if commander in {'Tychus','Vorazun','Zeratul','Karax','Stukov'} and mc_units[commander] in self.unit_data[which][commander]:
+        #     for unit in self.unit_data[which][commander]:
+        #         if self.unit_data[which][commander][unit]['created'] == 0 :
+        #             self.unit_data[which][commander][mc_units[commander]]['kills'] += self.unit_data[which][commander][unit]['kills']
+
+
+        for unit in self.unit_data[which][commander]:
+            # Don't workers and other unlikely units to get kills, their created/lost numbers would be very off
+            if unit in {'Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
+                continue
+            # Don't show mind controlled units
+            if self.unit_data[which][commander][unit]['created'] == 0 or (commander in {'Tychus','Vorazun','Zeratul','Abathur'} and unit in {'Broodling','Infested Terran'}):
+                continue
+
+            idx += 1
+            if not idx % 2:
+                self.units[('bg', unit)] = QtWidgets.QFrame(self.WD_units)
+                self.units[('bg', unit)].setGeometry(QtCore.QRect(15, top_offset-1+idx*17, 480, 17))
+                self.units[('bg', unit)].setStyleSheet(f'background-color: {background_color}')
+
+            self.units[('name', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('name', unit)].setGeometry(QtCore.QRect(20, top_offset+idx*17, 150, 17))
+            name =  unit if unit != 'sum' else 'Σ'
+            self.units[('name', unit)].setText(str(name)) 
+
+            self.units[('created', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('created', unit)].setGeometry(QtCore.QRect(180, top_offset+idx*17, 60, 17))
+            self.units[('created', unit)].setText(fi(self.unit_data[which][commander][unit]['created'])) 
+
+            self.units[('lost', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('lost', unit)].setGeometry(QtCore.QRect(240, top_offset+idx*17, 60, 17))
+            self.units[('lost', unit)].setText(fi(self.unit_data[which][commander][unit]['lost'])) 
+
+            self.units[('kills', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('kills', unit)].setGeometry(QtCore.QRect(300, top_offset+idx*17, 60, 17))
+            self.units[('kills', unit)].setText(fi(self.unit_data[which][commander][unit]['kills'])) 
+
+            self.units[('KD', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('KD', unit)].setGeometry(QtCore.QRect(360, top_offset+idx*17, 60, 17))
+            kd = self.unit_data[which][commander][unit]['KD']
+            if kd != None:
+                self.units[('KD', unit)].setText(f"{kd:.1f}")
+            else:
+                self.units[('KD', unit)].setText("-")
+
+            self.units[('percent', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('percent', unit)].setGeometry(QtCore.QRect(420, top_offset+idx*17, 60, 17))
+            percent = self.unit_data[which][commander][unit]['kill_percentage']
+            percent = percent if percent != None else 0
+            self.units[('percent', unit)].setText(f"{100*percent:.1f}%")
+            self.units[('percent', unit)].setToolTip(f"Typical percent of total kills")
+
+        for unit in self.units:
+            if not unit[0] in {'name','bg'}:
+                self.units[unit].setAlignment(QtCore.Qt.AlignRight)
+            self.units[unit].show()
 
 
 class RegionStats(QtWidgets.QWidget):

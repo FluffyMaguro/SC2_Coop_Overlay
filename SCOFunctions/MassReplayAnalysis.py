@@ -299,8 +299,11 @@ def _add_units(unit_data: dict, r: dict, p: int):
         # Add unit [created, lost, kills]
         names = {0 :'created', 1: 'lost', 2: 'kills'}
         for i in range(3):
-            if not isinstance(r['players'][p]['units'][unit][i], str):
+            if not isinstance(r['players'][p]['units'][unit][i], str) and not isinstance(unit_data[commander][unit][names[i]], str):
                 unit_data[commander][unit][names[i]] += r['players'][p]['units'][unit][i]
+            else:
+                unit_data[commander][unit][names[i]] = r['players'][p]['units'][unit][i]
+                # print(f'{unit} adding string to for {commander}')
 
         # Add kill fraction
         if r['players'][p]['kills'] > 0:
@@ -363,15 +366,15 @@ def _process_dict(unit_data: dict):
                 unit_data[commander][unit]['kill_percentage'] = 0
 
             # Calculate K/D
-            if unit_data[commander][unit]['lost'] > 0:
+            if not isinstance(unit_data[commander][unit]['lost'], str) and unit_data[commander][unit]['lost'] > 0:
                 unit_data[commander][unit]['KD'] = unit_data[commander][unit]['kills']/unit_data[commander][unit]['lost']
             else:
                 unit_data[commander][unit]['KD'] = None
 
             # Sum
-            total['created'] += unit_data[commander][unit]['created']
-            total['lost'] += unit_data[commander][unit]['lost']
-            total['kills'] += unit_data[commander][unit]['kills']
+            for item in {'created', 'lost', 'kills'}:
+                if not isinstance(unit_data[commander][unit][item], str):
+                    total[item] += unit_data[commander][unit][item]
 
         # Sum K/D
         if total['lost'] > 0:
@@ -405,6 +408,22 @@ def calculate_unit_stats(ReplayData, main_handles):
     amon_unit_data = _process_dict_amon(amon_unit_data)
 
     return {'main':main_unit_data, 'ally': ally_unit_data, 'amon': amon_unit_data}
+
+
+def calculate_words(ReplayData):
+    """ Caulculates which words were used and how many times"""
+
+    words = dict()
+    for r in ReplayData:
+        for m in r['messages']:
+            message = m['text'].split(' ')
+            for word in message:
+                if word in words:
+                    words[word] += 1
+                else:
+                    words[word] = 1
+
+    return {k:v for k,v in sorted(words.items(), key=lambda x:x[1], reverse=True)}
 
 
 class mass_replay_analysis:
@@ -555,12 +574,11 @@ class mass_replay_analysis:
             if idx >= 20:
                 idx = 0
                 self.save_cache()
-                print('saving...')
 
             # Interrupt the analysis if the app is closing
             if self.closing:
                 self.save_cache()
-                return
+                return False
 
             # Analyze those that are not fully parsed yet
             if not 'full_analysis' in r and not 'comp' in r:
@@ -583,6 +601,8 @@ class mass_replay_analysis:
         self.full_analysis_label.setText(f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
         self.full_analysis_finished = True
+        return True
+
 
     def main_player_is_sub_15(self, replay):
         """ Returns True if the main player is level 1-14"""
