@@ -97,6 +97,7 @@ class UnitStats(QtWidgets.QWidget):
 
         self.sortby = QtWidgets.QComboBox(self)
         self.sortby.setGeometry(QtCore.QRect(830, 48, 100, 21))
+        self.sortby.addItem('Name')
         self.sortby.addItem('Created')
         self.sortby.addItem('Lost')
         self.sortby.addItem('Lost%')
@@ -147,7 +148,7 @@ class UnitStats(QtWidgets.QWidget):
 
         # Sort
         sortby = self.sortby.currentText()
-        sortby = {'Created': 'created','Lost': 'lost','Lost%': 'lost_percent','Kills': 'kills','K/D': 'KD','Kills%': 'kill_percentage'}[sortby]
+        sortby = {'Name':'Name','Created': 'created','Lost': 'lost','Lost%': 'lost_percent','Kills': 'kills','K/D': 'KD','Kills%': 'kill_percentage'}[sortby]
 
         def sortingf(x):
             if x[0] == 'sum':
@@ -156,7 +157,10 @@ class UnitStats(QtWidgets.QWidget):
                 return x[1][sortby]
             return 0
 
-        self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=sortingf, reverse=True)}
+        if sortby == 'Name':
+            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items())}
+        else:
+            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=sortingf, reverse=True)}
 
         # Create lines for UnitStats
         idx = -1

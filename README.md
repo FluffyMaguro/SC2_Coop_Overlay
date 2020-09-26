@@ -55,6 +55,10 @@ python SCO.py
 
 ![Screenshot](./Screenshots/5_Stats_AlliedCommanders.png)
 
+**Unit statistics:**
+
+![Screenshot](./Screenshots/6_Stats_Units.png)
+
 **Commander randomizer:**
 
 ![Screenshot](./Screenshots/8_Randomizer.png)
