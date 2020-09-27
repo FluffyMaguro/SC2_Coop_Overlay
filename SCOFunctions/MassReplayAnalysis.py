@@ -617,7 +617,11 @@ class mass_replay_analysis:
 
             # Analyze those that are not fully parsed yet
             if not 'full_analysis' in r and not 'comp' in r:
+                if not os.path.isfile(r['file']):
+                    continue
+
                 full_data = analyse_replay(r['file'])
+
                 full_data['full_analysis'] = True
                 if len(full_data) == 0:
                     with lock:

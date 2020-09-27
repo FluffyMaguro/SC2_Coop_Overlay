@@ -1162,7 +1162,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
 class CustomWebView(QtWebEngineWidgets.QWebEngineView):
     """ Expanding this class to add javascript after page is loaded. This is could be used to distinquish main overlay from other overlays (e.g. in OBS)"""
-    def __init__(self,  parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
 
@@ -1172,3 +1172,45 @@ class CustomWebView(QtWebEngineWidgets.QWebEngineView):
         if ok:
             self.page().runJavaScript(f"do_not_use_websocket = true;")
             MF.resend_init_message()
+
+
+class PatchNotes(QtWidgets.QWidget):
+    """ Widget for showing patchnotes """
+    def __init__(self, version, parent=None, icon=None, patchnotes=None):
+        super().__init__(parent)
+
+        release = f"{str(version)[0]}.{str(version)[1:]}"
+        height = 50 + len(patchnotes)*18
+        width = 200
+        text = ''
+        
+        # Add text, calculate required width
+        for line in patchnotes:
+            text += f'&middot; {line}<br>'
+            width = width if width > len(line)*6 + 40 else len(line)*6 + 40
+
+        font = self.font()
+        font.setPointSize(font.pointSize()*1.2)
+
+        self.setWindowTitle(f'New release changelog')
+        self.setWindowIcon(icon)
+        self.setFixedSize(width, height)       
+
+        self.la_heading = QtWidgets.QLabel(self)
+        self.la_heading.setGeometry(QtCore.QRect(0, 10, self.width(), 30))
+        self.la_heading.setText(f'<h1>StarCraft Co-op Overlay ({release})</h1>')
+        self.la_heading.setAlignment(QtCore.Qt.AlignHCenter)
+        
+        self.la_patchnotes = QtWidgets.QLabel(self)
+        self.la_patchnotes.setGeometry(QtCore.QRect(20, 40, self.width()-20, self.height()-40))
+        self.la_patchnotes.setText(text)
+        self.la_patchnotes.setFont(font)
+
+        self.show()
+
+
+    @QtCore.pyqtSlot(bool)    
+    def closeEvent(self, event):
+        """ Overriding close event. Otherwise it closes the app when it's minimized """
+        event.ignore()
+        self.hide()

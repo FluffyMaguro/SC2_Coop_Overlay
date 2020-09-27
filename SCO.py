@@ -1202,6 +1202,7 @@ class UI_TabWidget(object):
         # Delete install bat if it's there
         if os.path.isfile(truePath('install.bat')):
             os.remove(truePath('install.bat'))
+            self.show_patchnotes()
 
         # Screenshot folder
         if self.settings['screenshot_folder'] in {None,''} or not os.path.isdir(self.settings['screenshot_folder']):
@@ -1229,6 +1230,29 @@ class UI_TabWidget(object):
         self.manage_keyboard_threads()
 
         self.full_analysis_running = False
+
+
+    def show_patchnotes(self):
+        """ Shows a widget with the lastest patchnotes.
+        Usually shown only after an update (after deleting install.bat)"""
+        try:
+            file = innerPath('src/patchnotes.json')
+            if not os.path.isfile(file):
+                return
+
+            with open(file, 'r') as f:
+                patchnotes = json.load(f)
+
+            patchnotes = patchnotes.get(str(APPVERSION), None)
+
+            if patchnotes == None:
+                return
+            if len(patchnotes) == 0:
+                return      
+
+            self.WD_patchnotes = MUI.PatchNotes(APPVERSION, patchnotes=patchnotes, icon=QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
+        except:
+            logger.error(traceback.format_exc())
 
 
     def check_for_updates(self):
