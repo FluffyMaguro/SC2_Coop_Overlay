@@ -13,7 +13,7 @@ from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAdd
 duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
-icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic','Strike Fighter Platform'}
+icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic'}
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {"Stetmann's Top Bar","Zeratul's Top Bar","Vorazun's Top Bar","Fenix's Top Bar","Zagara's Top Bar","Tychus' Top Bar","Swann's Top Bar","Stukov's Top Bar","Raynor's Top Bar","Nova's Top Bar","Mengsk's Top Bar","Kerrigan's Top Bar","Karax's Top Bar","Han and Horner's Top Bar","Dehaka's Top Bar","Artanis' Top Bar","Abathur's Top Bar",'Photon Overcharge','Super Gary','Gary','Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
