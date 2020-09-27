@@ -288,6 +288,10 @@ def calculate_region_data(ReplayData, main_handles):
 
 def _add_units(unit_data: dict, r: dict, p: int):
     """ Add units to the dictionary"""
+
+    if not 'units' in r['players'][p]:
+        return
+
     commander = r['players'][p]['commander']
     if not commander in unit_data:
         unit_data[commander] = dict()
@@ -327,6 +331,8 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
 def _add_units_amon(unit_data: dict, r: dict):
     """ Add units from the replay into amon's dictionary"""
+    if not 'amon_units' in r:
+        return
     for unit in r['amon_units']:
         if not unit in unit_data:
             unit_data[unit] = {'created': 0, 'lost': 0, 'kills': 0}
