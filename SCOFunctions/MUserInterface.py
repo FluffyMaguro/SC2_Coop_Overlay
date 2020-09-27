@@ -131,13 +131,15 @@ class UnitStats(QtWidgets.QWidget):
             which = 'main' if main else 'ally'
             self.which = which
 
-        if commander == None:
+        if commander == None and not hasattr(self, 'commander'):
+            return # Don't update if user hasn't clicked anything yet (updating after a new game)
+        elif commander == None:
             commander = self.commander
         else:
             self.commander = commander
 
         # Show sort & update title
-        self.WD_units.setTitle(f'Unit stats ({which}) – {commander}')
+        self.WD_units.setTitle(f'Unit stats ({which.title()}) – {commander}')
         self.sortby.show()
         self.sortby_label.show()
       

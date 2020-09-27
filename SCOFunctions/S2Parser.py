@@ -63,10 +63,10 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     contents = archive.header['user_data_header']['content']
 
     header = versions.latest().decode_replay_header(contents)
-    base_build = header['m_version']['m_baseBuild']
+    replay_build = header['m_version']['m_baseBuild']
 
     # If the build is in a known list of protocols that aren't included but work, replace the build by the version that works.
-    base_build = valid_protocols.get(base_build, base_build)
+    base_build = valid_protocols.get(replay_build, replay_build)
 
     try:
         protocol = versions.build(base_build)
@@ -121,7 +121,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
     # Create output
     replay = dict()
     replay['file'] = file
-    replay['build'] = {'replay_build': base_build, 'protocol_build': used_build}
+    replay['build'] = {'replay_build': replay_build, 'protocol_build': used_build}
     replay['date'] = time.strftime('%Y:%m:%d:%H:%M:%S', time.localtime(os.path.getmtime(file)))
 
     if metadata['Title'] in map_names:

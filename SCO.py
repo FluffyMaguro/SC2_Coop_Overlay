@@ -2090,8 +2090,7 @@ class UI_TabWidget(object):
         # Create tab if it's not there yey
         if not hasattr(self, 'TAB_CommUnitStats'):
             self.TAB_CommUnitStats = QtWidgets.QWidget()
-            self.TABW_StatResults.addTab(self.TAB_CommUnitStats, "")
-            self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_CommUnitStats), "Unit stats")
+            self.TABW_StatResults.insertTab(4, self.TAB_CommUnitStats,  "Unit stats")
 
         # Update units widget
         if not hasattr(self, 'WD_unit_stats'):

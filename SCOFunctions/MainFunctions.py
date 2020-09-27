@@ -578,7 +578,7 @@ def check_for_new_game():
             all_users = True
             for player in players:
                 if player['type'] != 'user':
-                    all_users == False
+                    all_users = False
 
             if all_users:
                 continue
