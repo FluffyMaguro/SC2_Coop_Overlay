@@ -36,9 +36,154 @@ class AmonUnitStats(QtWidgets.QWidget):
     """ Widget for amon's unit stats """
     def __init__(self, unit_data, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(0, 0, 950, 430))
+        self.setGeometry(QtCore.QRect(0, 0, 967, 450))
+
+        # Scroll
+        self.scroll_area = QtWidgets.QScrollArea(self)
+        self.scroll_area.setGeometry(QtCore.QRect(0, 0, self.width(), self.height()))
+        self.scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll_area.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.scroll_area.setWidgetResizable(True)
+
+        self.scroll_area_contents = QtWidgets.QWidget()
+        self.scroll_area_contents.setGeometry(QtCore.QRect(0, 25, 961, 561))
+        self.scroll_area_contents_layout = QtWidgets.QVBoxLayout()
+        self.scroll_area_contents_layout.setAlignment(QtCore.Qt.AlignTop)
+        self.scroll_area_contents_layout.setContentsMargins(10,0,0,0)
+
+        # Add heading
+        self.heading = AmonUnitStatsUnit('Name',{'created':'Created','lost':'Lost','kills':'Kills','KD':'K/D'}, parent=self.scroll_area_contents)
+        self.scroll_area_contents_layout.addWidget(self.heading)
+
+        # Add Amon's units
+        self.units = dict()
+        for idx, unit in enumerate(unit_data['amon']):
+            self.units[unit] = AmonUnitStatsUnit(unit, unit_data['amon'][unit], parent=self.scroll_area_contents, bg=idx%2)
+            self.scroll_area_contents_layout.addWidget(self.units[unit])
+
+        # Search
+        self.search_label = QtWidgets.QLabel(self)
+        self.search_label.setGeometry(QtCore.QRect(700, 10, 100, 21))
+        self.search_label.setText('<b>Search for units</b>')
+
+        self.ed_search = QtWidgets.QLineEdit(self)
+        self.ed_search.setGeometry(QtCore.QRect(700, 30, 200, 20))
+        self.ed_search.setAlignment(QtCore.Qt.AlignCenter)
+        self.ed_search.setPlaceholderText("Search for units")
+        self.ed_search.textChanged.connect(self.filter_units)
+
+        # Sort by
+        self.sort_label = QtWidgets.QLabel(self)
+        self.sort_label.setGeometry(QtCore.QRect(700, 70, 100, 21))
+        self.sort_label.setText('<b>Sort by</b>')
+
+        self.sort_box = QtWidgets.QComboBox(self)
+        self.sort_box.setGeometry(QtCore.QRect(700, 90, 100, 21))
+        self.sort_box.addItem('Name')
+        self.sort_box.addItem('Created')
+        self.sort_box.addItem('Lost')
+        self.sort_box.addItem('Kills')
+        self.sort_box.addItem('K/D')
+        self.sort_box.setCurrentIndex(1)
+        self.sort_box.activated[str].connect(self.sort_units)
+
+        # Finalize
+        self.scroll_area_contents.setLayout(self.scroll_area_contents_layout)
+        self.scroll_area.setWidget(self.scroll_area_contents)
+        self.show()
 
 
+    def filter_units(self):
+        text = self.ed_search.text().lower()
+        for unit in self.units:
+            if text in self.units[unit].search_name:
+                self.units[unit].show()
+            else:
+                self.units[unit].hide()
+
+
+    def sort_units(self):
+        """ Sorts Amon's units """
+        sortby = self.sort_box.currentText()
+        trans_dict = {'Name':'Name','Created':'created','Lost':'lost','Kills':'kills','K/D':'KD'}
+        sortby = trans_dict[sortby]
+        
+        # Remove widgets from the layout
+        for unit in self.units:
+            self.scroll_area_contents_layout.removeWidget(self.units[unit])
+
+        # Sort
+        if sortby == 'Name':
+            self.units = {k:v for k,v in sorted(self.units.items())}
+        else:
+            self.units = {k:v for k,v in sorted(self.units.items(), key=partial(self.sortingf, sortby=sortby), reverse=True)}
+
+        # Add widgets to the layout
+        for unit in self.units:
+            self.scroll_area_contents_layout.addWidget(self.units[unit])
+
+
+    @staticmethod
+    def sortingf(data, sortby=None):
+        unit = data[0]
+        widget = data[1]
+
+        if unit == 'sum':
+            return 99999999999999
+        return widget.unit_data[sortby]
+
+
+class AmonUnitStatsUnit(QtWidgets.QWidget):
+    """ Widget for amon unit"""
+    def __init__(self, unit, unit_data, parent=None, bg=False):
+        super().__init__(parent)
+        height = 14 if unit != 'Name' else 26
+        self.setGeometry(QtCore.QRect(0, 0, parent.width(), height))
+        self.setMinimumHeight(height)
+        self.setMaximumHeight(height)
+        self.search_name = unit.lower()
+        self.unit_data = unit_data
+
+        if bg:
+            self.bg = QtWidgets.QFrame(self)
+            self.bg.setGeometry(QtCore.QRect(30, 0, 580, 20))
+            self.bg.setStyleSheet("background-color: #ddd")
+
+        if unit in {'Name','sum'}:
+            self.setStyleSheet("font-weight:bold")
+
+        self.name = QtWidgets.QLabel(self)
+        self.name.setGeometry(QtCore.QRect(40, 0, 160, height))
+        self.name.setText(str(unit if unit != 'sum' else 'Total'))
+        if unit == 'Name':
+            self.name.setAlignment(QtCore.Qt.AlignVCenter)
+
+            self.line = QtWidgets.QFrame(self)
+            self.line.setGeometry(QtCore.QRect(20, 24, 600, 2))
+            self.line.setFrameShape(QtWidgets.QFrame.HLine)
+            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.elements = dict()
+        for idx, item in enumerate(unit_data):
+            self.elements[item] = QtWidgets.QLabel(self)
+            self.elements[item].setGeometry(QtCore.QRect(100+100*(idx+1), 0, 100, height))           
+
+            if item == 'KD':
+                if isinstance(unit_data[item], str):
+                    self.elements[item].setText(unit_data[item])
+                else:
+                    self.elements[item].setText(f"{100*unit_data[item]:.1f}%")
+                self.elements[item].setToolTip("Kill-death ratio")
+
+            elif isinstance(unit_data[item],int):
+                self.elements[item].setText(fi(unit_data[item]))
+            else:
+                self.elements[item].setText(str(unit_data[item]))
+
+            if unit == 'Name':
+                self.elements[item].setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignRight)
+            else:
+                self.elements[item].setAlignment(QtCore.Qt.AlignRight)
 
 
 class UnitStats(QtWidgets.QWidget):

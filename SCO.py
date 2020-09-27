@@ -673,7 +673,7 @@ class UI_TabWidget(object):
 
         ##### RESULTS #####
         self.TABW_StatResults = QtWidgets.QTabWidget(self.TAB_Stats)
-        self.TABW_StatResults.setGeometry(QtCore.QRect(5, 126, 971, 451))
+        self.TABW_StatResults.setGeometry(QtCore.QRect(5, 126, 971, 459))
 
         ### TAB Maps
         self.TAB_Maps = QtWidgets.QWidget()
