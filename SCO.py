@@ -1715,7 +1715,7 @@ class UI_TabWidget(object):
             self.WebView.move(int(sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), sg.top())
             logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except:
-            logger.errror(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
+            logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
 
 
     def pc_waken_from_sleep(self, diff):
@@ -2103,7 +2103,7 @@ class UI_TabWidget(object):
         self.ally_commander_analysis = analysis['AllyCommanderData']
         self.ally_commander_sort_update()
 
-        ### Kill fractions
+        ### Unit stats
         if self.CAnalysis.full_analysis_finished:
             self.update_unit_stats(analysis['UnitData'])
 
@@ -2116,12 +2116,24 @@ class UI_TabWidget(object):
             self.TAB_CommUnitStats = QtWidgets.QWidget()
             self.TABW_StatResults.insertTab(4, self.TAB_CommUnitStats,  "Unit stats")
 
-        # Update units widget
+        # Update commander units widget
         if not hasattr(self, 'WD_unit_stats'):
             self.WD_unit_stats = MUI.UnitStats(unit_data, parent=self.TAB_CommUnitStats)
         else:
             self.WD_unit_stats.unit_data = unit_data
             self.WD_unit_stats.update_units()
+
+        # Amon unit tab
+        if not hasattr(self, 'TAB_AmonUnitStats'):
+            self.TAB_AmonUnitStats = QtWidgets.QWidget()
+            self.TABW_StatResults.insertTab(5, self.TAB_AmonUnitStats,  "Amon stats")
+
+        # Update amon units widget
+        if not hasattr(self, 'WD_amon_unit_stats'):
+            self.WD_amon_unit_stats = MUI.AmonUnitStats(unit_data, parent=self.TAB_AmonUnitStats)
+        # else:
+        #     self.WD_amon_unit_stats.unit_data = unit_data
+        #     self.WD_amon_unit_stats.update_units()
 
         
     def my_commander_sort_update(self):

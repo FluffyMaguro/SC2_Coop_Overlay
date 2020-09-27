@@ -223,7 +223,7 @@ class TwitchBot:
                 if line == "":
                     break
                 
-                if "PING" in line and console(line):
+                if "PING" in line and self.console(line):
                     msgg = "PONG :tmi.twitch.tv\r\n".encode()
                     self.s.send(msgg)
                     logger.info(msgg)

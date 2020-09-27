@@ -32,6 +32,15 @@ def fi(number):
         return str(number)
 
 
+class AmonUnitStats(QtWidgets.QWidget):
+    """ Widget for amon's unit stats """
+    def __init__(self, unit_data, parent=None):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(0, 0, 950, 430))
+
+
+
+
 class UnitStats(QtWidgets.QWidget):
     """ Widget for unit stats """
     def __init__(self, unit_data, parent=None):
@@ -1183,7 +1192,7 @@ class PatchNotes(QtWidgets.QWidget):
         height = 50 + len(patchnotes)*18
         width = 200
         text = ''
-        
+
         # Add text, calculate required width
         for line in patchnotes:
             text += f'&middot; {line}<br>'
