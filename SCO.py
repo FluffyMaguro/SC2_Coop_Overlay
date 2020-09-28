@@ -755,7 +755,7 @@ class UI_TabWidget(object):
 
         self.CH_FA_description = QtWidgets.QLabel(self.TAB_FullAnalysis)
         self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
-        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take few hours and the application will be less responsive.</b>')
+        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take few hours and the application will be less responsive.</b>')
         self.CH_FA_description.setWordWrap(True)    
 
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
@@ -774,7 +774,7 @@ class UI_TabWidget(object):
         self.CH_FA_atstart.setText('Continue full analysis at start')
 
         self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
-        self.CH_FA_status.setGeometry(QtCore.QRect(10, 140, 300, 20))
+        self.CH_FA_status.setGeometry(QtCore.QRect(10, 140, 400, 40))
 
         # Putting it together
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
@@ -1660,7 +1660,7 @@ class UI_TabWidget(object):
             self.set_WebView_size_location(self.settings['monitor'])
 
             self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
-            
+
             if not self.settings['force_hide_overlay']:
                 self.WebView.show()
 

@@ -608,11 +608,13 @@ class mass_replay_analysis:
             if 'full_analysis' in r or 'comp' in r:
                 fully_parsed += 1
         self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
-
+        fully_parsed_at_start = fully_parsed
+        
         # Start 
         logger.info('Starting full analysis!')
         start = time.time()
         idx = 0
+        eta = '?'
         for r in self.ReplayDataAll:
             # Save cache every now and then
             if idx >= 20:
@@ -640,13 +642,20 @@ class mass_replay_analysis:
                 # Update data
                 idx += 1
                 fully_parsed +=1
+
+                # Calculate eta
+                if (fully_parsed - fully_parsed_at_start) > 15 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
+                    eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
+                    eta = time.strftime("%H:%M:%S", time.gmtime(eta))
+                    
+                # Update widget
                 with lock:
                     r.update(self.format_data(full_data))
-                    self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+                    self.full_analysis_label.setText(f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
         if idx > 0:
             self.save_cache()
-        self.full_analysis_label.setText(f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+        self.full_analysis_label.setText(f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} | {100*fully_parsed/len(self.ReplayDataAll):.0f}%')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')        
         self.full_analysis_finished = True
         return True
