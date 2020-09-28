@@ -55,9 +55,6 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.heading = AmonUnitStatsUnit('Name',{'created':'Created','lost':'Lost','kills':'Kills','KD':'K/D'}, parent=self.scroll_area_contents)
         self.scroll_area_contents_layout.addWidget(self.heading)
 
-        # Add Amon's units
-        self.update_data(unit_data)
-
         # Search
         self.search_label = QtWidgets.QLabel(self)
         self.search_label.setGeometry(QtCore.QRect(700, 10, 100, 21))
@@ -84,13 +81,17 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.sort_box.setCurrentIndex(1)
         self.sort_box.activated[str].connect(self.sort_units)
 
+        # Add Amon's units
+        self.update_data(unit_data, init=True)
+
         # Finalize
         self.scroll_area_contents.setLayout(self.scroll_area_contents_layout)
         self.scroll_area.setWidget(self.scroll_area_contents)
         self.show()
 
 
-    def update_data(self, unit_data):
+
+    def update_data(self, unit_data, init=False):
         """ Updates widget based on new unit data"""
         if not hasattr(self, 'units'):
             self.units = dict()
@@ -119,15 +120,19 @@ class AmonUnitStats(QtWidgets.QWidget):
             else:
                 self.units[unit].show()
 
-        self.update_backgrounds()
+        if init:
+            self.update_backgrounds(init=True)
+        else:
+            self.sort_units()
+            self.filter_units()
 
 
-    def update_backgrounds(self):
+    def update_backgrounds(self, init=False):
         """ Updates background for all Amon's units"""
         idx = 0
         for i in range(self.scroll_area_contents_layout.count()):
             widget = self.scroll_area_contents_layout.itemAt(i).widget()
-            if widget.isVisible() and not widget.search_name in {'sum','name'}:
+            if (init or widget.isVisible()) and not widget.search_name in {'sum','name'}:
                 idx += 1
                 widget.update_bg(idx%2)
 
@@ -197,8 +202,9 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.search_name = unit.lower()
 
         self.bg = QtWidgets.QFrame(self)
-        self.bg.setGeometry(QtCore.QRect(30, 0, 580, 20))
+        self.bg.setGeometry(QtCore.QRect(30, 0, 580, height))
         self.bg.setStyleSheet("background-color: #ddd")
+        self.bg.hide()
 
         if unit in {'Name','sum'}:
             self.setStyleSheet("font-weight:bold")
@@ -227,6 +233,7 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
                 self.elements[item].setAlignment(QtCore.Qt.AlignRight)
 
         self.update_data(unit_data)
+        self.show()
 
 
     def update_data(self, unit_data):
