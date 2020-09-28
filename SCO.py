@@ -1660,7 +1660,9 @@ class UI_TabWidget(object):
             self.set_WebView_size_location(self.settings['monitor'])
 
             self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
-            self.WebView.show()
+            
+            if not self.settings['force_hide_overlay']:
+                self.WebView.show()
 
             MF.WEBPAGE = self.WebPage
 

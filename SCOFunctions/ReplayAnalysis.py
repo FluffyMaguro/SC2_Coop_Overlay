@@ -22,7 +22,7 @@ commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis",
 commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"SoACasterKarax","Artanis":"SoACasterArtanis"}
 units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
 primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
-dont_include_units = {"CommanderPrestigeMengskTrooperBoom"}
+dont_include_units = {"CommanderPrestigeMengskTrooperBoom","InvisibleEscortFlying"}
 
 logger = logclass('REPA','INFO')
 
@@ -685,7 +685,7 @@ def analyse_replay(filepath, main_player_handles=None):
         logger.error('Not a Co-op replay')
 
 
-    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=0):
+    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=-1):
         """ Fills units into output dictionary, fill created/list units into icons """
         new_dict = switch_names(pdict)
         sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse = True, key=lambda item: item[1][2])} # Sorts by number of create (0), lost (1), kills (2), K/D (3)

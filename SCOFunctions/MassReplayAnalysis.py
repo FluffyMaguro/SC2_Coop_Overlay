@@ -349,7 +349,10 @@ def _process_dict_amon(unit_data: dict):
     total = {'created': 0, 'lost': 0, 'kills': 0}
 
     for unit in unit_data:
-        if unit_data[unit]['lost'] > 0:
+        if unit in {'Twister','Purifier Beam','Moebius Corps Laser Drill'}:
+            unit_data[unit]['lost'] = 0
+            unit_data[unit]['KD'] = '-'
+        elif unit_data[unit]['lost'] > 0:
             unit_data[unit]['KD'] = unit_data[unit]['kills'] / unit_data[unit]['lost']
         else:
             unit_data[unit]['KD'] = 0

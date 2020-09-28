@@ -94,10 +94,14 @@ class AmonUnitStats(QtWidgets.QWidget):
 
 
     def filter_units(self):
+        """ Filters Amon's units based on text. Updates visibility and background."""
         text = self.ed_search.text().lower()
+        idx = 0
         for unit in self.units:
             if text in self.units[unit].search_name:
+                idx += 1
                 self.units[unit].show()
+                self.units[unit].update_bg(idx%2)
             else:
                 self.units[unit].hide()
 
@@ -113,14 +117,22 @@ class AmonUnitStats(QtWidgets.QWidget):
             self.scroll_area_contents_layout.removeWidget(self.units[unit])
 
         # Sort
-        if sortby == 'Name':
-            self.units = {k:v for k,v in sorted(self.units.items())}
-        else:
-            self.units = {k:v for k,v in sorted(self.units.items(), key=partial(self.sortingf, sortby=sortby), reverse=True)}
+        self.units = {k:v for k,v in sorted(self.units.items(), key=self.get_sortingf(sortby), reverse=True if sortby != 'Name' else False)}
 
         # Add widgets to the layout
+        idx = 0
         for unit in self.units:
             self.scroll_area_contents_layout.addWidget(self.units[unit])
+            if self.units[unit].isVisible():
+                idx += 1
+                self.units[unit].update_bg(idx%2)
+
+
+    def get_sortingf(self, sortby):
+        """ Returns None if sorting by name, otherwise custom sorting function """
+        if sortby == 'Name':
+            return None
+        return partial(self.sortingf, sortby=sortby)
 
 
     @staticmethod
@@ -130,6 +142,8 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         if unit == 'sum':
             return 99999999999999
+        if isinstance(widget.unit_data[sortby], str):
+            return 9999999999999
         return widget.unit_data[sortby]
 
 
@@ -144,10 +158,10 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.search_name = unit.lower()
         self.unit_data = unit_data
 
-        if bg:
-            self.bg = QtWidgets.QFrame(self)
-            self.bg.setGeometry(QtCore.QRect(30, 0, 580, 20))
-            self.bg.setStyleSheet("background-color: #ddd")
+        self.bg = QtWidgets.QFrame(self)
+        self.bg.setGeometry(QtCore.QRect(30, 0, 580, 20))
+        self.bg.setStyleSheet("background-color: #ddd")
+        self.update_bg(bg)
 
         if unit in {'Name','sum'}:
             self.setStyleSheet("font-weight:bold")
@@ -172,7 +186,7 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
                 if isinstance(unit_data[item], str):
                     self.elements[item].setText(unit_data[item])
                 else:
-                    self.elements[item].setText(f"{100*unit_data[item]:.1f}%")
+                    self.elements[item].setText(f"{unit_data[item]:.1f}")
                 self.elements[item].setToolTip("Kill-death ratio")
 
             elif isinstance(unit_data[item],int):
@@ -184,6 +198,14 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
                 self.elements[item].setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignRight)
             else:
                 self.elements[item].setAlignment(QtCore.Qt.AlignRight)
+
+
+    def update_bg(self, bg):
+        """ Changes whether the unit widget is to have background or not"""
+        if bg:
+            self.bg.show()
+        else:
+            self.bg.hide()
 
 
 class UnitStats(QtWidgets.QWidget):
@@ -766,7 +788,7 @@ class CommanderEntry(QtWidgets.QWidget):
         self.la_killpercent.setText(percent)
 
         if percent == '–':
-            self.la_killpercent.setToolTip('Typical percent of total kills<br>Run full analysis for this statistic')
+            self.la_killpercent.setToolTip('Typical percent of total kills<br><br>Run full analysis for this statistic.')
         else:
             self.la_killpercent.setToolTip('Typical percent of total kills')
 
@@ -876,7 +898,7 @@ class MapEntry(QtWidgets.QWidget):
         self.la_bonus.setAlignment(QtCore.Qt.AlignCenter)
         if bonus == 0:
             self.la_bonus.setText('–')
-            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.<br>Run full analysis for this statistic')
+            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.<br><br>Run full analysis for this statistic.')
         elif isinstance(bonus, int) or isinstance(bonus, float):
             self.la_bonus.setText(f'{100*bonus:.0f}%')
             self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.')
