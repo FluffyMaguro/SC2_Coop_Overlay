@@ -275,6 +275,9 @@ def analyse_replay(filepath, main_player_handles=None):
 
         if event['_event'] in ['NNet.Replay.Tracker.SUnitBornEvent','NNet.Replay.Tracker.SUnitInitEvent']:
             _unit_type = event['m_unitTypeName'].decode()
+            _ability_name = event.get('m_creatorAbilityName', None)
+            _ability_name = _ability_name.decode() if _ability_name != None else None
+
             _control_pid = event['m_controlPlayerId']
             unit_dict[unitid(event)] = [_unit_type, _control_pid]
 
@@ -308,7 +311,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 else:
                     unit_type_dict_ally[_unit_type] = [1,0,0,0]
 
-            if _control_pid in amon_players:
+            if _control_pid in amon_players and not _ability_name == 'MutatorAmonDehakaDrag':
                 if _unit_type in unit_type_dict_amon:
                     unit_type_dict_amon[_unit_type][0] += 1
                 else:

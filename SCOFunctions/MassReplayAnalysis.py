@@ -343,24 +343,6 @@ def _add_units_amon(unit_data: dict, r: dict):
                 unit_data[unit][names[i]] += r['amon_units'][unit][i]
 
 
-    #  !!!debug
-    if "Miles 'Blaze' Lewis" in r['amon_units']:
-        print(f'Blaze here: {r["file"]}')
-
-    # !!!debug
-    if "Mecha Larva" in r['amon_units']:
-        print(f'Mecha larva here: {r["file"]}')
-
-    # !!!debug
-    if "Siege Tank Wreckage" in r['amon_units']:
-        print(f'Siege Tank Wreckage here: {r["file"]}')
-
-    # !!!debug
-    if "Xel'Naga Passageway" in r['amon_units']:
-        print(f'XelNaga Passageway here: {r["file"]}')
-
-
-
 def _process_dict_amon(unit_data: dict):
     """ Sorts and calculates KD for Amon's dictionary"""
     # Calculate K/D
