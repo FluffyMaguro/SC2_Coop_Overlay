@@ -244,6 +244,7 @@ def analyse_replay(filepath, main_player_handles=None):
     ResearchVesselLandedTiming = None
     LastBiomassPosition = [0,0,0]
     AbathurKillLocusts = set()
+    MutatorDehakaDragUnitIDs = set()
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -311,8 +312,10 @@ def analyse_replay(filepath, main_player_handles=None):
                 else:
                     unit_type_dict_ally[_unit_type] = [1,0,0,0]
 
-            if _control_pid in amon_players and not _ability_name == 'MutatorAmonDehakaDrag':
-                if _unit_type in unit_type_dict_amon:
+            if _control_pid in amon_players:
+                if _ability_name == 'MutatorAmonDehakaDrag':
+                    MutatorDehakaDragUnitIDs.add(unitid(event))
+                elif _unit_type in unit_type_dict_amon:
                     unit_type_dict_amon[_unit_type][0] += 1
                 else:
                     unit_type_dict_amon[_unit_type] = [1,0,0,0]
@@ -604,7 +607,7 @@ def analyse_replay(filepath, main_player_handles=None):
                     else:
                         unit_type_dict_ally[_killed_unit_type] = [0,1,0,0]
 
-                if _losing_player in amon_players and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1:
+                if _losing_player in amon_players and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1 and not unitid(event) in MutatorDehakaDragUnitIDs:
                     if _killed_unit_type in unit_type_dict_amon:
                         unit_type_dict_amon[_killed_unit_type][1] += 1
                     else:
