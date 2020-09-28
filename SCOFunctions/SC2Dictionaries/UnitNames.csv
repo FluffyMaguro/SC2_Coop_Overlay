@@ -1097,6 +1097,7 @@ DehakaUltraliskLevel2Burrowed,Primal Ultralisk
 DehakaUltraliskLevel3Burrowed,Tyrannozor
 DehakaMutaliskLevel2,Unit/Name/DehakaMutaliskLevel2
 CybrosEscortTowerUp,Suppression Tower
+CybrosEscortTowerDown,Suppression Tower
 ImpalerDehakaBurrowed,Impaler
 DehakaRavasaurBurrowed,Ravasaur
 HHSCV,SCV
@@ -1352,3 +1353,7 @@ DehakaCoopClone,Zweihaka
 CommanderPrestigeMengskTrooperBoom,Trooper's Weapon
 MutatorBoomBot,Boom Bot
 ACVirophageBurrowed,Virophage
+InfestationSpire,Infestation Spire
+MutatorMissilePointDefense,Missile Point Defense
+PitMalash,Ma'lash
+WolfStatue,Wolf Statue

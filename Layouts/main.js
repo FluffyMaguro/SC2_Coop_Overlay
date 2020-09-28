@@ -609,7 +609,7 @@ function fillunits(el, dat) {
         } else if (percent == 100) {
             spacer = 'nokillpadding'
         };
-        if (value[2] > -100) {
+        if (value[2] > 0) {
             text = text + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><br>'
         };
     }

@@ -343,13 +343,32 @@ def _add_units_amon(unit_data: dict, r: dict):
                 unit_data[unit][names[i]] += r['amon_units'][unit][i]
 
 
+    #  !!!debug
+    if "Miles 'Blaze' Lewis" in r['amon_units']:
+        print(f'Blaze here: {r["file"]}')
+
+    # !!!debug
+    if "Mecha Larva" in r['amon_units']:
+        print(f'Mecha larva here: {r["file"]}')
+
+    # !!!debug
+    if "Siege Tank Wreckage" in r['amon_units']:
+        print(f'Siege Tank Wreckage here: {r["file"]}')
+
+    # !!!debug
+    if "Xel'Naga Passageway" in r['amon_units']:
+        print(f'XelNaga Passageway here: {r["file"]}')
+
+
+
 def _process_dict_amon(unit_data: dict):
     """ Sorts and calculates KD for Amon's dictionary"""
     # Calculate K/D
     total = {'created': 0, 'lost': 0, 'kills': 0}
 
     for unit in unit_data:
-        if unit in {'Twister','Purifier Beam','Moebius Corps Laser Drill'}:
+        # These mutator units shouldn't have any losses
+        if unit in {'Twister','Purifier Beam','Moebius Corps Laser Drill','Blizzard'}:
             unit_data[unit]['lost'] = 0
             unit_data[unit]['KD'] = '-'
         elif unit_data[unit]['lost'] > 0:
@@ -365,6 +384,11 @@ def _process_dict_amon(unit_data: dict):
     total['KD'] = 0
     if total['lost'] > 0:
         total['KD'] = total['kills'] / total['lost']
+
+    # Remove these units
+    for unit in {'AdeptPhaseShift','Drakken Pulse Cannon'}:
+        if unit in unit_data:
+            del unit_data[unit]
 
     # Sort 
     unit_data['sum'] = total

@@ -2132,10 +2132,9 @@ class UI_TabWidget(object):
 
         # Update amon units widget
         if not hasattr(self, 'WD_amon_unit_stats'):
-            self.WD_amon_unit_stats = MUI.AmonUnitStats(unit_data, parent=self.TAB_AmonUnitStats)
-        # else:
-        #     self.WD_amon_unit_stats.unit_data = unit_data
-        #     self.WD_amon_unit_stats.update_units()
+            self.WD_amon_unit_stats = MUI.AmonUnitStats(unit_data['amon'], parent=self.TAB_AmonUnitStats)
+        else:
+            self.WD_amon_unit_stats.update_data(unit_data['amon'])
 
         
     def my_commander_sort_update(self):

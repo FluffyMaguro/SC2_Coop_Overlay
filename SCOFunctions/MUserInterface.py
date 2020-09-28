@@ -56,10 +56,7 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area_contents_layout.addWidget(self.heading)
 
         # Add Amon's units
-        self.units = dict()
-        for idx, unit in enumerate(unit_data['amon']):
-            self.units[unit] = AmonUnitStatsUnit(unit, unit_data['amon'][unit], parent=self.scroll_area_contents, bg=idx%2)
-            self.scroll_area_contents_layout.addWidget(self.units[unit])
+        self.update_data(unit_data)
 
         # Search
         self.search_label = QtWidgets.QLabel(self)
@@ -93,17 +90,58 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.show()
 
 
+    def update_data(self, unit_data):
+        """ Updates widget based on new unit data"""
+        if not hasattr(self, 'units'):
+            self.units = dict()
+
+        # Contains widgets for units that are not present in currently generated data
+        self.hidden_units = set() 
+
+        # Either create widgets or update current ones
+        for idx, unit in enumerate(unit_data):
+            if not unit in self.units:
+                self.units[unit] = AmonUnitStatsUnit(unit, unit_data[unit], parent=self.scroll_area_contents, bg=idx%2)
+                self.scroll_area_contents_layout.addWidget(self.units[unit])
+            else:
+                self.units[unit].update_data(unit_data[unit])
+
+        # Hide/show old widgets        
+        for unit in self.units:
+            if not unit in unit_data:
+                self.units[unit].hide()
+                self.hidden_units.add(unit)
+
+            elif unit in self.hidden_units:
+                self.units[unit].show()
+                self.hidden_units.remove(unit)
+
+            else:
+                self.units[unit].show()
+
+        self.update_backgrounds()
+
+
+    def update_backgrounds(self):
+        """ Updates background for all Amon's units"""
+        idx = 0
+        for i in range(self.scroll_area_contents_layout.count()):
+            widget = self.scroll_area_contents_layout.itemAt(i).widget()
+            if widget.isVisible() and not widget.search_name in {'sum','name'}:
+                idx += 1
+                widget.update_bg(idx%2)
+
+
     def filter_units(self):
         """ Filters Amon's units based on text. Updates visibility and background."""
         text = self.ed_search.text().lower()
-        idx = 0
         for unit in self.units:
-            if text in self.units[unit].search_name:
-                idx += 1
+            if text in self.units[unit].search_name and not unit in self.hidden_units:
                 self.units[unit].show()
-                self.units[unit].update_bg(idx%2)
             else:
                 self.units[unit].hide()
+
+        self.update_backgrounds()
 
 
     def sort_units(self):
@@ -120,12 +158,13 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.units = {k:v for k,v in sorted(self.units.items(), key=self.get_sortingf(sortby), reverse=True if sortby != 'Name' else False)}
 
         # Add widgets to the layout
-        idx = 0
+        self.scroll_area_contents_layout.addWidget(self.units['sum'])
         for unit in self.units:
+            if unit == 'sum':
+                continue
             self.scroll_area_contents_layout.addWidget(self.units[unit])
-            if self.units[unit].isVisible():
-                idx += 1
-                self.units[unit].update_bg(idx%2)
+
+        self.update_backgrounds()
 
 
     def get_sortingf(self, sortby):
@@ -156,12 +195,10 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.setMinimumHeight(height)
         self.setMaximumHeight(height)
         self.search_name = unit.lower()
-        self.unit_data = unit_data
 
         self.bg = QtWidgets.QFrame(self)
         self.bg.setGeometry(QtCore.QRect(30, 0, 580, 20))
         self.bg.setStyleSheet("background-color: #ddd")
-        self.update_bg(bg)
 
         if unit in {'Name','sum'}:
             self.setStyleSheet("font-weight:bold")
@@ -183,21 +220,29 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
             self.elements[item].setGeometry(QtCore.QRect(100+100*(idx+1), 0, 100, height))           
 
             if item == 'KD':
-                if isinstance(unit_data[item], str):
-                    self.elements[item].setText(unit_data[item])
-                else:
-                    self.elements[item].setText(f"{unit_data[item]:.1f}")
                 self.elements[item].setToolTip("Kill-death ratio")
-
-            elif isinstance(unit_data[item],int):
-                self.elements[item].setText(fi(unit_data[item]))
-            else:
-                self.elements[item].setText(str(unit_data[item]))
-
             if unit == 'Name':
                 self.elements[item].setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignRight)
             else:
                 self.elements[item].setAlignment(QtCore.Qt.AlignRight)
+
+        self.update_data(unit_data)
+
+
+    def update_data(self, unit_data):
+        """ Updates Amon's unit widget based on data provided"""
+        self.unit_data = unit_data
+        for idx, item in enumerate(unit_data):
+            if item == 'KD':
+                if isinstance(unit_data[item], str):
+                    self.elements[item].setText(unit_data[item])
+                else:
+                    self.elements[item].setText(f"{unit_data[item]:.1f}")
+
+            elif isinstance(unit_data[item], int):
+                self.elements[item].setText(fi(unit_data[item]))
+            else:
+                self.elements[item].setText(str(unit_data[item]))
 
 
     def update_bg(self, bg):
