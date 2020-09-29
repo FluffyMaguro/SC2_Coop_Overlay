@@ -367,7 +367,13 @@ def _process_dict_amon(unit_data: dict):
     if total['lost'] > 0:
         total['KD'] = total['kills'] / total['lost']
 
-    # Remove these units
+    """
+     Remove these units. 
+     Drakken Pulse Cannon is the nuke effect on Cradle of Death. 
+     Sirius Sykes' kills is his autoturrets being captured by Eminent Domain and kills added to him.
+     AdeptPhaseShift is probably from Eminent Domain as well.
+
+     """
     for unit in {'AdeptPhaseShift','Drakken Pulse Cannon',"James 'Sirius' Sykes"}:
         if unit in unit_data:
             del unit_data[unit]

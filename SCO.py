@@ -1106,11 +1106,11 @@ class UI_TabWidget(object):
             'show_random_on_overlay': False,
             'account_folder':None,
             'screenshot_folder':None,
-            'hotkey_show/hide':'Ctrl+*',
+            'hotkey_show/hide':'Ctrl+Shift+*',
             'hotkey_show':None,
             'hotkey_hide':None,
-            'hotkey_newer':'Alt+/',
-            'hotkey_older':'Alt+*',
+            'hotkey_newer':'Ctrl+Alt+/',
+            'hotkey_older':'Ctrl+Alt+*',
             'hotkey_winrates':'Ctrl+Alt+-',
             'color_player1':'#0080F8',
             'color_player2':'#00D532',
@@ -1124,6 +1124,7 @@ class UI_TabWidget(object):
             'right_offset':0,
             'width': 0.5,
             'height':1,
+            'debug': False,
             'font_scale':1,
             'subtract_height': 1,
             'debug_button': False,
@@ -1547,6 +1548,7 @@ class UI_TabWidget(object):
         self.settings['player_notes'] = previous_settings['player_notes'] 
         self.settings['twitchbot'] = previous_settings['twitchbot']
         self.settings['debug_button'] = previous_settings['debug_button']
+        self.settings['debug'] = previous_settings['debug']
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
@@ -1644,6 +1646,18 @@ class UI_TabWidget(object):
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'>>> Starting!\n{self.settings}')
+
+        # Debug files in MEI directory
+        if self.settings['debug']:
+            folder = innerPath('')
+            folder = os.path.abspath(folder)
+
+            if os.path.isdir(folder):
+                for root, directories, files in os.walk(folder):
+                    for file in files:
+                        logger.info(f'>>File: {os.path.abspath(os.path.join(root, file))}')
+            else:
+                logger.error(f"No dir: {folder}")
 
         # Load overlay
         if not os.path.isfile(truePath('Layouts/Layout.html')):

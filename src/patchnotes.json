@@ -11,6 +11,7 @@
     "Player info doesn't show for versus games",
     "Option for full analysis added. Running it will take long time, but it will provide more accurate game lengths and more stats",
     "Added new stats related to player and unit kills, and bonus objective completion. These require full analysis",
+	"Default hotkeys changed so it's less likely to press them by accident",
 	"Fancy changelog you see here"
   ]
 }
