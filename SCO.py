@@ -38,7 +38,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 210
+APPVERSION = 209
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1082,7 +1082,7 @@ class UI_TabWidget(object):
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
 
-        TabWidget.setCurrentIndex(3)
+        TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
         if not HF.isWindows():
@@ -1707,7 +1707,7 @@ class UI_TabWidget(object):
                 self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
                 self.thread_twitch_bot.start()
                 self.bt_twitch.setText('Stop the bot')
-        
+
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
@@ -1853,8 +1853,8 @@ class UI_TabWidget(object):
 
             # Put the last player on top of player tab
             for player in {1,2}:
-                name = replay_dict['parser']['players'][player]['name']
-                if not replay_dict['parser']['players'][player]['handle'] in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
+                name = replay_dict['parser']['players'][player].get('name','-')
+                if not replay_dict['parser']['players'][player].get('handle','-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
                     self.put_player_first(name)
                     break
 
@@ -2354,10 +2354,13 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)        
     TabWidget = MUI.CustomQTabWidget()
 
-    ui = UI_TabWidget()
-    ui.setupUI(TabWidget)
-    ui.loadSettings()
-    ui.start_main_functionality()
+    try:
+        ui = UI_TabWidget()
+        ui.setupUI(TabWidget)
+        ui.loadSettings()
+        ui.start_main_functionality()
+    except:
+        logger.error(traceback.format_exc())
 
     # Do stuff before the app is closed
     exit_event = app.exec_()

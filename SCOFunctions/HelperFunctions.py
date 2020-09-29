@@ -75,7 +75,7 @@ def new_version(current_version):
     """ Checks for a new version of the app. Returns a download link if a new version available. """
     try:
         data = json.loads(requests.get(version_link).text)
-        logger.info(f'This version: {str(current_version)[0]}.{str(current_version)[1:]}. Most current live version: 1.{data["version"]}. ')
+        logger.info(f'This version: {str(current_version)[0]}.{str(current_version)[1:]}. Most current live version: {data["version"]}. ')
         if data['version'] > current_version:
             return data['download_link_1']
         else:

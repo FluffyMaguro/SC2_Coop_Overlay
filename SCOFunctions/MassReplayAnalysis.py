@@ -368,7 +368,7 @@ def _process_dict_amon(unit_data: dict):
         total['KD'] = total['kills'] / total['lost']
 
     # Remove these units
-    for unit in {'AdeptPhaseShift','Drakken Pulse Cannon'}:
+    for unit in {'AdeptPhaseShift','Drakken Pulse Cannon',"James 'Sirius' Sykes"}:
         if unit in unit_data:
             del unit_data[unit]
 
