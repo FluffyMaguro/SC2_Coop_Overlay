@@ -1200,11 +1200,6 @@ class UI_TabWidget(object):
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
 
-        # Delete install bat if it's there
-        if os.path.isfile(truePath('install.bat')):
-            os.remove(truePath('install.bat'))
-            self.show_patchnotes()
-
         # Screenshot folder
         if self.settings['screenshot_folder'] in {None,''} or not os.path.isdir(self.settings['screenshot_folder']):
             self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
@@ -1231,6 +1226,11 @@ class UI_TabWidget(object):
         self.manage_keyboard_threads()
 
         self.full_analysis_running = False
+
+        # Delete install bat if it's there. Show patchnotes
+        if os.path.isfile(truePath('install.bat')):
+            os.remove(truePath('install.bat'))
+            self.show_patchnotes()
 
 
     def show_patchnotes(self):

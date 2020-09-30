@@ -512,7 +512,14 @@ class mass_replay_analysis:
         """ Parses and adds new replays. Doesn't parse already parsed replays. """
         replays_to_parse = {r for r in replays if not r in self.parsed_replays}
         ts = time.time()
-        out = self.ReplayDataAll + list(map(parse_replay, replays_to_parse))
+        out = list()
+
+        for r in replays_to_parse:
+            out.append(parse_replay(r))
+            if self.closing:
+                break
+
+        out += self.ReplayDataAll
         out = [r for r in out if r != None]
 
         with lock:
