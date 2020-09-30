@@ -1269,7 +1269,7 @@ class UI_TabWidget(object):
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_NewUpdate.setGeometry(QtCore.QRect(190, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
-        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #2EB32E')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
         self.BT_NewUpdate.clicked.connect(self.start_download)
 
         # Check if it's already downloaded
@@ -1295,6 +1295,7 @@ class UI_TabWidget(object):
         self.downloading = True
         self.BT_NewUpdate.setText('Downloading')
         self.BT_NewUpdate.setEnabled(False)
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #CCCCCC')
         self.BT_NewUpdate.clicked.disconnect()
         self.PB_download.show()
 
@@ -1323,6 +1324,7 @@ class UI_TabWidget(object):
         """ Changes button text and connect it to another function"""
         self.BT_NewUpdate.setText('Restart and update')
         self.BT_NewUpdate.setEnabled(True)
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
         try:
             self.BT_NewUpdate.clicked.disconnect()    
         except:
