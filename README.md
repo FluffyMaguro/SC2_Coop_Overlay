@@ -83,6 +83,22 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+* 2.10 version
+
+      - Frequency added to maps
+      - Maps can be sorted
+      - Last ally showed in the player tab on top and is colored
+      - Checkbox for showing/hiding session information
+      - Randomized commander & prestige can be shown on the overlay
+      - Part and Parcel bonus identification fixed
+      - More replays are parsed successfully
+      - More accurate replay analysis
+      - Player info doesn't show for versus games
+      - Option for full analysis added. Running it will take long time, but it will provide more accurate game lengths and more stats
+      - Added new stats related to player and unit kills, and bonus objective completion. These require full analysis
+      - Default hotkeys changed to be less likely pressed by accident
+      - Fancy changelog
+
 * 2.00 version
 
       - Revamped interface (settings, game list, player list, stats, links)
