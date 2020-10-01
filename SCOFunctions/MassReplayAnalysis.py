@@ -563,6 +563,7 @@ class mass_replay_analysis:
         parsed_data['bonus'] = full_data['bonus']
         parsed_data['comp'] = full_data['comp']
         parsed_data['amon_units'] = full_data['amonUnits']
+        parsed_data['full_analysis'] = True
 
         main = full_data['positions']['main']
         for p in {1,2}:

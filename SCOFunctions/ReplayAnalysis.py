@@ -23,6 +23,7 @@ commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"
 units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
 primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","CommanderPrestigeMengskTrooperBoom","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
+salvage_units = {"ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
 
 logger = logclass('REPA','INFO')
 
@@ -594,7 +595,13 @@ def analyse_replay(filepath, main_player_handles=None):
                     
                     logger.debug(f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------')
 
-                # Add deaths    
+                # Add deaths  
+
+                # Don't include salvage  
+                if _killed_unit_type in salvage_units and _losing_player == _killing_player:
+                    continue
+
+                # Add
                 if main_player == _losing_player and event['_gameloop']/16 > 0 and event['_gameloop']/16 > START_TIME+1: # Don't count deaths on game init
                     if _killed_unit_type in unit_type_dict_main:
                         unit_type_dict_main[_killed_unit_type][1] += 1
