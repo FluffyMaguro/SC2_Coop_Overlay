@@ -118,7 +118,7 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
 
     for root, directories, files in os.walk(folder):
         for directory in directories:
-            if directory.count('-') >= 3 and not r'\Banks' in root and not 'Crash' in directory and not 'Desync' in directory:
+            if directory.count('-') >= 3 and not r'\Banks' in root and not 'Crash' in directory and not 'Desync' in directory and not 'Error' in directory:
                 handles.add(directory)
 
         for file in files:

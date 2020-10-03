@@ -17,7 +17,7 @@ all_unit_ids = {u.lower() for u in set(UnitNameDict.keys())}
 mutator_set = {m.lower() for m in set(Mutators.keys())}
 
 class TwitchBot:
-    def __init__(self, twdict):
+    def __init__(self, twdict, widget=None):
         self.channel = twdict['channel_name']
         self.bot_name = twdict['bot_name']
         self.bot_oauth = twdict['bot_oauth']
@@ -28,6 +28,7 @@ class TwitchBot:
         self.greetings = twdict['greetings']
         self.banned_mutators = {m.lower() for m in twdict['banned_mutators']}
         self.banned_units = {u.lower() for u in twdict['banned_units']}
+        self.widget = widget
 
         if len(self.banks) > 0:
             self.bank = self.banks.get('Default', list(self.banks.values())[0])
@@ -234,6 +235,7 @@ class TwitchBot:
                 message = self.getMessage(line)
                 first_word = message.split()[0].lower()
                 self.saveMessage(user,message)
+                self.widget.add_message(user, message)
                 try:
                     following_words = message.split(' ',1)[1].rstrip()
                 except:

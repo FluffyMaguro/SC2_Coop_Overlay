@@ -29,6 +29,7 @@ import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
 from SCOFunctions.MRandomizer import randomize
+from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
@@ -38,7 +39,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 210
+APPVERSION = 220
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -953,6 +954,24 @@ class UI_TabWidget(object):
         self.ch_twitch.setGeometry(QtCore.QRect(601, 70, 200, 17))
         self.ch_twitch.setText('Start the bot automatically')
 
+        self.ch_twitch_chat = QtWidgets.QCheckBox(self.TAB_TwitchBot)
+        self.ch_twitch_chat.setGeometry(QtCore.QRect(601, 120, 200, 17))
+        self.ch_twitch_chat.setText('Show chat as overlay')
+        self.ch_twitch_chat.clicked.connect(self.create_twitch_chat)
+
+        self.chat_slider_x = QtWidgets.QSlider(QtCore.Qt.Horizontal, self.TAB_TwitchBot)
+        self.chat_slider_x.setGeometry(601, 170, 200, 20)
+        self.chat_slider_x.valueChanged[int].connect(self.update_twitch_chat_position)
+
+        self.chat_slider_y = QtWidgets.QSlider(QtCore.Qt.Horizontal, self.TAB_TwitchBot)
+        self.chat_slider_y.setGeometry(601, 200, 200, 20)
+        self.chat_slider_y.valueChanged[int].connect(self.update_twitch_chat_position)
+
+        self.chat_max_messages = QtWidgets.QSpinBox(self.TAB_TwitchBot)
+        self.chat_max_messages.setGeometry(QtCore.QRect(601, 250, 42, 22))
+        self.chat_max_messages.setMinimum(1)
+        self.chat_max_messages.setToolTip("Requires restart")
+
         # Info label
         self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
         self.LA_InfoTwitch.setGeometry(QtCore.QRect(20, 560, 800, 20))
@@ -1130,6 +1149,9 @@ class UI_TabWidget(object):
             'debug_button': False,
             'fixed_font_size': True,
             'rng_choices': dict(),
+            'show_chat': False,
+            'chat_position': (99,99),
+            'chat_max_messages': 15,
             'webflag': 'CoverWindow',
             'full_analysis_atstart': False,
             'twitchbot' : {
@@ -1399,6 +1421,11 @@ class UI_TabWidget(object):
         self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
+        self.ch_twitch_chat.setChecked(self.settings['show_chat'])
+        self.chat_slider_x.setValue(self.settings['chat_position'][0])
+        self.chat_slider_y.setValue(self.settings['chat_position'][1])
+        self.chat_max_messages.setProperty("value", self.settings['chat_max_messages'])
+
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
        
         if self.settings['debug_button']:
@@ -1444,6 +1471,10 @@ class UI_TabWidget(object):
 
         self.settings['full_analysis_atstart'] = self.CH_FA_atstart.isChecked()
         self.settings['show_random_on_overlay'] = self.FR_RNG_Overlay.isChecked()
+
+        self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
+        self.settings['chat_position'] = (self.chat_slider_x.value(), self.chat_slider_y.value())
+        self.settings['chat_max_messages'] = self.chat_max_messages.value()
 
         # RNG choices
         for co in prestige_names:
@@ -1649,6 +1680,10 @@ class UI_TabWidget(object):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'>>> Starting!\n{self.settings}')
 
+        # Get monitor dimensions
+        self.sg = QtWidgets.QDesktopWidget().screenGeometry(int(self.settings['monitor']-1))
+        self.dimensions = (self.sg.width(), self.sg.height())
+
         # Debug files in MEI directory
         if self.settings['debug']:
             folder = innerPath('')
@@ -1713,8 +1748,12 @@ class UI_TabWidget(object):
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
 
+        # Create chat widget, when?
+        if self.settings['show_chat']:
+            self.create_twitch_chat()
+
         # Twitch both
-        self.TwitchBot = TwitchBot(self.settings['twitchbot'])
+        self.TwitchBot = TwitchBot(self.settings['twitchbot'], widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
         if self.settings['twitchbot']['auto_start']:
             if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
                 logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
@@ -1727,11 +1766,10 @@ class UI_TabWidget(object):
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
-        sg = QtWidgets.QDesktopWidget().screenGeometry(int(monitor-1))
         try:
-            self.WebView.setFixedSize(int(sg.width()*self.settings['width']), int(sg.height()*self.settings['height']) - self.settings['subtract_height'])
-            self.WebView.move(int(sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), sg.top())
-            logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
+            self.WebView.setFixedSize(int(self.sg.width()*self.settings['width']), int(self.sg.height()*self.settings['height']) - self.settings['subtract_height'])
+            self.WebView.move(int(self.sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), self.sg.top())
+            logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
         except:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
 
@@ -2348,6 +2386,44 @@ class UI_TabWidget(object):
             self.FR_RNG_Result_MapRace.setText('')
 
         MF.RNG_COMMANDER = {'Commander':commander, 'Prestige':prestige_names[commander][prestige]}
+
+
+    def update_twitch_chat_position(self):
+        """ Updates position of the chat widget"""
+        if not hasattr(self, 'chat_widget'):
+            return
+
+        position = self.chat_widget.pos()
+        x = self.chat_slider_x.value()
+        y = self.chat_slider_y.value()
+
+        x = (self.dimensions[0]-200)*x/100 
+        y = (self.dimensions[1])*y/100 - 490
+        
+        position.setX(int(x))
+        position.setY(int(y))
+
+        self.chat_widget.move(position)
+
+
+    def create_twitch_chat(self):
+        """ Creates or updates twitch chat"""
+
+        # Hide
+        if hasattr(self, 'chat_widget') and not self.ch_twitch_chat.isChecked():
+            self.chat_widget.hide()
+
+        # Show
+        elif hasattr(self, 'chat_widget') and self.ch_twitch_chat.isChecked():
+            self.chat_widget.show()
+
+        # Creates twitch chat widget if it's not created already
+        elif not hasattr(self, 'chat_widget'):
+            self.chat_widget = ChatWidget(max_messages=self.settings['chat_max_messages'])
+            self.update_twitch_chat_position()
+
+            if hasattr(self, 'TwitchBot'):
+                self.TwitchBot.widget = self.chat_widget
 
 
     def debug_function(self):
