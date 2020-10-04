@@ -6,7 +6,7 @@ from SCOFunctions.MFilePath import innerPath
 
 
 class ChatMessage():
-    """ """
+    """ Class container for one message """
     def __init__(self, parent):
         self.empty = True
         self.height = 16
@@ -14,24 +14,24 @@ class ChatMessage():
         
         self.time = QtWidgets.QLabel(parent)
         self.time.setStyleSheet('color: #999')
-        # self.time.setAlignment(QtCore.Qt.AlignTop)
 
         self.user = QtWidgets.QLabel(parent)
         font = parent.font()
         self.user.setFont(font)
-        # self.user.setAlignment(QtCore.Qt.AlignTop)
 
         self.message = QtWidgets.QLabel(parent)
         self.message.setStyleSheet('color: white')
-        # self.message.setAlignment(QtCore.Qt.AlignTop)
         self.message.setWordWrap(True)
+        # This is telling it that the label can use the extra horizontal space
+        self.message.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                                        QtWidgets.QSizePolicy.MinimumExpanding)) 
 
         for item in {self.time,self.user,self.message}:
-            # item.setMinimumWidth(0)
             item.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
 
 
     def update(self, user, message, color):
+        """ Update with new data"""
         if user == None:
             return
         self.empty = False
@@ -99,7 +99,7 @@ class ChatWidget(QtWidgets.QWidget):
         # DEBUG
         import random
         for i in range(8):
-            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,50))
+            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,100))
 
         self.show()
 
