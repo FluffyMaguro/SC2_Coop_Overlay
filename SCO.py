@@ -959,18 +959,10 @@ class UI_TabWidget(object):
         self.ch_twitch_chat.setText('Show chat as overlay')
         self.ch_twitch_chat.clicked.connect(self.create_twitch_chat)
 
-        self.chat_slider_x = QtWidgets.QSlider(QtCore.Qt.Horizontal, self.TAB_TwitchBot)
-        self.chat_slider_x.setGeometry(601, 170, 200, 20)
-        self.chat_slider_x.valueChanged[int].connect(self.update_twitch_chat_position)
-
-        self.chat_slider_y = QtWidgets.QSlider(QtCore.Qt.Horizontal, self.TAB_TwitchBot)
-        self.chat_slider_y.setGeometry(601, 200, 200, 20)
-        self.chat_slider_y.valueChanged[int].connect(self.update_twitch_chat_position)
-
-        self.chat_max_messages = QtWidgets.QSpinBox(self.TAB_TwitchBot)
-        self.chat_max_messages.setGeometry(QtCore.QRect(601, 250, 42, 22))
-        self.chat_max_messages.setMinimum(1)
-        self.chat_max_messages.setToolTip("Requires restart")
+        self.bt_twitch_position = QtWidgets.QPushButton(self.TAB_TwitchBot)
+        self.bt_twitch_position.setGeometry(QtCore.QRect(600, 150, 140, 25))
+        self.bt_twitch_position.setText('Change chat position')
+        self.bt_twitch_position.clicked.connect(self.update_twitch_chat_position)
 
         # Info label
         self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
@@ -1150,8 +1142,7 @@ class UI_TabWidget(object):
             'fixed_font_size': True,
             'rng_choices': dict(),
             'show_chat': False,
-            'chat_position': (99,99),
-            'chat_max_messages': 15,
+            'chat_geometry': (700,300,500,500),
             'webflag': 'CoverWindow',
             'full_analysis_atstart': False,
             'twitchbot' : {
@@ -1422,9 +1413,6 @@ class UI_TabWidget(object):
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
         self.ch_twitch_chat.setChecked(self.settings['show_chat'])
-        self.chat_slider_x.setValue(self.settings['chat_position'][0])
-        self.chat_slider_y.setValue(self.settings['chat_position'][1])
-        self.chat_max_messages.setProperty("value", self.settings['chat_max_messages'])
 
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
        
@@ -1473,8 +1461,8 @@ class UI_TabWidget(object):
         self.settings['show_random_on_overlay'] = self.FR_RNG_Overlay.isChecked()
 
         self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
-        self.settings['chat_position'] = (self.chat_slider_x.value(), self.chat_slider_y.value())
-        self.settings['chat_max_messages'] = self.chat_max_messages.value()
+        if hasattr(self, 'chat_widget'):
+            self.settings['chat_geometry'] = (self.chat_widget.pos().x(), self.chat_widget.pos().y(), self.chat_widget.width(), self.chat_widget.height())
 
         # RNG choices
         for co in prestige_names:
@@ -2389,21 +2377,22 @@ class UI_TabWidget(object):
 
 
     def update_twitch_chat_position(self):
-        """ Updates position of the chat widget"""
+        """ Updates state of the chat widget. Whether it can be moved or not."""
         if not hasattr(self, 'chat_widget'):
             return
 
-        position = self.chat_widget.pos()
-        x = self.chat_slider_x.value()
-        y = self.chat_slider_y.value()
-
-        x = (self.dimensions[0]-200)*x/100 
-        y = (self.dimensions[1])*y/100 - 490
-        
-        position.setX(int(x))
-        position.setY(int(y))
-
-        self.chat_widget.move(position)
+        if self.chat_widget.fixed:
+            self.chat_widget.fixed = False
+            self.chat_widget.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
+            self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
+            self.chat_widget.show()
+            self.bt_twitch_position.setText('Fix chat position')
+        else:
+            self.chat_widget.fixed = True
+            self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+            self.chat_widget.show()
+            self.bt_twitch_position.setText('Change chat position')
 
 
     def create_twitch_chat(self):
@@ -2419,8 +2408,7 @@ class UI_TabWidget(object):
 
         # Creates twitch chat widget if it's not created already
         elif not hasattr(self, 'chat_widget'):
-            self.chat_widget = ChatWidget(max_messages=self.settings['chat_max_messages'])
-            self.update_twitch_chat_position()
+            self.chat_widget = ChatWidget(geometry=self.settings['chat_geometry'])
 
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget

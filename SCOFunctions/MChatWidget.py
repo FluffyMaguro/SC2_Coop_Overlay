@@ -8,7 +8,8 @@ class ChatMessage(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.empty = True
-        self.height = 11
+        self.height = 16
+        self.value = (None, None, None)
         self.setStyleSheet('color: white')
         self.setGeometry(0, 0, 500, self.height)
         self.setMinimumHeight(self.height)
@@ -23,8 +24,13 @@ class ChatMessage(QtWidgets.QWidget):
         self.message.setGeometry(120, 0, 450, 60)
         self.message.setWordWrap(True)
 
+        for item in {self.time, self.user, self.message}:
+            item.setAlignment(QtCore.Qt.AlignVCenter)
+
 
     def update(self, user, message, color):
+        if user == None:
+            return
         self.empty = False
         self.value = (user, message, color)
 
@@ -38,17 +44,23 @@ class ChatMessage(QtWidgets.QWidget):
 class ChatWidget(QtWidgets.QWidget):
     """ Widget showing chat messages"""
 
-    def __init__(self, max_messages=15, parent=None):
+    def __init__(self, geometry=None, parent=None):
         super().__init__(parent)
-        self.setGeometry(0, 0, 500, 500)
+
+        if geometry == None:
+            self.setGeometry(700, 300, 500, 500)
+        else:
+            self.setGeometry(*geometry)
+
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
         # Setting things up
+        self.fixed = True
         font = self.font()
-        font.setPointSize(int(font.pointSize()*1.3))
+        font.setPointSize(int(font.pointSize()*1.35))
         self.setFont(font)
-        self.max_messages = max_messages
+        self.max_messages = 15
         self.colors = ['#7878FF', '#FF5858', 'yellow', 'purple', '#DAA520', '#94C237', 'pink','#00E700','#ED551E']
         self.color_index = 0
         self.users = dict()
@@ -56,6 +68,7 @@ class ChatWidget(QtWidgets.QWidget):
         # Adding layout
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setAlignment(QtCore.Qt.AlignBottom)
+        self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
         # Fill messages.
@@ -65,6 +78,11 @@ class ChatWidget(QtWidgets.QWidget):
             new_widget = ChatMessage(parent=self)
             self.layout.addWidget(new_widget)
             self.messages.append(new_widget)
+
+        # DEBUG
+        import random
+        for i in range(3):
+            self.add_message(f'user_{i}', 'asd'*random.randint(10,20))
 
         self.show()
 
@@ -82,22 +100,13 @@ class ChatWidget(QtWidgets.QWidget):
     def add_message(self, user, message):
         """ Adds a message to the widget"""
         color = self.get_user_color(user)
-        print(f'adding message {message}')
 
-        # In case messages aren't fully filled, add to the end
-
-        # !! REMAKE ITERATION
-        # I want to update from down
-        if self.messages[self.max_messages-1].empty:
-            for idx in range(len(self.messages),-1):
-                if widget.empty:
-                    widget.update(user, message, color)
-                    return
-
-        # Otherwise move text upwards
+        # Go from the top
         for idx, widget in enumerate(self.messages):
-            if idx == self.max_messages - 1:
-                widget.update(user, message, color)
-                return
+            if idx < self.max_messages - 1:
+                # Update upper widget with data from the one down
+                next_widget = self.messages[idx+1]               
+                widget.update(*next_widget.value)
             else:
-                widget.update(*self.messages[idx+1].value)
+                # When we reach bottom, update with our data
+                widget.update(user, message, color)
