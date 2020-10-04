@@ -18,10 +18,12 @@ class ChatMessage(QtWidgets.QWidget):
         self.time = QtWidgets.QLabel(self)
         self.time.setGeometry(0, 0, 40, self.height)
         self.time.setStyleSheet('color: #999')
+
         self.user = QtWidgets.QLabel(self)
-        self.user.setGeometry(38, 0, 140, self.height)
+        self.user.setGeometry(40, 0, 140, self.height)
+
         self.message = QtWidgets.QLabel(self)
-        self.message.setGeometry(120, 0, 450, 60)
+        self.message.setGeometry(120, 0, 200, 60)
         self.message.setWordWrap(True)
 
         for item in {self.time, self.user, self.message}:
@@ -38,7 +40,7 @@ class ChatMessage(QtWidgets.QWidget):
         self.user.setText(user)
         self.user.setStyleSheet(f'color: {color}; font-weight: bold')
         self.message.setText(f": {message}")
-        self.message.setGeometry(53+int(len(user)*6), 0, 450, self.height)
+        self.message.setGeometry(55+int(len(user)*6), 0, 450, self.height)
 
 
 class ChatWidget(QtWidgets.QWidget):
@@ -58,7 +60,7 @@ class ChatWidget(QtWidgets.QWidget):
         # Setting things up
         self.fixed = True
         font = self.font()
-        font.setPointSize(int(font.pointSize()*1.35))
+        font.setPointSize(int(font.pointSize()*1.4))
         self.setFont(font)
         self.max_messages = 15
         self.colors = ['#7878FF', '#FF5858', 'yellow', 'purple', '#DAA520', '#94C237', 'pink','#00E700','#ED551E']
@@ -81,8 +83,8 @@ class ChatWidget(QtWidgets.QWidget):
 
         # DEBUG
         import random
-        for i in range(3):
-            self.add_message(f'user_{i}', 'asd'*random.randint(10,20))
+        for i in range(8):
+            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd'*random.randint(10,20))
 
         self.show()
 
