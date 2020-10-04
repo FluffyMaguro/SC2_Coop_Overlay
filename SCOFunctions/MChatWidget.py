@@ -2,32 +2,33 @@ import datetime
 import threading
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 
+from SCOFunctions.MFilePath import innerPath
 
-class ChatMessage(QtWidgets.QWidget):
+
+class ChatMessage():
     """ """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent):
         self.empty = True
         self.height = 16
         self.value = (None, None, None)
-        self.setStyleSheet('color: white')
-        self.setGeometry(0, 0, 500, self.height)
-        self.setMinimumHeight(self.height)
-        self.setMaximumHeight(self.height)
-
-        self.time = QtWidgets.QLabel(self)
-        self.time.setGeometry(0, 0, 40, self.height)
+        
+        self.time = QtWidgets.QLabel(parent)
         self.time.setStyleSheet('color: #999')
+        # self.time.setAlignment(QtCore.Qt.AlignTop)
 
-        self.user = QtWidgets.QLabel(self)
-        self.user.setGeometry(40, 0, 140, self.height)
+        self.user = QtWidgets.QLabel(parent)
+        font = parent.font()
+        self.user.setFont(font)
+        # self.user.setAlignment(QtCore.Qt.AlignTop)
 
-        self.message = QtWidgets.QLabel(self)
-        self.message.setGeometry(120, 0, 200, 60)
+        self.message = QtWidgets.QLabel(parent)
+        self.message.setStyleSheet('color: white')
+        # self.message.setAlignment(QtCore.Qt.AlignTop)
         self.message.setWordWrap(True)
 
-        for item in {self.time, self.user, self.message}:
-            item.setAlignment(QtCore.Qt.AlignVCenter)
+        for item in {self.time,self.user,self.message}:
+            # item.setMinimumWidth(0)
+            item.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
 
 
     def update(self, user, message, color):
@@ -36,11 +37,10 @@ class ChatMessage(QtWidgets.QWidget):
         self.empty = False
         self.value = (user, message, color)
 
-        self.time.setText(datetime.datetime.now().strftime('%H:%M'))
+        self.time.setText(datetime.datetime.now().strftime('%H:%M '))
         self.user.setText(user)
         self.user.setStyleSheet(f'color: {color}; font-weight: bold')
         self.message.setText(f": {message}")
-        self.message.setGeometry(55+int(len(user)*6), 0, 450, self.height)
 
 
 class ChatWidget(QtWidgets.QWidget):
@@ -54,13 +54,16 @@ class ChatWidget(QtWidgets.QWidget):
         else:
             self.setGeometry(*geometry)
 
+        self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
+        self.setWindowTitle('Twitch chat position')
+
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
         # Setting things up
         self.fixed = True
         font = self.font()
-        font.setPointSize(int(font.pointSize()*1.4))
+        font.setPointSize(int(font.pointSize()*1.3))
         self.setFont(font)
         self.max_messages = 15
         self.colors = ['#7878FF', '#FF5858', 'yellow', 'purple', '#DAA520', '#94C237', 'pink','#00E700','#ED551E']
@@ -71,20 +74,32 @@ class ChatWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setAlignment(QtCore.Qt.AlignBottom)
         self.layout.setSpacing(0)
+        # self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
 
         # Fill messages.
         # To be thread safe, all elements are already created, and updating will be just changing text.
         self.messages = list()
+        self.layouts = list()
+
         for i in range(self.max_messages):
-            new_widget = ChatMessage(parent=self)
-            self.layout.addWidget(new_widget)
+            new_widget = ChatMessage(self)
+            new_layout = QtWidgets.QHBoxLayout()
+            # new_layout.setAlignment(QtCore.Qt.AlignLeft)
+
+            new_layout.addWidget(new_widget.time)
+            new_layout.addWidget(new_widget.user)
+            new_layout.addWidget(new_widget.message)
+            # new_layout.setContentsMargins(0,0,0,0)
+
+            self.layout.addLayout(new_layout)
             self.messages.append(new_widget)
+            self.layouts.append(new_layout)
 
         # DEBUG
         import random
         for i in range(8):
-            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd'*random.randint(10,20))
+            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,50))
 
         self.show()
 
