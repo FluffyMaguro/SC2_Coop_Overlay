@@ -1,50 +1,52 @@
+import time
 import datetime
-import threading
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 
+from SCOFunctions.MFilePath import innerPath
 
-class ChatMessage(QtWidgets.QWidget):
-    """ """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+
+class ChatMessage():
+    """ Class container for one message line (time, user, message) """
+    def __init__(self, parent):
         self.empty = True
         self.height = 16
         self.value = (None, None, None)
-        self.setStyleSheet('color: white')
-        self.setGeometry(0, 0, 500, self.height)
-        self.setMinimumHeight(self.height)
-        self.setMaximumHeight(self.height)
-
-        self.time = QtWidgets.QLabel(self)
-        self.time.setGeometry(0, 0, 40, self.height)
+        
+        self.time = QtWidgets.QLabel()
         self.time.setStyleSheet('color: #999')
-        self.user = QtWidgets.QLabel(self)
-        self.user.setGeometry(38, 0, 140, self.height)
-        self.message = QtWidgets.QLabel(self)
-        self.message.setGeometry(120, 0, 450, 60)
+
+        self.user = QtWidgets.QLabel()
+
+        self.message = QtWidgets.QLabel()
+        self.message.setStyleSheet('color: white')
         self.message.setWordWrap(True)
 
-        for item in {self.time, self.user, self.message}:
-            item.setAlignment(QtCore.Qt.AlignVCenter)
+        # This is telling it that the label can use the extra horizontal space, and can exand vertically as well
+        self.message.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                                        QtWidgets.QSizePolicy.MinimumExpanding)) 
+        font = parent.font()
+        for item in {self.time,self.user,self.message}:
+            item.setFont(font)
+            item.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
 
 
     def update(self, user, message, color):
+        """ Update with new data"""
         if user == None:
             return
         self.empty = False
         self.value = (user, message, color)
 
-        self.time.setText(datetime.datetime.now().strftime('%H:%M'))
+        self.time.setText(datetime.datetime.now().strftime('%H:%M '))
         self.user.setText(user)
-        self.user.setStyleSheet(f'color: {color}; font-weight: bold')
+        self.user.setStyleSheet(f'color: {color}')
         self.message.setText(f": {message}")
-        self.message.setGeometry(53+int(len(user)*6), 0, 450, self.height)
 
 
 class ChatWidget(QtWidgets.QWidget):
     """ Widget showing chat messages"""
 
-    def __init__(self, geometry=None, parent=None):
+    def __init__(self, chat_font_scale=1.3, geometry=None, parent=None):
         super().__init__(parent)
 
         if geometry == None:
@@ -52,38 +54,72 @@ class ChatWidget(QtWidgets.QWidget):
         else:
             self.setGeometry(*geometry)
 
+        self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
+        self.setWindowTitle('Twitch chat position')
+
+        # Flags for transparency
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
-        # Setting things up
-        self.fixed = True
         font = self.font()
-        font.setPointSize(int(font.pointSize()*1.35))
+        font.setPointSize(int(font.pointSize()*chat_font_scale))
+
         self.setFont(font)
-        self.max_messages = 15
+        self.fixed = True
+        self.max_messages = 30
         self.colors = ['#7878FF', '#FF5858', 'yellow', 'purple', '#DAA520', '#94C237', 'pink','#00E700','#ED551E']
         self.color_index = 0
         self.users = dict()
 
-        # Adding layout
-        self.layout = QtWidgets.QVBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignBottom)
-        self.layout.setSpacing(0)
-        self.setLayout(self.layout)
+        # Create scroll area so old messages can disappear on top
+        self.scroll_area = QtWidgets.QScrollArea(self)
+        self.scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll_area.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.scroll_area.setStyleSheet('background-color: transparent')
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        # Fill messages.
-        # To be thread safe, all elements are already created, and updating will be just changing text.
+        # Contents will be here
+        self.scroll_area_contents = QtWidgets.QWidget()
+        self.scroll_area.setWidget(self.scroll_area_contents)
+        self.scroll_area_contents_layout = QtWidgets.QVBoxLayout()
+        self.scroll_area_contents_layout.setSpacing(0)
+        self.scroll_area_contents.setLayout(self.scroll_area_contents_layout)
+
+        # Put scroll area into a widget so it fills the parent when resized
+        self.main_layout = QtWidgets.QHBoxLayout()
+        self.main_layout.addWidget(self.scroll_area)
+        self.scroll_area.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                                    QtWidgets.QSizePolicy.Expanding)) 
+        self.main_layout.setContentsMargins(0,0,0,0)
+        self.setLayout(self.main_layout)
+
+        """
+        Fill messages.
+        To be thread safe, all elements are already created, and updating will be just changing text.
+        We can't create and change parents in non-primary thread. That counts even for using <b></b> tags.
+
+        """
+
         self.messages = list()
+        self.layouts = list()
+
         for i in range(self.max_messages):
-            new_widget = ChatMessage(parent=self)
-            self.layout.addWidget(new_widget)
+            new_widget = ChatMessage(self.scroll_area_contents)
+            new_layout = QtWidgets.QHBoxLayout()
+            new_layout.setAlignment(QtCore.Qt.AlignLeft)
+
+            new_layout.addWidget(new_widget.time)
+            new_layout.addWidget(new_widget.user)
+            new_layout.addWidget(new_widget.message)
+            new_layout.setContentsMargins(0,0,0,0)
+            new_layout.setSpacing(0)
+
+            self.scroll_area_contents_layout.addLayout(new_layout)
             self.messages.append(new_widget)
+            self.layouts.append(new_layout)
 
-        # DEBUG
-        import random
-        for i in range(3):
-            self.add_message(f'user_{i}', 'asd'*random.randint(10,20))
-
+        # Finalize
         self.show()
 
 
@@ -110,3 +146,14 @@ class ChatWidget(QtWidgets.QWidget):
             else:
                 # When we reach bottom, update with our data
                 widget.update(user, message, color)
+
+
+        """ 
+        Let's add a small delay for the message widget to expand.
+        This is happening on the Twitch bot thread, so it won't interfere with the main UI.
+        Otherwise we woudl use QtCore.QTimer() if we were on the main thread. 
+        """
+        time.sleep(0.01)
+        bar = self.scroll_area.verticalScrollBar()
+        bar.setValue(bar.maximum())
+

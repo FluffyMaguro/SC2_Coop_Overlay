@@ -75,8 +75,11 @@ class TwitchBot:
     @staticmethod
     def getUser(line):
         separate = line.split(":", 2)
-        user = separate[1].split("!", 1)[0]
-        return user
+        try:
+            user = separate[1].split("!", 1)[0]
+            return user
+        except:
+            return None
 
 
     @staticmethod
@@ -232,6 +235,9 @@ class TwitchBot:
 
                 # Get user, first and following words
                 user = self.getUser(line) 
+                if user == None:
+                    continue
+                    
                 message = self.getMessage(line)
                 first_word = message.split()[0].lower()
                 self.saveMessage(user,message)
