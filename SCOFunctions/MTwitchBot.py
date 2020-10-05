@@ -75,11 +75,11 @@ class TwitchBot:
     @staticmethod
     def getUser(line):
         separate = line.split(":", 2)
-        if len(separate) < 1:
+        try:
+            user = separate[1].split("!", 1)[0]
+            return user
+        except:
             return None
-
-        user = separate[1].split("!", 1)[0]
-        return user
 
 
     @staticmethod

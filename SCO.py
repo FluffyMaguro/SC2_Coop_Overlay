@@ -1143,6 +1143,7 @@ class UI_TabWidget(object):
             'rng_choices': dict(),
             'show_chat': False,
             'chat_geometry': (700,300,500,500),
+            'chat_font_scale': 1.3,
             'webflag': 'CoverWindow',
             'full_analysis_atstart': False,
             'twitchbot' : {
@@ -2409,7 +2410,7 @@ class UI_TabWidget(object):
 
         # Creates twitch chat widget if it's not created already
         elif not hasattr(self, 'chat_widget'):
-            self.chat_widget = ChatWidget(geometry=self.settings['chat_geometry'])
+            self.chat_widget = ChatWidget(geometry=self.settings['chat_geometry'], chat_font_scale=self.settings['chat_font_scale'])
 
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget
