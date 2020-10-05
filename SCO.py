@@ -2388,21 +2388,12 @@ class UI_TabWidget(object):
             self.chat_widget.show()
             self.bt_twitch_position.setText('Fix chat position')
 
-            # self.chat_widget.setMinimumHeight(0)
-            # self.chat_widget.setMaximumHeight(50000)
-            # self.chat_widget.setMinimumWidth(0)
-            # self.chat_widget.setMaximumWidth(50000)
         else:
             self.chat_widget.fixed = True
             self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Change chat position')
-
-            # self.chat_widget.setMinimumHeight(self.chat_widget.height())
-            # self.chat_widget.setMaximumHeight(self.chat_widget.height())
-            # self.chat_widget.setMinimumWidth(self.chat_widget.width())
-            # self.chat_widget.setMaximumWidth(self.chat_widget.width())
 
 
     def create_twitch_chat(self):

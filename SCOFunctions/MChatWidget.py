@@ -54,6 +54,9 @@ class ChatWidget(QtWidgets.QWidget):
         else:
             self.setGeometry(*geometry)
 
+        # self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed,
+        #                                 QtWidgets.QSizePolicy.Fixed)) 
+
         self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         self.setWindowTitle('Twitch chat position')
 
@@ -97,9 +100,9 @@ class ChatWidget(QtWidgets.QWidget):
             self.layouts.append(new_layout)
 
         # DEBUG
-        import random
-        for i in range(8):
-            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,100))
+        # import random
+        # for i in range(8):
+        #     self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,100))
 
         self.show()
 
