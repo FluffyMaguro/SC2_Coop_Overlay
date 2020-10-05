@@ -20,8 +20,9 @@ class ChatMessage():
         self.user.setFont(font)
 
         self.message = QtWidgets.QLabel(parent)
-        self.message.setStyleSheet('color: white')
+        # self.message.setStyleSheet('color: white')
         self.message.setWordWrap(True)
+        # self.message.setGeometry(0,0,parent.width(), 16)
         # This is telling it that the label can use the extra horizontal space
         self.message.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                                         QtWidgets.QSizePolicy.MinimumExpanding)) 
@@ -57,28 +58,65 @@ class ChatWidget(QtWidgets.QWidget):
         # self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed,
         #                                 QtWidgets.QSizePolicy.Fixed)) 
 
+        # self.setMaximumHeight(500)
+
         self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         self.setWindowTitle('Twitch chat position')
 
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+        # self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
         # Setting things up
-        self.fixed = True
+        
         font = self.font()
         font.setPointSize(int(font.pointSize()*1.3))
-        self.setFont(font)
+
+        # self.setFont(font)
+        self.fixed = True
         self.max_messages = 15
         self.colors = ['#7878FF', '#FF5858', 'yellow', 'purple', '#DAA520', '#94C237', 'pink','#00E700','#ED551E']
         self.color_index = 0
         self.users = dict()
 
-        # Adding layout
-        self.layout = QtWidgets.QVBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignBottom)
-        self.layout.setSpacing(0)
-        # self.layout.setContentsMargins(0,0,0,0)
-        self.setLayout(self.layout)
+        self.scroll_area = QtWidgets.QScrollArea()
+        self.scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll_area.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.scroll_area.setStyleSheet('background-color: red')
+        # self.scroll_area.setAlignment(QtCore.Qt.AlignBottom)
+        self.scroll_area.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                                            QtWidgets.QSizePolicy.Expanding)) 
+
+        self.scl_laout = QtWidgets.QHBoxLayout()
+        self.scl_laout.addWidget(self.scroll_area)
+        self.scl_laout.setContentsMargins(0,0,0,0)
+        # self.scl_laout.setAlignment(QtCore.Qt.AlignBottom)
+        self.setLayout(self.scl_laout)
+
+
+
+        # self.scroll_area.setWidgetResizable(True)
+
+        self.scroll_area_contents = QtWidgets.QWidget()
+        self.scroll_area_contents.setStyleSheet('background-color: green')
+
+        # self.scroll_area_contents.setGeometry(QtCore.QRect(0, 0, self.width(), self.height()))
+
+        self.scroll_area_contents.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                                    QtWidgets.QSizePolicy.Expanding)) 
+
+
+
+        self.scl_laout_inner = QtWidgets.QVBoxLayout()
+        self.scl_laout_inner.addWidget(self.scroll_area_contents)
+        self.scl_laout_inner.setContentsMargins(0,0,0,0)
+        # # self.scl_laout_inner.setAlignment(QtCore.Qt.AlignBottom)
+        self.scroll_area.setLayout(self.scl_laout_inner)
+
+
+        self.scroll_area_contents_layout = QtWidgets.QVBoxLayout()
+        # self.scroll_area_contents_layout.setAlignment(QtCore.Qt.AlignBottom)
+        # self.scroll_area_contents_layout.setContentsMargins(0,0,0,0)
+
 
         # Fill messages.
         # To be thread safe, all elements are already created, and updating will be just changing text.
@@ -86,7 +124,7 @@ class ChatWidget(QtWidgets.QWidget):
         self.layouts = list()
 
         for i in range(self.max_messages):
-            new_widget = ChatMessage(self)
+            new_widget = ChatMessage(self.scroll_area_contents)
             new_layout = QtWidgets.QHBoxLayout()
             # new_layout.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -95,15 +133,21 @@ class ChatWidget(QtWidgets.QWidget):
             new_layout.addWidget(new_widget.message)
             # new_layout.setContentsMargins(0,0,0,0)
 
-            self.layout.addLayout(new_layout)
+            self.scroll_area_contents_layout.addLayout(new_layout)
             self.messages.append(new_widget)
             self.layouts.append(new_layout)
 
         # DEBUG
-        # import random
-        # for i in range(8):
-        #     self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,100))
+        import random
+        for i in range(8):
+            self.add_message(f'user_{"ag"*random.randint(0,2)}_{i}', 'asd '*random.randint(10,100))
 
+        self.show()
+        return
+
+        # Finalize
+        self.scroll_area_contents.setLayout(self.scroll_area_contents_layout)
+        self.scroll_area.setWidget(self.scroll_area_contents)
         self.show()
 
 
@@ -130,3 +174,5 @@ class ChatWidget(QtWidgets.QWidget):
             else:
                 # When we reach bottom, update with our data
                 widget.update(user, message, color)
+
+        self.scroll_area.scrollContentsBy(0,600)
