@@ -13,5 +13,11 @@
     "Added new stats related to player and unit kills, and bonus objective completion. These require full analysis",
 	"Default hotkeys changed to be less likely pressed by accident",
 	"Fancy changelog you see here"
+  ],
+  "220": [
+    "To use twitch bot, just fill channel name",
+    "Twitch chat can be overlaid on screen",
+    "Salvaged units aren't counted as losses",
+    "....",
   ]
 }

@@ -18,3 +18,4 @@ Test/*
 install.bat
 .DS_Store
 SC2CoopOverlay (x.x).zip
+src/secure.json

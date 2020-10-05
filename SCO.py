@@ -931,11 +931,9 @@ class UI_TabWidget(object):
         self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 520, 500))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
-        self.la_twitch_text.setText("""This is a feature for twitch streamers. It connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. 
-                                    Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
+        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. Second, it connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
-                                    This panel provides only the most basic control over the bot. To get the bot working, you have to create a new twitch account for your bot and 
-                                    <a href="https://twitchapps.com/tmi/">generate oauth token</a>. Then fill in those in the Setting.json file as well as locations of your MMTwitchIntegration.SC2Banks 
+                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, but you can do so and fill its name and oauth in the Setting.json file as well as locations of your MMTwitchIntegration.SC2Banks 
                                     for different regions or accounts. See <a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">read me</a> for more details. 
                                     <br><br><br>
                                     <u><b>Commands for the streamer:</b></u>
@@ -945,24 +943,45 @@ class UI_TabWidget(object):
                                     <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
                                     """)
 
+
+        self.la_twitch_channel_name = QtWidgets.QLabel(self.TAB_TwitchBot)
+        self.la_twitch_channel_name.setGeometry(QtCore.QRect(601, 25, 300, 20))
+        self.la_twitch_channel_name.setText("Use it only for your channel !")
+
+        self.ED_twitch_channel_name = QtWidgets.QLineEdit(self.TAB_TwitchBot)
+        self.ED_twitch_channel_name.setGeometry(QtCore.QRect(601, 50, 140, 20))
+        self.ED_twitch_channel_name.setAlignment(QtCore.Qt.AlignCenter)
+        self.ED_twitch_channel_name.setPlaceholderText("channel name")
+
         self.bt_twitch = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch.setGeometry(QtCore.QRect(600, 30, 100, 25))
+        self.bt_twitch.setGeometry(QtCore.QRect(600, 110, 140, 25))
         self.bt_twitch.setText('Run the bot')
         self.bt_twitch.clicked.connect(self.start_stop_bot)
 
         self.ch_twitch = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch.setGeometry(QtCore.QRect(601, 70, 200, 17))
+        self.ch_twitch.setGeometry(QtCore.QRect(601, 140, 200, 17))
         self.ch_twitch.setText('Start the bot automatically')
 
+        self.bt_twitch_position = QtWidgets.QPushButton(self.TAB_TwitchBot)
+        self.bt_twitch_position.setGeometry(QtCore.QRect(600, 190, 140, 25))
+        self.bt_twitch_position.setText('Change chat position')
+        self.bt_twitch_position.clicked.connect(self.update_twitch_chat_position)
+
         self.ch_twitch_chat = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch_chat.setGeometry(QtCore.QRect(601, 120, 200, 17))
+        self.ch_twitch_chat.setGeometry(QtCore.QRect(601, 220, 200, 17))
         self.ch_twitch_chat.setText('Show chat as overlay')
         self.ch_twitch_chat.clicked.connect(self.create_twitch_chat)
 
-        self.bt_twitch_position = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch_position.setGeometry(QtCore.QRect(600, 150, 140, 25))
-        self.bt_twitch_position.setText('Change chat position')
-        self.bt_twitch_position.clicked.connect(self.update_twitch_chat_position)
+        self.BT_choose_bank_location = QtWidgets.QPushButton(self.TAB_TwitchBot)
+        self.BT_choose_bank_location.setGeometry(QtCore.QRect(20, 360, 150, 25))
+        self.BT_choose_bank_location.setText('Default bank location')
+        self.BT_choose_bank_location.setToolTip('Choose your primary bank location\nE.g. C:/Users/Maguro/Documents/StarCraft II/Accounts/114803619/1-S2-1-4189373/Banks/1-S2-1-4189373/MMTwitchIntegration.SC2Bank')
+        self.BT_choose_bank_location.clicked.connect(self.findBankLocation)
+
+        self.la_twitch_bank_location = QtWidgets.QLabel(self.TAB_TwitchBot)
+        self.la_twitch_bank_location.setGeometry(QtCore.QRect(20, 390, 900, 20))
+        self.la_twitch_bank_location.setText('E.g.: C:/Users/Maguro/Documents/StarCraft II/Accounts/114803619/1-S2-1-4189373/Banks/1-S2-1-4189373/MMTwitchIntegration.SC2Bank')
+
 
         # Info label
         self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
@@ -1414,6 +1433,9 @@ class UI_TabWidget(object):
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
         self.ch_twitch_chat.setChecked(self.settings['show_chat'])
+        self.ED_twitch_channel_name.setText(self.settings['twitchbot']['channel_name'])
+
+        self.la_twitch_bank_location.setText(f"<b>{self.settings['twitchbot']['bank_locations']['Default']}</b>")
 
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
        
@@ -1457,6 +1479,7 @@ class UI_TabWidget(object):
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
         self.settings['twitchbot']['auto_start'] = self.ch_twitch.isChecked()
+        self.settings['twitchbot']['channel_name'] = self.ED_twitch_channel_name.text()
 
         self.settings['full_analysis_atstart'] = self.CH_FA_atstart.isChecked()
         self.settings['show_random_on_overlay'] = self.FR_RNG_Overlay.isChecked()
@@ -1628,6 +1651,21 @@ class UI_TabWidget(object):
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
 
+    def findBankLocation(self):
+        """ Finds bank location"""
+        dialog = QtWidgets.QFileDialog()
+        if not self.settings['twitchbot']['bank_locations']['Default'] in {None,''}:
+            dialog.setDirectory(self.settings['twitchbot']['bank_locations']['Default'])
+
+        if dialog.exec_():
+            file = dialog.selectedFiles()[0]
+            if 'MMTwitchIntegration.SC2Bank' in file:
+                logger.info(f"Updating default bank location to {file}")
+                self.settings['twitchbot']['bank_locations']['Default'] = file
+                self.la_twitch_bank_location.setText(f"<b>{file}</b>")
+
+
+
     def sendInfoMessage(self, message, color='#555'):
         """ Sends info message. `color` specifies message color"""
         self.LA_InfoLabel.setText(message)
@@ -1742,9 +1780,23 @@ class UI_TabWidget(object):
             self.create_twitch_chat()
 
         # Twitch both
-        self.TwitchBot = TwitchBot(self.settings['twitchbot'], widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
+        twitchbot_settings = self.settings['twitchbot'].copy()
+
+        # Fallback to my bot if the user doesn't have its own bot
+        if self.settings['twitchbot']['channel_name'] != '' and self.settings['twitchbot']['bot_name'] == '' and self.settings['twitchbot']['bot_oauth'] == '':
+            file = innerPath('src/secure.json')
+            if os.path.isfile(file):
+                with open(file, 'r') as f:
+                    fallback = json.load(f)
+
+                logger.info('Falling back on my twitch bot settings')
+                twitchbot_settings['bot_name'] = fallback['bot_name']
+                twitchbot_settings['bot_oauth'] = fallback['bot_oauth']
+
+        # Create the twitch bot
+        self.TwitchBot = TwitchBot(twitchbot_settings, widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
         if self.settings['twitchbot']['auto_start']:
-            if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
+            if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
                 logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
                 self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
             else:
@@ -1961,6 +2013,9 @@ class UI_TabWidget(object):
         self.BT_FA_run.clicked.connect(self.run_f_analysis)
         if self.settings['full_analysis_atstart']:
             self.run_f_analysis()
+
+        # If try to find 
+        self.find_default_bank_location()
 
 
     def run_f_analysis(self):
@@ -2414,6 +2469,23 @@ class UI_TabWidget(object):
 
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget
+
+
+    def find_default_bank_location(self):
+        """ Finds default bank location (Runs after mass analysis is finished)"""
+        if self.settings['twitchbot']['bank_locations']['Default'] != '':
+            return # We already have one
+
+        try:
+            result = self.CAnalysis.find_banks()
+            result = list(result.values())[0][1]
+            result = os.path.join(result,'MMTwitchIntegration.SC2Bank')
+            self.settings['twitchbot']['bank_locations']['Default'] = result
+            self.la_twitch_bank_location.setText(f"<b>{result}</b>")
+            logger.info(f"Setting default bank location to {result}")
+
+        except:
+            logger.error(traceback.format_exc())
 
 
     def debug_function(self):

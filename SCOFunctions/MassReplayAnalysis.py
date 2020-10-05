@@ -732,6 +732,30 @@ class mass_replay_analysis:
         return winrate_data
 
 
+    def find_banks(self, allreplays=False):
+        """Finds bank folder locations one or more players
+        by default check only the last game, if `allreplays` == True, check for all replays"""
+
+        unknown_handles = set(self.main_handles)
+        known_handles = dict()
+        replays = self.ReplayDataAll if allreplays else self.get_last_replays(1)
+
+        for r in replays:
+            if len(unknown_handles) == 0:
+                break
+
+            r['file']
+            for p in {1,2}:
+                if r['players'][p]['handle'] in unknown_handles:
+                    unknown_handles.remove(r['players'][p]['handle'])
+                    folder = r['file'].split('Replays\\Multiplayer')[0]
+                    handle = folder.split('\\')[-2]
+                    folder = os.path.join(folder, 'Banks', handle)
+                    known_handles[r['players'][p]['handle']] = [r['region'], folder]
+
+        return known_handles
+
+
     def analyse_replays(self, 
                         include_mutations=True, 
                         include_normal_games=True, 
