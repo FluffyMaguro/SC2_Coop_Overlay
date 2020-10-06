@@ -33,6 +33,7 @@ from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
+from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 
@@ -989,6 +990,41 @@ class UI_TabWidget(object):
         self.LA_InfoTwitch.setStyleSheet('color: red')
 
         ###########################
+        ###### RESOURCE TAB #######
+        ###########################
+
+        self.TAB_ResourceTab = QtWidgets.QWidget()
+
+        # Performance description
+        self.la_performance_description = QtWidgets.QLabel(self.TAB_ResourceTab)
+        self.la_performance_description.setGeometry(QtCore.QRect(10, 10, self.TAB_ResourceTab.width()-20, 300))
+        self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
+        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.<br><b>CPUc</b> is per core CPU usage. 100% means fully used one core.')
+        self.la_performance_description.setWordWrap(True)
+
+        # Checks whether to show/hide
+        self.ch_performance_show = QtWidgets.QCheckBox(self.TAB_ResourceTab)
+        self.ch_performance_show.setGeometry(QtCore.QRect(10, 60, 200, 17))
+        self.ch_performance_show.setText('Show performance overlay')
+        self.ch_performance_show.clicked.connect(self.show_hide_create_performance_overlay)
+
+        # Position overlay
+        self.bt_performance_overlay_position = QtWidgets.QPushButton(self.TAB_ResourceTab)
+        self.bt_performance_overlay_position.setGeometry(QtCore.QRect(10, 100, 150, 25))
+        self.bt_performance_overlay_position.setText('Change overlay position')
+        self.bt_performance_overlay_position.clicked.connect(self.update_performance_overlay_position)
+
+        # Hotkey description
+        self.la_hotkey_performance_desc = QtWidgets.QLabel(self.TAB_ResourceTab)
+        self.la_hotkey_performance_desc.setGeometry(QtCore.QRect(10, 150, 300, 20))
+        self.la_hotkey_performance_desc.setText('Hotkey for showing/hiding overlay')
+
+        # Hotkey 
+        self.KEY_Performance = MUI.CustomKeySequenceEdit(self.TAB_ResourceTab)
+        self.KEY_Performance.setGeometry(QtCore.QRect(10, 170, 113, 20))
+        self.KEY_Performance.setToolTip('Key for showing or hiding performance overlay')
+
+        ###########################
         ######## LINKS TAB ########
         ###########################
 
@@ -1108,6 +1144,9 @@ class UI_TabWidget(object):
 
         TabWidget.addTab(self.TAB_TwitchBot, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_TwitchBot), "Twitch")
+
+        TabWidget.addTab(self.TAB_ResourceTab, "")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_ResourceTab), "Resources")
 
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
@@ -2469,6 +2508,46 @@ class UI_TabWidget(object):
 
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget
+
+
+    def update_performance_overlay_position(self):
+        """ Updates state of the performance overlay widget. Whether it can be moved or not."""
+        if not hasattr(self, 'performance_overlay'):
+            return
+
+        if not self.performance_overlay.started:
+            return
+
+        if self.performance_overlay.fixed:
+            self.performance_overlay.fixed = False
+            self.performance_overlay.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
+            self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
+            self.performance_overlay.show()
+            self.bt_performance_overlay_position.setText('Fix overlay position')
+
+        else:
+            self.performance_overlay.fixed = True
+            self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+            self.performance_overlay.show()
+            self.bt_performance_overlay_position.setText('Change overlay position')
+
+
+    def show_hide_create_performance_overlay(self):
+        # Hide
+        if hasattr(self, 'performance_overlay') and not self.ch_performance_show.isChecked():
+            self.performance_overlay.hide()
+
+        # Show
+        elif hasattr(self, 'performance_overlay') and self.ch_performance_show.isChecked():
+            self.performance_overlay.show()
+            if not self.performance_overlay.started:
+                self.performance_overlay.start()
+
+        # Create performance overlay
+        elif not hasattr(self, 'performance_overlay'):
+            self.performance_overlay = SystemInfo()
+            self.performance_overlay.start()
 
 
     def find_default_bank_location(self):
