@@ -40,7 +40,7 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         # Scroll
         self.scroll_area = QtWidgets.QScrollArea(self)
-        self.scroll_area.setGeometry(QtCore.QRect(0, 0, self.width(), self.height()))
+        self.scroll_area.setGeometry(QtCore.QRect(0, 25, self.width(), self.height()))
         self.scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.scroll_area.setFrameShadow(QtWidgets.QFrame.Plain)
         self.scroll_area.setWidgetResizable(True)
@@ -52,8 +52,8 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area_contents_layout.setContentsMargins(10,0,0,0)
 
         # Add heading
-        self.heading = AmonUnitStatsUnit('Name',{'created':'Created','lost':'Lost','kills':'Kills','KD':'K/D'}, parent=self.scroll_area_contents)
-        self.scroll_area_contents_layout.addWidget(self.heading)
+        self.heading = AmonUnitStatsUnit('Name',{'created':'Created','lost':'Lost','kills':'Kills','KD':'K/D'}, parent=self)
+        self.heading.setGeometry(QtCore.QRect(10, 0, self.width(), 21))
 
         # Search
         self.search_label = QtWidgets.QLabel(self)
