@@ -264,7 +264,10 @@ class SystemInfo(QtWidgets.QWidget):
                 self.la_sc2_memory_value.setText(f"{self.sc2_process.memory_percent():.0f}% | {self.sc2_process.memory_info().rss/1024/1024:.0f} MB")
 
             except psutil.NoSuchProcess:
-                pass # SC2 closed
+                # Set no values
+                self.restart()
+                for item in {self.la_sc2_read_value_total, self.la_sc2_write_value_total, self.la_sc2_read_value, self.la_sc2_write_value, self.la_sc2_cpu_value, self.la_sc2_memory_value}:
+                    item.setText('')
             except:
                 logger.error(traceback.format_exc())
 
