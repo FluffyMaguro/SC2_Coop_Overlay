@@ -1,17 +1,30 @@
 import psutil
+import traceback
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+from SCOFunctions.MFilePath import innerPath
+from SCOFunctions.MLogging import logclass
+
+logger = logclass('SYS','INFO')
 
 
 class SystemInfo(QtWidgets.QWidget):
     """ This widget overlays system and StarCraft II information on-screen (CPU, RAM, Disk, Network,...) """
-    def __init__(self, parent=None):
+    def __init__(self, geometry=None, parent=None):
         super().__init__(parent)
-        self.setGeometry(0, 0, 260, 400)
-        self.setWindowTitle('Info (debug)')
+
+        if geometry == None:
+            self.setGeometry(0, 0, 260, 400)
+            sg = QtWidgets.QDesktopWidget().screenGeometry(0)
+            self.move(sg.width()-self.width()-10, sg.top()+210)
+        else:
+            self.setGeometry(*geometry)
+        
+        self.setWindowTitle('Performance overaly position')
+        self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
 
         # Move to top-right
-        sg = QtWidgets.QDesktopWidget().screenGeometry(0)
-        self.move(sg.width()-self.width()-10, sg.top()+210)
+
         self.setStyleSheet('color: white')
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
@@ -153,8 +166,6 @@ class SystemInfo(QtWidgets.QWidget):
             item.setGraphicsEffect(shadow)     
 
 
-
-
     def start(self):
         """ Periodic update """
         self.started = True
@@ -233,24 +244,29 @@ class SystemInfo(QtWidgets.QWidget):
 
         # Use cached values of the process
         with self.sc2_process.oneshot():
+            try:
+                # Disk usage
+                if self.sc2_bytes_read != None:
+                    read = (1/self.iter)*(self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
+                    writen = (1/self.iter)*(self.sc2_process.io_counters().write_bytes -self.sc2_bytes_written)
+                    self.la_sc2_read_value.setText(f"{self.format_bytes(read)}/s")
+                    self.la_sc2_write_value.setText(f"{self.format_bytes(writen)}/s")
 
-            # Disk usage
-            if self.sc2_bytes_read != None:
-                read = (1/self.iter)*(self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
-                writen = (1/self.iter)*(self.sc2_process.io_counters().write_bytes -self.sc2_bytes_written)
-                self.la_sc2_read_value.setText(f"{self.format_bytes(read)}/s")
-                self.la_sc2_write_value.setText(f"{self.format_bytes(writen)}/s")
+                self.sc2_bytes_read = self.sc2_process.io_counters().read_bytes
+                self.sc2_bytes_written = self.sc2_process.io_counters().write_bytes
 
-            self.sc2_bytes_read = self.sc2_process.io_counters().read_bytes
-            self.sc2_bytes_written = self.sc2_process.io_counters().write_bytes
+                self.la_sc2_read_value_total.setText(f"{self.format_bytes(self.sc2_bytes_read)}")
+                self.la_sc2_write_value_total.setText(f"{self.format_bytes(self.sc2_bytes_written)}")
 
-            self.la_sc2_read_value_total.setText(f"{self.format_bytes(self.sc2_bytes_read)}")
-            self.la_sc2_write_value_total.setText(f"{self.format_bytes(self.sc2_bytes_written)}")
+                # CPU
+                self.la_sc2_cpu_value.setText(f"{self.sc2_process.cpu_percent()}%")
+                # RAM
+                self.la_sc2_memory_value.setText(f"{self.sc2_process.memory_percent():.0f}% | {self.sc2_process.memory_info().rss/1024/1024:.0f} MB")
 
-            # CPU
-            self.la_sc2_cpu_value.setText(f"{self.sc2_process.cpu_percent()}%")
-            # RAM
-            self.la_sc2_memory_value.setText(f"{self.sc2_process.memory_percent():.0f}% | {self.sc2_process.memory_info().rss/1024/1024:.0f} MB")
+            except psutil.NoSuchProcess:
+                pass # SC2 closed
+            except:
+                logger.error(traceback.format_exc())
 
 
     @staticmethod
@@ -262,12 +278,3 @@ class SystemInfo(QtWidgets.QWidget):
             return f'{bbytes/1024**2:.1f} MB'
         else:
             return f'{bbytes/1024**3:.1f} GB'
-
-
-# For debugging only
-if __name__ == '__main__':
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    SystemInfoWidget = SystemInfo()
-    SystemInfoWidget.start()
-    sys.exit(app.exec_())

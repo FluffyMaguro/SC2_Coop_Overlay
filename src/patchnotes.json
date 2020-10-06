@@ -15,9 +15,9 @@
 	"Fancy changelog you see here"
   ],
   "220": [
-    "To use twitch bot, just fill channel name",
-    "Twitch chat can be overlaid on screen",
+    "Twitch bot works now with after filling up the channel name",
+    "Twitch chat available as overlay",
+    "New performance monitoring available as overlay",
     "Salvaged units aren't counted as losses",
-    "....",
   ]
 }

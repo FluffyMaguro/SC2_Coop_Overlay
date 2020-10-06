@@ -995,34 +995,45 @@ class UI_TabWidget(object):
 
         self.TAB_ResourceTab = QtWidgets.QWidget()
 
+        # Performance group box
+        self.gb_Resources = QtWidgets.QGroupBox(self.TAB_ResourceTab)
+        self.gb_Resources.setTitle('Performance overlay')
+        self.gb_Resources.setGeometry(QtCore.QRect(15, 15, 550, 310))
+
         # Performance description
-        self.la_performance_description = QtWidgets.QLabel(self.TAB_ResourceTab)
-        self.la_performance_description.setGeometry(QtCore.QRect(10, 10, self.TAB_ResourceTab.width()-20, 300))
+        self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
+        self.la_performance_description.setGeometry(QtCore.QRect(14, 25, self.gb_Resources.width()-20, 300))
         self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
-        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.<br><b>CPUc</b> is per core CPU usage. 100% means fully used one core.')
+        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.<br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).<br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
         self.la_performance_description.setWordWrap(True)
 
         # Checks whether to show/hide
-        self.ch_performance_show = QtWidgets.QCheckBox(self.TAB_ResourceTab)
-        self.ch_performance_show.setGeometry(QtCore.QRect(10, 60, 200, 17))
+        self.ch_performance_show = QtWidgets.QCheckBox(self.gb_Resources)
+        self.ch_performance_show.setGeometry(QtCore.QRect(14, 125, 200, 17))
         self.ch_performance_show.setText('Show performance overlay')
         self.ch_performance_show.clicked.connect(self.show_hide_create_performance_overlay)
 
         # Position overlay
-        self.bt_performance_overlay_position = QtWidgets.QPushButton(self.TAB_ResourceTab)
-        self.bt_performance_overlay_position.setGeometry(QtCore.QRect(10, 100, 150, 25))
+        self.bt_performance_overlay_position = QtWidgets.QPushButton(self.gb_Resources)
+        self.bt_performance_overlay_position.setGeometry(QtCore.QRect(14, 150, 150, 25))
         self.bt_performance_overlay_position.setText('Change overlay position')
         self.bt_performance_overlay_position.clicked.connect(self.update_performance_overlay_position)
 
         # Hotkey description
-        self.la_hotkey_performance_desc = QtWidgets.QLabel(self.TAB_ResourceTab)
-        self.la_hotkey_performance_desc.setGeometry(QtCore.QRect(10, 150, 300, 20))
-        self.la_hotkey_performance_desc.setText('Hotkey for showing/hiding overlay')
+        self.la_hotkey_performance_desc = QtWidgets.QLabel(self.gb_Resources)
+        self.la_hotkey_performance_desc.setGeometry(QtCore.QRect(15, 220, 300, 20))
+        self.la_hotkey_performance_desc.setText('<b>Hotkey for showing/hiding overlay</b>')
 
         # Hotkey 
-        self.KEY_Performance = MUI.CustomKeySequenceEdit(self.TAB_ResourceTab)
-        self.KEY_Performance.setGeometry(QtCore.QRect(10, 170, 113, 20))
+        self.KEY_Performance = MUI.CustomKeySequenceEdit(self.gb_Resources)
+        self.KEY_Performance.setGeometry(QtCore.QRect(15, 245, 113, 25))
         self.KEY_Performance.setToolTip('Key for showing or hiding performance overlay')
+
+        # Apply 
+        self.bt_performance_apply = QtWidgets.QPushButton(self.gb_Resources)
+        self.bt_performance_apply.setGeometry(QtCore.QRect(150, 245, 75, 25))
+        self.bt_performance_apply.setText('Apply')
+        self.bt_performance_apply.clicked.connect(self.saveSettings)
 
         ###########################
         ######## LINKS TAB ########
@@ -1199,6 +1210,9 @@ class UI_TabWidget(object):
             'debug_button': False,
             'fixed_font_size': True,
             'rng_choices': dict(),
+            'performance_geometry': None,
+            'performance_show': False,
+            'performance_hotkey': None,
             'show_chat': False,
             'chat_geometry': (700,300,500,500),
             'chat_font_scale': 1.3,
@@ -1476,6 +1490,9 @@ class UI_TabWidget(object):
 
         self.la_twitch_bank_location.setText(f"<b>{self.settings['twitchbot']['bank_locations']['Default']}</b>")
 
+        self.ch_performance_show.setChecked(self.settings['performance_show'])
+        self.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
+
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
        
         if self.settings['debug_button']:
@@ -1525,7 +1542,13 @@ class UI_TabWidget(object):
 
         self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
-            self.settings['chat_geometry'] = (self.chat_widget.pos().x(), self.chat_widget.pos().y(), self.chat_widget.width(), self.chat_widget.height())
+            self.settings['chat_geometry'] = [self.chat_widget.pos().x(), self.chat_widget.pos().y(), self.chat_widget.width(), self.chat_widget.height()]
+
+        self.settings['performance_show'] = self.ch_performance_show.isChecked()
+        self.settings['performance_hotkey'] = self.KEY_Performance.keySequence().toString()
+        if hasattr(self, 'performance_overlay'):
+            self.settings['performance_geometry'] = [self.performance_overlay.pos().x(), self.performance_overlay.pos().y(), self.performance_overlay.width(), self.performance_overlay.height()]
+
 
         # RNG choices
         for co in prestige_names:
@@ -1544,7 +1567,7 @@ class UI_TabWidget(object):
         self.sendInfoMessage('Settings applied.')
 
         # Warning
-        hotkeys = [self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
+        hotkeys = [self.settings['performance_hotkey'], self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
         hotkeys = [h for h in hotkeys if not h in {None,''}]
         if len(hotkeys) > len(set(hotkeys)):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
@@ -1593,7 +1616,7 @@ class UI_TabWidget(object):
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
-        hotkey_func_dict = {'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
+        hotkey_func_dict = {'performance_hotkey': self.show_hide_performance_overlay, 'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
         
         # Init
         if previous_settings == None:
@@ -1612,13 +1635,20 @@ class UI_TabWidget(object):
                 if previous_settings[key] != self.settings[key] and not self.settings[key] in {None,''}:
                     if key in self.hotkey_hotkey_dict:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
-                    self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
-                    logger.info(f'Changed hotkey of {key} to {self.settings[key]}')
+                    try:
+                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+                        logger.info(f'Changed hotkey of {key} to {self.settings[key]}')
+                    except:
+                        logger.error(f'Failed to change hotkey {key}\n{traceback.format_exc()}')
+
 
                 # Remove current hotkey no value
                 elif self.settings[key] in {None,''} and key in self.hotkey_hotkey_dict:
-                    keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
-                    logger.info(f'Removing hotkey of {key}')
+                    try:
+                        keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
+                        logger.info(f'Removing hotkey of {key}')
+                    except:
+                        logger.error(f'Failed to remove hotkey {key}\n{traceback.format_exc()}')
 
 
     def resetSettings(self):
@@ -1843,6 +1873,9 @@ class UI_TabWidget(object):
                 self.thread_twitch_bot.start()
                 self.bt_twitch.setText('Stop the bot')
 
+        # Performance overlay
+        self.show_hide_create_performance_overlay()
+
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
@@ -1956,7 +1989,7 @@ class UI_TabWidget(object):
 
         # Delay updating new data to prevent lag when showing the overlay
         self.timeoutTimer = QtCore.QTimer()
-        self.timeoutTimer.setInterval(1000)
+        self.timeoutTimer.setInterval(2000)
         self.timeoutTimer.setSingleShot(True)
         self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
@@ -2534,6 +2567,7 @@ class UI_TabWidget(object):
 
 
     def show_hide_create_performance_overlay(self):
+        """Show/hide/create performance overlay. Triggered by the checkbox. """
         # Hide
         if hasattr(self, 'performance_overlay') and not self.ch_performance_show.isChecked():
             self.performance_overlay.hide()
@@ -2545,9 +2579,20 @@ class UI_TabWidget(object):
                 self.performance_overlay.start()
 
         # Create performance overlay
-        elif not hasattr(self, 'performance_overlay'):
-            self.performance_overlay = SystemInfo()
+        elif not hasattr(self, 'performance_overlay') and self.ch_performance_show.isChecked():
+            self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'])
             self.performance_overlay.start()
+
+
+    def show_hide_performance_overlay(self):
+        """ Shows/hides peformance overlay. Triggered by hotkey """
+        if not hasattr(self, 'performance_overlay'):
+            return
+
+        elif self.performance_overlay.isVisible():
+            self.performance_overlay.hide()
+        else:
+            self.performance_overlay.show()
 
 
     def find_default_bank_location(self):
