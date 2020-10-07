@@ -26,6 +26,11 @@ class ChatMessage():
                                                         QtWidgets.QSizePolicy.MinimumExpanding)) 
         font = parent.font()
         for item in {self.time,self.user,self.message}:
+            shadow = QtWidgets.QGraphicsDropShadowEffect() 
+            shadow.setBlurRadius(3)
+            shadow.setOffset(1)
+            shadow.setColor(QtGui.QColor(0, 0, 0))
+            item.setGraphicsEffect(shadow)     
             item.setFont(font)
             item.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
 

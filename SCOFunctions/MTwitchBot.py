@@ -280,8 +280,8 @@ class TwitchBot:
 
 
                 if "!bank" == first_word and user == self.channel:
-                    if following_words.lower() in self.banks:
-                        self.bank = self.banks[following_words.lower()]
+                    if following_words in self.banks:
+                        self.bank = self.banks[following_words]
                         self.sendMessage('/color ' + chatColor)
                         self.sendMessage(f'/me Bank file changed to: {following_words}')
                     elif following_words == "":

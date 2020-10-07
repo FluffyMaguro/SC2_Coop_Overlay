@@ -160,7 +160,7 @@ class SystemInfo(QtWidgets.QWidget):
         # Add shadows to everything
         for item in headers.union(labels).union(values).union({self.cpu_cores[i] for i in self.cpu_cores}):
             shadow = QtWidgets.QGraphicsDropShadowEffect() 
-            shadow.setBlurRadius(5)
+            shadow.setBlurRadius(3)
             shadow.setOffset(1)
             shadow.setColor(QtGui.QColor(0, 0, 0))
             item.setGraphicsEffect(shadow)     
@@ -169,7 +169,7 @@ class SystemInfo(QtWidgets.QWidget):
     def start(self):
         """ Periodic update """
         self.started = True
-        self.show()   
+        self.show()
         self.Timer = QtCore.QTimer()
         self.Timer.setInterval(self.iter)
         self.Timer.timeout.connect(self.update)
@@ -247,7 +247,7 @@ class SystemInfo(QtWidgets.QWidget):
             if 'SC2' in self.sc2_process.name():
                 self.la_sc2.setText('<b>StarCraft II</b>')
             else:
-                self.la_sc2.setText(self.sc2_process.name())
+                self.la_sc2.setText(f"<b>{self.sc2_process.name()}</b>")
 
             try:
                 # Disk usage
