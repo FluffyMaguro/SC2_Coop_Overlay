@@ -44,12 +44,28 @@ APPVERSION = 220
 SETTING_FILE = truePath('Settings.json')
 
 
+class Signal_Manager(QtCore.QObject):
+    """ 
+    Small object for emiting signals.
+
+    Through this object non-PyQt threads can safely interact with PyQt.
+    Threads can emit signals, e.g.: signal_manager.showHidePerfOverlay.emit() and
+    and some method connected to this signal will be called in the primary
+    PyQt thread.
+    
+    """
+    showHidePerfOverlay = QtCore.pyqtSignal()
+
+
 class UI_TabWidget(object):
     def setupUI(self, TabWidget):
         TabWidget.setWindowTitle(f"StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         TabWidget.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         TabWidget.setFixedSize(980, 610)
         TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})')
+
+        self.signal_manager = Signal_Manager()
+        self.signal_manager.showHidePerfOverlay.connect(self.show_hide_performance_overlay)
 
         ##########################
         ######## MAIN TAB ########
@@ -1011,7 +1027,7 @@ class UI_TabWidget(object):
         self.ch_performance_show = QtWidgets.QCheckBox(self.gb_Resources)
         self.ch_performance_show.setGeometry(QtCore.QRect(14, 125, 200, 17))
         self.ch_performance_show.setText('Show performance overlay')
-        self.ch_performance_show.clicked.connect(self.show_hide_create_performance_overlay)
+        self.ch_performance_show.clicked.connect(self.show_hide_performance_overlay)
 
         # Position overlay
         self.bt_performance_overlay_position = QtWidgets.QPushButton(self.gb_Resources)
@@ -1617,7 +1633,7 @@ class UI_TabWidget(object):
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
-        hotkey_func_dict = {'performance_hotkey': self.show_hide_performance_overlay, 'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
+        hotkey_func_dict = {'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit, 'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
         
         # Init
         if previous_settings == None:
@@ -1647,6 +1663,7 @@ class UI_TabWidget(object):
                 elif self.settings[key] in {None,''} and key in self.hotkey_hotkey_dict:
                     try:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
+                        del self.hotkey_hotkey_dict[key]
                         logger.info(f'Removing hotkey of {key}')
                     except:
                         logger.error(f'Failed to remove hotkey {key}\n{traceback.format_exc()}')
@@ -1875,7 +1892,7 @@ class UI_TabWidget(object):
                 self.bt_twitch.setText('Stop the bot')
 
         # Performance overlay
-        self.show_hide_create_performance_overlay()
+        self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
 
 
     def set_WebView_size_location(self, monitor):
@@ -2567,33 +2584,19 @@ class UI_TabWidget(object):
             self.bt_performance_overlay_position.setText('Change overlay position')
 
 
-    def show_hide_create_performance_overlay(self):
-        """Show/hide/create performance overlay. Triggered by the checkbox. """
-        # Hide
-        if hasattr(self, 'performance_overlay') and not self.ch_performance_show.isChecked():
-            self.performance_overlay.hide()
-
-        # Show
-        elif hasattr(self, 'performance_overlay') and self.ch_performance_show.isChecked():
-            self.performance_overlay.show()
-            if not self.performance_overlay.started:
-                self.performance_overlay.start()
-
-        # Create performance overlay
-        elif not hasattr(self, 'performance_overlay') and self.ch_performance_show.isChecked():
-            self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
-            self.performance_overlay.start()
-
-
     def show_hide_performance_overlay(self):
         """ Shows/hides peformance overlay. Triggered by hotkey """
         if not hasattr(self, 'performance_overlay'):
             return
 
-        elif self.performance_overlay.isVisible():
+        if self.performance_overlay.isVisible():
             self.performance_overlay.hide()
+            self.ch_performance_show.setChecked(False)
         else:
             self.performance_overlay.show()
+            self.ch_performance_show.setChecked(True)
+            if not self.performance_overlay.started:
+                self.performance_overlay.start()
 
 
     def find_default_bank_location(self):
