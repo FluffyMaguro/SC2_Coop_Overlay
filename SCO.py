@@ -214,7 +214,8 @@ class UI_TabWidget(object):
         self.KEY_ShowHide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 80, 113, 20))
         self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
-        
+        self.KEY_ShowHide.keySequenceChanged.connect(self.hotkey_changed)
+
         # Show
         self.BT_Show = QtWidgets.QPushButton(self.FR_HotkeyFrame)
         self.BT_Show.setGeometry(QtCore.QRect(149, 50, 115, 25))
@@ -224,6 +225,7 @@ class UI_TabWidget(object):
         self.KEY_Show = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Show.setGeometry(QtCore.QRect(150, 80, 113, 20))
         self.KEY_Show.setToolTip('The key for just showing the overlay')
+        self.KEY_Show.keySequenceChanged.connect(self.hotkey_changed)
 
         # Hide
         self.BT_Hide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
@@ -234,6 +236,7 @@ class UI_TabWidget(object):
         self.KEY_Hide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Hide.setGeometry(QtCore.QRect(280, 80, 113, 20))
         self.KEY_Hide.setToolTip('The key for just hiding the overlay')
+        self.KEY_Hide.keySequenceChanged.connect(self.hotkey_changed)
 
         # Newer
         self.BT_Newer = QtWidgets.QPushButton(self.FR_HotkeyFrame)
@@ -244,6 +247,7 @@ class UI_TabWidget(object):
         self.KEY_Newer = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Newer.setGeometry(QtCore.QRect(20, 150, 113, 20))
         self.KEY_Newer.setToolTip('The key for showing a newer replay than is currently displayed')
+        self.KEY_Newer.keySequenceChanged.connect(self.hotkey_changed)
 
         # Older
         self.BT_Older = QtWidgets.QPushButton(self.FR_HotkeyFrame)
@@ -254,6 +258,7 @@ class UI_TabWidget(object):
         self.KEY_Older = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Older.setGeometry(QtCore.QRect(150, 150, 113, 20))
         self.KEY_Older.setToolTip('The key for showing an older replay than is currently displayed')
+        self.KEY_Older.keySequenceChanged.connect(self.hotkey_changed)
 
         # Winrates
         self.BT_Winrates = QtWidgets.QPushButton(self.FR_HotkeyFrame)
@@ -264,6 +269,7 @@ class UI_TabWidget(object):
         self.KEY_Winrates = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Winrates.setGeometry(QtCore.QRect(280, 150, 113, 20))
         self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
+        self.KEY_Winrates.keySequenceChanged.connect(self.hotkey_changed)
 
         for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
             item.setStyleSheet("color: #444;")
@@ -1044,6 +1050,7 @@ class UI_TabWidget(object):
         self.KEY_Performance = MUI.CustomKeySequenceEdit(self.gb_Resources)
         self.KEY_Performance.setGeometry(QtCore.QRect(15, 245, 113, 25))
         self.KEY_Performance.setToolTip('Key for showing or hiding performance overlay')
+        self.KEY_Performance.keySequenceChanged.connect(self.hotkey_changed)
 
         # Apply 
         self.bt_performance_apply = QtWidgets.QPushButton(self.gb_Resources)
@@ -1566,7 +1573,6 @@ class UI_TabWidget(object):
         if hasattr(self, 'performance_overlay'):
             self.settings['performance_geometry'] = [self.performance_overlay.pos().x(), self.performance_overlay.pos().y(), self.performance_overlay.width(), self.performance_overlay.height()]
 
-
         # RNG choices
         for co in prestige_names:
             for prest in {0,1,2,3}:
@@ -1628,6 +1634,34 @@ class UI_TabWidget(object):
             self.WebView.hide()
         elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay'] and not self.WebView.isVisible():
             self.WebView.show()
+
+
+    def hotkey_changed(self):
+        """ Wait a bit for the sequence to update, and then check if not to delete the key"""
+        self.hotkey_changed_timer = QtCore.QTimer()
+        self.hotkey_changed_timer.setInterval(50)
+        self.hotkey_changed_timer.setSingleShot(True)
+        self.hotkey_changed_timer.timeout.connect(self.check_to_remove_hotkeys)
+        self.hotkey_changed_timer.start()
+
+
+    def check_to_remove_hotkeys(self):
+        """ Checks if a key is 'Del' and sets it to None """
+        key_dict = {self.KEY_ShowHide: 'hotkey_show/hide',
+                    self.KEY_Show: 'hotkey_show',
+                    self.KEY_Hide: 'hotkey_hide',
+                    self.KEY_Newer: 'hotkey_newer',
+                    self.KEY_Older: 'hotkey_older',
+                    self.KEY_Winrates: 'hotkey_winrates',
+                    self.KEY_Performance: 'performance_hotkey'}
+
+        for key in key_dict:
+            value = key.keySequence().toString()
+            if value == 'Del':
+                key.setKeySequence(QtGui.QKeySequence.fromString(None))
+                logger.info(f"Removed key for {key_dict[key]}")
+                self.saveSettings()
+                break
 
 
     def manage_keyboard_threads(self, previous_settings=None):
