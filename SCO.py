@@ -1213,6 +1213,7 @@ class UI_TabWidget(object):
             'performance_geometry': None,
             'performance_show': False,
             'performance_hotkey': None,
+            'performance_processes':['SC2_x64.exe','SC2_x32.exe'],
             'show_chat': False,
             'chat_geometry': (700,300,500,500),
             'chat_font_scale': 1.3,
@@ -2580,7 +2581,7 @@ class UI_TabWidget(object):
 
         # Create performance overlay
         elif not hasattr(self, 'performance_overlay') and self.ch_performance_show.isChecked():
-            self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'])
+            self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
             self.performance_overlay.start()
 
 

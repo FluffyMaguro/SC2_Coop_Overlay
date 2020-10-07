@@ -90,7 +90,6 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.show()
 
 
-
     def update_data(self, unit_data, init=False):
         """ Updates widget based on new unit data"""
         if not hasattr(self, 'units'):

@@ -10,7 +10,7 @@ logger = logclass('SYS','INFO')
 
 class SystemInfo(QtWidgets.QWidget):
     """ This widget overlays system and StarCraft II information on-screen (CPU, RAM, Disk, Network,...) """
-    def __init__(self, geometry=None, parent=None):
+    def __init__(self, geometry=None, process_names=None, parent=None):
         super().__init__(parent)
 
         if geometry == None:
@@ -33,7 +33,7 @@ class SystemInfo(QtWidgets.QWidget):
         # Data
         self.restart() # Inits some data
         self.iter = 1000 # Length of whole loop in miliseconds
-        self.sc2process_names = {'SC2_x64.exe','SC2_x32.exe'}
+        self.sc2process_names = process_names
         self.fixed = True
         self.started = False
 
@@ -244,6 +244,11 @@ class SystemInfo(QtWidgets.QWidget):
 
         # Use cached values of the process
         with self.sc2_process.oneshot():
+            if 'SC2' in self.sc2_process.name():
+                self.la_sc2.setText('<b>StarCraft II</b>')
+            else:
+                self.la_sc2.setText(self.sc2_process.name())
+
             try:
                 # Disk usage
                 if self.sc2_bytes_read != None:
