@@ -40,7 +40,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 220
+APPVERSION = 219
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1231,7 +1231,6 @@ class UI_TabWidget(object):
             'font_scale':1,
             'subtract_height': 1,
             'debug_button': False,
-            'fixed_font_size': True,
             'rng_choices': dict(),
             'performance_geometry': None,
             'performance_show': False,
@@ -1291,21 +1290,12 @@ class UI_TabWidget(object):
                 self.settings[key] = self.default_settings[key]
 
         # Update fix font size
-        if HF.isWindows() and self.settings['fixed_font_size']:
-            scaleFactor = 1
-            if not 'Windows-7' in platform.platform():
-                try:
-                    scaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
-                except:
-                    logger.error(traceback.format_exc())
-            font = QtGui.QFont()
-            font.fromString(f"MS Shell Dlg 2,{8.25/scaleFactor},-1,5,50,0,0,0,0,0")
-            app.setFont(font)
-
-        if self.settings['font_scale'] != 1:
-            font = app.font()
+        font = QtGui.QFont()
+        if HF.isWindows():
+            font.fromString(f"MS Shell Dlg 2,{8.25*self.settings['font_scale']},-1,5,50,0,0,0,0,0")
+        else:
             font.setPointSize(font.pointSize()*self.settings['font_scale'])
-            app.setFont(font)
+        app.setFont(font)
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
@@ -1656,8 +1646,7 @@ class UI_TabWidget(object):
                     self.KEY_Performance: 'performance_hotkey'}
 
         for key in key_dict:
-            value = key.keySequence().toString()
-            if value == 'Del':
+            if key.keySequence().toString() == 'Del':
                 key.setKeySequence(QtGui.QKeySequence.fromString(None))
                 logger.info(f"Removed key for {key_dict[key]}")
                 self.saveSettings()
@@ -2667,7 +2656,9 @@ class UI_TabWidget(object):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)        
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app = QtWidgets.QApplication(sys.argv)
+
     TabWidget = MUI.CustomQTabWidget()
 
     try:
