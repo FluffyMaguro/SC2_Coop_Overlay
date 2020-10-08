@@ -67,6 +67,13 @@ python SCO.py
 
 ![Screenshot](./Screenshots/winrate.png)
 
+**Twitch chat overlay:**
+
+![Screenshot](./Screenshots/twitch_overlay.jpg)
+
+**Performance overlay:**
+
+![Screenshot](./Screenshots/perf_overlay.jpg)
 **And more...**
 
 
@@ -83,6 +90,17 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.20 version
+
+      - Twitch bot works now with after filling up the channel name
+      - Twitch chat available as overlay
+      - New performance monitoring available as overlay
+      - Salvaged units aren't counted as losses
+      - Improved scaling for high DPI displays
+      - App cannot be started multiple times
+
+
 * 2.10 version
 
       - Frequency added to maps

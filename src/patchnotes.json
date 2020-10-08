@@ -19,5 +19,7 @@
     "Twitch chat available as overlay",
     "New performance monitoring available as overlay",
     "Salvaged units aren't counted as losses",
+	"Improved scaling for high DPI displays",
+	"App cannot be started multiple times"
   ]
 }

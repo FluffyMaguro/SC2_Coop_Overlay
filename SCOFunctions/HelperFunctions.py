@@ -6,6 +6,7 @@ import requests
 import zipfile
 import traceback
 from pathlib import Path
+import psutil
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
@@ -40,6 +41,21 @@ def write_permission_granted():
         logger.info(f'Permission error:\n{traceback.format_exc()}')
 
     return permission_granted
+
+
+def app_running_multiple_instances():
+    """ Returns True if the app is running multiple instances.
+    Normally there are two instances of SCO.exe running. """
+    running = 0
+    for pid in psutil.pids():
+        try:
+            process = psutil.Process(pid)
+            if process.name() == 'SCO.exe':
+                running += 1
+        except:
+            pass
+
+    return running > 2
 
 
 def add_to_startup(Add):

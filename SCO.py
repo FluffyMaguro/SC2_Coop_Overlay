@@ -56,6 +56,11 @@ class Signal_Manager(QtCore.QObject):
     showHidePerfOverlay = QtCore.pyqtSignal()
 
 
+class MultipleInstancesRunning(Exception):
+    """ Custom exception for multiple instance of the app running"""
+    pass
+
+
 class UI_TabWidget(object):
     def setupUI(self, TabWidget):
         TabWidget.setWindowTitle(f"StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
@@ -1228,6 +1233,7 @@ class UI_TabWidget(object):
             'height':1,
             'debug': False,
             'font_scale':1,
+            'check_for_multiple_instances': True,
             'subtract_height': 1,
             'debug_button': False,
             'rng_choices': dict(),
@@ -1287,6 +1293,12 @@ class UI_TabWidget(object):
         for key in self.default_settings:
             if key not in self.settings:
                 self.settings[key] = self.default_settings[key]
+
+        # Check for multiple instances
+        if self.settings['check_for_multiple_instances'] and HF.isWindows():
+            if HF.app_running_multiple_instances():
+                logger.error('App running at multiple instances. Closing!')
+                raise MultipleInstancesRunning
 
         # Update fix font size
         font = QtGui.QFont()
@@ -2479,7 +2491,7 @@ class UI_TabWidget(object):
         """ Starts or stops the twitch bot """
         if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
             logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
-            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
+            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings or restart the app!')
             return
 
         if not self.TwitchBot.RUNNING:
@@ -2665,6 +2677,8 @@ if __name__ == "__main__":
         ui.setupUI(TabWidget)
         ui.loadSettings()
         ui.start_main_functionality()
+    except MultipleInstancesRunning:
+        sys.exit()
     except:
         logger.error(traceback.format_exc())
 
