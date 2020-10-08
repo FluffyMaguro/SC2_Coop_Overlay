@@ -1184,7 +1184,7 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_TwitchBot), "Twitch")
 
         TabWidget.addTab(self.TAB_ResourceTab, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_ResourceTab), "Resources")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_ResourceTab), "Performance")
 
         TabWidget.addTab(self.TAB_Links, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
