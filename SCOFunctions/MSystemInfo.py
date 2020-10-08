@@ -209,7 +209,7 @@ class SystemInfo(QtWidgets.QWidget):
             if cpu > 85:
                 self.cpu_cores[('value', idx)].setStyleSheet('color:#FF8787')
             elif cpu < 15:
-                self.cpu_cores[('value', idx)].setStyleSheet('color: #999')
+                self.cpu_cores[('value', idx)].setStyleSheet('color: rgba(255,255,255,0.5)')
             else:
                 self.cpu_cores[('value', idx)].setStyleSheet('color:white')
 
