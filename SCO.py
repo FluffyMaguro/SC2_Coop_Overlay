@@ -1900,7 +1900,19 @@ class UI_TabWidget(object):
         if self.settings['show_chat']:
             self.create_twitch_chat()
 
-        # Twitch both
+        # Create the twitch bot
+        if self.settings['twitchbot']['auto_start']:
+            self.run_twitch_bot()
+
+        # Performance overlay
+        self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
+        if self.settings['performance_show']:
+            self.ch_performance_show.setChecked(True)
+            self.performance_overlay.start()
+
+
+    def run_twitch_bot(self):
+        """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """
         twitchbot_settings = self.settings['twitchbot'].copy()
 
         # Fallback to my bot if the user doesn't have its own bot
@@ -1914,19 +1926,15 @@ class UI_TabWidget(object):
                 twitchbot_settings['bot_name'] = fallback['bot_name']
                 twitchbot_settings['bot_oauth'] = fallback['bot_oauth']
 
-        # Create the twitch bot
-        self.TwitchBot = TwitchBot(twitchbot_settings, widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
-        if self.settings['twitchbot']['auto_start']:
-            if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
-                logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
-                self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
-            else:
-                self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
-                self.thread_twitch_bot.start()
-                self.bt_twitch.setText('Stop the bot')
-
-        # Performance overlay
-        self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
+        # Run the both if settings are ok
+        if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
+            logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
+            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
+        else:
+            self.TwitchBot = TwitchBot(twitchbot_settings, widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
+            self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
+            self.thread_twitch_bot.start()
+            self.bt_twitch.setText('Stop the bot')
 
 
     def set_WebView_size_location(self, monitor):
@@ -2489,21 +2497,17 @@ class UI_TabWidget(object):
 
     def start_stop_bot(self):
         """ Starts or stops the twitch bot """
-        if self.settings['twitchbot']['channel_name'] == '' or self.settings['twitchbot']['bot_name'] == '' or self.settings['twitchbot']['bot_oauth'] == '':
-            logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
-            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings or restart the app!')
-            return
+        self.settings['twitchbot']['channel_name'] = self.ED_twitch_channel_name.text()
 
-        if not self.TwitchBot.RUNNING:
-            if not hasattr(self, 'thread_twitch_bot'):
-                self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
-                self.thread_twitch_bot.start()
+        if hasattr(self, 'TwitchBot'):
+            if self.TwitchBot.RUNNING:
+                self.TwitchBot.RUNNING = False
+                self.bt_twitch.setText('Run the bot')
             else:
                 self.TwitchBot.RUNNING = True
-            self.bt_twitch.setText('Stop the bot')
+                self.bt_twitch.setText('Stop the bot')
         else:
-            self.TwitchBot.RUNNING = False
-            self.bt_twitch.setText('Run the bot')
+            self.run_twitch_bot()
 
 
     def randomize_commander(self):
@@ -2561,17 +2565,20 @@ class UI_TabWidget(object):
         if not hasattr(self, 'chat_widget'):
             return
 
+        position = self.chat_widget.pos()
+
         if self.chat_widget.fixed:
             self.chat_widget.fixed = False
             self.chat_widget.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
+            self.chat_widget.move(position.x()-8, position.y()-31)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Fix chat position')
-
         else:
             self.chat_widget.fixed = True
             self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+            self.chat_widget.move(position.x()+8, position.y()+31)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Change chat position')
 
@@ -2603,18 +2610,21 @@ class UI_TabWidget(object):
         if not self.performance_overlay.started:
             return
 
+        position = self.performance_overlay.pos()
+
         if self.performance_overlay.fixed:
             self.performance_overlay.fixed = False
             self.performance_overlay.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.performance_overlay.show()
+            self.performance_overlay.move(position.x()-8, position.y()-31)
             self.bt_performance_overlay_position.setText('Fix overlay position')
-
         else:
             self.performance_overlay.fixed = True
             self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.performance_overlay.show()
+            self.performance_overlay.move(position)
             self.bt_performance_overlay_position.setText('Change overlay position')
 
 
