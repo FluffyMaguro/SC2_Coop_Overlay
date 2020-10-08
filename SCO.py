@@ -12,7 +12,6 @@ Setup -> Load Settings -> UI
 import os
 import sys
 import json
-import ctypes
 import shutil
 import platform
 import threading

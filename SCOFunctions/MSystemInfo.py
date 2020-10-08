@@ -32,10 +32,13 @@ class SystemInfo(QtWidgets.QWidget):
 
         # Data
         self.restart() # Inits some data
+        self.core_count = psutil.cpu_count()
         self.iter = 1000 # Length of whole loop in miliseconds
         self.sc2process_names = process_names
         self.fixed = True
         self.started = False
+        self.bytes_sent = None
+        self.bytes_recv = None
 
         # SC2 widgets
         self.layout = QtWidgets.QGridLayout()
@@ -178,14 +181,11 @@ class SystemInfo(QtWidgets.QWidget):
 
     def restart(self):
         """ Defaults some variables """
-        self.bytes_sent = None
-        self.bytes_recv = None
         self.sc2_pid = None
         self.sc2_bytes_read = None
         self.sc2_bytes_written = None
         self.sc2_process = None
-        self.core_count = psutil.cpu_count()
-
+        
 
     def update(self):
         # Network up and down
@@ -196,8 +196,8 @@ class SystemInfo(QtWidgets.QWidget):
             self.la_download_value.setText(f"{self.format_bytes(recv)}/s")
             self.la_upload_value.setText(f"{self.format_bytes(sent)}/s")           
 
-        self.bytes_sent = network_data.bytes_sent 
-        self.bytes_recv = network_data.bytes_recv  
+        self.bytes_sent = network_data.bytes_sent
+        self.bytes_recv = network_data.bytes_recv
 
         self.la_download_value_total.setText(self.format_bytes(self.bytes_recv))
         self.la_upload_value_total.setText(self.format_bytes(self.bytes_sent))
