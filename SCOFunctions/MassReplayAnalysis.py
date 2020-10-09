@@ -500,16 +500,23 @@ class mass_replay_analysis:
         """ Returns a sorted list of replays containining given arguments in their data structure"""
         replays = list()
         args = tuple(str(a).lower() for a in args)
+        races = ('terran','protoss','zerg')
 
         for r in self.ReplayData:
             struct = str(r).lower()
             args_found = 0
             for arg in args:
-                if arg in struct:
+                # Special filter for races. Check enemy race directly.
+                if arg in races:
+                    if arg == r['enemy_race'].lower():
+                        args_found += 1
+
+                elif arg in struct:
                     args_found += 1
 
             if args_found == len(args):
                 replays.append(r)
+
 
         return sorted(replays, key=lambda x: int(x['date'].replace(':','')), reverse=True)
 
