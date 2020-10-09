@@ -13,7 +13,6 @@ import threading
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.MInsideSearch import InsideSearch
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units
@@ -495,15 +494,21 @@ class mass_replay_analysis:
         self.closing = False
         self.full_analysis_label = None
         self.full_analysis_finished = False
-        self.InsideSearch = InsideSearch()
 
 
     def search(self, *args):
         """ Returns a sorted list of replays containining given arguments in their data structure"""
         replays = list()
+        args = tuple(str(a).lower() for a in args)
+
         for r in self.ReplayData:
-            found, args_found = self.InsideSearch.search(r, *args)
-            if found:
+            struct = str(r).lower()
+            args_found = 0
+            for arg in args:
+                if arg in struct:
+                    args_found += 1
+
+            if args_found == len(args):
                 replays.append(r)
 
         return sorted(replays, key=lambda x: int(x['date'].replace(':','')), reverse=True)
