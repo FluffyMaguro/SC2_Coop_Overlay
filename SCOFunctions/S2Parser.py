@@ -5,7 +5,7 @@ import time
 
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
-from SCOFunctions.SC2Dictionaries import map_names
+from SCOFunctions.SC2Dictionaries import map_names, prestige_names
 from SCOFunctions.MLogging import logclass
 
 logger = logclass('PARS','INFO')
@@ -171,6 +171,7 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
             replay['players'][idx]['commander_level'] = player['m_commanderLevel']
             replay['players'][idx]['commander_mastery_level'] = player['m_commanderMasteryLevel']
             replay['players'][idx]['prestige'] = player.get('m_selectedCommanderPrestige',0)
+            replay['players'][idx]['prestige_name'] = prestige_names.get(replay['players'][idx]['commander'], dict()).get(replay['players'][idx]['prestige'],'')
             replay['players'][idx]['handle'] = player['m_toonHandle'].decode()
             replay['players'][idx]['difficulty'] = player['m_difficulty']
 
