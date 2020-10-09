@@ -99,6 +99,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - Salvaged units aren't counted as losses
       - Improved scaling for high DPI displays
       - App cannot be started multiple times
+      - Small tweaks and fixes
 
 
 * 2.10 version
