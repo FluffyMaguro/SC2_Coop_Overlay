@@ -100,6 +100,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
       - Twitch bot works now with after filling up the channel name
       - Twitch chat available as overlay
+      - You can search through replays
       - New performance monitoring available as overlay
       - Salvaged units aren't counted as losses
       - Improved scaling for high DPI displays
