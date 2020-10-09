@@ -31,8 +31,11 @@ python SCO.py
 ![Screenshot](./Screenshots/Display.jpg)
 
 
+# OBS setup
 
+<img width="100%" alt="Drag the layout file to OBS" src="https://i.imgur.com/ECARj6M.png">
 
+<img width="52.38%" alt="Drag the layout file to OBS" src="https://i.imgur.com/dNSWhq4.png">
 
 # The app
 **Settings:**
