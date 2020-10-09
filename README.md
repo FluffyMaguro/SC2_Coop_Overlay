@@ -33,9 +33,11 @@ python SCO.py
 
 # OBS setup
 
+If you are using game capture, you have to add overlay to OBS manually.
+
 <img width="100%" alt="Drag the layout file to OBS" src="https://i.imgur.com/ECARj6M.png">
 
-<img width="52.38%" alt="Drag the layout file to OBS" src="https://i.imgur.com/dNSWhq4.png">
+<img width="52.38%" alt="Fit the layout to screen" src="https://i.imgur.com/dNSWhq4.png">
 
 # The app
 **Settings:**
