@@ -1236,7 +1236,7 @@ class UI_TabWidget(object):
             'aom_secret_key':None,
             'player_notes':dict(),
             'main_names': list(),
-            'list_games': 100,
+            'list_games': 200,
             'right_offset':0,
             'width': 0.5,
             'height':1,
