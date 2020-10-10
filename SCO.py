@@ -2078,7 +2078,7 @@ class UI_TabWidget(object):
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
             self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.insertWidget(1, self.game_UI_dict[replay_dict['parser']['file']].widget)     
+            self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)     
 
             # Update mass replay analysis
             self.CAnalysis.add_parsed_replay(replay_dict)

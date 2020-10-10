@@ -98,7 +98,7 @@ def calculate_map_data(ReplayData):
 
 def get_masterises(replay,player):
     """ Return masteries. Contains fix for mastery switches (e.g. Zagara)"""
-    masteries = replay['players'][player]['masteries']
+    masteries = replay['players'][player]['masteries'].copy()
     commander = replay['players'][player]['commander']
 
     # Zagara mastery fix (at least some)
