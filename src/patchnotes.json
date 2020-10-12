@@ -11,8 +11,8 @@
     "Player info doesn't show for versus games",
     "Option for full analysis added. Running it will take long time, but it will provide more accurate game lengths and more stats",
     "Added new stats related to player and unit kills, and bonus objective completion. These require full analysis",
-	  "Default hotkeys changed to be less likely pressed by accident",
-	  "Fancy changelog you see here"
+	"Default hotkeys changed to be less likely pressed by accident",
+	"Fancy changelog you see here"
   ],
   "220": [
     "Twitch bot works now with after filling up the channel name",
@@ -20,8 +20,8 @@
     "You can search through replays",
     "New performance monitoring available as overlay",
     "Salvaged units aren't counted as losses",
-	  "Improved scaling for high DPI displays",
-	  "App cannot be started multiple times",
+	"Improved scaling for high DPI displays",
+	"App cannot be started multiple times",
     "Small tweaks and fixes"
   ]
 }
