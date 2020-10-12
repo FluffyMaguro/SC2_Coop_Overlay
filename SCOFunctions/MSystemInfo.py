@@ -39,6 +39,7 @@ class SystemInfo(QtWidgets.QWidget):
         self.started = False
         self.bytes_sent = None
         self.bytes_recv = None
+        self.sc2_idx_search = -1
 
         # SC2 widgets
         self.layout = QtWidgets.QGridLayout()
@@ -223,9 +224,14 @@ class SystemInfo(QtWidgets.QWidget):
         else:
             self.la_memory_value.setStyleSheet('color:white')
 
-
         # Get StarCraft 2 process if there is none
         if self.sc2_process == None:
+            self.sc2_idx_search += 1
+
+            # Check only every few iterations for a process to prevent high overhead
+            if self.sc2_idx_search%8:
+                return
+
             for pid in psutil.pids():
                 try:
                     process = psutil.Process(pid)
@@ -250,6 +256,8 @@ class SystemInfo(QtWidgets.QWidget):
             self.restart()
             logger.debug(f"Debug: No SC2 process. Restarting.")
             return 
+        else:
+            self.sc2_idx_search = -1
 
         # Use cached values of the process
         with self.sc2_process.oneshot():
