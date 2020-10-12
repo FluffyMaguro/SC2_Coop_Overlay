@@ -8,7 +8,7 @@ For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhq
 
 **Download links:**
 * [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.20/SC2CoopOverlay.2.20.zip)
-* [Mega](https://mega.nz/file/ooUA3RYA#zBZ7HJ946JrLSMIzKAwl7TP6nVKrJBUEnVhCo9WT83Y)
+* [Mega](https://mega.nz/file/ch1GTBiI#_bpSHk4BqbdXxXUEbH2r-nDtsPc3xSyp58kbZ1cxEyg)
 * Or run the script with Python 3.8 or newer:
 
 ```
