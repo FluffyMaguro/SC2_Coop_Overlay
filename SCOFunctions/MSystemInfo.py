@@ -226,20 +226,29 @@ class SystemInfo(QtWidgets.QWidget):
 
         # Get StarCraft 2 process if there is none
         if self.sc2_process == None:
-            try:
-                for pid in psutil.pids():
+            for pid in psutil.pids():
+                try:
                     process = psutil.Process(pid)
                     if process.name() in self.sc2process_names:
                         self.sc2_pid = pid
                         self.sc2_process = psutil.Process(self.sc2_pid)
+                        logger.info(f'Found process {process.name()} | {pid}')
                         break
-            except:
-                self.restart()
-                return                
+                except psutil.NoSuchProcess:
+                    pass
+                except psutil.AccessDenied:
+                    pass
+                except PermissionError:
+                    pass
+                except AttributeError:
+                    pass
+                except:
+                    logger.info(f'Error when finding process\n{traceback.format_exc()}')
         
         # We haven't found StarCraft process running
         if self.sc2_process == None:
             self.restart()
+            logger.debug(f"Debug: No SC2 process. Restarting.")
             return 
 
         # Use cached values of the process
@@ -250,6 +259,7 @@ class SystemInfo(QtWidgets.QWidget):
                 self.la_sc2.setText(f"<b>{self.sc2_process.name()}</b>")
 
             try:
+                logger.debug('Debug: updating SC2....')
                 # Disk usage
                 if self.sc2_bytes_read != None:
                     read = (1/self.iter)*(self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
