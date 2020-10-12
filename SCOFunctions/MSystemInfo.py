@@ -224,12 +224,18 @@ class SystemInfo(QtWidgets.QWidget):
         else:
             self.la_memory_value.setStyleSheet('color:white')
 
+        # If not visible skip SC2 update
+        if not self.isVisible():
+            self.sc2_bytes_read = None
+            self.sc2_bytes_written = None 
+            return
+
         # Get StarCraft 2 process if there is none
         if self.sc2_process == None:
             self.sc2_idx_search += 1
 
             # Check only every few iterations for a process to prevent high overhead
-            if self.sc2_idx_search%8:
+            if self.sc2_idx_search%6:
                 return
 
             for pid in psutil.pids():
