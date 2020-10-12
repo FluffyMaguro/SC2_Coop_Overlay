@@ -1408,7 +1408,7 @@ class PatchNotes(QtWidgets.QWidget):
 
         release = f"{str(version)[0]}.{str(version)[1:]}"
         height = 50 + len(patchnotes)*18
-        width = 200
+        width = 490
         text = ''
 
         # Add text, calculate required width
