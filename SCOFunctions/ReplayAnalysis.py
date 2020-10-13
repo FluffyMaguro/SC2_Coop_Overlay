@@ -536,7 +536,7 @@ def analyse_replay(filepath, main_player_handles=None):
                         else:
                             unit_type_dict_ally[_killing_unit_type] = [0,0,1,0]
 
-                    if _killing_player in amon_players and not _losing_player in (1,2):
+                    if _killing_player in amon_players and _losing_player in (1,2):
                         if _killing_unit_type in unit_type_dict_amon:
                             unit_type_dict_amon[_killing_unit_type][2] += 1
                         else:
