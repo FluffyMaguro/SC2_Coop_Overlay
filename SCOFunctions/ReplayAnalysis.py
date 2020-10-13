@@ -531,15 +531,15 @@ def analyse_replay(filepath, main_player_handles=None):
                         else:
                             unit_type_dict_ally[_killing_unit_type] = [0,0,1,0]
 
-                    if _killing_player in amon_players and not _losing_player in amon_players:
+                    if _killing_player in amon_players and not _losing_player in (1,2):
                         if _killing_unit_type in unit_type_dict_amon:
                             unit_type_dict_amon[_killing_unit_type][2] += 1
                         else:
                             unit_type_dict_amon[_killing_unit_type] = [0,0,1,0]
 
                 # Debug for player no units kills
-                if _killed_unit_type not in {'Scarab','Interceptor'} and not _killing_unit_id in unit_dict and not _killing_unit_type in commander_no_units.values() and _killing_player in {1,2} and _losing_player != _killing_player:
-                    logger.debug(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16:.1f}s ')
+                # if _killed_unit_type not in {'Scarab','Interceptor'} and not _killing_unit_id in unit_dict and not _killing_unit_type in commander_no_units.values() and _killing_player in {1,2} and _losing_player != _killing_player:
+                #     logger.debug(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16:.1f}s ')
 
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
