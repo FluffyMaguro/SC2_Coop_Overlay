@@ -519,13 +519,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Update unit kill stats
                 if ((_killing_unit_id in unit_dict) or _killing_unit_type in commander_no_units.values()) and (_killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
-                    if main_player == _killing_player:
+                    if main_player == _killing_player and _losing_player in amon_players:
                         if _killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[_killing_unit_type][2] += 1
                         else:
                             unit_type_dict_main[_killing_unit_type] = [0,0,1,0]
 
-                    if ally_player == _killing_player:
+                    if ally_player == _killing_player and _losing_player in amon_players:
                         if _killing_unit_type in unit_type_dict_ally:
                             unit_type_dict_ally[_killing_unit_type][2] += 1
                         else:

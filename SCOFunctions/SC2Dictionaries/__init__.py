@@ -521,7 +521,7 @@ amon_player_ids = {
  'Dead of Night': {3,4,5,7},
  'Lock & Load': {3,4},
  'Malwarfare': {3,4},
- 'Miner Evacuation': {3,4,5,6,7,9},
+ 'Miner Evacuation': {3,4,5,6,7,9,11},
  'Mist Opportunities': {3,4},
  'Oblivion Express': {3,4,5,6,7},
  'Part and Parcel': {3,4,8},
