@@ -422,8 +422,13 @@ def analyse_replay(filepath, main_player_handles=None):
                 _killing_player = event['m_killerPlayerId']
 
                 # Count kills for players
-                if _losing_player != _killing_player and not _killed_unit_type in ['FuelCellPickupUnit','ForceField'] and not(_killing_player in [1,2] and _losing_player in [1,2]) and _killing_player != None: # Don't count team kills
-                    killcounts[_killing_player] += 1
+                if _killing_player != None and not _killed_unit_type in ['FuelCellPickupUnit','ForceField']:
+                    if _killing_player in (1,2) and not _losing_player in amon_players:
+                        pass
+                    elif _killing_player in amon_players and not _losing_player in (1,2):
+                        pass   
+                    else:
+                        killcounts[_killing_player] += 1
 
                 # Get last_aoe_unit_killed (used when player units die without a killing unit, it was likely some enemy caster casting persistent AoE spell)
                 if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players and unitid(event) != None:
