@@ -62,6 +62,7 @@ def switch_names(pdict):
     for key in pdict:
         if key in dont_include_units:
             continue
+            
         # For locusts, broodlings, interceptors, add kills to the main unit. Don't add unit created/lost
         if key in UnitAddKillsTo:
             name = UnitAddKillsTo[key]
@@ -71,7 +72,7 @@ def switch_names(pdict):
                 temp_dict[name] = [0,0,pdict[key][2],0]
 
         # For wreckages, cocoon
-        if key in UnitAddLossesTo:
+        elif key in UnitAddLossesTo:
             name = UnitAddLossesTo[key]
             if name in temp_dict:
                 temp_dict[name][1] += pdict[key][1]
