@@ -24,7 +24,7 @@ units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Muta
 primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
 salvage_units = {"ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
-UnitAddLossesTo = {'SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor'}
+UnitAddLossesTo = {'TorrasqueChrysalis':'Ultralisk','SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor'}
 
 logger = logclass('REPA','INFO')
 
@@ -386,7 +386,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
                     # Don't add into created units if it's just a morph
                     # Don't count wreckages morhping back
-                    if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in {'SiegeTankWreckage', 'ThorWreckageSwann', 'ThorWreckage'}: 
+                    if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo: 
 
                         # Increase unit type created for controlling player
                         if main_player == _control_pid:
