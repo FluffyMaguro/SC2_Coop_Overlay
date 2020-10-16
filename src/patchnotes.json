@@ -30,6 +30,7 @@
 	"Amon kills limited to player units",
     "Player kills limited to Amons units",
     "SC2 process isn't checked when overlay is not visible",
-    "Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly"
+    "Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly",
+	"Twitch bot won't fail when the channel name is capitalized"
   ]
 }

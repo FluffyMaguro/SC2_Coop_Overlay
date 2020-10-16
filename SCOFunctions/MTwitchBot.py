@@ -18,7 +18,7 @@ mutator_set = {m.lower() for m in set(Mutators.keys())}
 
 class TwitchBot:
     def __init__(self, twdict, widget=None):
-        self.channel = twdict['channel_name']
+        self.channel = twdict['channel_name'].lower()
         self.bot_name = twdict['bot_name']
         self.bot_oauth = twdict['bot_oauth']
         self.host = twdict['host']
