@@ -23,5 +23,13 @@
 	"Improved scaling for high DPI displays",
 	"App cannot be started multiple times",
     "Small tweaks and fixes"
+  ],
+    "222": [
+	"At least something gets updates",
+	"Mengsk P3 kills properly counted",
+	"Amon kills limited to player units",
+    "Player kills limited to Amons units",
+    "SC2 process isn't checked when overlay is not visible",
+    "Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly"
   ]
 }
