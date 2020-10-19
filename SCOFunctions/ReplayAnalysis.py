@@ -23,7 +23,7 @@ commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"
 units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
 primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
-salvage_units = {"ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
+salvage_units = {"PerditionTurretUnderground","PerditionTurret","ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
 UnitAddLossesTo = {'TorrasqueChrysalis':'Ultralisk','SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor'}
 
 logger = logclass('REPA','INFO')
