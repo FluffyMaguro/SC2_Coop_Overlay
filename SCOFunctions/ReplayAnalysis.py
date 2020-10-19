@@ -256,6 +256,7 @@ def analyse_replay(filepath, main_player_handles=None):
     LastBiomassPosition = [0,0,0]
     AbathurKillLocusts = set()
     MutatorDehakaDragUnitIDs = set()
+    MWBonusInitialTiming = [0,0]
 
     last_aoe_unit_killed = [0]*17
     for player in range(1,16):
@@ -422,9 +423,15 @@ def analyse_replay(filepath, main_player_handles=None):
         if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and unitid(event) in unit_dict:
             unit_dict[unitid(event)][1] = event['m_controlPlayerId']
 
-            # Malwarfare bonus objective. If it changes, the bonus is completed.
-            if 'Malwarfare' in replay['map_name'] and event['m_controlPlayerId'] == 6:
-                bonus_timings.append(event['_gameloop']/16 - START_TIME)    
+            # Malwarfare bonus objective. First save when the bonus started, then check if it was completed sooner than 245.9375
+            if 'Malwarfare' in replay['map_name']:
+                _time = event['_gameloop']/16 - START_TIME
+                if event['m_controlPlayerId'] == 9:
+                    MWBonusInitialTiming[0] = _time
+                elif event['m_controlPlayerId'] == 10:
+                    MWBonusInitialTiming[1] = _time
+                elif event['m_controlPlayerId'] == 6 and (_time - MWBonusInitialTiming[0] < 245.9375 or _time - MWBonusInitialTiming[1] < 245.9375):
+                    bonus_timings.append(_time)
 
         # Update some kill stats
         if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent':

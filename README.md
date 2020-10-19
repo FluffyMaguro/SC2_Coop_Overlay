@@ -96,6 +96,17 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 # Changelog
 
+* 2.22 version
+
+      - Player kills limited to Amons units
+      - Amon kills limited to player units
+      - SC2 process isn't checked when overlay is not visible
+      - Mengsk Prestige 3 kills properly counted
+      - Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly
+      - Twitch bot won't fail when the channel name is capitalized
+      - Better identification for bonus objective completion on Malwarfare
+
+
 * 2.20 version
 
       - Twitch bot works now with after filling up the channel name
