@@ -66,7 +66,7 @@ class UI_TabWidget(object):
         TabWidget.setWindowTitle(f"StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         TabWidget.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         TabWidget.setFixedSize(980, 610)
-        TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})')
+        TabWidget.tray_icon.setToolTip(f'StarCraft Co-op Overlay')
 
         self.signal_manager = Signal_Manager()
         self.signal_manager.showHidePerfOverlay.connect(self.show_hide_performance_overlay)
