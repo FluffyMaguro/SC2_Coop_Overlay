@@ -407,13 +407,13 @@ function postGameStats(data, showing = false) {
     fill('bonus', bonus_text);
 
     // Mutators
+    var mutator_text = '';
     if (data['mutators'] != null) {
-        var mutator_text = '';
         for (i = 0; i < data['mutators'].length; i++) {
             mutator_text = mutator_text + '<img src="Mutator Icons/' + data['mutators'][i] + '.png">'
         }
-        fill('mutators', mutator_text);
     }
+    fill('mutators', mutator_text);
 
     //BG images
     if ((data['mainCommander'] != null) && (data['mainCommander'] != '')) {
@@ -448,7 +448,7 @@ function postGameStats(data, showing = false) {
         fill('rng', '');
     };    
 
-    if ((data['extension'] > 0) && (data['mutators'].length == 0)) {
+    if ((data['extension'] > 0) && (data['mutators'] != null) && (data['mutators'].length == 0)) {
         fill('brutal', 'Weekly ('+ data['difficulty'] + ')' )  
     } else if (data['B+'] > 0) {
         fill('brutal', 'Brutal+' + data['B+'])
@@ -609,8 +609,7 @@ function fillunits(el, dat) {
         return
     };
     for (let [key, value] of Object.entries(dat)) {
-        idx += 1;
-        if (idx === (maxUnits + 1)) {
+        if (idx === maxUnits) {
             break
         };
         spacer = ''
@@ -621,6 +620,7 @@ function fillunits(el, dat) {
             spacer = 'nokillpadding'
         };
         if (value[2] > 0) {
+            idx += 1;                   
             text = text + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><br>'
         };
     }

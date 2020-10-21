@@ -73,6 +73,8 @@ body {
     font-size: 2.5vh;
     text-shadow: 0.1vh 0.1vh 0.1vh black;
     font-weight: bold;
+    position: relative;
+    z-index: 100;
 }
 
 #name2,
