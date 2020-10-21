@@ -6,6 +6,7 @@ import time
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
 from SCOFunctions.SC2Dictionaries import map_names, prestige_names
+from SCOFunctions.IdentifyMutators import identify_mutators
 from SCOFunctions.MLogging import logclass
 
 logger = logclass('PARS','INFO')
@@ -145,6 +146,10 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
         replay['accurate_length'] = replay['length'] - replay['start_time']
         replay['end_time'] = replay['length']
 
+    if parse_events and replay['extension']:
+        replay['mutators'] = identify_mutators(events)
+    else:
+        replay['mutators'] = list()
 
     replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
     replay['form_alength'] = replay['form_alength'] if not replay['form_alength'].startswith('00:') else replay['form_alength'][3:] 
