@@ -40,6 +40,21 @@ body {
     transition: right 1.5s, opacity 1s;
 }
 
+#mutators {
+    top: -0.7vh;
+    position: absolute;
+    height: 3.6vh;
+    width: 100%;
+    text-align: center;
+}
+
+#mutators img {
+    margin-right: 0.2vh;
+    height: 100%;
+    outline: 0.2vh solid rgba(0,0,0,.5);
+    outline-offset: -0.2vh
+}
+
 #topstats {
     margin-bottom: 0.35vh;
 }
@@ -77,15 +92,6 @@ body {
 #name2 {
     position: absolute;
     right: 0vh;
-}
-
-#result {
-    position: absolute;
-    top: 0vh;
-    width: 100%;
-    font-size: 2.5vh;
-    opacity: 0.7;
-    text-align: center;
 }
 
 #killbar {
@@ -132,7 +138,7 @@ body {
     left: 1.2vh;
 }
 
-#kills {
+#result {
     position: absolute;
     top: 1vh;
     width: 100%;

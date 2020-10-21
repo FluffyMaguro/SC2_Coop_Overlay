@@ -58,8 +58,8 @@ function debug() {
         'mainPrestige': 'Desolate Queen',
         'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay',
         'date': '2020-06-19 20:53:27',
-        'extension': 0,
-        'B+': 1,
+        'extension': 1,
+        'B+': 0,
         'comp': 'Dominion Battlegroup',
         'length': 745.0,
         'main': 'Maguro',
@@ -120,7 +120,9 @@ function debug() {
         'Victory':5,
         'Defeat':2,
         'Commander': 'Alarak',
-        'Prestige': 'Shadow of Death'
+        'Prestige': 'Shadow of Death',
+        'mutators': ['Lucky Envelopes','Just Die!','Aggressive Deployment','Transmutation'],
+        'difficulty': 'Brutal'
 
     };
     // data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
@@ -404,6 +406,15 @@ function postGameStats(data, showing = false) {
     }
     fill('bonus', bonus_text);
 
+    // Mutators
+    if (data['mutators'] != null) {
+        var mutator_text = '';
+        for (i = 0; i < data['mutators'].length; i++) {
+            mutator_text = mutator_text + '<img src="Mutator Icons/' + data['mutators'][i] + '.png">'
+        }
+        fill('mutators', mutator_text);
+    }
+
     //BG images
     if ((data['mainCommander'] != null) && (data['mainCommander'] != '')) {
         document.getElementById('killbar1img').src ='Commanders/'+ data['mainCommander'] +'.png'
@@ -437,8 +448,8 @@ function postGameStats(data, showing = false) {
         fill('rng', '');
     };    
 
-    if (data['extension'] > 0) {
-        fill('brutal', 'weekly/custom')
+    if ((data['extension'] > 0) && (data['mutators'].length == 0)) {
+        fill('brutal', 'Weekly')  
     } else if (data['B+'] > 0) {
         fill('brutal', 'Brutal+' + data['B+'])
     } else {

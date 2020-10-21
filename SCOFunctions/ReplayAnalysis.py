@@ -658,6 +658,7 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['length'] = replay['accurate_length']/1.4
     del replay['events']
     replay_report_dict['parser'] = replay
+    replay_report_dict['mutators'] = replay['mutators']
 
     # Main player
     replay_report_dict['mainCommander'] = replay['players'][main_player].get('commander','')
