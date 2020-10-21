@@ -449,7 +449,7 @@ function postGameStats(data, showing = false) {
     };    
 
     if ((data['extension'] > 0) && (data['mutators'].length == 0)) {
-        fill('brutal', 'Weekly')  
+        fill('brutal', 'Weekly ('+ data['difficulty'] + ')' )  
     } else if (data['B+'] > 0) {
         fill('brutal', 'Brutal+' + data['B+'])
     } else {
