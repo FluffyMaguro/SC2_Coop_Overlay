@@ -2,6 +2,7 @@ import os
 import mpyq
 import json
 import time
+import traceback
 
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
@@ -147,7 +148,11 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
         replay['end_time'] = replay['length']
 
     if parse_events and replay['extension']:
-        replay['mutators'] = identify_mutators(events)
+        try:
+            replay['mutators'] = identify_mutators(events)
+        except:
+            replay['mutators'] = list()
+            logger.error(traceback.format_exc())
     else:
         replay['mutators'] = list()
 
