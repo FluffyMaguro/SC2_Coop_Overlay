@@ -105,6 +105,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly
       - Twitch bot won't fail when the channel name is capitalized
       - Better identification for bonus objective completion on Malwarfare
+      - Small tweaks and fixes
 
 
 * 2.20 version
