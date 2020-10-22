@@ -55,6 +55,13 @@ body {
     outline-offset: -0.2vh
 }
 
+#resultsp {
+    font-size:2.5vh;
+    position: relative;
+    top: 1vh;
+    color: #B8B8B8;
+}
+
 #topstats {
     margin-bottom: 0.35vh;
 }

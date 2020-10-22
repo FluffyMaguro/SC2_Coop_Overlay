@@ -408,12 +408,17 @@ function postGameStats(data, showing = false) {
 
     // Mutators
     var mutator_text = '';
-    if (data['mutators'] != null) {
+    if ((data['mutators'] != null) && (data['mutators'].length > 0)) {
         for (i = 0; i < data['mutators'].length; i++) {
             mutator_text = mutator_text + '<img src="Mutator Icons/' + data['mutators'][i] + '.png">'
         }
+        fill('mutators', mutator_text);
+        fill('result', data['result'] + '!');
+    } else {
+        fill('mutators', '<span id="resultsp">' + data['result'] + '!</span>');
+        fill('result', 'kills');
     }
-    fill('mutators', mutator_text);
+    
 
     //BG images
     if ((data['mainCommander'] != null) && (data['mainCommander'] != '')) {
@@ -428,7 +433,7 @@ function postGameStats(data, showing = false) {
     }    
 
     fill('name1', data['main']);
-    fill('result', data['result'] + '!');
+    
     fill('map', data['map'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
     fill('name2', data['ally']);
     fillCommander('com1', data['mainCommander'], data['mainCommanderLevel'])
