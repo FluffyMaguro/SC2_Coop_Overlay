@@ -147,9 +147,9 @@ def s2_parse_replay(file, try_lastest=True, parse_events=True, onlyBlizzard=Fals
         replay['accurate_length'] = replay['length'] - replay['start_time']
         replay['end_time'] = replay['length']
 
-    if parse_events and replay['extension']:
+    if parse_events:
         try:
-            replay['mutators'] = identify_mutators(events)
+            replay['mutators'] = identify_mutators(events, extension=replay['extension'], mm='[MM]' in file)
         except:
             replay['mutators'] = list()
             logger.error(traceback.format_exc())
