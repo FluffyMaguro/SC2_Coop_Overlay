@@ -2526,12 +2526,19 @@ class UI_TabWidget(object):
         mastery_all_in = True if self.CB_RNG_Mastery.currentText() == 'All points into one' else False
         commander_dict = dict()
        
+        found = False
         for co in prestige_names:
             commander_dict[co] = set()
             for prest in {0,1,2,3}:
                 if self.RNG_co_dict[(co, prest)].isChecked():
                     commander_dict[co].add(prest)
+                    found = True
        
+        # Check if there are any prestiges selected
+        if not found:
+            logger.error('No commanders to randomize')
+            return
+
         # Randomize
         commander, prestige, mastery, mmap, race = randomize(commander_dict, mastery_all_in=mastery_all_in)
 
