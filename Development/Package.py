@@ -30,9 +30,10 @@ os.replace('dist/SCO.exe','SCO.exe')
 file_name = f"SC2CoopOverlay (x.x).zip"
 
 to_zip = ['SCO.exe','Read me (Github).url']
-to_zip.extend([f'Layouts/{f}' for f in os.listdir('Layouts')])
+to_zip.extend([f'Layouts/{f}' for f in os.listdir('Layouts') if not f in ('custom.css','custom.js')])
 to_zip.extend([f'Layouts/Icons/{f}' for f in os.listdir('Layouts/Icons')])
 to_zip.extend([f'Layouts/Commanders/{f}' for f in os.listdir('Layouts/Commanders')])
+to_zip.extend([f'Layouts/Mutator Icons/{f}' for f in os.listdir('Layouts/Mutator Icons')])
 
 with ZipFile(file_name,'w') as zip: 
         for file in to_zip: 

@@ -1853,6 +1853,15 @@ class UI_TabWidget(object):
             else:
                 logger.error(f"No dir: {folder}")
 
+        # Custom CSS/JS
+        if not os.path.isfile(truePath('Layouts/custom.css')):
+            with open(truePath('Layouts/custom.css'), 'w') as f:
+                f.write('/* insert custom css here */')
+
+        if not os.path.isfile(truePath('Layouts/custom.js')):
+            with open(truePath('Layouts/custom.js'), 'w') as f:
+                f.write('// insert custom javascript here')
+
         # Load overlay
         if not os.path.isfile(truePath('Layouts/Layout.html')):
             self.sendInfoMessage("Error! Failed to locate the html file", color='red')
