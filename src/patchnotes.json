@@ -32,5 +32,11 @@
     "Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly",
 	"Twitch bot won't fail when the channel name is capitalized",
 	"Better identification for bonus objective completion on Malwarfare"
+  ],
+    "223": [
+    "Mutators identified in custom mutators and MM maps",
+    "custom.js and custom.css are not overriden after an update",
+    "Weekly mutations and custom mutators shows difficulty",
+    "Small fixes and tweaks"
   ]
 }

@@ -96,6 +96,13 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 # Changelog
 
+* 2.23 version
+
+      - Mutators identified in custom mutators and MM maps
+      - custom.js and custom.css are not overriden after an update
+      - Weekly mutations and custom mutators shows difficulty
+      - Small fixes and tweaks
+
 * 2.22 version
 
       - Player kills limited to Amons units
