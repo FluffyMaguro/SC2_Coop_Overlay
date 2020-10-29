@@ -1,7 +1,7 @@
 from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
-mutators = list(Mutators.keys())[:-19]
+mutators_list = list(Mutators.keys())[:-19]
 for item in ('Nap Time',
              'Stone Zealots',
              'Chaos Studios',
@@ -17,13 +17,13 @@ for item in ('Nap Time',
              'Fireworks',
              'Lucky Envelopes',
              'Sluggishness'):
-    mutators.remove(item)
+    mutators_list.remove(item)
 
 
 def get_mutator(button, panel):
     """ Returns mutator based on button (41-83) and currently selected panel (1-4) """
     button = (button - 41)//3 + (panel-1)*15
-    return mutators[button]
+    return mutators_list[button]
 
 
 def identify_mutators(events, extension=True, mm=False):
@@ -45,10 +45,14 @@ def identify_mutators(events, extension=True, mm=False):
     if extension:
         # Get a list of dialog items used
         actions = list()
+        offset = 0
 
         for event in events:
+            if event['_gameloop'] == 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['m_eventType'] == 3 and 'SelectionChanged' in event['m_eventData']:
+                offset = 129 - event['m_controlId']
+
             if event['_gameloop'] > 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
-                actions.append(event['m_controlId'])
+                actions.append(event['m_controlId'] + offset)
 
             # Break on game starting
             elif event['_event'] == 'NNet.Game.STriggerCutsceneBookmarkFiredEvent':
