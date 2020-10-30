@@ -7,8 +7,8 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.23/SC2CoopOverlay.2.23.zip)
-* [Mega](https://mega.nz/file/Ek1hCKLY#SxrwpwS7NmkMtokBC7ry4vWKAXcr2K2rgYl49lBHsQE)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.24/SC2CoopOverlay.2.24.zip)
+* [Mega](https://mega.nz/file/g98TxajC#k_wvrLG2kEC6hxdMf0L1dxO0bMdnl54qbO1t0CJ67Fw)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -95,6 +95,10 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.24 version
+
+      - Fix for mutator identification
 
 * 2.23 version
 

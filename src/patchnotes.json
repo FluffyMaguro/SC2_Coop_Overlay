@@ -38,5 +38,8 @@
     "custom.js and custom.css are not overriden after an update",
     "Weekly mutations and custom mutators shows difficulty",
     "Small fixes and tweaks"
+  ],
+    "224": [
+    "Fix for mutator identification"
   ]
 }
