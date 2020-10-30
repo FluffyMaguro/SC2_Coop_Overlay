@@ -51,11 +51,11 @@ def identify_mutators(events, extension=True, mm=False):
             if event['_gameloop'] == 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['m_eventType'] == 3 and 'SelectionChanged' in event['m_eventData']:
                 offset = 129 - event['m_controlId']
 
-            if event['_gameloop'] > 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
+            elif event['_gameloop'] > 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
                 actions.append(event['m_controlId'] + offset)
 
             # Break on game starting
-            elif event['_event'] == 'NNet.Game.STriggerCutsceneBookmarkFiredEvent':
+            elif event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1,2] and 'Spray' in event['m_upgradeTypeName'].decode():
                break
 
         panel = 1 # Currently visible mutator panel
