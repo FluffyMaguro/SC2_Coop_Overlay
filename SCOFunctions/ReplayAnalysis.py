@@ -223,6 +223,8 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['mainAPM'] = replay['players'][main_player].get('apm',0)
     replay_report_dict['allyAPM'] = replay['players'][ally_player].get('apm',0)
     replay_report_dict['positions'] = {'main':main_player, 'ally':ally_player}
+    replay_report_dict['mainIcons'] = dict()
+    replay_report_dict['allyIcons'] = dict()
 
     # Difficulty
     diff_1 = replay['difficulty'][0]
@@ -421,6 +423,24 @@ def analyse_replay(filepath, main_player_handles=None):
 
         # Update ownership
         if event['_event'] == 'NNet.Replay.Tracker.SUnitOwnerChangeEvent' and unitid(event) in unit_dict:
+
+            # Mind-controlled units
+            _losing_player = unit_dict[unitid(event)][1]
+            # _unit = unit_dict[unitid(event)][0]
+            # logger.info(f"{_unit} ({_losing_player}) mind-controlled by {event['m_controlPlayerId']}")
+
+            if event['m_controlPlayerId'] == main_player and _losing_player in amon_players:
+                if not 'mc' in  replay_report_dict['mainIcons']:
+                    replay_report_dict['mainIcons']['mc'] = 1
+                else:
+                    replay_report_dict['mainIcons']['mc'] += 1
+            elif event['m_controlPlayerId'] == ally_player and _losing_player in amon_players:
+                if not 'mc' in  replay_report_dict['allyIcons']:
+                    replay_report_dict['allyIcons']['mc'] = 1
+                else:
+                    replay_report_dict['allyIcons']['mc'] += 1
+
+            # Update ownership
             unit_dict[unitid(event)][1] = event['m_controlPlayerId']
 
             # Malwarfare bonus objective. First save when the bonus started, then check if it was completed sooner than 245.9375
@@ -665,7 +685,6 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['mainCommanderLevel'] = replay['players'][main_player].get('commander_level',0)
     replay_report_dict['mainMasteries'] = replay['players'][main_player].get('masteries',[0,0,0,0,0,0])
     replay_report_dict['mainkills'] = killcounts[main_player]
-    replay_report_dict['mainIcons'] = dict()
     replay_report_dict['mainPrestige'] = PrestigeTalents[main_player]
 
     # Ally player
@@ -673,7 +692,6 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['allyCommanderLevel'] = replay['players'][ally_player].get('commander_level',0)
     replay_report_dict['allyMasteries'] = replay['players'][ally_player].get('masteries',[0,0,0,0,0,0])
     replay_report_dict['allykills'] = killcounts[ally_player]
-    replay_report_dict['allyIcons'] = dict()
     replay_report_dict['allyPrestige'] = PrestigeTalents[ally_player]
 
     # Fallback
