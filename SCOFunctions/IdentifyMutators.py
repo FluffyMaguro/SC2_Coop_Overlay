@@ -23,7 +23,10 @@ for item in ('Nap Time',
 def get_mutator(button, panel):
     """ Returns mutator based on button (41-83) and currently selected panel (1-4) """
     button = (button - 41)//3 + (panel-1)*15
-    return mutators_list[button]
+    if 0 <= button < len(mutators_list):
+        return mutators_list[button]
+    else:
+        return None
 
 
 def identify_mutators(events, extension=True, mm=False):
@@ -62,7 +65,9 @@ def identify_mutators(events, extension=True, mm=False):
         for action in actions:
             # Mutator clicked
             if 41 <= action <= 83:
-                mutators.append(get_mutator(action, panel))
+                new_mutator = get_mutator(action, panel)
+                if new_mutator != None and not new_mutator in mutators:
+                    mutators.append(new_mutator)
 
             # Panel Changed
             if action == 123 and panel > 1:
