@@ -341,7 +341,7 @@ class UnitStats(QtWidgets.QWidget):
     @staticmethod
     def sortingf(x, sortby=None):
         """ Sorting function for units"""
-        if x[0] == 'sum':
+        if x[0] in ('sum', 'count'):
             return -1
         elif isinstance(x[1][sortby], int) or isinstance(x[1][sortby], float):
             return x[1][sortby]
@@ -398,7 +398,7 @@ class UnitStats(QtWidgets.QWidget):
         idx = -1
         for unit in self.unit_data[which][commander]:
             # Don't workers and other unlikely units to get kills, their created/lost numbers would be very off
-            if unit in {'Mecha Infestor','Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
+            if unit in {'count','Mecha Infestor','Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
                 continue
 
             # Not sure what happened here, but Disruptors were created for Karax. Brood Queen is from gift mutator.
@@ -417,7 +417,7 @@ class UnitStats(QtWidgets.QWidget):
 
             self.units[('name', unit)] = QtWidgets.QLabel(self.WD_units)
             self.units[('name', unit)].setGeometry(QtCore.QRect(self.left_offset+20, self.top_offset+idx*17, 150, 17))
-            name = unit if unit != 'sum' else 'Σ'
+            name = unit if unit != 'sum' else f'Σ ({self.unit_data[which][commander]["count"]} games)'
             self.units[('name', unit)].setText(str(name)) 
 
             self.units[('created', unit)] = QtWidgets.QLabel(self.WD_units)

@@ -295,6 +295,9 @@ def _add_units(unit_data: dict, r: dict, p: int):
     commander = r['players'][p]['commander']
     if not commander in unit_data:
         unit_data[commander] = dict()
+        unit_data[commander]['count'] = 0
+
+    unit_data[commander]['count'] += 1
 
     # Count kills done by mind-controlled units
     mc_unit_bonus_kills = 0
@@ -392,7 +395,7 @@ def _process_dict(unit_data: dict):
         total = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':1}
                                        
         for unit in unit_data[commander]:
-            if unit == 'sum':
+            if unit in ('sum','count'):
                 continue
 
             # Calculate median of kills

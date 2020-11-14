@@ -96,10 +96,11 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 # Changelog
 
-* 2.24 version
+* 2.25 version
 
       - Counted the total number of mind-controlled units
       - Fix for mutator identification
+      - Number of games shown in unit stats
 
 * 2.24 version
 
