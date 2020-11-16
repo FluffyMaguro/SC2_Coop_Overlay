@@ -11,6 +11,6 @@ PyQt5==5.15.1
 PyQt5-sip==12.8.1
 PyQtWebEngine==5.15.1
 requests==2.24.0
-s2protocol==5.0.3.81433.0
+s2protocol==5.0.4.82457.0
 urllib3==1.25.10
 websockets==8.1

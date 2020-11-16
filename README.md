@@ -7,8 +7,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.24/SC2CoopOverlay.2.24.zip)
-* [Mega](https://mega.nz/file/g98TxajC#k_wvrLG2kEC6hxdMf0L1dxO0bMdnl54qbO1t0CJ67Fw)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.25/SC2CoopOverlay.2.25.zip)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -101,6 +100,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
       - Counted the total number of mind-controlled units
       - Fix for mutator identification
       - Number of games shown in unit stats
+      - Updated s2protocol
 
 * 2.24 version
 

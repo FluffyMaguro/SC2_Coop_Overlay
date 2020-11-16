@@ -1,4 +1,4 @@
 {
-"version" : 224, 
-"download_link_1" : "https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.24/SC2CoopOverlay.2.24.zip"
+"version" : 225, 
+"download_link_1" : "https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.25/SC2CoopOverlay.2.25.zip"
 }

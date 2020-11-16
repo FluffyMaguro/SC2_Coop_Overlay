@@ -1162,7 +1162,7 @@ class UI_TabWidget(object):
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
         self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
         self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">donate if you feel generous</a>')
+        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if appreciate this work</a>')
 
         # Styling
         for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate, self.LA_MDiscord}:
