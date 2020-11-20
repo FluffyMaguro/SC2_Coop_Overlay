@@ -16,6 +16,7 @@ import shutil
 import platform
 import threading
 import traceback
+import webbrowser
 import urllib.request
 from functools import partial
 from datetime import datetime
@@ -348,6 +349,19 @@ class UI_TabWidget(object):
         self.BT_AomTest.clicked.connect(self.validateAOM)
         self.BT_AomTest.setText("Verify") 
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
+
+        #Paypal
+        x = 835
+        y = 520
+        self.IMG_Front_Donate = QtWidgets.QLabel(self.TAB_Main)
+        self.IMG_Front_Donate.setGeometry(QtCore.QRect(835, y, 145, 50))
+        self.IMG_Front_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
+
+        self.BT_Front_Donate = QtWidgets.QPushButton(self.TAB_Main)
+        self.BT_Front_Donate.setGeometry(QtCore.QRect(x-5, y, 140, 50))
+        self.BT_Front_Donate.clicked.connect(self.paypal_clicked)
+        self.BT_Front_Donate.setStyleSheet("border: 0px")
+        self.BT_Front_Donate.setToolTip(f'Donate to support this app')
 
         # Version
         self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
@@ -1162,7 +1176,7 @@ class UI_TabWidget(object):
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
         self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
         self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if appreciate this work</a>')
+        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if you feel generous</a>')
 
         # Styling
         for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate, self.LA_MDiscord}:
@@ -2729,6 +2743,10 @@ class UI_TabWidget(object):
         except:
             print(traceback.format_exc())
             self.sendInfoMessage(f'Failed at executing: {text}', color='red')
+
+
+    def paypal_clicked(self):
+        webbrowser.open("https://www.paypal.com/paypalme/FluffyMaguro")
 
 
 if __name__ == "__main__":

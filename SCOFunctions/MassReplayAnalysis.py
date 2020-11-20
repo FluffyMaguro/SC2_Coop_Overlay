@@ -849,7 +849,7 @@ class mass_replay_analysis:
             data = [r for r in data if not self.both_main_players(r)]
 
 
-        logger.info(f'Filtering {len(self.ReplayData)} → {len(data)}')
+        logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)}')
 
         # Analyse
         DifficultyData = calculate_difficulty_data(data)

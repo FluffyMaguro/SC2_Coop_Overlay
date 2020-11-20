@@ -24,9 +24,9 @@ class logclass:
             print(msg)
         except:
             try:
-                print(traceback.format_exc())
+                print(msg.encode("utf-8"))
             except:
-                pass
+                print(traceback.format_exc())
 
         if self.LOGGING:
             with open(self.FILE,'ab') as f:
