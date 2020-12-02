@@ -676,7 +676,7 @@ class mass_replay_analysis:
                 full_data = analyse_replay(r['file'])
 
                 full_data['full_analysis'] = True
-                if len(full_data) == 0:
+                if len(full_data) < 2:
                     with lock:
                         r['full_analysis'] = False
                     continue
@@ -692,7 +692,11 @@ class mass_replay_analysis:
                     
                 # Update widget
                 with lock:
-                    r.update(self.format_data(full_data))
+                    try:
+                        formated = self.format_data(full_data)
+                        r.update(formated)
+                    except:
+                        logger.error(traceback.format_exc())
                     self.full_analysis_label.setText(f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
         if idx > 0:
