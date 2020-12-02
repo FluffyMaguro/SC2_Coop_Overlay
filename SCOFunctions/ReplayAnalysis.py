@@ -173,13 +173,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
     # Load the replay
     replay = None
-    for i in range(2):
+    for i in range(3):
         try:
             replay = s2_parse_replay(filepath, return_events=True)
             break
         except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
             logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
-            time.sleep(0.2)
+            time.sleep(0.3)
 
     if replay == None:
         return {}
@@ -430,12 +430,12 @@ def analyse_replay(filepath, main_player_handles=None):
             # logger.info(f"{_unit} ({_losing_player}) mind-controlled by {event['m_controlPlayerId']}")
 
             if event['m_controlPlayerId'] == main_player and _losing_player in amon_players:
-                if not 'mc' in  replay_report_dict['mainIcons']:
+                if not 'mc' in replay_report_dict['mainIcons']:
                     replay_report_dict['mainIcons']['mc'] = 1
                 else:
                     replay_report_dict['mainIcons']['mc'] += 1
             elif event['m_controlPlayerId'] == ally_player and _losing_player in amon_players:
-                if not 'mc' in  replay_report_dict['allyIcons']:
+                if not 'mc' in replay_report_dict['allyIcons']:
                     replay_report_dict['allyIcons']['mc'] = 1
                 else:
                     replay_report_dict['allyIcons']['mc'] += 1
