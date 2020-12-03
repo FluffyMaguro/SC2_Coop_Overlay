@@ -46,5 +46,8 @@
     "Counted the total number of mind-controlled units",
     "Fix for mutator identification",
     "Number of games shown in unit stats"
+  ],
+    "226": [
+    "Bug fixes and tweaks"
   ]
 }
