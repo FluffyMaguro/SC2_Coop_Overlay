@@ -95,6 +95,12 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 # Changelog
 
+* 2.27 version
+
+      - Fixed duration setting not working properly
+      - Fixed monitor setting not working properly
+      - Updated s2protocol
+
 * 2.26 version
 
       - Bug fixes and tweaks

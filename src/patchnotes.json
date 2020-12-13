@@ -49,5 +49,10 @@
   ],
     "226": [
     "Bug fixes and tweaks"
+  ],
+    "227": [
+    "Fixed duration setting not working properly",
+    "Fixed monitor setting not working properly",
+    "Updated s2protocol"
   ]
 }

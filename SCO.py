@@ -40,7 +40,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 226
+APPVERSION = 227
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1852,8 +1852,8 @@ class UI_TabWidget(object):
         logger.info(f'>>> Starting!\n{self.settings}')
 
         # Get monitor dimensions
-        self.sg = QtWidgets.QDesktopWidget().screenGeometry(int(self.settings['monitor']-1))
-        self.dimensions = (self.sg.width(), self.sg.height())
+        self.desktop_widget = QtWidgets.QDesktopWidget()
+        self.sg = self.desktop_widget.screenGeometry(int(self.settings['monitor']-1))
 
         # Debug files in MEI directory
         if self.settings['debug']:
@@ -1973,7 +1973,15 @@ class UI_TabWidget(object):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         try:
             self.WebView.setFixedSize(int(self.sg.width()*self.settings['width']), int(self.sg.height()*self.settings['height']) - self.settings['subtract_height'])
-            self.WebView.move(int(self.sg.width()*(1 - self.settings['width']) + self.settings['right_offset']), self.sg.top())
+
+            # Calculate correct X offset when considering multiple monitors. Sum all widths including the current monitor.
+            x_start = 0
+            for i in range(0, self.settings['monitor']):
+                x_start += self.desktop_widget.screenGeometry(i).width()
+            # Substract widget  width and offset
+            x = x_start - self.sg.width()*self.settings['width'] + self.settings['right_offset']
+            # Move widget
+            self.WebView.move(int(x), self.sg.top())
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
         except:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
