@@ -512,7 +512,8 @@ function postGameStats(data, showing = false) {
     if (data['Victory'] == null) {
         document.getElementById('loader').style.opacity = '0';
         document.getElementById('loader').innerHTML = ''
-    } else {
+    } 
+    if (data['newReplay'] != null) {
         setTimeout(hidestats, DURATION * 1000);
     }
 }

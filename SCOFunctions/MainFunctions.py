@@ -285,6 +285,7 @@ def check_replays():
 
                                 # What to send
                                 out = replay_dict.copy()
+                                out['newReplay'] = True
                                 if SETTINGS.get('show_session',False):
                                     out.update(session_games)
                                 if SETTINGS.get('show_random_on_overlay',False) and len(RNG_COMMANDER) > 0:
