@@ -49,13 +49,15 @@ def identify_mutators(events, extension=True, mm=False):
         # Get a list of dialog items used
         actions = list()
         offset = 0
+        last_game_loop = None # Save the last gameloop. Don't count multiple clicks done on the same loop, game will ignore them.
 
         for event in events:
             if event['_gameloop'] == 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['m_eventType'] == 3 and 'SelectionChanged' in event['m_eventData']:
                 offset = 129 - event['m_controlId']
 
-            elif event['_gameloop'] > 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
+            elif event['_gameloop'] > 0 and event['_gameloop'] != last_game_loop and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
                 actions.append(event['m_controlId'] + offset)
+                last_game_loop = event['_gameloop']
 
             # Break on game starting
             elif event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1,2] and 'Spray' in event['m_upgradeTypeName'].decode():
