@@ -282,6 +282,7 @@ def check_replays():
                             for player in replay_dict['parser']['players']:
                                 if player.get('commander','') != '':
                                     commander_found = True
+                                    break
 
                             if not commander_found:
                                 logger.info('No commanders found, wont show replay')
