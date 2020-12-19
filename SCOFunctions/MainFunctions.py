@@ -279,10 +279,13 @@ def check_replays():
 
                             # Check if commanders have been found ingame (to exclude other game modes)
                             commander_found = False
-                            for player in replay_dict['parser']['players']:
-                                if player.get('commander','') != '':
-                                    commander_found = True
-                                    break
+                            try:
+                                for player in replay_dict['parser']['players']:
+                                    if player.get('commander','') != '':
+                                        commander_found = True
+                                        break
+                            except:
+                                pass
 
                             if not commander_found:
                                 logger.info('No commanders found, wont show replay')
