@@ -277,8 +277,15 @@ def check_replays():
                         try:
                             replay_dict = analyse_replay(file_path,PLAYER_HANDLES)
 
-                            # Good output
-                            if len(replay_dict) > 1:
+                            # Check if commanders have been found ingame (to exclude other game modes)
+                            commander_found = False
+                            for player in replay_dict['parser']['players']:
+                                if player.get('commander','') != '':
+                                    commander_found = True
+
+                            if not commander_found:
+                                logger.info('No commanders found, wont show replay')
+                            elif len(replay_dict) > 1:
                                 logger.debug('Replay analysis result looks good, appending...')
                                 with lock:
                                     session_games[replay_dict['result']] += 1
