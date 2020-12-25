@@ -54,5 +54,10 @@
     "Fixed duration setting not working properly",
     "Fixed monitor setting not working properly",
     "Updated s2protocol"
+  ],
+    "228": [
+    "Overlay won't show in games where no commanders were found",
+    "Fixed a bug with mutator identifiaction",
+    "Updated libraries"
   ]
 }

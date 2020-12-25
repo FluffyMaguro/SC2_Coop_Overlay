@@ -7,7 +7,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.27/SC2CoopOverlay.2.27.zip)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.28/SC2CoopOverlay.2.28.zip)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -83,6 +83,7 @@ If you are using game capture, you have to add overlay to OBS manually.
 
 # Other notes
 * Close the app by right clicking the icon in the system tray and clicking "Quit"
+* If you delete replays, delete also `cache_replay_analysis.txt` so new replays with the same name and path will not show old cached data.
 * The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay).
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
 * On MacOS or Linux run the script with "`sudo python3 SCO.py`" after installing required packages. It has been successfully tested on both MacOS and Linux, however every distribution and OS version has its own quirks.
@@ -94,6 +95,12 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.28 version
+
+      - Overlay won't show in games where no commanders were found
+      - Fixed a bug with mutator identifiaction
+      - Updated libraries
 
 * 2.27 version
 
