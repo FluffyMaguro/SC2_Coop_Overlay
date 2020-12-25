@@ -99,7 +99,7 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * 2.28 version
 
       - Overlay won't show in games where no commanders were found
-      - Fixed a bug with mutator identifiaction
+      - Fixed a bug with mutator identification
       - Updated libraries
 
 * 2.27 version
