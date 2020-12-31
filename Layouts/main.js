@@ -496,12 +496,12 @@ function postGameStats(data, showing = false) {
     fill('CMname1', data['main']);
     fillicons('CMicons1', data['mainIcons']);
     fillmasteries('CMmastery1', data['mainMasteries'], data['mainCommander']);
-    fillunits('CMunits1', data['mainUnits']);
+    fillunits('CMunits1', data['mainUnits'], data['mainCommander']);
 
     fill('CMname2', data['ally']);
     fillicons('CMicons2', data['allyIcons']);
     fillmasteries('CMmastery2', data['allyMasteries'], data['allyCommander']);
-    fillunits('CMunits2', data['allyUnits'], 'CMicons2');
+    fillunits('CMunits2', data['allyUnits'], data['allyCommander']);
 
     fill('CMname3', 'Amon');
     fillunits('CMunits3', data['amonUnits'], null);
@@ -608,11 +608,11 @@ function fillicons(el, data) {
     document.getElementById(el).innerHTML = text
 }
 
-function fillunits(el, dat) {
-    var text = '<span class="unitkills">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kills</span><span class="unitcreated">created</span><span class="unitdied">lost</span><br>';
-    var percent = 0
-    var spacer = ''
-    var idx = 0
+function fillunits(el, dat, commander) {
+    let text = '<span class="unitkills">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kills</span><span class="unitcreated">created</span><span class="unitdied">lost</span><br>';
+    let percent = 0;
+    let spacer = '';
+    let idx = 0;
     if (dat == null) {
         return
     };
@@ -620,8 +620,13 @@ function fillunits(el, dat) {
         if (idx === maxUnits) {
             break
         };
-        spacer = ''
-        percent = Math.round(100 * value[3])
+
+        // Switch few unit names
+        if ((key == 'Stalker') && (commander == 'Alarak')) {key = 'Slayer'};
+        if ((key == 'Sentinel') && (commander == 'Fenix')) {key = 'Legionnaire'};
+
+        spacer = '';
+        percent = Math.round(100 * value[3]);
         if (percent < 10) {
             spacer = 'killpadding'
         } else if (percent == 100) {
