@@ -1,0 +1,9 @@
+TychusReaper
+TychusMedic
+TychusMarauder
+TychusFirebat
+TychusHERC
+TychusCoop
+TychusGhost
+TychusWarhound
+TychusSpectre

@@ -757,7 +757,7 @@ commander_no_units = {'Nova': 'CoopCasterNova',
                       'Karax': 'SoACasterKarax',
                       'Artanis': 'SoACasterArtanis',
                       }
-units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
+units_killed_in_morph = {'HydraliskLurker', 'MutaliskBroodlord', 'RoachVile', 'Mutalisk'}
 primal_combat_predecessors = {'DehakaRavasaur': 'DehakaZerglingLevel2',
                               'DehakaRoachLevel3': 'DehakaRoachLevel2',
                               'DehakaGuardianFightMorph': 'DehakaRoachLevel2',
@@ -771,3 +771,11 @@ UnitAddLossesTo = {'TorrasqueChrysalis': 'Ultralisk',
                    'ThorWreckageSwann': 'Thor',
                    'ThorWreckage': 'Thor',
                    }
+
+skip_strings = _txt_to_iter(_joinDATA('skip_strings.txt'), factory=list)
+dont_show_created_lost = _txt_to_iter(_joinDATA('dont_show_created_lost.txt'))
+aoe_units = _txt_to_iter(_joinDATA('aoe_units.txt'))
+tychus_outlaws = _txt_to_iter(_joinDATA('tychus_outlaws.txt'))
+commander_upgrades = _csv_to_dictitems(_joinDATA('commander_upgrades.csv'))
+dont_include_units = _txt_to_iter(_joinDATA('dont_include_units.txt'))
+salvage_units = _txt_to_iter(_joinDATA('salvage_units.txt'))

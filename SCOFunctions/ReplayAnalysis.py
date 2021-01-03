@@ -11,15 +11,9 @@ from SCOFunctions.SC2Dictionaries import (
     UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades,
     HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids, duplicating_units, revival_types, icon_units,
     self_killing_units, commander_no_units, units_killed_in_morph, primal_combat_predecessors, UnitAddLossesTo,
+    skip_strings, dont_show_created_lost, aoe_units, tychus_outlaws, commander_upgrades, dont_include_units,
+    salvage_units,
 )
-
-skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
-dont_show_created_lost = {"Stetmann's Top Bar","Zeratul's Top Bar","Vorazun's Top Bar","Fenix's Top Bar","Zagara's Top Bar","Tychus' Top Bar","Swann's Top Bar","Stukov's Top Bar","Raynor's Top Bar","Nova's Top Bar","Mengsk's Top Bar","Kerrigan's Top Bar","Karax's Top Bar","Han and Horner's Top Bar","Dehaka's Top Bar","Artanis' Top Bar","Abathur's Top Bar",'Photon Overcharge','Super Gary','Gary','Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
-aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
-tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
-commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
-dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
-salvage_units = {"PerditionTurretUnderground","PerditionTurret","ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
 
 logger = logclass('REPA','INFO')
 

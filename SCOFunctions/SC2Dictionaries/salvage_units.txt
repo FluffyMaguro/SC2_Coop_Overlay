@@ -1,0 +1,10 @@
+KelMorianGrenadeTurret
+Bunker
+BunkerDepotMengsk
+NovaACLaserTurret
+PerditionTurret
+PerditionTurretUnderground
+ArtilleryMengsk
+FlamingBetty
+KelMorianMissileTurret
+TychusSCVAutoTurret
