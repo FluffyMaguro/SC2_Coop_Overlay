@@ -737,3 +737,37 @@ mutator_ids = {
  'Vertigo': 'Vertigo',
  'VoidRifts': 'Void Rifts',
  'WalkingInfested': 'Walking Infested'}
+
+duplicating_units = ['HotSRaptor',
+                     'MutatorAmonArtanis',
+                     'HellbatBlackOps',
+                     'LurkerStetmannBurrowed',
+                     ]
+revival_types = {'KerriganReviveCocoon': 'K5Kerrigan',
+                 'AlarakReviveBeacon': 'AlarakCoop',
+                 'ZagaraReviveCocoon': 'ZagaraVoidCoop',
+                 'DehakaCoopReviveCocoonFootPrint': 'DehakaCoop',
+                 'NovaReviveBeacon': 'NovaCoop',
+                 'ZeratulCoopReviveBeacon': 'ZeratulCoop',
+                 }
+icon_units = {'MULE', 'Omega Worm', 'Infested Bunker', 'Mecha Infestor', 'Unbound Fanatic'}
+self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
+commander_no_units = {'Nova': 'CoopCasterNova',
+                      'Han & Horner': 'HHMagneticMine',
+                      'Karax': 'SoACasterKarax',
+                      'Artanis': 'SoACasterArtanis',
+                      }
+units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
+primal_combat_predecessors = {'DehakaRavasaur': 'DehakaZerglingLevel2',
+                              'DehakaRoachLevel3': 'DehakaRoachLevel2',
+                              'DehakaGuardianFightMorph': 'DehakaRoachLevel2',
+                              'ImpalerDehaka':'DehakaHydraliskLevel2',
+                              'DehakaMutaliskLevel3FightMorph': 'DehakaHydraliskLevel2',
+                              'DehakaPrimalSwarmHost': 'DehakaSwarmHost',
+                              'DehakaUltraliskLevel3': 'DehakaUltraliskLevel2',
+                              }
+UnitAddLossesTo = {'TorrasqueChrysalis': 'Ultralisk',
+                   'SiegeTankWreckage': 'Siege Tank',
+                   'ThorWreckageSwann': 'Thor',
+                   'ThorWreckage': 'Thor',
+                   }

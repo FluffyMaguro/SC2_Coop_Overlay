@@ -7,24 +7,19 @@ from pprint import pprint
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
+from SCOFunctions.SC2Dictionaries import (
+    UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades,
+    HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids, duplicating_units, revival_types, icon_units,
+    self_killing_units, commander_no_units, units_killed_in_morph, primal_combat_predecessors, UnitAddLossesTo,
+)
 
-
-duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
 skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
-revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
-icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic'}
-self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {"Stetmann's Top Bar","Zeratul's Top Bar","Vorazun's Top Bar","Fenix's Top Bar","Zagara's Top Bar","Tychus' Top Bar","Swann's Top Bar","Stukov's Top Bar","Raynor's Top Bar","Nova's Top Bar","Mengsk's Top Bar","Kerrigan's Top Bar","Karax's Top Bar","Han and Horner's Top Bar","Dehaka's Top Bar","Artanis' Top Bar","Abathur's Top Bar",'Photon Overcharge','Super Gary','Gary','Tychus Findlay',"James 'Sirius' Sykes","Kev 'Rattlesnake' West",'Nux','Crooked Sam','Lt. Layna Nikara',"Miles 'Blaze' Lewis","Rob 'Cannonball' Boswell","Vega"}
 aoe_units = {'Raven','ScienceVessel','Viper','HybridDominator','Infestor','HighTemplar','Blightbringer','TitanMechAssault','MutatorAmonNova'}
 tychus_outlaws = {'TychusCoop','TychusReaper','TychusWarhound','TychusMarauder','TychusHERC','TychusFirebat','TychusGhost','TychusSpectre','TychusMedic',}
 commander_upgrades = { "AlarakCommander":"Alarak", "ArtanisCommander":"Artanis", "FenixCommander":"Fenix", "KaraxCommander":"Karax", "VorazunCommander":"Vorazun", "ZeratulCommander":"Zeratul", "HornerCommander":"Han & Horner", "MengskCommander":"Mengsk", "NovaCommander":"Nova", "RaynorCommander":"Raynor", "SwannCommander":"Swann", "TychusCommander":"Tychus", "AbathurCommander":"Abathur", "DehakaCommander":"Dehaka", "KerriganCommander":"Kerrigan", "StukovCommander":"Stukov", "ZagaraCommander":"Zagara", "StetmannCommander":"Stetmann"}
-commander_no_units = {'Nova':'CoopCasterNova', "Han & Horner":'HHMagneticMine',"Karax":"SoACasterKarax","Artanis":"SoACasterArtanis"}
-units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Mutalisk'}
-primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
 salvage_units = {"PerditionTurretUnderground","PerditionTurret","ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
-UnitAddLossesTo = {'TorrasqueChrysalis':'Ultralisk','SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor'}
 
 logger = logclass('REPA','INFO')
 
