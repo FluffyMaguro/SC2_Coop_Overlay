@@ -1940,7 +1940,6 @@ class UI_TabWidget(object):
         # Select current index
         self.update_selected_bank_item(self.settings['twitchbot']['bank_locations']['Current'])
 
-        
 
     def find_and_update_banks(self):
         """ Finds banks, update UI """
@@ -2252,14 +2251,14 @@ class UI_TabWidget(object):
                     elif '\\98-S2-' in bank_path:
                         region = 'PTR'
                     else:
-                        region = 'Unknown'
+                        region = '?'
 
                     text = f"{self.CAnalysis.name_handle_dict[handle]} ({region}) - {bank_path}"
                     self.bank_name_to_location_dict[text] = bank_path
                     self.CB_twitch_banks.setItemText(i, text)
                     break
 
-        # Link changing
+        # Enable selecting banks
         self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
         self.CB_twitch_banks.setEnabled(True)
 
