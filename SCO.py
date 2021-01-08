@@ -1037,6 +1037,7 @@ class UI_TabWidget(object):
         # Bank combo-box
         self.CB_twitch_banks = QtWidgets.QComboBox(self.TAB_TwitchBot)
         self.CB_twitch_banks.setGeometry(QtCore.QRect(20, 443, 800, 20))
+        self.CB_twitch_banks.setEnabled(False)
 
         # Refresh button
         self.BT_find_banks = QtWidgets.QPushButton(self.TAB_TwitchBot)
@@ -1938,8 +1939,7 @@ class UI_TabWidget(object):
         self.find_and_update_banks()
         # Select current index
         self.update_selected_bank_item(self.settings['twitchbot']['bank_locations']['Current'])
-        # Link changing
-        self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
+
         
 
     def find_and_update_banks(self):
@@ -1961,26 +1961,31 @@ class UI_TabWidget(object):
     def change_bank(self):
         """ Update currently used bank in the twitch bot.
         Used when user changes combo-box directly"""
-        logger.info(f'Changing bank to {self.CB_twitch_banks.currentText()}')
-        self.settings['twitchbot']['bank_locations']['Current'] = self.CB_twitch_banks.currentText()
+        bank_path = self.bank_name_to_location_dict.get(self.CB_twitch_banks.currentText(), self.CB_twitch_banks.currentText())
+        logger.info(f'Changing bank to {bank_path}')
+        self.settings['twitchbot']['bank_locations']['Current'] = bank_path
         try:
-            self.TwitchBot.bank = self.CB_twitch_banks.currentText()
+            self.TwitchBot.bank = bank_path
         except:
             logger.error('Failed to set bank for twitch bot')
 
 
-    def update_selected_bank_item(self, path):
+    def update_selected_bank_item(self, bank_path):
         """ Updates selected bank indirectly (when user didn't click it directly)"""
-        if path in {'',None}:
+        if bank_path in {'',None}:
             logger.error('not valid bank path, not changing')
             return
 
-        logger.info(f'Changing bank indirectly to {path.strip()}')
+        logger.info(f'Changing bank indirectly to {bank_path.strip()}')
        
         for i in range(self.CB_twitch_banks.count()):
-            if path == self.CB_twitch_banks.itemText(i):
-                self.settings['twitchbot']['bank_locations']['Current'] = path
+            if bank_path in self.CB_twitch_banks.itemText(i):
+                self.settings['twitchbot']['bank_locations']['Current'] = bank_path
                 self.CB_twitch_banks.setCurrentIndex(i)
+                try:
+                    self.TwitchBot.bank = bank_path
+                except:
+                    logger.error('Failed to set bank for twitch bot')
                 break
 
 
@@ -2231,25 +2236,32 @@ class UI_TabWidget(object):
         self.find_default_bank_location()
 
         # Change bank names
+        self.bank_name_to_location_dict = dict()
         for i in range(self.CB_twitch_banks.count()):
+            bank_path = self.CB_twitch_banks.itemText(i)
             for handle in self.CAnalysis.name_handle_dict:
-                if handle in self.CB_twitch_banks.itemText(i):
-                    if '\\1-S2-' in self.CB_twitch_banks.itemText(i):
+                if handle in bank_path:
+                    if '\\1-S2-' in bank_path:
                         region = 'NA'
-                    elif '\\2-S2-' in self.CB_twitch_banks.itemText(i):
+                    elif '\\2-S2-' in bank_path:
                         region = 'EU'
-                    elif '\\3-S2-' in self.CB_twitch_banks.itemText(i):
+                    elif '\\3-S2-' in bank_path:
                         region = 'KR'
-                    elif '\\5-S2-' in self.CB_twitch_banks.itemText(i):
+                    elif '\\5-S2-' in bank_path:
                         region = 'CN'
-                    elif '\\98-S2-' in self.CB_twitch_banks.itemText(i):
+                    elif '\\98-S2-' in bank_path:
                         region = 'PTR'
                     else:
                         region = 'Unknown'
 
-                    text = f"{self.CAnalysis.name_handle_dict[handle]} ({region}) - {self.CB_twitch_banks.itemText(i)}"
-                    self.CB_twitch_banks.setItemText(i, text) 
+                    text = f"{self.CAnalysis.name_handle_dict[handle]} ({region}) - {bank_path}"
+                    self.bank_name_to_location_dict[text] = bank_path
+                    self.CB_twitch_banks.setItemText(i, text)
                     break
+
+        # Link changing
+        self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
+        self.CB_twitch_banks.setEnabled(True)
 
 
     def run_f_analysis(self):
