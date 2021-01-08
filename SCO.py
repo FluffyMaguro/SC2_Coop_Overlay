@@ -40,7 +40,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 228
+APPVERSION = 229
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -974,11 +974,11 @@ class UI_TabWidget(object):
 
         self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
         self.qb_twitch_text.setTitle('About the twitch bot')
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 310 if HF.isWindows() else 555))
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 370 if HF.isWindows() else 555))
         
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
-        self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 520, 500))
+        self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 530, 700))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
         self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. Second, it connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
@@ -988,9 +988,17 @@ class UI_TabWidget(object):
                                     <br><br><br>
                                     <u><b>Commands for the streamer:</b></u>
                                     <br><br>
-                                    <b>!bank X</b><br> → Switches to bank X (when switching between regions or accounts)<br><br>
                                     <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay)<br><br>
                                     <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
+                                    <br><br>
+                                    <u><b>Commands for the viewers:</b></u>
+                                    <br>
+                                    <br><b>!join X</b>→ Join as a random unit for player X
+                                    <br><b>!message X</b>→ Send a message X to the game
+                                    <br><b>!spawn X Y Z</b>→ spawn Y units of type X for player Z (+rand → at random position)
+                                    <br><b>!mutator X</b>→ enables mutator X (+disable → disables)
+                                    <br><b>!resources X Y Z</b>→ Adds X minerals and Y vespene to player Z
+                                    <br><b>!wave X Y</b>→ Spawns an enemy wave of tech X and size Y
                                     """)
 
 
@@ -1022,20 +1030,23 @@ class UI_TabWidget(object):
         self.ch_twitch_chat.setText('Show chat as overlay')
         self.ch_twitch_chat.clicked.connect(self.create_twitch_chat)
 
-        self.BT_choose_bank_location = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.BT_choose_bank_location.setGeometry(QtCore.QRect(20, 360, 150, 25))
-        self.BT_choose_bank_location.setText('Default bank location')
-        self.BT_choose_bank_location.setToolTip('Choose your primary bank location\nE.g. C:/Users/Maguro/Documents/StarCraft II/Accounts/114803619/1-S2-1-4189373/Banks/1-S2-1-4189373/MMTwitchIntegration.SC2Bank')
-        self.BT_choose_bank_location.clicked.connect(self.findBankLocation)
+        self.la_twitch_bank_desc = QtWidgets.QLabel(self.TAB_TwitchBot)
+        self.la_twitch_bank_desc.setGeometry(QtCore.QRect(22, 420, 800, 20))
+        self.la_twitch_bank_desc.setText("Choose bank location. It's different for every account and server. At start the app will try to find the correct bank.")
 
-        self.la_twitch_bank_location = QtWidgets.QLabel(self.TAB_TwitchBot)
-        self.la_twitch_bank_location.setGeometry(QtCore.QRect(20, 390, 900, 20))
-        self.la_twitch_bank_location.setText('E.g.: C:/Users/Maguro/Documents/StarCraft II/Accounts/114803619/1-S2-1-4189373/Banks/1-S2-1-4189373/MMTwitchIntegration.SC2Bank')
+        # Bank combo-box
+        self.CB_twitch_banks = QtWidgets.QComboBox(self.TAB_TwitchBot)
+        self.CB_twitch_banks.setGeometry(QtCore.QRect(20, 443, 750, 20))
 
+        # Refresh button
+        self.BT_find_banks = QtWidgets.QPushButton(self.TAB_TwitchBot)
+        self.BT_find_banks.setGeometry(QtCore.QRect(780, 440, 100, 25))
+        self.BT_find_banks.setText('Refresh')
+        self.BT_find_banks.clicked.connect(self.find_and_update_banks)
 
         # Info label
         self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
-        self.LA_InfoTwitch.setGeometry(QtCore.QRect(20, 560, 800, 20))
+        self.LA_InfoTwitch.setGeometry(QtCore.QRect(20, 560, 700, 20))
         self.LA_InfoTwitch.setStyleSheet('color: red')
 
         ###########################
@@ -1198,7 +1209,7 @@ class UI_TabWidget(object):
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
 
         TabWidget.addTab(self.TAB_Stats, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Stats")
+        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Statistics")
 
         TabWidget.addTab(self.TAB_Randomizer, "")
         TabWidget.setTabText(TabWidget.indexOf(self.TAB_Randomizer), "Randomizer")
@@ -1275,9 +1286,7 @@ class UI_TabWidget(object):
                            'bot_oauth': '',
                            'bank_locations': {
                                               'Default':'',
-                                              'EU':'',
-                                              'NA':'',
-                                              'KR':''
+                                              'Current':''
                                               },
                            'responses': {
                                          'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
@@ -1536,8 +1545,6 @@ class UI_TabWidget(object):
         self.ch_twitch_chat.setChecked(self.settings['show_chat'])
         self.ED_twitch_channel_name.setText(self.settings['twitchbot']['channel_name'])
 
-        self.la_twitch_bank_location.setText(f"<b>{self.settings['twitchbot']['bank_locations']['Default']}</b>")
-
         self.ch_performance_show.setChecked(self.settings['performance_show'])
         self.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
 
@@ -1795,21 +1802,6 @@ class UI_TabWidget(object):
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
 
-    def findBankLocation(self):
-        """ Finds bank location"""
-        dialog = QtWidgets.QFileDialog()
-        if not self.settings['twitchbot']['bank_locations']['Default'] in {None,''}:
-            dialog.setDirectory(self.settings['twitchbot']['bank_locations']['Default'])
-
-        if dialog.exec_():
-            file = dialog.selectedFiles()[0]
-            if 'MMTwitchIntegration.SC2Bank' in file:
-                logger.info(f"Updating default bank location to {file}")
-                self.settings['twitchbot']['bank_locations']['Default'] = file
-                self.la_twitch_bank_location.setText(f"<b>{file}</b>")
-
-
-
     def sendInfoMessage(self, message, color='#555'):
         """ Sends info message. `color` specifies message color"""
         self.LA_InfoLabel.setText(message)
@@ -1941,6 +1933,55 @@ class UI_TabWidget(object):
         if self.settings['performance_show']:
             self.ch_performance_show.setChecked(True)
             self.performance_overlay.start()
+
+        # Find MM Integration banks
+        self.find_and_update_banks()
+        # Select current index
+        self.update_selected_bank_item(self.settings['twitchbot']['bank_locations']['Current'])
+        # Link changing
+        self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
+        
+
+    def find_and_update_banks(self):
+        """ Finds banks, update UI """
+        if not hasattr(self, 'bank_found_locations'):
+            self.bank_found_locations = set()
+
+        folder = os.path.dirname(self.settings['account_folder'])
+
+        for root, directories, files in os.walk(folder):
+            for file in files:
+                if file == 'MMTwitchIntegration.SC2Bank':
+                    path = os.path.join(root, file)
+                    if not path in self.bank_found_locations:
+                        self.CB_twitch_banks.addItem(path)
+                        self.bank_found_locations.add(path)
+
+
+    def change_bank(self):
+        """ Update currently used bank in the twitch bot.
+        Used when user changes combo-box directly"""
+        logger.info(f'Changing bank to {self.CB_twitch_banks.currentText()}')
+        self.settings['twitchbot']['bank_locations']['Current'] = self.CB_twitch_banks.currentText()
+        try:
+            self.TwitchBot.bank = self.CB_twitch_banks.currentText()
+        except:
+            logger.error('Failed to set bank for twitch bot')
+
+
+    def update_selected_bank_item(self, path):
+        """ Updates selected bank indirectly (when user didn't click it directly)"""
+        if path in {'',None}:
+            logger.error('not valid bank path, not changing')
+            return
+
+        logger.info(f'Changing bank indirectly to {path.strip()}')
+       
+        for i in range(self.CB_twitch_banks.count()):
+            if path == self.CB_twitch_banks.itemText(i):
+                self.settings['twitchbot']['bank_locations']['Current'] = path
+                self.CB_twitch_banks.setCurrentIndex(i)
+                break
 
 
     def run_twitch_bot(self):
@@ -2692,17 +2733,14 @@ class UI_TabWidget(object):
 
     def find_default_bank_location(self):
         """ Finds default bank location (Runs after mass analysis is finished)"""
-        if self.settings['twitchbot']['bank_locations']['Default'] != '':
-            return # We already have one
 
         try:
             result = self.CAnalysis.find_banks()
             result = list(result.values())[0][1]
             result = os.path.join(result,'MMTwitchIntegration.SC2Bank')
             self.settings['twitchbot']['bank_locations']['Default'] = result
-            self.la_twitch_bank_location.setText(f"<b>{result}</b>")
-            logger.info(f"Setting default bank location to {result}")
-
+            logger.info(f"Setting default bank location to {result.strip()}")
+            self.update_selected_bank_item(result)
         except:
             logger.error(traceback.format_exc())
 
