@@ -497,6 +497,7 @@ class mass_replay_analysis:
         self.closing = False
         self.full_analysis_label = None
         self.full_analysis_finished = False
+        self.name_handle_dict = dict()
 
 
     def search(self, *args):
@@ -620,6 +621,7 @@ class mass_replay_analysis:
         self.current_replays = replays
         self.update_data()
         self.save_cache()
+        self.update_name_handle_dict()
 
 
     def update_data(self):
@@ -632,7 +634,21 @@ class mass_replay_analysis:
         self.load_cache()
         self.add_replays(self.current_replays)
         self.save_cache()
+        self.update_name_handle_dict()
         return True
+
+
+    def update_name_handle_dict(self):
+        """ Udpates disctionary of names and handles 
+        Lists corresponding player names to handles"""
+        for r in self.ReplayDataAll:
+            if len(self.name_handle_dict) == len(self.main_handles):
+                break
+
+            for p in {1,2}:
+                handle = r['players'][p]['handle']
+                if handle in self.main_handles and not handle in self.name_handle_dict:
+                    self.name_handle_dict[handle] = r['players'][p]['name']
 
 
     def get_last_replays(self, number):
@@ -776,7 +792,6 @@ class mass_replay_analysis:
             if len(unknown_handles) == 0:
                 break
 
-            r['file']
             for p in {1,2}:
                 if r['players'][p]['handle'] in unknown_handles:
                     unknown_handles.remove(r['players'][p]['handle'])

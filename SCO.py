@@ -1036,11 +1036,11 @@ class UI_TabWidget(object):
 
         # Bank combo-box
         self.CB_twitch_banks = QtWidgets.QComboBox(self.TAB_TwitchBot)
-        self.CB_twitch_banks.setGeometry(QtCore.QRect(20, 443, 750, 20))
+        self.CB_twitch_banks.setGeometry(QtCore.QRect(20, 443, 800, 20))
 
         # Refresh button
         self.BT_find_banks = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.BT_find_banks.setGeometry(QtCore.QRect(780, 440, 100, 25))
+        self.BT_find_banks.setGeometry(QtCore.QRect(830, 440, 100, 25))
         self.BT_find_banks.setText('Refresh')
         self.BT_find_banks.clicked.connect(self.find_and_update_banks)
 
@@ -2229,6 +2229,27 @@ class UI_TabWidget(object):
 
         # If try to find 
         self.find_default_bank_location()
+
+        # Change bank names
+        for i in range(self.CB_twitch_banks.count()):
+            for handle in self.CAnalysis.name_handle_dict:
+                if handle in self.CB_twitch_banks.itemText(i):
+                    if '\\1-S2-' in self.CB_twitch_banks.itemText(i):
+                        region = 'NA'
+                    elif '\\2-S2-' in self.CB_twitch_banks.itemText(i):
+                        region = 'EU'
+                    elif '\\3-S2-' in self.CB_twitch_banks.itemText(i):
+                        region = 'KR'
+                    elif '\\5-S2-' in self.CB_twitch_banks.itemText(i):
+                        region = 'CN'
+                    elif '\\98-S2-' in self.CB_twitch_banks.itemText(i):
+                        region = 'PTR'
+                    else:
+                        region = 'Unknown'
+
+                    text = f"{self.CAnalysis.name_handle_dict[handle]} ({region}) - {self.CB_twitch_banks.itemText(i)}"
+                    self.CB_twitch_banks.setItemText(i, text) 
+                    break
 
 
     def run_f_analysis(self):
