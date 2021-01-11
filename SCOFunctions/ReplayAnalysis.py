@@ -24,7 +24,7 @@ units_killed_in_morph = {'HydraliskLurker','MutaliskBroodlord','RoachVile','Muta
 primal_combat_predecessors = {'DehakaRavasaur':'DehakaZerglingLevel2','DehakaRoachLevel3':'DehakaRoachLevel2','DehakaGuardianFightMorph':'DehakaRoachLevel2','ImpalerDehaka':'DehakaHydraliskLevel2','DehakaMutaliskLevel3FightMorph':'DehakaHydraliskLevel2','DehakaPrimalSwarmHost':'DehakaSwarmHost','DehakaUltraliskLevel3':'DehakaUltraliskLevel2'}
 dont_include_units = {"SuperWarpGate","VoidRiftUnselectable","UnbuildableRocksUnit","TrooperMengskWeaponAAPickup","TrooperMengskWeaponFlamethrowerPickup","TrooperMengskWeaponImprovedPickup","PsiDisintegratorPowerLink","ProtossDockingBayUnit","PnPHybridVoidRift","PlatformConnector","MutatorAmonKaraxInvisiblePylon","KorhalGateControl","HybridStasisChamberA","HybridHoldingCellSmallUnit","HybridHoldingCellUnit","GateControlUnit","Food1000","COOPTerrazineTank","ExpeditionJumpGate","EnemyPathingBlocker4x4","InvisibleEscortFlying","DestructibleUmojanLabTestTube",'AmonHostDeathBeamUnit','DamagedMutatorLaserDrill'}
 salvage_units = {"PerditionTurretUnderground","PerditionTurret","ArtilleryMengsk","Bunker","FlamingBetty","KelMorianGrenadeTurret","KelMorianMissileTurret","NovaACLaserTurret","TychusSCVAutoTurret","BunkerDepotMengsk"}
-UnitAddLossesTo = {'TorrasqueChrysalis':'Ultralisk','SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor'}
+UnitAddLossesTo = {'TorrasqueChrysalis':'Ultralisk','SiegeTankWreckage':'Siege Tank','ThorWreckageSwann':'Thor', 'ThorWreckage':'Thor','DehakaMutaliskReviveEgg':'Primal Mutalisk'}
 
 logger = logclass('REPA','INFO')
 
@@ -60,26 +60,29 @@ def switch_names(pdict):
     temp_dict = {}
 
     for key in pdict:
+        added = False
         if key in dont_include_units:
             continue
             
         # For locusts, broodlings, interceptors, add kills to the main unit. Don't add unit created/lost
         if key in UnitAddKillsTo:
             name = UnitAddKillsTo[key]
+            added = True
             if name in temp_dict:
                 temp_dict[name][2] += pdict[key][2]
             else:
                 temp_dict[name] = [0,0,pdict[key][2],0]
 
         # For wreckages, cocoon
-        elif key in UnitAddLossesTo:
+        if key in UnitAddLossesTo:
             name = UnitAddLossesTo[key]
+            added = True
             if name in temp_dict:
                 temp_dict[name][1] += pdict[key][1]
             else:
                 temp_dict[name] = [0,pdict[key][1],0,0]
 
-        else:
+        if not added:
             # Translate names & sum up those with the same names
             name = UnitNameDict.get(key,key)
             if name in temp_dict:
