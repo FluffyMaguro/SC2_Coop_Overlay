@@ -981,14 +981,14 @@ class UI_TabWidget(object):
         self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 530, 700))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
-        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. Second, it connects the twitch chat to the StarCraft II game when playing one of my <a href="https://www.maguro.one/p/my-maps.html">MM maps</a>. Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
+        self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
-                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, but you can do so and fill its name and oauth in the Setting.json file as well as locations of your MMTwitchIntegration.SC2Banks 
-                                    for different regions or accounts. See <a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">read me</a> for more details. 
+                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, but you can do so and fill its name and oauth in the Setting.json.
                                     <br><br><br>
                                     <u><b>Commands for the streamer:</b></u>
                                     <br><br>
-                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay)<br><br>
+                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay!)<br><br>
                                     <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
                                     <br><br>
                                     <u><b>Commands for the viewers:</b></u>
@@ -1004,7 +1004,7 @@ class UI_TabWidget(object):
 
         self.la_twitch_channel_name = QtWidgets.QLabel(self.TAB_TwitchBot)
         self.la_twitch_channel_name.setGeometry(QtCore.QRect(601, 25, 300, 20))
-        self.la_twitch_channel_name.setText("Use it only for your channel !")
+        self.la_twitch_channel_name.setText("Use only for your own channel!")
 
         self.ED_twitch_channel_name = QtWidgets.QLineEdit(self.TAB_TwitchBot)
         self.ED_twitch_channel_name.setGeometry(QtCore.QRect(601, 50, 140, 20))

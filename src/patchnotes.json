@@ -59,5 +59,9 @@
     "Overlay won't show in games where no commanders were found",
     "Fixed a bug with mutator identification",
     "Updated libraries"
+  ],
+    "229": [
+    "Easier bank management for twitch integration",
+    "Fixed stats for Primal Mutalisk"
   ]
 }

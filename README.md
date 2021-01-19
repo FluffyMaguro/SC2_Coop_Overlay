@@ -7,7 +7,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.28/SC2CoopOverlay.2.28.zip)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.29/SC2CoopOverlay.2.29.zip)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -95,6 +95,11 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.29 version
+
+      - Easier bank management for twitch integration
+      - Fixed stats for Primal Mutalisk
 
 * 2.28 version
 
