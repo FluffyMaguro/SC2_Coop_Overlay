@@ -641,14 +641,14 @@ class mass_replay_analysis:
     def update_name_handle_dict(self):
         """ Udpates disctionary of names and handles 
         Lists corresponding player names to handles"""
-        for r in self.ReplayDataAll:
+        for i in range(len(self.ReplayDataAll)-1,-1,-1): #Iterate in reverse order
             if len(self.name_handle_dict) == len(self.main_handles):
                 break
 
             for p in {1,2}:
-                handle = r['players'][p]['handle']
+                handle = self.ReplayDataAll[i]['players'][p]['handle']
                 if handle in self.main_handles and not handle in self.name_handle_dict:
-                    self.name_handle_dict[handle] = r['players'][p]['name']
+                    self.name_handle_dict[handle] = self.ReplayDataAll[i]['players'][p]['name']
 
 
     def get_last_replays(self, number):
