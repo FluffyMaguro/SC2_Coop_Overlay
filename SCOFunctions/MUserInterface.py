@@ -1125,7 +1125,7 @@ class GameEntry:
             else:
                 t = time.strftime('%M:%S', time.gmtime(message['time']))
             style = f'style="color: {color}"'
-            text += f"<span {style}>{t}&nbsp;&nbsp;<b>{replay_dict['players'][message['player']]['name']}</b>:&nbsp;&nbsp;{message['text']}</span><br>"
+            text += f"<span {style}>{t}&nbsp;&nbsp;<b>{replay_dict['players'][message['player']].get('name','–')}</b>:&nbsp;&nbsp;{message['text']}</span><br>"
 
         self.la_chat.setText(text)
         self.la_chat.hide()
