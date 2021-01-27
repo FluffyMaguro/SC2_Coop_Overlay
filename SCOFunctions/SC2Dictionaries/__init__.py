@@ -590,6 +590,7 @@ UnitAddLossesTo = {'TorrasqueChrysalis': 'Ultralisk',
                    'SiegeTankWreckage': 'Siege Tank',
                    'ThorWreckageSwann': 'Thor',
                    'ThorWreckage': 'Thor',
+                   'DehakaMutaliskReviveEgg': 'Primal Mutalisk',
                    }
 
 skip_strings = _txt_to_iter(_joinDATA('skip_strings.txt'), factory=list)
