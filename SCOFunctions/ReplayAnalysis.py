@@ -32,10 +32,7 @@ logger = logclass('REPA','INFO')
 def contains_skip_strings(pname):
     """ Checks if any of skip strings is in the pname """
     lowered_name = pname.lower()
-    for item in skip_strings:
-        if item in lowered_name:
-            return True
-    return False
+    return any(item in lowered_name for item in skip_strings)
 
 
 def upgrade_is_in_mastery_upgrades(upgrade):

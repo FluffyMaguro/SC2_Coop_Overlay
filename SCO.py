@@ -1987,6 +1987,8 @@ class UI_TabWidget(object):
                     logger.error('Failed to set bank for twitch bot')
                 break
 
+        logger.info('bank changed indirectly succesfully')
+
 
     def run_twitch_bot(self):
         """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """
