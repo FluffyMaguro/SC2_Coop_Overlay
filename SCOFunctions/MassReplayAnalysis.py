@@ -640,8 +640,7 @@ class mass_replay_analysis:
             if not 'hash' in r:
                 r['hash'] = get_hash(r['file'])
 
-            if not r['hash'] in data and r['hash'] != None:
-                data[r['hash']] = r
+            data[r['hash']] = r
 
         # Save file again
         with open(file_name, 'w') as f:
