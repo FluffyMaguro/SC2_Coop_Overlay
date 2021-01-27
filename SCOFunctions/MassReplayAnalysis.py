@@ -4,7 +4,9 @@ This module is used for generating overall stats from a list of replays (and pla
 """
 import os
 import time
+import json
 import pickle
+import hashlib
 import traceback
 import statistics
 import s2protocol
@@ -607,6 +609,43 @@ class mass_replay_analysis:
         with lock:
             with open(self.cachefile,'wb') as f:
                 pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def get_hash(file):
+        """ Returns MD5 file hash for a file """
+        try:
+            with open(file,"rb") as f:
+                bytesread = f.read()
+                readable_hash = hashlib.md5(bytesread).hexdigest()
+            return readable_hash
+        except:
+            logger.error(traceback.format_exc())
+            return None
+
+
+    def dump_all(self):
+        """ Dumps all data to a json file """
+        file_name = 'all_data.json'
+        data = dict()
+        # Load previous file if there is one
+        if os.path.isfile(file_name):
+            try:
+                with open(file_name,'r') as f:
+                    data = json.load(f)
+            except:
+                logger.error(traceback.format_exc())
+                
+        # Go through current replays, get file hashes, see if they are added
+        for r in self.ReplayDataAll:
+            if not 'hash' in r:
+                r['hash'] = get_hash(r['file'])
+
+            if not r['hash'] in data and r['hash'] != None:
+                data[r['hash']] = r
+
+        # Save file again
+        with open(file_name, 'w') as f:
+            json.dump(data, f, indent=2)
 
 
     def update_accountdir(self, ACCOUNTDIR):
