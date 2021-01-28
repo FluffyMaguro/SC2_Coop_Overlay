@@ -771,7 +771,18 @@ class UI_TabWidget(object):
         ### TAB Difficulty & Regions
         self.TAB_DifficultyRegions = QtWidgets.QWidget()
         self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_DifficultyRegions)
-        self.ProgressionStatsHeading = MUI.RegionStats('Region', {'Defeat':'Losses', 'Victory': 'Wins', 'frequency': 'Frequency','max_asc': 'Ascension level','max_com': 'Maxed commanders','winrate': 'Winrate',  'prestiges': 'Prestiges tried'}, 0, parent=self.TAB_DifficultyRegions, bold=True, line=True)
+        self.ProgressionStatsHeading = MUI.RegionStats('Region', 
+                                                        {'Defeat':'Losses', 
+                                                        'Victory': 'Wins', 
+                                                        'frequency': 'Frequency',
+                                                        'max_asc': 'Ascension level',
+                                                        'max_com': 'Maxed commanders',
+                                                        'winrate': 'Winrate',
+                                                        'prestiges': 'Prestiges tried'},
+                                                        0, 
+                                                        parent=self.TAB_DifficultyRegions,
+                                                        bold=True,
+                                                        line=True)
 
         ### TAB Commanders
         self.TAB_MyCommanders = QtWidgets.QWidget()
@@ -820,7 +831,9 @@ class UI_TabWidget(object):
 
         self.CH_FA_description = QtWidgets.QLabel(self.TAB_FullAnalysis)
         self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
-        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics related to player and unit kills, bonus objectives and other. <br><br><b>Warning! This might take few hours and the application will be less responsive.</b>')
+        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics \
+                                        related to player and unit kills, bonus objectives and other.<br><br><b>Warning! This might \
+                                        take few hours and the application will be less responsive.</b>')
         self.CH_FA_description.setWordWrap(True)    
 
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
@@ -876,7 +889,9 @@ class UI_TabWidget(object):
         self.BT_RNG_Description.setGeometry(QtCore.QRect(370, 20, 510, 60))
         self.BT_RNG_Description.setWordWrap(True)
         self.BT_RNG_Description.setEnabled(False)
-        self.BT_RNG_Description.setText('This commander randomizer randomly chooses a combination of commander, prestige and masteries.<br>Specify which commanders and prestiges can be picked. Mastery points will be randomized with either all points into one mastery choice, fully random or not at all.')     
+        self.BT_RNG_Description.setText('This commander randomizer randomly chooses a combination of commander, prestige and masteries.\
+                                        <br>Specify which commanders and prestiges can be picked. Mastery points will be randomized with\
+                                        either all points into one mastery choice, fully random or not at all.')     
 
         # Mastery label
         self.CB_RNG_Mastery_Label = QtWidgets.QLabel(self.TAB_Randomizer)
@@ -996,13 +1011,17 @@ class UI_TabWidget(object):
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
         self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
+        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
+                                    Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. \
+                                    Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
-                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, but you can do so and fill its name and oauth in the Setting.json.
+                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, \
+                                        but you can do so and fill its name and oauth in the Setting.json.
                                     <br><br><br>
                                     <u><b>Commands for the streamer:</b></u>
                                     <br><br>
-                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, or just messages and joins (not affecting gameplay!)<br><br>
+                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, \
+                                        or just messages and joins (not affecting gameplay!)<br><br>
                                     <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
                                     <br><br>
                                     <u><b>Commands for the viewers:</b></u>
@@ -1079,7 +1098,9 @@ class UI_TabWidget(object):
         self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
         self.la_performance_description.setGeometry(QtCore.QRect(14, 25, self.gb_Resources.width()-20, 300))
         self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
-        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.<br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).<br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
+        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
+                                                <br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).\
+                                                <br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
         self.la_performance_description.setWordWrap(True)
 
         # Checks whether to show/hide
@@ -1305,7 +1326,8 @@ class UI_TabWidget(object):
                                               },
                            'responses': {
                                          'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
-                                         'syntax': '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
+                                         'syntax': '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player \
+                                                    (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
                                          'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
                                          'maguro': 'www.maguro.one',
                                          'names': 'https://www.maguro.one/p/unit-names.html'
@@ -1404,7 +1426,7 @@ class UI_TabWidget(object):
 
             patchnotes = patchnotes.get(str(APPVERSION), None)
 
-            if patchnotes == None:
+            if patchnotes is None:
                 return
             if len(patchnotes) == 0:
                 return      
@@ -1516,7 +1538,8 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile,'w') as f:
-            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\necho Installation completed...\n"{truePath("SCO.exe")}"')
+            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" \
+                    /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\necho Installation completed...\n"{truePath("SCO.exe")}"')
 
         self.saveSettings()
         os.startfile(installfile)
@@ -1612,12 +1635,18 @@ class UI_TabWidget(object):
 
         self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
-            self.settings['chat_geometry'] = [self.chat_widget.pos().x(), self.chat_widget.pos().y(), self.chat_widget.width(), self.chat_widget.height()]
+            self.settings['chat_geometry'] = [self.chat_widget.pos().x(), 
+                                            self.chat_widget.pos().y(), 
+                                            self.chat_widget.width(), 
+                                            self.chat_widget.height()]
 
         self.settings['performance_show'] = self.ch_performance_show.isChecked()
         self.settings['performance_hotkey'] = self.KEY_Performance.keySequence().toString()
         if hasattr(self, 'performance_overlay'):
-            self.settings['performance_geometry'] = [self.performance_overlay.pos().x(), self.performance_overlay.pos().y(), self.performance_overlay.width(), self.performance_overlay.height()]
+            self.settings['performance_geometry'] = [self.performance_overlay.pos().x(), 
+                                                    self.performance_overlay.pos().y(), 
+                                                    self.performance_overlay.width(), 
+                                                    self.performance_overlay.height()]
 
         # RNG choices
         for co in prestige_names:
@@ -1636,14 +1665,21 @@ class UI_TabWidget(object):
         self.sendInfoMessage('Settings applied.')
 
         # Warning
-        hotkeys = [self.settings['performance_hotkey'], self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'], self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']]
+        hotkeys = [self.settings['performance_hotkey'],
+                    self.settings['hotkey_show/hide'], 
+                    self.settings['hotkey_show'], 
+                    self.settings['hotkey_hide'], 
+                    self.settings['hotkey_newer'], 
+                    self.settings['hotkey_older'], 
+                    self.settings['hotkey_winrates']]
+
         hotkeys = [h for h in hotkeys if not h in {None,''}]
         if len(hotkeys) > len(set(hotkeys)):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
         # Registry
         out = HF.add_to_startup(self.settings['start_with_windows'])
-        if out != None:
+        if out is not None:
             self.sendInfoMessage(f'Warning: {out}', color='red')
             self.settings['start_with_windows'] = False
             self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
@@ -1660,7 +1696,7 @@ class UI_TabWidget(object):
         # Compare
         changed_keys = set()
         for key in previous_settings:
-            if previous_settings[key] != self.settings[key] and not (previous_settings[key] == None and self.settings[key] == ''):
+            if previous_settings[key] != self.settings[key] and not (previous_settings[key] is None and self.settings[key] == ''):
                 logger.info(f'Changed: {key}: {previous_settings[key]} → {self.settings[key]}')
                 changed_keys.add(key)
 
@@ -1712,10 +1748,16 @@ class UI_TabWidget(object):
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
-        hotkey_func_dict = {'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit, 'hotkey_show/hide': MF.keyboard_SHOWHIDE, 'hotkey_show': MF.keyboard_SHOW, 'hotkey_hide': MF.keyboard_HIDE, 'hotkey_newer': MF.keyboard_NEWER, 'hotkey_older': MF.keyboard_OLDER, 'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
+        hotkey_func_dict = {'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit, 
+                            'hotkey_show/hide': MF.keyboard_SHOWHIDE, 
+                            'hotkey_show': MF.keyboard_SHOW, 
+                            'hotkey_hide': MF.keyboard_HIDE, 
+                            'hotkey_newer': MF.keyboard_NEWER, 
+                            'hotkey_older': MF.keyboard_OLDER, 
+                            'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
         
         # Init
-        if previous_settings == None:
+        if previous_settings is None:
             self.hotkey_hotkey_dict = dict()
             for key in hotkey_func_dict:
                 if not self.settings[key] in {None,''}:
@@ -1890,7 +1932,13 @@ class UI_TabWidget(object):
 
         else:
             self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|eval(f"QtCore.Qt.{self.settings['webflag']}")|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|
+                                        QtCore.Qt.WindowTransparentForInput|
+                                        QtCore.Qt.WindowStaysOnTopHint|
+                                        eval(f"QtCore.Qt.{self.settings['webflag']}")|
+                                        QtCore.Qt.NoDropShadowWindowHint|
+                                        QtCore.Qt.WindowDoesNotAcceptFocus)
+
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
             self.WebPage = self.WebView.page()
@@ -2050,7 +2098,7 @@ class UI_TabWidget(object):
 
     def pc_waken_from_sleep(self, diff):
         """ This function is run when the PC is awoken """
-        if diff == None:
+        if diff is None:
             return
         logger.info(f'The computer just awoke! ({diff:.0f} seconds)')
         thread_awakening = MUI.Worker(MF.wait_for_wake)
@@ -2107,7 +2155,7 @@ class UI_TabWidget(object):
 
     def update_player_tab(self, winrate_data):
         """ Updates player tab based on provide winrate data """
-        if self.LA_Winrates_Wait != None:
+        if self.LA_Winrates_Wait is not None:
             self.LA_Winrates_Wait.deleteLater()
             self.LA_Winrates_Wait = None
 
@@ -2422,7 +2470,17 @@ class UI_TabWidget(object):
         idx = 0
         for m in analysis['MapData']:
             idx += 1
-            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, idx*25, m, analysis['MapData'][m]['Fastest']['length'], analysis['MapData'][m]['average_victory_time'], analysis['MapData'][m]['Victory'], analysis['MapData'][m]['Defeat'], analysis['MapData'][m]['frequency'], analysis['MapData'][m]['bonus'], bg=idx%2 == 0)
+            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, 
+                                                        idx*25, 
+                                                        m, 
+                                                        analysis['MapData'][m]['Fastest']['length'], 
+                                                        analysis['MapData'][m]['average_victory_time'], 
+                                                        analysis['MapData'][m]['Victory'], 
+                                                        analysis['MapData'][m]['Defeat'], 
+                                                        analysis['MapData'][m]['frequency'], 
+                                                        analysis['MapData'][m]['bonus'], 
+                                                        bg=idx%2 == 0)
+
             self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
 
         # Try to show the last visible fastest map if it's there
@@ -2455,13 +2513,28 @@ class UI_TabWidget(object):
         for difficulty in difficulties:
             if difficulty in analysis['DifficultyData']:
                 line = True if idx+1 == len(analysis['DifficultyData']) else False
-                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), analysis['DifficultyData'][difficulty]['Victory'], analysis['DifficultyData'][difficulty]['Defeat'], f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 50, idx*18+20, bg=idx%2==1, parent=self.TAB_DifficultyRegions, line=line)
+                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), 
+                                                                                analysis['DifficultyData'][difficulty]['Victory'], 
+                                                                                analysis['DifficultyData'][difficulty]['Defeat'], 
+                                                                                f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 
+                                                                                50, 
+                                                                                idx*18+20, 
+                                                                                bg=idx%2, 
+                                                                                parent=self.TAB_DifficultyRegions, 
+                                                                                line=line)
                 idx += 1
                 AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
         AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', AllDiff['Victory'], AllDiff['Defeat'], AllDiff['Winrate'], 50, idx*18+23, parent=self.TAB_DifficultyRegions)
+
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', 
+                                                                    AllDiff['Victory'], 
+                                                                    AllDiff['Defeat'], 
+                                                                    AllDiff['Winrate'], 
+                                                                    50, 
+                                                                    idx*18+23, 
+                                                                    parent=self.TAB_DifficultyRegions)
 
         # Region stats
         if hasattr(self, 'stats_region_UI_dict'):
@@ -2472,7 +2545,11 @@ class UI_TabWidget(object):
             self.stats_region_UI_dict = dict()
 
         for idx, region in enumerate(analysis['RegionData']):
-            self.stats_region_UI_dict[region] = MUI.RegionStats(region, analysis['RegionData'][region], 20+idx*18, bg=True if idx%2==1 else False, parent=self.TAB_DifficultyRegions)
+            self.stats_region_UI_dict[region] = MUI.RegionStats(region, 
+                                                                analysis['RegionData'][region], 
+                                                                20+idx*18, 
+                                                                bg=True if idx%2 else False, 
+                                                                parent=self.TAB_DifficultyRegions)
 
         ### Commander stats
         self.my_commander_analysis = analysis['CommanderData']
@@ -2533,16 +2610,35 @@ class UI_TabWidget(object):
         for co in self.my_commander_analysis:
             if co == 'any':
                 continue
-            if firstCommander == None:
+            if firstCommander is None:
                 firstCommander = co
-            self.stats_mycommander_UI_dict[co] = MUI.CommanderEntry(co, f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%", self.my_commander_analysis[co]['Victory'], self.my_commander_analysis[co]['Defeat'], f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", f"{100*self.my_commander_analysis[co].get('KillFraction',0):.0f}%", idx*spacing+23, parent=self.TAB_MyCommanders, bg=True if idx%2==1 else False)
+            self.stats_mycommander_UI_dict[co] = MUI.CommanderEntry(co, 
+                                                                    f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%", 
+                                                                    self.my_commander_analysis[co]['Victory'], 
+                                                                    self.my_commander_analysis[co]['Defeat'], 
+                                                                    f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", 
+                                                                    f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", 
+                                                                    f"{100*self.my_commander_analysis[co].get('KillFraction',0):.0f}%", 
+                                                                    idx*spacing+23, 
+                                                                    parent=self.TAB_MyCommanders, 
+                                                                    bg=True if idx%2==1 else False)
+
             self.stats_mycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_my_commander_stats_update, co))
             idx += 1
 
-        self.stats_mycommander_UI_dict['any'] = MUI.CommanderEntry('Σ', f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", self.my_commander_analysis['any']['Victory'], self.my_commander_analysis['any']['Defeat'], f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", f"{100*self.my_commander_analysis['any'].get('KillFraction',0):.0f}%", idx*spacing+23, parent=self.TAB_MyCommanders, button=False)
+        self.stats_mycommander_UI_dict['any'] = MUI.CommanderEntry('Σ',
+                                                                    f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", 
+                                                                    self.my_commander_analysis['any']['Victory'], 
+                                                                    self.my_commander_analysis['any']['Defeat'], 
+                                                                    f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", 
+                                                                    f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", 
+                                                                    f"{100*self.my_commander_analysis['any'].get('KillFraction',0):.0f}%", 
+                                                                    idx*spacing+23, 
+                                                                    parent=self.TAB_MyCommanders, 
+                                                                    button=False)
 
         # Update details
-        if hasattr(self, 'my_detailed_info') and self.my_detailed_info != None:
+        if hasattr(self, 'my_detailed_info') and self.my_detailed_info is not None:
             self.my_detailed_info.deleteLater()
             self.my_detailed_info = None
 
@@ -2555,7 +2651,7 @@ class UI_TabWidget(object):
     def detailed_my_commander_stats_update(self, commander):
         """ Updates my commander details"""
         self.my_commander_clicked = commander
-        if hasattr(self, 'my_detailed_info') and self.my_detailed_info != None:
+        if hasattr(self, 'my_detailed_info') and self.my_detailed_info is not None:
             self.my_detailed_info.deleteLater()
             self.my_detailed_info = None
         self.my_detailed_info = MUI.CommanderStats(commander, self.my_commander_analysis, parent=self.TAB_MyCommanders)
@@ -2580,16 +2676,35 @@ class UI_TabWidget(object):
         for co in self.ally_commander_analysis:
             if co == 'any':
                 continue
-            if firstCommander == None:
+            if firstCommander is None:
                 firstCommander = co
-            self.stats_allycommander_UI_dict[co] = MUI.CommanderEntry(co, f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%", self.ally_commander_analysis[co]['Victory'], self.ally_commander_analysis[co]['Defeat'], f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%", f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}", f"{100*self.ally_commander_analysis[co].get('KillFraction',0):.0f}%", idx*spacing+23, parent=self.TAB_AlliedCommanders, bg=True if idx%2==1 else False)
+            self.stats_allycommander_UI_dict[co] = MUI.CommanderEntry(co, 
+                                                                    f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%", 
+                                                                    self.ally_commander_analysis[co]['Victory'], 
+                                                                    self.ally_commander_analysis[co]['Defeat'], 
+                                                                    f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%", 
+                                                                    f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}", 
+                                                                    f"{100*self.ally_commander_analysis[co].get('KillFraction',0):.0f}%", 
+                                                                    idx*spacing+23, 
+                                                                    parent=self.TAB_AlliedCommanders, 
+                                                                    bg=True if idx%2==1 else False)
+
             self.stats_allycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_ally_commander_stats_update, co))
             idx += 1
 
-        self.stats_allycommander_UI_dict['any'] = MUI.CommanderEntry('Σ', f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%", self.ally_commander_analysis['any']['Victory'], self.ally_commander_analysis['any']['Defeat'], f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%", f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}", f"{100*self.ally_commander_analysis['any'].get('KillFraction',0):.0f}%", idx*spacing+23, parent=self.TAB_AlliedCommanders, button=False)
+        self.stats_allycommander_UI_dict['any'] = MUI.CommanderEntry('Σ', 
+                                                                    f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%", 
+                                                                    self.ally_commander_analysis['any']['Victory'], 
+                                                                    self.ally_commander_analysis['any']['Defeat'], 
+                                                                    f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%", 
+                                                                    f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}", 
+                                                                    f"{100*self.ally_commander_analysis['any'].get('KillFraction',0):.0f}%", 
+                                                                    idx*spacing+23, 
+                                                                    parent=self.TAB_AlliedCommanders, 
+                                                                    button=False)
 
         # Update details
-        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info != None:
+        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info is not None:
             self.ally_detailed_info.deleteLater()
             self.ally_detailed_info = None
 
@@ -2602,7 +2717,7 @@ class UI_TabWidget(object):
     def detailed_ally_commander_stats_update(self, commander):
         """ Updates allied commander details"""
         self.ally_commander_clicked = commander
-        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info != None:
+        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info is not None:
             self.ally_detailed_info.deleteLater()
             self.ally_detailed_info = None
         self.ally_detailed_info = MUI.CommanderStats(commander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
@@ -2723,14 +2838,22 @@ class UI_TabWidget(object):
 
         if self.chat_widget.fixed:
             self.chat_widget.fixed = False
-            self.chat_widget.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
+            self.chat_widget.setWindowFlags(QtCore.Qt.Window|
+                                            QtCore.Qt.CustomizeWindowHint|
+                                            QtCore.Qt.WindowTitleHint)
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.chat_widget.move(position.x()-8, position.y()-31)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Fix chat position')
         else:
             self.chat_widget.fixed = True
-            self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|
+                                            QtCore.Qt.WindowTransparentForInput|
+                                            QtCore.Qt.WindowStaysOnTopHint|
+                                            QtCore.Qt.CoverWindow|
+                                            QtCore.Qt.NoDropShadowWindowHint|
+                                            QtCore.Qt.WindowDoesNotAcceptFocus)
+
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.chat_widget.move(position.x()+8, position.y()+31)
             self.chat_widget.show()
@@ -2768,14 +2891,21 @@ class UI_TabWidget(object):
 
         if self.performance_overlay.fixed:
             self.performance_overlay.fixed = False
-            self.performance_overlay.setWindowFlags(QtCore.Qt.Window|QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint)
+            self.performance_overlay.setWindowFlags(QtCore.Qt.Window|
+                                                    QtCore.Qt.CustomizeWindowHint|
+                                                    QtCore.Qt.WindowTitleHint)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.performance_overlay.show()
             self.performance_overlay.move(position.x()-8, position.y()-31)
             self.bt_performance_overlay_position.setText('Fix overlay position')
         else:
             self.performance_overlay.fixed = True
-            self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint|
+                                                    QtCore.Qt.WindowTransparentForInput|
+                                                    QtCore.Qt.WindowStaysOnTopHint|
+                                                    QtCore.Qt.CoverWindow|
+                                                    QtCore.Qt.NoDropShadowWindowHint|
+                                                    QtCore.Qt.WindowDoesNotAcceptFocus)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.performance_overlay.show()
             self.performance_overlay.move(position)
@@ -2856,8 +2986,8 @@ class UI_TabWidget(object):
             print(traceback.format_exc())
             self.sendInfoMessage(f'Failed at executing: {text}', color='red')
 
-
-    def paypal_clicked(self):
+    @staticmethod
+    def paypal_clicked():
         webbrowser.open("https://www.paypal.com/paypalme/FluffyMaguro")
 
 
