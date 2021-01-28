@@ -32,6 +32,7 @@ var winrateTime = 12;
 var showingWinrateStats = false;
 var last_shown_file = '';
 var do_not_use_websocket = false;
+var minimum_kills = 1; // minimum number of kills for a unit to be shown
 
 //main functionality
 setColors(null, null, null, null);
@@ -632,7 +633,7 @@ function fillunits(el, dat, commander) {
         } else if (percent == 100) {
             spacer = 'nokillpadding'
         };
-        if (value[2] > 0) {
+        if (value[2] >= minimum_kills) {
             idx += 1;                   
             text = text + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><br>'
         };

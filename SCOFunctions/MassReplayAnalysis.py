@@ -311,16 +311,20 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
     # Go over units
     for unit in r['players'][p]['units']:
+        # Don't count units without kills
+        if r['players'][p]['units'][unit][2] <= 0:
+            continue
+
         if not unit in unit_data[commander]:
             unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage':list()}
 
         # Add unit [created, lost, kills]
         names = {0 :'created', 1: 'lost', 2: 'kills'}
-        for i in range(3):
-            if not isinstance(r['players'][p]['units'][unit][i], str) and not isinstance(unit_data[commander][unit][names[i]], str):
-                unit_data[commander][unit][names[i]] += r['players'][p]['units'][unit][i]
+        for i, s in names.items():
+            if not isinstance(r['players'][p]['units'][unit][i], str) and not isinstance(unit_data[commander][unit][s], str):
+                unit_data[commander][unit][s] += r['players'][p]['units'][unit][i]
             else:
-                unit_data[commander][unit][names[i]] = r['players'][p]['units'][unit][i]
+                unit_data[commander][unit][s] = r['players'][p]['units'][unit][i]
 
         # Add bonus kills to mind-controlling unit
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:

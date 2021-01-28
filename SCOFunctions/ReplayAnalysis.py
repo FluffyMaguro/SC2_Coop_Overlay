@@ -741,10 +741,11 @@ def analyse_replay(filepath, main_player_handles=None):
         logger.error('Not a Co-op replay')
 
 
-    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=0):
+    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=-1):
         """ Fills units into output dictionary, fill created/list units into icons """
         new_dict = switch_names(pdict)
-        sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse = True, key=lambda item: item[1][2])} # Sorts by number of create (0), lost (1), kills (2), K/D (3)
+        sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse=True, key=lambda item: item[1][0])} # Sorts by number of create (0), lost (1), kills (2), K/D (3)
+        sorted_dict = {k:v for k,v in sorted(sorted_dict.items(), reverse=True, key=lambda item: item[1][2])}
 
         # Save data
         unitkey = 'mainUnits' if player == main_player else 'allyUnits'
