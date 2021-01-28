@@ -1,13 +1,10 @@
-import os
-import mpyq
-import json
 import time
 import traceback
 from pprint import pprint
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
+from SCOFunctions.SC2Dictionaries import UnitNameDict, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
 
 
 duplicating_units = {'HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed'}
@@ -147,7 +144,7 @@ def unitid(event, killer=False):
         index = event['m_unitTagIndex']
         recycleindex = event['m_unitTagRecycle']
 
-    if index==None or recycleindex==None:
+    if index is None or recycleindex is None:
         logger.debug(f'No unitid from {killer=}{event=}')
         return None
 
@@ -181,7 +178,7 @@ def analyse_replay(filepath, main_player_handles=None):
             logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
             time.sleep(0.3)
 
-    if replay == None:
+    if replay is None:
         return {}
 
     # Find Amon players
@@ -199,7 +196,7 @@ def analyse_replay(filepath, main_player_handles=None):
     main_player = 1
     main_player_found = False
 
-    if main_player_handles != None and len(main_player_handles) > 0: # Check if you can find the main player
+    if main_player_handles is not None and len(main_player_handles) > 0: # Check if you can find the main player
         for player in replay['players']:
             if player['pid'] in {1,2} and not main_player_found and player['handle'] in main_player_handles:
                 main_player = player['pid']
@@ -285,13 +282,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
             # Prestige talents
             _prestige = prestige_talent_name(_upg_name)
-            if _prestige != None:
+            if _prestige is not None:
                 PrestigeTalents[_upg_pid] = _prestige
 
-        if event['_event'] in ['NNet.Replay.Tracker.SUnitBornEvent','NNet.Replay.Tracker.SUnitInitEvent']:
+        if event['_event'] in ('NNet.Replay.Tracker.SUnitBornEvent','NNet.Replay.Tracker.SUnitInitEvent'):
             _unit_type = event['m_unitTypeName'].decode()
             _ability_name = event.get('m_creatorAbilityName', None)
-            _ability_name = _ability_name.decode() if _ability_name != None else None
+            _ability_name = _ability_name.decode() if _ability_name is not None else None
 
             _control_pid = event['m_controlPlayerId']
             unit_dict[unitid(event)] = [_unit_type, _control_pid]
@@ -362,63 +359,63 @@ def analyse_replay(filepath, main_player_handles=None):
 
 
         if event['_event'] == 'NNet.Replay.Tracker.SUnitTypeChangeEvent' and unitid(event) in unit_dict:
-                _old_unit_type = unit_dict[unitid(event)][0]
-                _control_pid = unit_dict[unitid(event)][1]
-                _unit_type = event['m_unitTypeName'].decode()
+            _old_unit_type = unit_dict[unitid(event)][0]
+            _control_pid = unit_dict[unitid(event)][1]
+            _unit_type = event['m_unitTypeName'].decode()
 
-                # Void Launch bonus objective. If it lands and soon-ish after takes off, the bonus is complete.
-                if _control_pid == 7 and _unit_type == 'ResearchVesselLanded':
-                    ResearchVesselLandedTiming = event['_gameloop']
+            # Void Launch bonus objective. If it lands and soon-ish after takes off, the bonus is complete.
+            if _control_pid == 7 and _unit_type == 'ResearchVesselLanded':
+                ResearchVesselLandedTiming = event['_gameloop']
 
-                if _control_pid == 7 and _unit_type == 'ResearchVessel' and ResearchVesselLandedTiming != None and (ResearchVesselLandedTiming + 1100 > event['_gameloop']):
-                    bonus_timings.append(event['_gameloop']/16 - START_TIME)
-                    ResearchVesselLandedTiming = None
+            if _control_pid == 7 and _unit_type == 'ResearchVessel' and ResearchVesselLandedTiming is not None and (ResearchVesselLandedTiming + 1100 > event['_gameloop']):
+                bonus_timings.append(event['_gameloop']/16 - START_TIME)
+                ResearchVesselLandedTiming = None
 
-                # Scythe of Amon bonus objective. If it changes to WarpPrismPhasing, the bonus is completed.
-                if 'Scythe of Amon' in replay['map_name'] and _control_pid == 11 and _unit_type == 'WarpPrismPhasing':
-                    bonus_timings.append(event['_gameloop']/16 - START_TIME)                    
+            # Scythe of Amon bonus objective. If it changes to WarpPrismPhasing, the bonus is completed.
+            if 'Scythe of Amon' in replay['map_name'] and _control_pid == 11 and _unit_type == 'WarpPrismPhasing':
+                bonus_timings.append(event['_gameloop']/16 - START_TIME)                    
 
-                # Strange. Some units morph to egg, then the morph is created, then the egg morphs back and the unit is killed
-                if _unit_type in units_killed_in_morph:
-                    continue
+            # Strange. Some units morph to egg, then the morph is created, then the egg morphs back and the unit is killed
+            if _unit_type in units_killed_in_morph:
+                continue
 
-                # Update unit_dict
-                unit_dict[unitid(event)][0] = _unit_type
+            # Update unit_dict
+            unit_dict[unitid(event)][0] = _unit_type
 
-                # Add to created units
-                if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
+            # Add to created units
+            if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
 
-                    # Don't add into created units if it's just a morph
-                    # Don't count wreckages morhping back
-                    if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo: 
+                # Don't add into created units if it's just a morph
+                # Don't count wreckages morhping back
+                if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo: 
 
-                        # Increase unit type created for controlling player
-                        if main_player == _control_pid:
-                            if _unit_type in unit_type_dict_main:
-                                unit_type_dict_main[_unit_type][0] += 1
-                            else:
-                                unit_type_dict_main[_unit_type] = [1,0,0,0]
+                    # Increase unit type created for controlling player
+                    if main_player == _control_pid:
+                        if _unit_type in unit_type_dict_main:
+                            unit_type_dict_main[_unit_type][0] += 1
+                        else:
+                            unit_type_dict_main[_unit_type] = [1,0,0,0]
 
-                        if ally_player == _control_pid:
-                            if _unit_type in unit_type_dict_ally:
-                                unit_type_dict_ally[_unit_type][0] += 1
-                            else:
-                                unit_type_dict_ally[_unit_type] = [1,0,0,0]
+                    if ally_player == _control_pid:
+                        if _unit_type in unit_type_dict_ally:
+                            unit_type_dict_ally[_unit_type][0] += 1
+                        else:
+                            unit_type_dict_ally[_unit_type] = [1,0,0,0]
 
-                        if _control_pid in amon_players:
-                            if _unit_type in unit_type_dict_amon:
-                                unit_type_dict_amon[_unit_type][0] += 1
-                            else:
-                                unit_type_dict_amon[_unit_type] = [1,0,0,0]
-                    else:
-                        if main_player == _control_pid and not(_unit_type in unit_type_dict_main):
-                            unit_type_dict_main[_unit_type] = [0,0,0,0]
+                    if _control_pid in amon_players:
+                        if _unit_type in unit_type_dict_amon:
+                            unit_type_dict_amon[_unit_type][0] += 1
+                        else:
+                            unit_type_dict_amon[_unit_type] = [1,0,0,0]
+                else:
+                    if main_player == _control_pid and not(_unit_type in unit_type_dict_main):
+                        unit_type_dict_main[_unit_type] = [0,0,0,0]
 
-                        if ally_player == _control_pid and not(_unit_type in unit_type_dict_ally):
-                            unit_type_dict_ally[_unit_type] = [0,0,0,0]
+                    if ally_player == _control_pid and not(_unit_type in unit_type_dict_ally):
+                        unit_type_dict_ally[_unit_type] = [0,0,0,0]
 
-                        if _control_pid in amon_players and not(_unit_type in unit_type_dict_amon):
-                            unit_type_dict_amon[_unit_type] = [0,0,0,0]
+                    if _control_pid in amon_players and not(_unit_type in unit_type_dict_amon):
+                        unit_type_dict_amon[_unit_type] = [0,0,0,0]
 
 
         # Update ownership
@@ -461,7 +458,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 _killing_player = event['m_killerPlayerId']
 
                 # Count kills for players
-                if _killing_player != None and not _killed_unit_type in ['FuelCellPickupUnit','ForceField']:
+                if _killing_player is not None and not _killed_unit_type in ('FuelCellPickupUnit','ForceField'):
                     if _killing_player in (1,2) and not _losing_player in amon_players:
                         pass
                     elif _killing_player in amon_players and not _losing_player in (1,2):
@@ -470,7 +467,7 @@ def analyse_replay(filepath, main_player_handles=None):
                         killcounts[_killing_player] += 1
 
                 # Get last_aoe_unit_killed (used when player units die without a killing unit, it was likely some enemy caster casting persistent AoE spell)
-                if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players and unitid(event) != None:
+                if _killed_unit_type in aoe_units and _killing_player in [1,2] and _losing_player in amon_players and unitid(event) is not None:
                     last_aoe_unit_killed[_losing_player] = [_killed_unit_type, event['_gameloop']/16]
 
             except:
@@ -486,7 +483,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 _commander = commander_fallback.get(_killing_player,None)
 
                 # Get killing unit
-                if _killing_unit_id in unit_dict and unitid(event) != None: # We have a killing unit
+                if _killing_unit_id in unit_dict and unitid(event) is not None: # We have a killing unit
                     _killing_unit_type = unit_dict[_killing_unit_id][0]
                 else:
                     """
@@ -497,7 +494,7 @@ def analyse_replay(filepath, main_player_handles=None):
                     _killing_unit_type = commander_no_units.get(_commander,'NoUnit')
 
                 # Killbot feed
-                if _killing_unit_type in ['MutatorKillBot','MutatorDeathBot','MutatorMurderBot'] and _losing_player in [1,2]:
+                if _killing_unit_type in ('MutatorKillBot','MutatorDeathBot','MutatorMurderBot') and _losing_player in [1,2]:
                     killbot_feed[_losing_player] += 1
 
                 # Abathur locusts
@@ -521,7 +518,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['propagators'] = {1:0,2:0}
                         custom_kill_count['propagators'][_killing_player] += 1
 
-                    elif _killed_unit_type in ['MutatorSpiderMine','MutatorSpiderMineBurrowed','WidowMineBurrowed','WidowMine']:
+                    elif _killed_unit_type in ('MutatorSpiderMine','MutatorSpiderMineBurrowed','WidowMineBurrowed','WidowMine'):
                         if not 'minesweeper' in custom_kill_count:
                             custom_kill_count['minesweeper'] = {1:0,2:0}
                         custom_kill_count['minesweeper'][_killing_player] += 1
@@ -531,7 +528,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['voidrifts'] = {1:0,2:0}
                         custom_kill_count['voidrifts'][_killing_player] += 1
 
-                    elif _killed_unit_type in ['MutatorTurkey','MutatorTurking','MutatorInfestedTurkey']:
+                    elif _killed_unit_type in ('MutatorTurkey','MutatorTurking','MutatorInfestedTurkey'):
                         if not 'turkey' in custom_kill_count:
                             custom_kill_count['turkey'] = {1:0,2:0}
                         custom_kill_count['turkey'][_killing_player] += 1
@@ -541,7 +538,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['voidreanimators'] = {1:0,2:0}
                         custom_kill_count['voidreanimators'][_killing_player] += 1
 
-                    elif _killed_unit_type in ['InfestableBiodome','JarbanInfestibleColonistHut','InfestedMercHaven','InfestableHut']:
+                    elif _killed_unit_type in ('InfestableBiodome','JarbanInfestibleColonistHut','InfestedMercHaven','InfestableHut'):
                         if not 'deadofnight' in custom_kill_count:
                             custom_kill_count['deadofnight'] = {1:0,2:0}
                         custom_kill_count['deadofnight'][_killing_player] += 1
@@ -556,8 +553,8 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 """Fix kills for some enemy area-of-effect units that kills player units after they are dead.
                    This is the best guess, if one of aoe_units died recently, it was likely that one. """
-                if _killing_unit_type == 'NoUnit' and _killing_unit_id == None and _killing_player in amon_players and _losing_player != _killing_player:
-                    if event['_gameloop']/16 - last_aoe_unit_killed[_killing_player][1] < 9 and last_aoe_unit_killed[_killing_player][0] != None:
+                if _killing_unit_type == 'NoUnit' and _killing_unit_id is None and _killing_player in amon_players and _losing_player != _killing_player:
+                    if event['_gameloop']/16 - last_aoe_unit_killed[_killing_player][1] < 9 and last_aoe_unit_killed[_killing_player][0] is not None:
                         unit_type_dict_amon[last_aoe_unit_killed[_killing_player][0]][2] += 1
                         logger.debug(f'{last_aoe_unit_killed[_killing_player][0]}({_killing_player}) killed {_killed_unit_type} | {event["_gameloop"]/16}s')
 
@@ -580,14 +577,10 @@ def analyse_replay(filepath, main_player_handles=None):
                             unit_type_dict_amon[_killing_unit_type][2] += 1
                         else:
                             unit_type_dict_amon[_killing_unit_type] = [0,0,1,0]
-
-                # Debug for player no units kills
-                # if _killed_unit_type not in {'Scarab','Interceptor'} and not _killing_unit_id in unit_dict and not _killing_unit_type in commander_no_units.values() and _killing_player in {1,2} and _losing_player != _killing_player:
-                #     logger.debug(f'{_killing_unit_type} ({_killing_player}|{commander_fallback.get(_killing_player,"")}) killed {_killed_unit_type} ({_losing_player}) - {event["m_x"]}x{event["m_y"]} - {event["_gameloop"]/16:.1f}s ')
-
+                            
                 # Update unit death stats
                 # Don't count self kills like Fenix switching suits
-                if _killed_unit_type in self_killing_units and _killing_player == None:
+                if _killed_unit_type in self_killing_units and _killing_player is None:
                     if main_player == _losing_player:
                         unit_type_dict_main[_killed_unit_type][0] -= 1
                     if ally_player == _losing_player:
@@ -607,7 +600,7 @@ def analyse_replay(filepath, main_player_handles=None):
                         continue
 
                 # In case of death caused by Archon merge, ignore these kills
-                if (_killed_unit_type == 'HighTemplar' or _killed_unit_type == 'DarkTemplar') and DT_HT_Ignore[_losing_player] > 0:
+                if _killed_unit_type in ('HighTemplar', 'DarkTemplar') and DT_HT_Ignore[_losing_player] > 0:
                     DT_HT_Ignore[_losing_player] -= 1
                     continue
 
@@ -623,13 +616,19 @@ def analyse_replay(filepath, main_player_handles=None):
                    ('Chain of Ascension' in replay['map_name'] and 'SlaynElemental' == _killed_unit_type and _losing_player == 10 and _killing_player in {1,2}) or \
                    ('Rifts to Korhal' in replay['map_name'] and 'ACPirateCapitalShip' == _killed_unit_type and _losing_player == 8 and _killing_player in {1,2}) or \
                    ('Cradle of Death' in replay['map_name'] and 'LogisticsHeadquarters' == _killed_unit_type and _losing_player == 3) or \
-                   ('Part and Parcel' in replay['map_name'] and _killed_unit_type in {'Caboose','TarsonisEngine'} and not round(event['_gameloop']/16 - START_TIME,0) in bonus_timings and _losing_player == 8 and not (event['m_x'] == 169 and event['m_y'] == 99) and not (event['m_x'] == 38 and event['m_y'] == 178)) or \
+                   ('Part and Parcel' in replay['map_name'] and _killed_unit_type in {'Caboose','TarsonisEngine'} 
+                        and not round(event['_gameloop']/16 - START_TIME,0) in bonus_timings 
+                        and _losing_player == 8 
+                        and not (event['m_x'] == 169 
+                        and event['m_y'] == 99) 
+                        and not (event['m_x'] == 38 
+                        and event['m_y'] == 178)) or \
                    ('Oblivion Express' in replay['map_name'] and 'TarsonisEngineFast' == _killed_unit_type and _losing_player == 7 and event['m_x'] < 196) or \
                    ('Mist Opportunities' in replay['map_name'] and 'COOPTerrazineTank' == _killed_unit_type and _losing_player == 3 and _killing_player in {1,2}) or \
                    ('The Vermillion Problem' in replay['map_name'] and _killed_unit_type in {'RedstoneSalamander','RedstoneSalamanderBurrowed'} and _losing_player == 9 and _killing_player in {1,2}) or \
                    ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'Blightbringer' and  _losing_player == 5 and _killing_player in {1,2}) or \
                    ('Miner Evacuation' in replay['map_name'] and _killed_unit_type == 'NovaEradicator' and  _losing_player == 9 and unit_type_dict_amon[_killed_unit_type][1] == 1 and _killing_player in {1,2}) or \
-                   ('Temple of the Past' in replay['map_name'] and 'ZenithStone' == _killed_unit_type and _losing_player == 8):
+                   ('Temple of the Past' in replay['map_name'] and killed_unit_type == 'ZenithStone' and _losing_player == 8):
 
                     # Time offset for Cradle of Death as the explosion is delayed
                     if 'Cradle of Death' in replay['map_name']: 
@@ -723,14 +722,14 @@ def analyse_replay(filepath, main_player_handles=None):
         custom_kill_count['tus'][2] += custom_kill_count['hfts'][2]
         del custom_kill_count['hfts']
 
-    for item in ['hfts','tus','propagators','voidrifts','turkey','voidreanimators','deadofnight','minesweeper']:
+    for item in ('hfts','tus','propagators','voidrifts','turkey','voidreanimators','deadofnight','minesweeper'):
         if item in custom_kill_count:
             # Skip if it's not a Dead of Night map
-            if item == 'deadofnight' and not 'Dead of Night' in replay['map_name']:
+            if item == 'deadofnight' and 'Dead of Night' not in replay['map_name']:
                 continue
 
             # Skip if just mines died, not a mutation
-            if item == 'minesweeper' and not 'MutatorSpiderMine' in unit_type_dict_amon:
+            if item == 'minesweeper' and 'MutatorSpiderMine' not in unit_type_dict_amon:
                 continue
 
             replay_report_dict['mainIcons'][item] = custom_kill_count[item][main_player]
@@ -741,7 +740,7 @@ def analyse_replay(filepath, main_player_handles=None):
         logger.error('Not a Co-op replay')
 
 
-    def fill_unit_kills_and_icons(playername, player, pdict, percent_cutoff=-1):
+    def fill_unit_kills_and_icons(player, pdict, percent_cutoff=-1):
         """ Fills units into output dictionary, fill created/list units into icons """
         new_dict = switch_names(pdict)
         sorted_dict = {k:v for k,v in sorted(new_dict.items(), reverse=True, key=lambda item: item[1][0])} # Sorts by number of create (0), lost (1), kills (2), K/D (3)
@@ -774,7 +773,7 @@ def analyse_replay(filepath, main_player_handles=None):
         # Icons: Artifacts and used projections
         Zeratul_artifacts_collected = 0
         for unit in pdict:
-            if unit in ['ZeratulArtifactPickup1','ZeratulArtifactPickup2','ZeratulArtifactPickup3','ZeratulArtifactPickupUnlimited']:
+            if unit in ('ZeratulArtifactPickup1','ZeratulArtifactPickup2','ZeratulArtifactPickup3','ZeratulArtifactPickupUnlimited'):
                 Zeratul_artifacts_collected += pdict[unit][1]
 
             if unit in ['ZeratulKhaydarinMonolithProjection','ZeratulPhotonCannonProjection']:
@@ -787,8 +786,8 @@ def analyse_replay(filepath, main_player_handles=None):
             replay_report_dict[iconkey]['Artifact'] = Zeratul_artifacts_collected
 
 
-    fill_unit_kills_and_icons(replay_report_dict['main'], main_player, unit_type_dict_main)
-    fill_unit_kills_and_icons(replay_report_dict['ally'], ally_player, unit_type_dict_ally)
+    fill_unit_kills_and_icons(main_player, unit_type_dict_main)
+    fill_unit_kills_and_icons(ally_player, unit_type_dict_ally)
 
     # Icons: Killbots
     if killbot_feed[main_player] > 0:
