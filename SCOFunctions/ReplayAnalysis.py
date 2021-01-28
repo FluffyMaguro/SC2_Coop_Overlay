@@ -10,8 +10,8 @@ from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.SC2Dictionaries import UnitNameDict, CommanderMastery, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
 
 
-duplicating_units = ['HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed']
-skip_strings = ['placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit"]
+duplicating_units = {'HotSRaptor','MutatorAmonArtanis','HellbatBlackOps','LurkerStetmannBurrowed'}
+skip_strings = ('placement', 'placeholder', 'dummy','cocoon','droppod',"colonist hut","bio-dome","amon's train","warp conduit")
 revival_types = {'KerriganReviveCocoon':'K5Kerrigan', 'AlarakReviveBeacon':'AlarakCoop','ZagaraReviveCocoon':'ZagaraVoidCoop','DehakaCoopReviveCocoonFootPrint':'DehakaCoop','NovaReviveBeacon':'NovaCoop','ZeratulCoopReviveBeacon':'ZeratulCoop'}
 icon_units = {'MULE','Omega Worm','Infested Bunker','Mecha Infestor','Unbound Fanatic'}
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
@@ -173,7 +173,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
     # Load the replay
     replay = None
-    for i in range(3):
+    for _ in range(3):
         try:
             replay = s2_parse_replay(filepath, return_events=True)
             break

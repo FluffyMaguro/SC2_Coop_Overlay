@@ -156,7 +156,7 @@ def get_account_dir(path=None):
                 return account_path
 
         # Check in all current user folders
-        for root, directories, files in os.walk(user_folder):
+        for root, _, files in os.walk(user_folder):
             for file in files:
                 if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
                     account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]

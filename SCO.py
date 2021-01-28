@@ -40,7 +40,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO','INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 229
+APPVERSION = 230
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1868,7 +1868,7 @@ class UI_TabWidget(object):
             folder = os.path.abspath(folder)
 
             if os.path.isdir(folder):
-                for root, directories, files in os.walk(folder):
+                for root, _, files in os.walk(folder):
                     for file in files:
                         logger.info(f'>>File: {os.path.abspath(os.path.join(root, file))}')
             else:
@@ -1962,7 +1962,7 @@ class UI_TabWidget(object):
 
         folder = os.path.dirname(self.settings['account_folder'])
 
-        for root, directories, files in os.walk(folder):
+        for root, _, files in os.walk(folder):
             for file in files:
                 if file == 'MMTwitchIntegration.SC2Bank':
                     path = os.path.join(root, file)
