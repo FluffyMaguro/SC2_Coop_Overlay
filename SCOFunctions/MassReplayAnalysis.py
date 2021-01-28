@@ -538,32 +538,38 @@ class mass_replay_analysis:
                 with open(self.cachefile,'rb') as f:
                     self.ReplayDataAll = pickle.load(f)
 
-                self.parsed_replays = {r['file'] for r in self.ReplayDataAll}
+                self.parsed_replays = {r.get('hash', self.get_hash(r['file'])) for r in self.ReplayDataAll}
         except:
             logger.error(traceback.format_exc())
 
 
-    def add_replays(self,replays):
+    def add_replays(self, replays):
         """ Parses and adds new replays. Doesn't parse already parsed replays. """
-        replays_to_parse = {r for r in replays if not r in self.parsed_replays}
+
         ts = time.time()
         out = list()
+        new_hashes = set()
+        new_files = set()
 
-        for r in replays_to_parse:
-            out.append(parse_replay(r))
-            if self.closing:
-                break
+        for r in replays:
+            rhash = self.get_hash(r)
+            if not rhash in self.parsed_replays:
+                out.append(parse_replay(r))
+                new_hashes.add(rhash)
+                new_files.add(r)
+                if self.closing:
+                    break
 
         out += self.ReplayDataAll
         out = [r for r in out if r != None]
 
         with lock:
             self.ReplayDataAll = out
-            self.parsed_replays = self.parsed_replays.union(replays_to_parse)
-            self.current_replays = self.current_replays.union(replays_to_parse)
+            self.parsed_replays = self.parsed_replays.union(new_hashes)
+            self.current_replays = self.current_replays.union(new_files)
             self.update_data()
 
-        logger.info(f'Parsing {len(replays_to_parse)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
+        logger.info(f'Parsing {len(new_hashes)} replays in {time.time()-ts:.1f} seconds leaving us with {len(self.ReplayData)} games')
 
         if len(self.main_names) == 0 and len(self.main_handles) > 0:
             self.main_names = names_fallback(self.main_handles, self.ReplayDataAll)
@@ -585,13 +591,12 @@ class mass_replay_analysis:
 
             with lock:
                 self.ReplayDataAll.append(parsed_data)
-                self.parsed_replays.add(parsed_data['file'])
+                self.parsed_replays.add(parsed_data['hash'])
                 self.current_replays.add(parsed_data['file'])
                 self.update_data()
 
 
-    @staticmethod
-    def format_data(full_data):
+    def format_data(self, full_data):
         """ Formats data returned by replay analysis into a single datastructure used here"""
         parsed_data = full_data['parser']
         parsed_data['accurate_length'] = full_data['length']*1.4
@@ -599,6 +604,7 @@ class mass_replay_analysis:
         parsed_data['comp'] = full_data['comp']
         parsed_data['amon_units'] = full_data['amonUnits']
         parsed_data['full_analysis'] = True
+        parsed_data['hash'] = parsed_data.get('hash', self.get_hash(full_data['filepath']))
 
         main = full_data['positions']['main']
         for p in {1,2}:
@@ -613,6 +619,7 @@ class mass_replay_analysis:
         with lock:
             with open(self.cachefile,'wb') as f:
                 pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
+
 
     @staticmethod
     def get_hash(file):
@@ -629,7 +636,7 @@ class mass_replay_analysis:
 
     def dump_all(self):
         """ Dumps all data to a json file """
-        file_name = 'all_data.json'
+        file_name = 'replay_data_dump.json'
         data = dict()
         # Load previous file if there is one
         if os.path.isfile(file_name):
@@ -642,7 +649,7 @@ class mass_replay_analysis:
         # Go through current replays, get file hashes, see if they are added
         for r in self.ReplayDataAll:
             if not 'hash' in r:
-                r['hash'] = get_hash(r['file'])
+                r['hash'] = self.get_hash(r['file'])
 
             data[r['hash']] = r
 
@@ -666,9 +673,13 @@ class mass_replay_analysis:
         self.update_name_handle_dict()
 
 
-    def update_data(self):
+    def update_data(self, showAll=False):
         """ Updates current data """
-        self.ReplayData = [r for r in self.ReplayDataAll if r['file'] in self.current_replays]
+        if showAll:
+            self.ReplayData = self.ReplayDataAll
+        else:
+            self.ReplayData = [r for r in self.ReplayDataAll if r['file'] in self.current_replays]
+            
 
 
     def initialize(self):

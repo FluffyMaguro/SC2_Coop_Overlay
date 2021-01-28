@@ -51,14 +51,27 @@ class TwitchBot:
         readbuffer_join = "".encode()
         Loading = True
         while Loading:
-            readbuffer_join = self.s.recv(1024)
-            readbuffer_join = readbuffer_join.decode()
-            temp = readbuffer_join.split("\n")
-            readbuffer_join = readbuffer_join.encode()
-            readbuffer_join = temp.pop()
+            try:
+                readbuffer_join = self.s.recv(1024)
+                readbuffer_join = readbuffer_join.decode()
+                temp = readbuffer_join.split("\n")
+                readbuffer_join = readbuffer_join.encode()
+                readbuffer_join = temp.pop()
 
-            for line in temp:
-                Loading = self.loadingComplete(line)
+                for line in temp:
+                    Loading = self.loadingComplete(line)
+            except ConnectionResetError:
+                logger.error('Twitch bot connection error. Trying again.')
+                time.sleep(2)
+                self.openSocket()
+            except ConnectionAbortedError:
+                logger.error('Twitch bot abort error. Trying again.')
+                time.sleep(2)
+                self.openSocket()
+            except:
+                logger.error(traceback.format_exc())
+                time.sleep(2)
+                self.openSocket()
 
         logger.info("Bot has joined the chat")
         self.sendMessage('/color green')

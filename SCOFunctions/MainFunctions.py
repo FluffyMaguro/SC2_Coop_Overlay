@@ -370,8 +370,8 @@ def show_overlay(file):
                 sendEvent(replay_dict)
                 with lock:
                     AllReplays[file]['replay_dict'] = replay_dict
-                with open(analysis_log_file, 'ab') as file:
-                    file.write((str(replay_dict)+'\n').encode('utf-8'))
+                with open(analysis_log_file, 'ab') as f:
+                    f.write((str(replay_dict)+'\n').encode('utf-8'))
                 if CAnalysis != None:
                     CAnalysis.add_parsed_replay(replay_dict)  
                     

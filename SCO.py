@@ -629,27 +629,34 @@ class UI_TabWidget(object):
         self.CH_TypeMutation.setText("Mutations")
         self.CH_TypeMutation.stateChanged.connect(self.generate_stats)
 
+        self.CH_AllHistoric = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_AllHistoric.setGeometry(QtCore.QRect(290, 20, 180, 17))
+        self.CH_AllHistoric.setChecked(True)
+        self.CH_AllHistoric.setText("Override folder selection")
+        self.CH_AllHistoric.setToolTip("Shows stats from all replays regardless of which folder is selected")
+        self.CH_AllHistoric.stateChanged.connect(self.generate_stats)
+
+        self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_DualMain.setGeometry(QtCore.QRect(290, 40, 250, 17))
+        self.CH_DualMain.setChecked(False)
+        self.CH_DualMain.setText("Include multi-box games")
+        self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
+        self.CH_DualMain.stateChanged.connect(self.generate_stats)
+
         # Sub15 and both mains
         self.CH_Sub15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Sub15.setGeometry(QtCore.QRect(290, 40, 150, 17))
+        self.CH_Sub15.setGeometry(QtCore.QRect(290, 60, 150, 17))
         self.CH_Sub15.setChecked(True)
         self.CH_Sub15.setText("Include levels 1-14")
         self.CH_Sub15.setToolTip("Include games where the main player was level 1-14")
         self.CH_Sub15.stateChanged.connect(self.generate_stats)
 
         self.CH_Over15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Over15.setGeometry(QtCore.QRect(290, 60, 150, 17))
+        self.CH_Over15.setGeometry(QtCore.QRect(290, 80, 150, 17))
         self.CH_Over15.setChecked(True)
         self.CH_Over15.setText("Include levels 15+")
         self.CH_Over15.setToolTip("Include games where the main player was level 15+")
         self.CH_Over15.stateChanged.connect(self.generate_stats)
-
-        self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DualMain.setGeometry(QtCore.QRect(290, 20, 250, 17))
-        self.CH_DualMain.setChecked(False)
-        self.CH_DualMain.setText("Include multi-box games")
-        self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
-        self.CH_DualMain.stateChanged.connect(self.generate_stats)
 
         # Games found
         self.LA_GamesFound = QtWidgets.QLabel(self.FR_Stats)
@@ -721,6 +728,13 @@ class UI_TabWidget(object):
         self.SP_MinGamelength.setMaximum(1000)
         self.SP_MinGamelength.setProperty("value", 0)
         self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
+
+        # Data dump
+        self.BT_FA_dump = QtWidgets.QPushButton(self.FR_Stats)
+        self.BT_FA_dump.setGeometry(QtCore.QRect(850, 10, 100, 25))
+        self.BT_FA_dump.setText('Dump Data')
+        self.BT_FA_dump.setToolTip('Dumps all replay data to "replay_data_dump.json" file')
+        self.BT_FA_dump.setEnabled(False)
 
         ##### RESULTS #####
         self.TABW_StatResults = QtWidgets.QTabWidget(self.TAB_Stats)
@@ -2264,6 +2278,18 @@ class UI_TabWidget(object):
         self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
         self.CB_twitch_banks.setEnabled(True)
 
+        # Dump & reinit
+        self.BT_FA_dump.setEnabled(True)
+        self.BT_FA_dump.clicked.connect(self.dump_all)
+
+
+    def dump_all(self):
+        """ Dumps all replay data from mass analysis into a file """
+        self.BT_FA_dump.setEnabled(False)
+        thread_dump_all = MUI.Worker(self.CAnalysis.dump_all)
+        thread_dump_all.signals.result.connect(partial(self.BT_FA_dump.setEnabled,True))
+        self.threadpool.start(thread_dump_all)
+
 
     def run_f_analysis(self):
         """ runs full analysis """
@@ -2310,6 +2336,12 @@ class UI_TabWidget(object):
         if not hasattr(self, 'CAnalysis'):
             logger.error('Mass analysis hasn\'t finished yet')
             return
+
+        # Check 
+        if self.CH_AllHistoric.isChecked():
+            self.CAnalysis.update_data(showAll=True)
+        else:
+            self.CAnalysis.update_data(showAll=False)
 
         # Filter
         include_mutations = True if self.CH_TypeMutation.isChecked() else False
