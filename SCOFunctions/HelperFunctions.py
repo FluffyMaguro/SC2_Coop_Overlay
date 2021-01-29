@@ -10,7 +10,7 @@ import psutil
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
-logger = logclass('HELP','INFO')
+logger = logclass('HELP', 'INFO')
 version_link = 'https://raw.githubusercontent.com/FluffyMaguro/SC2_Coop_overlay/master/version.txt'
 
 
@@ -24,8 +24,8 @@ def isWindows():
 if isWindows():
     import ctypes.wintypes
     from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
-else: 
-    logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg" )
+else:
+    logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
 
 
 def write_permission_granted():
@@ -126,26 +126,25 @@ def get_account_dir(path=None):
 
     # On windows use Use ctypes.wintypes
     if isWindows():
-        CSIDL_PERSONAL = 5       # My Documents
-        SHGFP_TYPE_CURRENT = 1   # Get current, not default value
+        CSIDL_PERSONAL = 5  # My Documents
+        SHGFP_TYPE_CURRENT = 1  # Get current, not default value
         buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
         ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
-        user_folder = buf.value.replace('Documents','')
+        user_folder = buf.value.replace('Documents', '')
     else:
         user_folder = os.path.abspath(os.path.expanduser('~'))
         if not os.path.isdir(user_folder):
             user_folder = Path.home()
 
-
     # If we have user folder, try finding the account section
     if os.path.isdir(user_folder):
         # Typical folder location
-        account_path = os.path.abspath(os.path.join(user_folder,'Documents\\StarCraft II\\Accounts'))
+        account_path = os.path.abspath(os.path.join(user_folder, 'Documents\\StarCraft II\\Accounts'))
         if os.path.isdir(account_path):
             return account_path
 
         # Mac
-        account_path = os.path.abspath(os.path.join(user_folder,'Library/Application Support/Blizzard/StarCraft II/Accounts'))
+        account_path = os.path.abspath(os.path.join(user_folder, 'Library/Application Support/Blizzard/StarCraft II/Accounts'))
         if os.path.isdir(account_path):
             return account_path
 
@@ -159,10 +158,9 @@ def get_account_dir(path=None):
         for root, _, files in os.walk(user_folder):
             for file in files:
                 if file.endswith('.SC2Replay') and 'StarCraft II\\Accounts' in root:
-                    account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
+                    account_path = os.path.join(root, file).split('StarCraft II\\Accounts')[0]
                     account_path += 'StarCraft II\\Accounts'
                     return os.path.abspath(account_path)
-
 
     # If we failed to locate the user folder check all available drives
     available_drives = [f'{d}:\\' for d in string.ascii_uppercase if os.path.exists(f'{d}:\\')]
@@ -170,7 +168,7 @@ def get_account_dir(path=None):
         for root, directories, files in os.walk(drive):
             for file in files:
                 if 'StarCraft II\\Accounts' in root and not '\\Sandbox\\' in root and file.endswith('.SC2Replay'):
-                    account_path = os.path.join(root,file).split('StarCraft II\\Accounts')[0]
+                    account_path = os.path.join(root, file).split('StarCraft II\\Accounts')[0]
                     account_path += 'StarCraft II\\Accounts'
                     return os.path.abspath(account_path)
 

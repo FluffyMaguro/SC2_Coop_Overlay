@@ -43,17 +43,16 @@ def csv_to_comastery_dict(filename, *, header=1):
         return {row[0]: row[1:] for row in reader if row}
 
 
-def get_file_path(file,subfolder=''):
+def get_file_path(file, subfolder=''):
     """Get path to file
 
     It takes care of cases when it's packaged with pyinstaller.
     """
 
     if subfolder != '':
-        file = os.path.join(subfolder,file)
+        file = os.path.join(subfolder, file)
 
     if getattr(sys, 'frozen', False):
         return os.path.join(sys._MEIPASS, file)
 
     return file
-

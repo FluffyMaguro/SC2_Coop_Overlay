@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MLogging import logclass
 
-logger = logclass('SYS','INFO')
+logger = logclass('SYS', 'INFO')
 
 
 class SystemInfo(QtWidgets.QWidget):
@@ -16,24 +16,23 @@ class SystemInfo(QtWidgets.QWidget):
         if geometry == None:
             self.setGeometry(0, 0, 260, 400)
             sg = QtWidgets.QDesktopWidget().screenGeometry(0)
-            self.move(sg.width()-self.width()-10, sg.top()+210)
+            self.move(sg.width() - self.width() - 10, sg.top() + 210)
         else:
             self.setGeometry(*geometry)
-        
+
         self.setWindowTitle('Performance overaly position')
         self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
 
         # Move to top-right
-
         self.setStyleSheet('color: white')
-
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowTransparentForInput|QtCore.Qt.WindowStaysOnTopHint|QtCore.Qt.CoverWindow|QtCore.Qt.NoDropShadowWindowHint|QtCore.Qt.WindowDoesNotAcceptFocus)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
+                            | QtCore.Qt.CoverWindow | QtCore.Qt.NoDropShadowWindowHint | QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
         # Data
-        self.restart() # Inits some data
+        self.restart()  # Inits some data
         self.core_count = psutil.cpu_count()
-        self.iter = 1000 # Length of whole loop in miliseconds
+        self.iter = 1000  # Length of whole loop in miliseconds
         self.sc2process_names = process_names
         self.fixed = True
         self.started = False
@@ -136,7 +135,6 @@ class SystemInfo(QtWidgets.QWidget):
             self.cpu_cores[('value', idx)].setAlignment(QtCore.Qt.AlignLeft)
             self.layout.addWidget(self.cpu_cores[('value', idx)], 8 + idx, 3, 1, 1)
 
-
         self.cpu_cores['total_label'] = QtWidgets.QLabel()
         self.cpu_cores['total_label'].setAlignment(QtCore.Qt.AlignRight)
         self.cpu_cores['total_label'].setText('total')
@@ -157,18 +155,21 @@ class SystemInfo(QtWidgets.QWidget):
             item.setAlignment(QtCore.Qt.AlignRight)
 
         # Values
-        values = {self.la_download_value_total, self.la_upload_value_total, self.la_sc2_read_value_total, self.la_sc2_write_value_total, self.la_upload_value, self.la_download_value, self.la_memory_value, self.la_sc2_read_value, self.la_sc2_write_value, self.la_sc2_cpu_value, self.la_sc2_memory_value}
+        values = {
+            self.la_download_value_total, self.la_upload_value_total, self.la_sc2_read_value_total, self.la_sc2_write_value_total,
+            self.la_upload_value, self.la_download_value, self.la_memory_value, self.la_sc2_read_value, self.la_sc2_write_value,
+            self.la_sc2_cpu_value, self.la_sc2_memory_value
+        }
         for item in values:
             item.setAlignment(QtCore.Qt.AlignLeft)
 
         # Add shadows to everything
         for item in headers.union(labels).union(values).union({self.cpu_cores[i] for i in self.cpu_cores}):
-            shadow = QtWidgets.QGraphicsDropShadowEffect() 
+            shadow = QtWidgets.QGraphicsDropShadowEffect()
             shadow.setBlurRadius(3)
             shadow.setOffset(1)
             shadow.setColor(QtGui.QColor(0, 0, 0))
-            item.setGraphicsEffect(shadow)     
-
+            item.setGraphicsEffect(shadow)
 
     def start(self):
         """ Periodic update """
@@ -178,7 +179,6 @@ class SystemInfo(QtWidgets.QWidget):
         self.Timer.setInterval(self.iter)
         self.Timer.timeout.connect(self.update)
         self.Timer.start()
-        
 
     def restart(self):
         """ Defaults some variables """
@@ -186,16 +186,15 @@ class SystemInfo(QtWidgets.QWidget):
         self.sc2_bytes_read = None
         self.sc2_bytes_written = None
         self.sc2_process = None
-        
 
     def update(self):
         # Network up and down
         network_data = psutil.net_io_counters()
         if self.bytes_sent != None and self.bytes_recv != None:
-            sent = (1000/self.iter)*(network_data.bytes_sent - self.bytes_sent)
-            recv = (1000/self.iter)*(network_data.bytes_recv - self.bytes_recv)
+            sent = (1000 / self.iter) * (network_data.bytes_sent - self.bytes_sent)
+            recv = (1000 / self.iter) * (network_data.bytes_recv - self.bytes_recv)
             self.la_download_value.setText(f"{self.format_bytes(recv)}/s")
-            self.la_upload_value.setText(f"{self.format_bytes(sent)}/s")           
+            self.la_upload_value.setText(f"{self.format_bytes(sent)}/s")
 
         self.bytes_sent = network_data.bytes_sent
         self.bytes_recv = network_data.bytes_recv
@@ -227,7 +226,7 @@ class SystemInfo(QtWidgets.QWidget):
         # If not visible skip SC2 update
         if not self.isVisible():
             self.sc2_bytes_read = None
-            self.sc2_bytes_written = None 
+            self.sc2_bytes_written = None
             return
 
         # Get StarCraft 2 process if there is none
@@ -235,7 +234,7 @@ class SystemInfo(QtWidgets.QWidget):
             self.sc2_idx_search += 1
 
             # Check only every few iterations for a process to prevent high overhead
-            if self.sc2_idx_search%6:
+            if self.sc2_idx_search % 6:
                 return
 
             for pid in psutil.pids():
@@ -256,12 +255,12 @@ class SystemInfo(QtWidgets.QWidget):
                     pass
                 except:
                     logger.info(f'Error when finding process\n{traceback.format_exc()}')
-        
+
         # We haven't found StarCraft process running
         if self.sc2_process == None:
             self.restart()
             logger.debug(f"Debug: No SC2 process. Restarting.")
-            return 
+            return
         else:
             self.sc2_idx_search = -1
 
@@ -276,8 +275,8 @@ class SystemInfo(QtWidgets.QWidget):
                 logger.debug('Debug: updating SC2....')
                 # Disk usage
                 if self.sc2_bytes_read != None:
-                    read = (1/self.iter)*(self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
-                    writen = (1/self.iter)*(self.sc2_process.io_counters().write_bytes -self.sc2_bytes_written)
+                    read = (1 / self.iter) * (self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
+                    writen = (1 / self.iter) * (self.sc2_process.io_counters().write_bytes - self.sc2_bytes_written)
                     self.la_sc2_read_value.setText(f"{self.format_bytes(read)}/s")
                     self.la_sc2_write_value.setText(f"{self.format_bytes(writen)}/s")
 
@@ -295,18 +294,20 @@ class SystemInfo(QtWidgets.QWidget):
             except psutil.NoSuchProcess:
                 # Set no values
                 self.restart()
-                for item in {self.la_sc2_read_value_total, self.la_sc2_write_value_total, self.la_sc2_read_value, self.la_sc2_write_value, self.la_sc2_cpu_value, self.la_sc2_memory_value}:
+                for item in {
+                        self.la_sc2_read_value_total, self.la_sc2_write_value_total, self.la_sc2_read_value, self.la_sc2_write_value,
+                        self.la_sc2_cpu_value, self.la_sc2_memory_value
+                }:
                     item.setText('')
             except:
                 logger.error(traceback.format_exc())
 
-
     @staticmethod
     def format_bytes(bbytes: int) -> str:
         """ Takes bytes and outputs a string 'X kB' or 'Y MB' or 'Z GB' """
-        if bbytes < 0.3*1024**2:
+        if bbytes < 0.3 * 1024**2:
             return f'{bbytes/1024:.1f} kB'
-        elif bbytes < 0.7*1024**3:
+        elif bbytes < 0.7 * 1024**3:
             return f'{bbytes/1024**2:.1f} MB'
         else:
             return f'{bbytes/1024**3:.1f} GB'

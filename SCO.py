@@ -36,8 +36,7 @@ from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
-
-logger = logclass('SCO','INFO')
+logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
 APPVERSION = 229
@@ -106,7 +105,9 @@ class UI_TabWidget(object):
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 120, 230, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
-        self.CH_ShowPlayerWinrates.setToolTip("The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable.")
+        self.CH_ShowPlayerWinrates.setToolTip(
+            "The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable."
+        )
 
         # Duration
         self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
@@ -132,7 +133,8 @@ class UI_TabWidget(object):
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 120, 300, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
-        self.CH_ForceHideOverlay.setToolTip("The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
+        self.CH_ForceHideOverlay.setToolTip(
+            "The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
 
         # Replay folder
         self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -142,7 +144,8 @@ class UI_TabWidget(object):
         self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 36, 150, 25))
         self.BT_ChooseFolder.setText('Account folder')
-        self.BT_ChooseFolder.setToolTip('Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
+        self.BT_ChooseFolder.setToolTip(
+            'Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
         self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
 
         self.LA_CurrentReplayFolder = QtWidgets.QLabel(self.TAB_Main)
@@ -237,7 +240,7 @@ class UI_TabWidget(object):
         self.BT_Hide.setGeometry(QtCore.QRect(279, 50, 115, 25))
         self.BT_Hide.setText("Hide")
         self.BT_Hide.clicked.connect(MF.keyboard_HIDE)
-        
+
         self.KEY_Hide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
         self.KEY_Hide.setGeometry(QtCore.QRect(280, 80, 113, 20))
         self.KEY_Hide.setToolTip('The key for just hiding the overlay')
@@ -286,7 +289,7 @@ class UI_TabWidget(object):
         self.FR_CustomizeColors.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_CustomizeColors.setFrameShadow(QtWidgets.QFrame.Plain)
 
-        # Customize colors 
+        # Customize colors
         self.LA_CustomizeColors = QtWidgets.QLabel(self.FR_CustomizeColors)
         self.LA_CustomizeColors.setGeometry(QtCore.QRect(0, 10, 241, 20))
         self.LA_CustomizeColors.setStyleSheet("font-weight: bold")
@@ -347,7 +350,7 @@ class UI_TabWidget(object):
         self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
         self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 25))
         self.BT_AomTest.clicked.connect(self.validateAOM)
-        self.BT_AomTest.setText("Verify") 
+        self.BT_AomTest.setText("Verify")
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
 
         #Paypal
@@ -358,7 +361,7 @@ class UI_TabWidget(object):
         self.IMG_Front_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
 
         self.BT_Front_Donate = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_Front_Donate.setGeometry(QtCore.QRect(x-5, y, 140, 50))
+        self.BT_Front_Donate.setGeometry(QtCore.QRect(x - 5, y, 140, 50))
         self.BT_Front_Donate.clicked.connect(self.paypal_clicked)
         self.BT_Front_Donate.setStyleSheet("border: 0px")
         self.BT_Front_Donate.setToolTip(f'Donate to support this app')
@@ -366,9 +369,9 @@ class UI_TabWidget(object):
         # Version
         self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
         self.LA_Version.setGeometry(QtCore.QRect(825, 560, 141, 20))
-        self.LA_Version.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
+        self.LA_Version.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
         self.LA_Version.setText(f"The app is up to date (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
-        self.LA_Version.setEnabled(False)        
+        self.LA_Version.setEnabled(False)
 
         ##############################
         ######### PLAYERS TAB ########
@@ -376,7 +379,7 @@ class UI_TabWidget(object):
 
         self.TAB_Players = QtWidgets.QWidget()
 
-        # Controls 
+        # Controls
         self.FR_Winrate_Controls = QtWidgets.QFrame(self.TAB_Players)
         self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 540, TabWidget.frameGeometry().width(), 60))
         self.FR_Winrate_Controls.setAutoFillBackground(True)
@@ -399,7 +402,7 @@ class UI_TabWidget(object):
 
         # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width()-5, TabWidget.frameGeometry().height()-70))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 70))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
@@ -408,14 +411,14 @@ class UI_TabWidget(object):
         self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 961, 561))
         self.SC_PlayersScrollAreaContentsLayout = QtWidgets.QVBoxLayout()
         self.SC_PlayersScrollAreaContentsLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(10,0,0,0)
+        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(10, 0, 0, 0)
 
         # Heading
         self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
         self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 10, 931, 31))
         self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
         self.WD_WinratesHeading.setMinimumHeight(25)
-        self.WD_WinratesHeading.setMaximumHeight(25) 
+        self.WD_WinratesHeading.setMaximumHeight(25)
         self.SC_PlayersScrollAreaContentsLayout.addWidget(self.WD_WinratesHeading)
 
         self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -464,7 +467,7 @@ class UI_TabWidget(object):
         self.LA_Winrates_Wait = QtWidgets.QLabel(self.TAB_Players)
         self.LA_Winrates_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_PlayersScrollAreaContents.width(), self.SC_PlayersScrollAreaContents.height()))
         self.LA_Winrates_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+        self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
         ###########################
         ######## GAMES TAB ########
@@ -474,7 +477,7 @@ class UI_TabWidget(object):
 
         # Scroll
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
-        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 30, TabWidget.frameGeometry().width()-5, TabWidget.frameGeometry().height()-30))
+        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 30, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 30))
         self.SC_GamesScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_GamesScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_GamesScrollArea.setWidgetResizable(True)
@@ -483,12 +486,12 @@ class UI_TabWidget(object):
         self.SC_GamesScrollAreaContent.setGeometry(QtCore.QRect(0, 0, 931, 561))
         self.SC_GamesScrollAreaContentLayout = QtWidgets.QVBoxLayout()
         self.SC_GamesScrollAreaContentLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_GamesScrollAreaContentLayout.setContentsMargins(10,0,0,0)
+        self.SC_GamesScrollAreaContentLayout.setContentsMargins(10, 0, 0, 0)
 
         self.LA_Games_Wait = QtWidgets.QLabel(self.SC_GamesScrollAreaContent)
         self.LA_Games_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_GamesScrollAreaContent.width(), self.SC_GamesScrollAreaContent.height()))
         self.LA_Games_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Games_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+        self.LA_Games_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
         # Heading
         self.WD_RecentGamesHeading = QtWidgets.QWidget(self.TAB_Games)
@@ -517,7 +520,7 @@ class UI_TabWidget(object):
 
         self.LA_Map = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Map.setGeometry(QtCore.QRect(30, 0, 125, 31))
-        self.LA_Map.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_Map.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_Map.setText("Map")
 
         self.LA_Player1 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
@@ -534,7 +537,7 @@ class UI_TabWidget(object):
         self.LA_Date.setGeometry(QtCore.QRect(655, 0, 101, 31))
         self.LA_Date.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Date.setText("Time")
-      
+
         self.ed_games_search = QtWidgets.QLineEdit(self.WD_RecentGamesHeading)
         self.ed_games_search.setGeometry(QtCore.QRect(740, 5, 160, 20))
         self.ed_games_search.setAlignment(QtCore.Qt.AlignCenter)
@@ -663,14 +666,14 @@ class UI_TabWidget(object):
         self.LA_GamesFound.setEnabled(False)
         self.LA_GamesFound.setGeometry(QtCore.QRect(570, 110, 381, 20))
         self.LA_GamesFound.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
 
         # Main names
         self.LA_IdentifiedPlayers = QtWidgets.QLabel(self.FR_Stats)
         self.LA_IdentifiedPlayers.setEnabled(False)
         self.LA_IdentifiedPlayers.setGeometry(QtCore.QRect(570, 125, 381, 20))
         self.LA_IdentifiedPlayers.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.LA_IdentifiedPlayers.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.LA_IdentifiedPlayers.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
 
         # Date time frame
         self.FR_DateTime = QtWidgets.QFrame(self.FR_Stats)
@@ -680,7 +683,7 @@ class UI_TabWidget(object):
         self.LA_ReplayDate = QtWidgets.QLabel(self.FR_DateTime)
         self.LA_ReplayDate.setGeometry(QtCore.QRect(160, 0, 101, 16))
         self.LA_ReplayDate.setStyleSheet('font-weight: bold')
-        self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_ReplayDate.setText("Replay date")
 
         self.LA_To = QtWidgets.QLabel(self.FR_DateTime)
@@ -705,7 +708,7 @@ class UI_TabWidget(object):
         self.LA_GameLength = QtWidgets.QLabel(self.FR_DateTime)
         self.LA_GameLength.setGeometry(QtCore.QRect(0, 0, 150, 16))
         self.LA_GameLength.setStyleSheet('font-weight: bold')
-        self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_GameLength.setText("Game length (minutes)")
 
         self.LA_Maximum = QtWidgets.QLabel(self.FR_DateTime)
@@ -744,8 +747,18 @@ class UI_TabWidget(object):
         self.TAB_Maps = QtWidgets.QWidget()
         self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
         self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 470, 420))
-        self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview, 0, 'Map name', 'Fastest', 'Average', 'Wins', 'Losses', 'Freq', 'Bonus', bold=True, button=False)
-        
+        self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview,
+                                       0,
+                                       'Map name',
+                                       'Fastest',
+                                       'Average',
+                                       'Wins',
+                                       'Losses',
+                                       'Freq',
+                                       'Bonus',
+                                       bold=True,
+                                       button=False)
+
         self.MapsComboBoxLabel = QtWidgets.QLabel(self.TAB_Maps)
         self.MapsComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
         self.MapsComboBoxLabel.setText('<b>Sort by</b>')
@@ -766,27 +779,46 @@ class UI_TabWidget(object):
         self.LA_Stats_Wait = QtWidgets.QLabel(self.TAB_Maps)
         self.LA_Stats_Wait.setGeometry(QtCore.QRect(0, 0, 470, self.TAB_Maps.height()))
         self.LA_Stats_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Stats_Wait.setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+        self.LA_Stats_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
         ### TAB Difficulty & Regions
         self.TAB_DifficultyRegions = QtWidgets.QWidget()
-        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly', 'Wins', 'Losses', 'Winrate', 50, 0, bold=True, line=True, parent=self.TAB_DifficultyRegions)
-        self.ProgressionStatsHeading = MUI.RegionStats('Region', 
-                                                        {'Defeat':'Losses', 
-                                                        'Victory': 'Wins', 
-                                                        'frequency': 'Frequency',
-                                                        'max_asc': 'Ascension level',
-                                                        'max_com': 'Maxed commanders',
-                                                        'winrate': 'Winrate',
-                                                        'prestiges': 'Prestiges tried'},
-                                                        0, 
-                                                        parent=self.TAB_DifficultyRegions,
+        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly',
+                                                        'Wins',
+                                                        'Losses',
+                                                        'Winrate',
+                                                        50,
+                                                        0,
                                                         bold=True,
-                                                        line=True)
+                                                        line=True,
+                                                        parent=self.TAB_DifficultyRegions)
+        self.ProgressionStatsHeading = MUI.RegionStats('Region', {
+            'Defeat': 'Losses',
+            'Victory': 'Wins',
+            'frequency': 'Frequency',
+            'max_asc': 'Ascension level',
+            'max_com': 'Maxed commanders',
+            'winrate': 'Winrate',
+            'prestiges': 'Prestiges tried'
+        },
+                                                       0,
+                                                       parent=self.TAB_DifficultyRegions,
+                                                       bold=True,
+                                                       line=True)
 
         ### TAB Commanders
         self.TAB_MyCommanders = QtWidgets.QWidget()
-        self.MyCommanderHeading = MUI.CommanderEntry('Commander', 'Freq', 'Wins', 'Losses', 'Winrate', 'APM', 'Kills', 2, bold=True, button=False, parent=self.TAB_MyCommanders)
+        self.MyCommanderHeading = MUI.CommanderEntry('Commander',
+                                                     'Freq',
+                                                     'Wins',
+                                                     'Losses',
+                                                     'Winrate',
+                                                     'APM',
+                                                     'Kills',
+                                                     2,
+                                                     bold=True,
+                                                     button=False,
+                                                     parent=self.TAB_MyCommanders)
 
         self.MyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_MyCommanders)
         self.MyCommanderComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
@@ -810,7 +842,19 @@ class UI_TabWidget(object):
         self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
         self.LA_AlliedCommanders.setEnabled(False)
 
-        self.AlliedCommanderHeading = MUI.CommanderEntry('Allied commander', 'Freq', 'Wins', 'Losses', 'Winrate', 'APM', 'Kills', 2, bold=True, button=False, parent=self.TAB_AlliedCommanders,)
+        self.AlliedCommanderHeading = MUI.CommanderEntry(
+            'Allied commander',
+            'Freq',
+            'Wins',
+            'Losses',
+            'Winrate',
+            'APM',
+            'Kills',
+            2,
+            bold=True,
+            button=False,
+            parent=self.TAB_AlliedCommanders,
+        )
 
         self.AllyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_AlliedCommanders)
         self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
@@ -834,7 +878,7 @@ class UI_TabWidget(object):
         self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics \
                                         related to player and unit kills, bonus objectives and other.<br><br><b>Warning! This might \
                                         take few hours and the application will be less responsive.</b>')
-        self.CH_FA_description.setWordWrap(True)    
+        self.CH_FA_description.setWordWrap(True)
 
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
         self.BT_FA_run.setGeometry(QtCore.QRect(10, 85, 80, 25))
@@ -877,7 +921,7 @@ class UI_TabWidget(object):
         ###########################
 
         self.TAB_Randomizer = QtWidgets.QWidget()
-        
+
         # Generate button
         self.BT_RNG_Generate = QtWidgets.QPushButton(self.TAB_Randomizer)
         self.BT_RNG_Generate.setGeometry(QtCore.QRect(720, 90, 150, 40))
@@ -891,7 +935,7 @@ class UI_TabWidget(object):
         self.BT_RNG_Description.setEnabled(False)
         self.BT_RNG_Description.setText('This commander randomizer randomly chooses a combination of commander, prestige and masteries.\
                                         <br>Specify which commanders and prestiges can be picked. Mastery points will be randomized with\
-                                        either all points into one mastery choice, fully random or not at all.')     
+                                        either all points into one mastery choice, fully random or not at all.')
 
         # Mastery label
         self.CB_RNG_Mastery_Label = QtWidgets.QLabel(self.TAB_Randomizer)
@@ -913,8 +957,8 @@ class UI_TabWidget(object):
         # Race
         self.CB_RNG_Race = QtWidgets.QCheckBox(self.TAB_Randomizer)
         self.CB_RNG_Race.setGeometry(QtCore.QRect(530, 105, 140, 21))
-        self.CB_RNG_Race.setText('Random enemy race')        
-       
+        self.CB_RNG_Race.setText('Random enemy race')
+
         ### Commanders & prestiges
         self.FR_RNG_GB = QtWidgets.QGroupBox(self.TAB_Randomizer)
         self.FR_RNG_GB.setGeometry(QtCore.QRect(40, 20, 280, 450))
@@ -934,20 +978,20 @@ class UI_TabWidget(object):
         self.RNG_co_heading_prestige.setText('<b>Prestige</b>')
 
         self.RNG_co_dict = dict()
-        for prest in {0,1,2,3}:
+        for prest in {0, 1, 2, 3}:
             self.RNG_co_dict[('heading', prest)] = QtWidgets.QLabel(self.FR_RNG_Commanders)
-            self.RNG_co_dict[('heading', prest)].setGeometry(QtCore.QRect(104+prest*30, 24, 300, 20))
+            self.RNG_co_dict[('heading', prest)].setGeometry(QtCore.QRect(104 + prest * 30, 24, 300, 20))
             self.RNG_co_dict[('heading', prest)].setText(str(prest))
 
         # Fill commanders
         for idx, co in enumerate(prestige_names):
-            self.RNG_co_dict[(co,'label')] = QtWidgets.QLabel(self.FR_RNG_Commanders)
-            self.RNG_co_dict[(co,'label')].setGeometry(QtCore.QRect(0, 40+20*idx, 200, 20))
-            self.RNG_co_dict[(co,'label')].setText(co)
+            self.RNG_co_dict[(co, 'label')] = QtWidgets.QLabel(self.FR_RNG_Commanders)
+            self.RNG_co_dict[(co, 'label')].setGeometry(QtCore.QRect(0, 40 + 20 * idx, 200, 20))
+            self.RNG_co_dict[(co, 'label')].setText(co)
 
-            for prest in {0,1,2,3}:
+            for prest in {0, 1, 2, 3}:
                 self.RNG_co_dict[(co, prest)] = QtWidgets.QCheckBox(self.FR_RNG_Commanders)
-                self.RNG_co_dict[(co, prest)].setGeometry(QtCore.QRect(100+prest*30, 40+20*idx, 50, 20))
+                self.RNG_co_dict[(co, prest)].setGeometry(QtCore.QRect(100 + prest * 30, 40 + 20 * idx, 50, 20))
                 self.RNG_co_dict[(co, prest)].setToolTip(prestige_names[co][prest])
                 if prest == 0:
                     self.RNG_co_dict[(co, prest)].setChecked(True)
@@ -963,29 +1007,29 @@ class UI_TabWidget(object):
 
         # Commander name
         self.FR_RNG_Result_CO = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_CO.setGeometry(QtCore.QRect(0, 12, self.FR_RNG_Result.width()-20, 87))
-        self.FR_RNG_Result_CO.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        self.FR_RNG_Result_CO.setGeometry(QtCore.QRect(0, 12, self.FR_RNG_Result.width() - 20, 87))
+        self.FR_RNG_Result_CO.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.FR_RNG_Result_CO.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
-        shadow = QtWidgets.QGraphicsDropShadowEffect() 
+        shadow = QtWidgets.QGraphicsDropShadowEffect()
         shadow.setBlurRadius(1)
         shadow.setOffset(2)
-        self.FR_RNG_Result_CO.setGraphicsEffect(shadow) 
+        self.FR_RNG_Result_CO.setGraphicsEffect(shadow)
 
         # Prestige
         self.FR_RNG_Result_Prestige = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_Prestige.setGeometry(QtCore.QRect(0, 35, self.FR_RNG_Result.width()-20, 87))
-        self.FR_RNG_Result_Prestige.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        self.FR_RNG_Result_Prestige.setGeometry(QtCore.QRect(0, 35, self.FR_RNG_Result.width() - 20, 87))
+        self.FR_RNG_Result_Prestige.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.FR_RNG_Result_Prestige.setStyleSheet('font-size: 13px; color: white')
-        self.FR_RNG_Result_Prestige.setGraphicsEffect(shadow) 
+        self.FR_RNG_Result_Prestige.setGraphicsEffect(shadow)
 
         self.FR_RNG_Result_Mastery = QtWidgets.QLabel(self.FR_RNG_Result)
         self.FR_RNG_Result_Mastery.setGeometry(QtCore.QRect(20, 90, 480, 200))
         self.FR_RNG_Result_Mastery.setStyleSheet('font-size: 13px')
-        
+
         self.FR_RNG_Result_MapRace = QtWidgets.QLabel(self.FR_RNG_Result)
         self.FR_RNG_Result_MapRace.setGeometry(QtCore.QRect(10, 290, 480, 20))
         self.FR_RNG_Result_MapRace.setStyleSheet('font-size: 13px')
-        self.FR_RNG_Result_MapRace.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignBottom)
+        self.FR_RNG_Result_MapRace.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
 
         # Overlay checkbox
         self.FR_RNG_Overlay = QtWidgets.QCheckBox(self.TAB_Randomizer)
@@ -993,7 +1037,6 @@ class UI_TabWidget(object):
         self.FR_RNG_Overlay.setText('Show next random commander with prestige on the overlay')
         self.FR_RNG_Overlay.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.FR_RNG_Overlay.clicked.connect(self.RNG_Overlay_changed)
-
 
         ############################
         ###### TWITCH BOT TAB ######
@@ -1004,7 +1047,7 @@ class UI_TabWidget(object):
         self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
         self.qb_twitch_text.setTitle('About the twitch bot')
         self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 370 if HF.isWindows() else 555))
-        
+
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
         self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 530, 700))
@@ -1033,7 +1076,6 @@ class UI_TabWidget(object):
                                     <br><b>!resources X Y Z</b>→ Adds X minerals and Y vespene to player Z
                                     <br><b>!wave X Y</b>→ Spawns an enemy wave of tech X and size Y
                                     """)
-
 
         self.la_twitch_channel_name = QtWidgets.QLabel(self.TAB_TwitchBot)
         self.la_twitch_channel_name.setGeometry(QtCore.QRect(601, 25, 300, 20))
@@ -1065,7 +1107,8 @@ class UI_TabWidget(object):
 
         self.la_twitch_bank_desc = QtWidgets.QLabel(self.TAB_TwitchBot)
         self.la_twitch_bank_desc.setGeometry(QtCore.QRect(22, 420, 800, 20))
-        self.la_twitch_bank_desc.setText("Choose bank location. It's different for every account and server. At start the app will try to find the correct bank.")
+        self.la_twitch_bank_desc.setText(
+            "Choose bank location. It's different for every account and server. At start the app will try to find the correct bank.")
 
         # Bank combo-box
         self.CB_twitch_banks = QtWidgets.QComboBox(self.TAB_TwitchBot)
@@ -1096,7 +1139,7 @@ class UI_TabWidget(object):
 
         # Performance description
         self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
-        self.la_performance_description.setGeometry(QtCore.QRect(14, 25, self.gb_Resources.width()-20, 300))
+        self.la_performance_description.setGeometry(QtCore.QRect(14, 25, self.gb_Resources.width() - 20, 300))
         self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
         self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
                                                 <br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).\
@@ -1120,13 +1163,13 @@ class UI_TabWidget(object):
         self.la_hotkey_performance_desc.setGeometry(QtCore.QRect(15, 220, 300, 20))
         self.la_hotkey_performance_desc.setText('<b>Hotkey for showing/hiding overlay</b>')
 
-        # Hotkey 
+        # Hotkey
         self.KEY_Performance = MUI.CustomKeySequenceEdit(self.gb_Resources)
         self.KEY_Performance.setGeometry(QtCore.QRect(15, 245, 113, 25))
         self.KEY_Performance.setToolTip('Key for showing or hiding performance overlay')
         self.KEY_Performance.keySequenceChanged.connect(self.hotkey_changed)
 
-        # Apply 
+        # Apply
         self.bt_performance_apply = QtWidgets.QPushButton(self.gb_Resources)
         self.bt_performance_apply.setGeometry(QtCore.QRect(150, 245, 75, 25))
         self.bt_performance_apply.setText('Apply')
@@ -1179,7 +1222,7 @@ class UI_TabWidget(object):
 
         self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
         self.LA_GitHub.setGeometry(QtCore.QRect(70, 175, 200, 41))
-        self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">Overlay on GitHub</a>')
 
         # Subreddit
@@ -1204,7 +1247,7 @@ class UI_TabWidget(object):
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
         self.IMG_Discord.setGeometry(QtCore.QRect(250, 130, 31, 41))
         self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
-        
+
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
         self.LA_Discord.setGeometry(QtCore.QRect(300, 130, 141, 31))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
@@ -1222,14 +1265,16 @@ class UI_TabWidget(object):
 
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
         self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
-        self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if you feel generous</a>')
 
         # Styling
-        for item in {self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate, self.LA_MDiscord}:
+        for item in {
+                self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate,
+                self.LA_MDiscord
+        }:
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
-
 
         ############################
         ####### FINALIZATION #######
@@ -1266,43 +1311,42 @@ class UI_TabWidget(object):
             self.CH_StartWithWindows.setChecked(False)
             self.CH_StartWithWindows.setEnabled(False)
 
-
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
         self.downloading = False
 
         self.default_settings = {
-            'start_with_windows':False,
-            'start_minimized':False,
-            'enable_logging':True,
-            'show_player_winrates':True,
-            'duration':60,
-            'monitor':1,
-            'force_hide_overlay':False,
+            'start_with_windows': False,
+            'start_minimized': False,
+            'enable_logging': True,
+            'show_player_winrates': True,
+            'duration': 60,
+            'monitor': 1,
+            'force_hide_overlay': False,
             'show_session': True,
             'show_random_on_overlay': False,
-            'account_folder':None,
-            'screenshot_folder':None,
-            'hotkey_show/hide':'Ctrl+Shift+*',
-            'hotkey_show':None,
-            'hotkey_hide':None,
-            'hotkey_newer':'Ctrl+Alt+/',
-            'hotkey_older':'Ctrl+Alt+*',
-            'hotkey_winrates':'Ctrl+Alt+-',
-            'color_player1':'#0080F8',
-            'color_player2':'#00D532',
-            'color_amon':'#FF0000',
-            'color_mastery':'#FFDC87',
-            'aom_account':None,
-            'aom_secret_key':None,
-            'player_notes':dict(),
+            'account_folder': None,
+            'screenshot_folder': None,
+            'hotkey_show/hide': 'Ctrl+Shift+*',
+            'hotkey_show': None,
+            'hotkey_hide': None,
+            'hotkey_newer': 'Ctrl+Alt+/',
+            'hotkey_older': 'Ctrl+Alt+*',
+            'hotkey_winrates': 'Ctrl+Alt+-',
+            'color_player1': '#0080F8',
+            'color_player2': '#00D532',
+            'color_amon': '#FF0000',
+            'color_mastery': '#FFDC87',
+            'aom_account': None,
+            'aom_secret_key': None,
+            'player_notes': dict(),
             'main_names': list(),
             'list_games': 200,
-            'right_offset':0,
+            'right_offset': 0,
             'width': 0.5,
-            'height':1,
+            'height': 1,
             'debug': False,
-            'font_scale':1,
+            'font_scale': 1,
             'check_for_multiple_instances': True,
             'subtract_height': 1,
             'debug_button': False,
@@ -1310,43 +1354,46 @@ class UI_TabWidget(object):
             'performance_geometry': None,
             'performance_show': False,
             'performance_hotkey': None,
-            'performance_processes':['SC2_x64.exe','SC2.exe'],
+            'performance_processes': ['SC2_x64.exe', 'SC2.exe'],
             'show_chat': False,
-            'chat_geometry': (700,300,500,500),
+            'chat_geometry': (700, 300, 500, 500),
             'chat_font_scale': 1.3,
             'webflag': 'CoverWindow',
             'full_analysis_atstart': False,
-            'twitchbot' : {
-                           'channel_name': '',
-                           'bot_name': '',
-                           'bot_oauth': '',
-                           'bank_locations': {
-                                              'Default':'',
-                                              'Current':''
-                                              },
-                           'responses': {
-                                         'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
-                                         'syntax': '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player \
+            'twitchbot': {
+                'channel_name': '',
+                'bot_name': '',
+                'bot_oauth': '',
+                'bank_locations': {
+                    'Default': '',
+                    'Current': ''
+                },
+                'responses': {
+                    'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
+                    'syntax':
+                    '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player \
                                                     (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
-                                         'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
-                                         'maguro': 'www.maguro.one',
-                                         'names': 'https://www.maguro.one/p/unit-names.html'
-                                         },
-                           'greetings': {
-                                         'fluffymaguro': 'Hello Maguro!'
-                                         },
-                           'banned_mutators':['Vertigo', 'Propagators', 'Fatal Attraction'],
-                           'banned_units':['',],                            
-                           'host': 'irc.twitch.tv',
-                           'port': 6667,
-                           'auto_start': False,
-                           }
+                    'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
+                    'maguro': 'www.maguro.one',
+                    'names': 'https://www.maguro.one/p/unit-names.html'
+                },
+                'greetings': {
+                    'fluffymaguro': 'Hello Maguro!'
+                },
+                'banned_mutators': ['Vertigo', 'Propagators', 'Fatal Attraction'],
+                'banned_units': [
+                    '',
+                ],
+                'host': 'irc.twitch.tv',
+                'port': 6667,
+                'auto_start': False,
             }
+        }
 
         self.settings = self.default_settings.copy()
 
-        # Try to load base config if there is one         
-        try:         
+        # Try to load base config if there is one
+        try:
             if os.path.isfile(SETTING_FILE):
                 with open(SETTING_FILE, 'r') as f:
                     self.settings = json.load(f)
@@ -1374,14 +1421,14 @@ class UI_TabWidget(object):
         if HF.isWindows():
             font.fromString(f"MS Shell Dlg 2,{8.25*self.settings['font_scale']},-1,5,50,0,0,0,0,0")
         else:
-            font.setPointSize(font.pointSize()*self.settings['font_scale'])
+            font.setPointSize(font.pointSize() * self.settings['font_scale'])
         app.setFont(font)
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
 
         # Screenshot folder
-        if self.settings['screenshot_folder'] in {None,''} or not os.path.isdir(self.settings['screenshot_folder']):
+        if self.settings['screenshot_folder'] in {None, ''} or not os.path.isdir(self.settings['screenshot_folder']):
             self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
 
         self.updateUI()
@@ -1412,7 +1459,6 @@ class UI_TabWidget(object):
             os.remove(truePath('install.bat'))
             self.show_patchnotes()
 
-
     def show_patchnotes(self):
         """ Shows a widget with the lastest patchnotes.
         Usually shown only after an update (after deleting install.bat)"""
@@ -1429,12 +1475,11 @@ class UI_TabWidget(object):
             if patchnotes is None:
                 return
             if len(patchnotes) == 0:
-                return      
+                return
 
             self.WD_patchnotes = MUI.PatchNotes(APPVERSION, patchnotes=patchnotes, icon=QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         except:
             logger.error(traceback.format_exc())
-
 
     def check_for_updates(self):
         """ Checks for updates and changes UI accordingly"""
@@ -1462,10 +1507,9 @@ class UI_TabWidget(object):
         if os.path.isfile(save_path):
             self.update_is_ready_for_install()
         else:
-            self.PB_download = QtWidgets.QProgressBar(self.TAB_Main) 
-            self.PB_download.setGeometry(21, 569, 830, 10) 
+            self.PB_download = QtWidgets.QProgressBar(self.TAB_Main)
+            self.PB_download.setGeometry(21, 569, 830, 10)
             self.PB_download.hide()
-
 
     def start_download(self):
         """ Starts downloading an update"""
@@ -1485,20 +1529,18 @@ class UI_TabWidget(object):
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
         urllib.request.urlretrieve(self.new_version, save_path, self.download_progress_bar_updater)
 
-
     def download_progress_bar_updater(self, blocknum, blocksize, totalsize):
         """ Updates the progress bar accordingly"""
-        readed_data = blocknum * blocksize 
+        readed_data = blocknum * blocksize
 
-        if totalsize > 0: 
-            download_percentage = readed_data * 100 / totalsize 
-            self.PB_download.setValue(int(download_percentage)) 
-            QtWidgets.QApplication.processEvents() 
+        if totalsize > 0:
+            download_percentage = readed_data * 100 / totalsize
+            self.PB_download.setValue(int(download_percentage))
+            QtWidgets.QApplication.processEvents()
 
             if download_percentage >= 100:
                 self.update_is_ready_for_install()
                 self.downloading = False
-
 
     def update_is_ready_for_install(self):
         """ Changes button text and connect it to another function"""
@@ -1506,11 +1548,10 @@ class UI_TabWidget(object):
         self.BT_NewUpdate.setEnabled(True)
         self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
         try:
-            self.BT_NewUpdate.clicked.disconnect()    
+            self.BT_NewUpdate.clicked.disconnect()
         except:
             pass
         self.BT_NewUpdate.clicked.connect(self.install_update)
-
 
     def install_update(self):
         """ Starts the installation """
@@ -1537,14 +1578,14 @@ class UI_TabWidget(object):
 
         # Create and run install.bat file
         installfile = truePath('install.bat')
-        with open(installfile,'w') as f:
-            f.write(f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" \
+        with open(installfile, 'w') as f:
+            f.write(
+                f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" \
                     /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\necho Installation completed...\n"{truePath("SCO.exe")}"')
 
         self.saveSettings()
         os.startfile(installfile)
         app.quit()
-
 
     def updateUI(self):
         """ Update UI elements based on the current settings """
@@ -1587,7 +1628,7 @@ class UI_TabWidget(object):
         self.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
 
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
-       
+
         if self.settings['debug_button']:
             self.BT_MainDebug.show()
             self.BT_MainDebug.setShortcut("Enter")
@@ -1599,9 +1640,8 @@ class UI_TabWidget(object):
         # RNG choices
         if len(self.settings['rng_choices']) > 18:
             for co in prestige_names:
-                for prest in {0,1,2,3}:
+                for prest in {0, 1, 2, 3}:
                     self.RNG_co_dict[(co, prest)].setChecked(self.settings['rng_choices'][f"{co}_{prest}"])
-
 
     def saveSettings(self):
         """ Saves main settings in the settings file. """
@@ -1635,22 +1675,25 @@ class UI_TabWidget(object):
 
         self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
-            self.settings['chat_geometry'] = [self.chat_widget.pos().x(), 
-                                            self.chat_widget.pos().y(), 
-                                            self.chat_widget.width(), 
-                                            self.chat_widget.height()]
+            self.settings['chat_geometry'] = [
+                self.chat_widget.pos().x(),
+                self.chat_widget.pos().y(),
+                self.chat_widget.width(), self.chat_widget.height()
+            ]
 
         self.settings['performance_show'] = self.ch_performance_show.isChecked()
         self.settings['performance_hotkey'] = self.KEY_Performance.keySequence().toString()
         if hasattr(self, 'performance_overlay'):
-            self.settings['performance_geometry'] = [self.performance_overlay.pos().x(), 
-                                                    self.performance_overlay.pos().y(), 
-                                                    self.performance_overlay.width(), 
-                                                    self.performance_overlay.height()]
+            self.settings['performance_geometry'] = [
+                self.performance_overlay.pos().x(),
+                self.performance_overlay.pos().y(),
+                self.performance_overlay.width(),
+                self.performance_overlay.height()
+            ]
 
         # RNG choices
         for co in prestige_names:
-            for prest in {0,1,2,3}:
+            for prest in {0, 1, 2, 3}:
                 self.settings['rng_choices'][f"{co}_{prest}"] = self.RNG_co_dict[(co, prest)].isChecked()
 
         # Save settings
@@ -1665,15 +1708,12 @@ class UI_TabWidget(object):
         self.sendInfoMessage('Settings applied.')
 
         # Warning
-        hotkeys = [self.settings['performance_hotkey'],
-                    self.settings['hotkey_show/hide'], 
-                    self.settings['hotkey_show'], 
-                    self.settings['hotkey_hide'], 
-                    self.settings['hotkey_newer'], 
-                    self.settings['hotkey_older'], 
-                    self.settings['hotkey_winrates']]
+        hotkeys = [
+            self.settings['performance_hotkey'], self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'],
+            self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']
+        ]
 
-        hotkeys = [h for h in hotkeys if not h in {None,''}]
+        hotkeys = [h for h in hotkeys if not h in {None, ''}]
         if len(hotkeys) > len(set(hotkeys)):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
 
@@ -1712,11 +1752,10 @@ class UI_TabWidget(object):
         self.manage_keyboard_threads(previous_settings=previous_settings)
 
         # Show/hide overlay
-        if hasattr(self, 'WebView') and self.settings['force_hide_overlay' ]and self.WebView.isVisible():
+        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
             self.WebView.hide()
         elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay'] and not self.WebView.isVisible():
             self.WebView.show()
-
 
     def hotkey_changed(self):
         """ Wait a bit for the sequence to update, and then check if not to delete the key"""
@@ -1726,16 +1765,17 @@ class UI_TabWidget(object):
         self.hotkey_changed_timer.timeout.connect(self.check_to_remove_hotkeys)
         self.hotkey_changed_timer.start()
 
-
     def check_to_remove_hotkeys(self):
         """ Checks if a key is 'Del' and sets it to None """
-        key_dict = {self.KEY_ShowHide: 'hotkey_show/hide',
-                    self.KEY_Show: 'hotkey_show',
-                    self.KEY_Hide: 'hotkey_hide',
-                    self.KEY_Newer: 'hotkey_newer',
-                    self.KEY_Older: 'hotkey_older',
-                    self.KEY_Winrates: 'hotkey_winrates',
-                    self.KEY_Performance: 'performance_hotkey'}
+        key_dict = {
+            self.KEY_ShowHide: 'hotkey_show/hide',
+            self.KEY_Show: 'hotkey_show',
+            self.KEY_Hide: 'hotkey_hide',
+            self.KEY_Newer: 'hotkey_newer',
+            self.KEY_Older: 'hotkey_older',
+            self.KEY_Winrates: 'hotkey_winrates',
+            self.KEY_Performance: 'performance_hotkey'
+        }
 
         for key in key_dict:
             if key.keySequence().toString() == 'Del':
@@ -1744,23 +1784,24 @@ class UI_TabWidget(object):
                 self.saveSettings()
                 break
 
-
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
         if `previous_settings` == None, then init hotkeys instead """
-        hotkey_func_dict = {'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit, 
-                            'hotkey_show/hide': MF.keyboard_SHOWHIDE, 
-                            'hotkey_show': MF.keyboard_SHOW, 
-                            'hotkey_hide': MF.keyboard_HIDE, 
-                            'hotkey_newer': MF.keyboard_NEWER, 
-                            'hotkey_older': MF.keyboard_OLDER, 
-                            'hotkey_winrates': MF.keyboard_PLAYERWINRATES}
-        
+        hotkey_func_dict = {
+            'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit,
+            'hotkey_show/hide': MF.keyboard_SHOWHIDE,
+            'hotkey_show': MF.keyboard_SHOW,
+            'hotkey_hide': MF.keyboard_HIDE,
+            'hotkey_newer': MF.keyboard_NEWER,
+            'hotkey_older': MF.keyboard_OLDER,
+            'hotkey_winrates': MF.keyboard_PLAYERWINRATES
+        }
+
         # Init
         if previous_settings is None:
             self.hotkey_hotkey_dict = dict()
             for key in hotkey_func_dict:
-                if not self.settings[key] in {None,''}:
+                if not self.settings[key] in {None, ''}:
                     try:
                         self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
                     except:
@@ -1770,7 +1811,7 @@ class UI_TabWidget(object):
         else:
             for key in hotkey_func_dict:
                 # Update current value if the hotkey changed
-                if previous_settings[key] != self.settings[key] and not self.settings[key] in {None,''}:
+                if previous_settings[key] != self.settings[key] and not self.settings[key] in {None, ''}:
                     if key in self.hotkey_hotkey_dict:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
                     try:
@@ -1779,16 +1820,14 @@ class UI_TabWidget(object):
                     except:
                         logger.error(f'Failed to change hotkey {key}\n{traceback.format_exc()}')
 
-
                 # Remove current hotkey no value
-                elif self.settings[key] in {None,''} and key in self.hotkey_hotkey_dict:
+                elif self.settings[key] in {None, ''} and key in self.hotkey_hotkey_dict:
                     try:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
                         del self.hotkey_hotkey_dict[key]
                         logger.info(f'Removing hotkey of {key}')
                     except:
                         logger.error(f'Failed to remove hotkey {key}\n{traceback.format_exc()}')
-
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
@@ -1798,7 +1837,7 @@ class UI_TabWidget(object):
         self.settings['screenshot_folder'] = previous_settings['screenshot_folder']
         self.settings['aom_account'] = self.ED_AomAccount.text()
         self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
-        self.settings['player_notes'] = previous_settings['player_notes'] 
+        self.settings['player_notes'] = previous_settings['player_notes']
         self.settings['twitchbot'] = previous_settings['twitchbot']
         self.settings['debug_button'] = previous_settings['debug_button']
         self.settings['debug'] = previous_settings['debug']
@@ -1808,7 +1847,6 @@ class UI_TabWidget(object):
         MF.update_settings(self.settings)
         MF.resend_init_message()
         self.manage_keyboard_threads(previous_settings=previous_settings)
-
 
     def chooseScreenshotFolder(self):
         """ Changes screenshot folder location """
@@ -1821,13 +1859,12 @@ class UI_TabWidget(object):
             logger.info(f'Changing screenshot_folder to {folder}')
             self.LA_ScreenshotLocation.setText(folder)
             self.settings['screenshot_folder'] = folder
-            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})',color='green')
-
+            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color='green')
 
     def findReplayFolder(self):
         """ Finds and sets account folder """
         dialog = QtWidgets.QFileDialog()
-        if not self.settings['account_folder'] in {None,''}:
+        if not self.settings['account_folder'] in {None, ''}:
             dialog.setDirectory(self.settings['account_folder'])
         dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
 
@@ -1837,7 +1874,7 @@ class UI_TabWidget(object):
                 logger.info(f'Changing accountdir to {folder}')
                 self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(folder)
-                self.sendInfoMessage(f'Account folder set succesfully! ({folder})',color='green')
+                self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color='green')
                 MF.update_names_and_handles(folder, MF.AllReplays)
                 if hasattr(self, 'CAnalysis'):
                     self.updating_maps = QtWidgets.QWidget()
@@ -1847,7 +1884,7 @@ class UI_TabWidget(object):
                     self.updating_maps_label = QtWidgets.QLabel(self.updating_maps)
                     self.updating_maps_label.setGeometry(QtCore.QRect(10, 10, 280, 80))
                     self.updating_maps_label.setText('<b>Please wait</b><br><br>You might need to restart for the game list and stats to update.')
-                    self.updating_maps_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                    self.updating_maps_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
                     self.updating_maps_label.setWordWrap(True)
                     self.updating_maps.show()
                     self.CAnalysis.update_accountdir(folder)
@@ -1858,13 +1895,11 @@ class UI_TabWidget(object):
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
-
     def sendInfoMessage(self, message, color='#555'):
         """ Sends info message. `color` specifies message color"""
         self.LA_InfoLabel.setText(message)
         self.LA_InfoLabel.setStyleSheet(f'color: {color}')
 
-    
     def validateAOM(self):
         """ Validates if name/key combination is valid """
         key = self.ED_AomSecretKey.text()
@@ -1880,11 +1915,10 @@ class UI_TabWidget(object):
         else:
             self.sendInfoMessage('Fill your account name and secret key first!')
 
-
     def openColorDialog(self, button):
         """ Color picker. After the color is picked, color is saved into settings, and button updated (text and color) """
-        button_dict = {self.LA_P1:'Player 1', self.LA_P2:'Player 2', self.LA_Amon:'  Amon', self.LA_Mastery:'Mastery'}
-        settings_dict = {self.LA_P1:'color_player1', self.LA_P2:'color_player2', self.LA_Amon:'color_amon', self.LA_Mastery:'color_mastery'}
+        button_dict = {self.LA_P1: 'Player 1', self.LA_P2: 'Player 2', self.LA_Amon: '  Amon', self.LA_Mastery: 'Mastery'}
+        settings_dict = {self.LA_P1: 'color_player1', self.LA_P2: 'color_player2', self.LA_Amon: 'color_amon', self.LA_Mastery: 'color_mastery'}
 
         color = QtWidgets.QColorDialog.getColor()
 
@@ -1895,14 +1929,13 @@ class UI_TabWidget(object):
             MF.update_settings(self.settings)
             MF.resend_init_message()
 
-
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'>>> Starting!\n{self.settings}')
 
         # Get monitor dimensions
         self.desktop_widget = QtWidgets.QDesktopWidget()
-        self.sg = self.desktop_widget.screenGeometry(int(self.settings['monitor']-1))
+        self.sg = self.desktop_widget.screenGeometry(int(self.settings['monitor'] - 1))
 
         # Debug files in MEI directory
         if self.settings['debug']:
@@ -1932,12 +1965,9 @@ class UI_TabWidget(object):
 
         else:
             self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint|
-                                        QtCore.Qt.WindowTransparentForInput|
-                                        QtCore.Qt.WindowStaysOnTopHint|
-                                        eval(f"QtCore.Qt.{self.settings['webflag']}")|
-                                        QtCore.Qt.NoDropShadowWindowHint|
-                                        QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
+                                        | eval(f"QtCore.Qt.{self.settings['webflag']}") | QtCore.Qt.NoDropShadowWindowHint
+                                        | QtCore.Qt.WindowDoesNotAcceptFocus)
 
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
@@ -1951,7 +1981,6 @@ class UI_TabWidget(object):
                 self.WebView.show()
 
             MF.WEBPAGE = self.WebPage
-
 
         # Pass current settings
         MF.update_settings(self.settings)
@@ -2002,7 +2031,6 @@ class UI_TabWidget(object):
         # Select current index
         self.update_selected_bank_item(self.settings['twitchbot']['bank_locations']['Current'])
 
-
     def find_and_update_banks(self):
         """ Finds banks, update UI """
         if not hasattr(self, 'bank_found_locations'):
@@ -2018,7 +2046,6 @@ class UI_TabWidget(object):
                         self.CB_twitch_banks.addItem(path)
                         self.bank_found_locations.add(path)
 
-
     def change_bank(self):
         """ Update currently used bank in the twitch bot.
         Used when user changes combo-box directly"""
@@ -2030,15 +2057,14 @@ class UI_TabWidget(object):
         except:
             logger.error('Failed to set bank for twitch bot')
 
-
     def update_selected_bank_item(self, bank_path):
         """ Updates selected bank indirectly (when user didn't click it directly)"""
-        if bank_path in {'',None}:
+        if bank_path in {'', None}:
             logger.error('not valid bank path, not changing')
             return
 
         logger.info(f'Changing bank indirectly to {bank_path.strip()}')
-       
+
         for i in range(self.CB_twitch_banks.count()):
             if bank_path in self.CB_twitch_banks.itemText(i):
                 self.settings['twitchbot']['bank_locations']['Current'] = bank_path
@@ -2051,13 +2077,13 @@ class UI_TabWidget(object):
 
         logger.info('bank changed indirectly succesfully')
 
-
     def run_twitch_bot(self):
         """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """
         twitchbot_settings = self.settings['twitchbot'].copy()
 
         # Fallback to my bot if the user doesn't have its own bot
-        if self.settings['twitchbot']['channel_name'] != '' and self.settings['twitchbot']['bot_name'] == '' and self.settings['twitchbot']['bot_oauth'] == '':
+        if self.settings['twitchbot']['channel_name'] != '' and self.settings['twitchbot']['bot_name'] == '' and self.settings['twitchbot'][
+                'bot_oauth'] == '':
             file = innerPath('src/secure.json')
             if os.path.isfile(file):
                 with open(file, 'r') as f:
@@ -2069,7 +2095,9 @@ class UI_TabWidget(object):
 
         # Run the both if settings are ok
         if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
-            logger.error(f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}")
+            logger.error(
+                f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}"
+            )
             self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
         else:
             self.TwitchBot = TwitchBot(twitchbot_settings, widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
@@ -2077,24 +2105,23 @@ class UI_TabWidget(object):
             self.thread_twitch_bot.start()
             self.bt_twitch.setText('Stop the bot')
 
-
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         try:
-            self.WebView.setFixedSize(int(self.sg.width()*self.settings['width']), int(self.sg.height()*self.settings['height']) - self.settings['subtract_height'])
+            self.WebView.setFixedSize(int(self.sg.width() * self.settings['width']),
+                                      int(self.sg.height() * self.settings['height']) - self.settings['subtract_height'])
 
             # Calculate correct X offset when considering multiple monitors. Sum all widths including the current monitor.
             x_start = 0
             for i in range(0, self.settings['monitor']):
                 x_start += self.desktop_widget.screenGeometry(i).width()
             # Substract widget  width and offset
-            x = x_start - self.sg.width()*self.settings['width'] + self.settings['right_offset']
+            x = x_start - self.sg.width() * self.settings['width'] + self.settings['right_offset']
             # Move widget
             self.WebView.move(int(x), self.sg.top())
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
         except:
-            logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")         
-
+            logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
 
     def pc_waken_from_sleep(self, diff):
         """ This function is run when the PC is awoken """
@@ -2105,7 +2132,6 @@ class UI_TabWidget(object):
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
         self.reset_keyboard_thread()
-
 
     def reset_keyboard_thread(self):
         """ Resets keyboard thread"""
@@ -2118,7 +2144,6 @@ class UI_TabWidget(object):
         except:
             logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 
-
     def put_player_first(self, player):
         """ Moves a player to the top spot in the player tab.
         Returns the last player on top (if any) to its position. """
@@ -2130,18 +2155,18 @@ class UI_TabWidget(object):
         if hasattr(self, 'last_ally_player'):
             w = self.player_winrate_UI_dict[self.last_ally_player]
             self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
-            
+
             # Find the position where to put it back
             wins = w.wins
             for idx, pplayer in enumerate(self.player_winrate_UI_dict):
                 if wins >= self.player_winrate_UI_dict[pplayer].wins and idx > 0:
-                    self.SC_PlayersScrollAreaContentsLayout.insertWidget(idx+1, w.widget)
+                    self.SC_PlayersScrollAreaContentsLayout.insertWidget(idx + 1, w.widget)
                     break
 
             # Color back
-            for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
+            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
                 item.setStyleSheet('color:black')
-    
+
         # New player to top
         if player in self.player_winrate_UI_dict:
             self.last_ally_player = player
@@ -2149,9 +2174,8 @@ class UI_TabWidget(object):
             self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
             self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
             w.widget.show()
-            for item in {w.la_name,w.la_wins,w.la_losses,w.la_winrate,w.la_apm,w.la_commander,w.la_frequency}:
+            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
                 item.setStyleSheet('color:blue')
-
 
     def update_player_tab(self, winrate_data):
         """ Updates player tab based on provide winrate data """
@@ -2164,11 +2188,12 @@ class UI_TabWidget(object):
 
         for idx, player in enumerate(winrate_data):
             if not player in self.player_winrate_UI_dict:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player], self.settings['player_notes'].get(player,None), self.SC_PlayersScrollAreaContents)
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player], self.settings['player_notes'].get(player, None),
+                                                                      self.SC_PlayersScrollAreaContents)
                 self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
             else:
                 self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])
-            
+
             if idx > 50:
                 self.player_winrate_UI_dict[player].hide()
             else:
@@ -2180,7 +2205,6 @@ class UI_TabWidget(object):
 
         self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
         self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
-
 
     def check_replays_finished(self, replay_dict):
         """ Launches function again. Adds game to game tab. Updates player winrate data. """
@@ -2203,22 +2227,21 @@ class UI_TabWidget(object):
         self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
 
-
     def RNG_Overlay_changed(self):
         self.saveSettings()
         if self.FR_RNG_Overlay.isChecked():
             self.randomize_commander()
-            
 
     def add_new_game_data(self, replay_dict):
-        """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """ 
+        """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """
 
         self.RNG_Overlay_changed()
 
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
-            self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)     
+            self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles,
+                                                                             self.SC_GamesScrollAreaContent)
+            self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
 
             # Update mass replay analysis
             self.CAnalysis.add_parsed_replay(replay_dict)
@@ -2228,23 +2251,22 @@ class UI_TabWidget(object):
             self.generate_stats()
 
             # Put the last player on top of player tab
-            for player in {1,2}:
-                name = replay_dict['parser']['players'][player].get('name','-')
-                if not replay_dict['parser']['players'][player].get('handle','-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
+            for player in {1, 2}:
+                name = replay_dict['parser']['players'][player].get('name', '-')
+                if not replay_dict['parser']['players'][player].get('handle',
+                                                                    '-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
                     self.put_player_first(name)
                     break
-
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
         if not hasattr(self, 'player_winrate_UI_dict'):
             return
         for player in self.player_winrate_UI_dict:
-            if not self.player_winrate_UI_dict[player].get_note() in {None,''}:
+            if not self.player_winrate_UI_dict[player].get_note() in {None, ''}:
                 self.settings['player_notes'][player] = self.player_winrate_UI_dict[player].get_note()
             elif player in self.settings['player_notes']:
-                del self.settings['player_notes'][player] 
-
+                del self.settings['player_notes'][player]
 
     def filter_players(self):
         """ Filters only players with string in name or note """
@@ -2256,12 +2278,11 @@ class UI_TabWidget(object):
             if self.CH_OnlyTop50.isChecked() and idx >= 50:
                 self.player_winrate_UI_dict[player].hide()
 
-            elif text in player.lower() or text in note or ('note' in text and not note in {None,''}):
+            elif text in player.lower() or text in note or ('note' in text and not note in {None, ''}):
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
             else:
                 self.player_winrate_UI_dict[player].hide()
-
 
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
@@ -2270,7 +2291,7 @@ class UI_TabWidget(object):
         self.game_UI_dict = dict()
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
             self.game_UI_dict[game['file']] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)            
+            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)
 
         # Update stats tab
         player_names = (', ').join(self.CAnalysis.main_names)
@@ -2295,7 +2316,7 @@ class UI_TabWidget(object):
         if self.settings['full_analysis_atstart']:
             self.run_f_analysis()
 
-        # If try to find 
+        # If try to find
         self.find_default_bank_location()
 
         # Change bank names
@@ -2330,14 +2351,12 @@ class UI_TabWidget(object):
         self.BT_FA_dump.setEnabled(True)
         self.BT_FA_dump.clicked.connect(self.dump_all)
 
-
     def dump_all(self):
         """ Dumps all replay data from mass analysis into a file """
         self.BT_FA_dump.setEnabled(False)
         thread_dump_all = MUI.Worker(self.CAnalysis.dump_all)
-        thread_dump_all.signals.result.connect(partial(self.BT_FA_dump.setEnabled,True))
+        thread_dump_all.signals.result.connect(partial(self.BT_FA_dump.setEnabled, True))
         self.threadpool.start(thread_dump_all)
-
 
     def run_f_analysis(self):
         """ runs full analysis """
@@ -2353,20 +2372,17 @@ class UI_TabWidget(object):
         thread_full_analysis.signals.result.connect(self.full_analysis_finished)
         self.threadpool.start(thread_full_analysis)
 
-
     def full_analysis_finished(self, finished_completely):
         self.generate_stats()
         if finished_completely:
             self.CH_FA_atstart.setChecked(True)
-   
-   
+
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
             self.CAnalysis.closing = True
             self.full_analysis_running = False
             self.BT_FA_run.setEnabled(True)
             self.BT_FA_stop.setEnabled(False)
-
 
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """
@@ -2377,7 +2393,6 @@ class UI_TabWidget(object):
         else:
             logger.error('Can\'t update winrate data before mass analysis is finished')
 
-
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""
 
@@ -2385,7 +2400,7 @@ class UI_TabWidget(object):
             logger.error('Mass analysis hasn\'t finished yet')
             return
 
-        # Check 
+        # Check
         if self.CH_AllHistoric.isChecked():
             self.CAnalysis.update_data(showAll=True)
         else:
@@ -2405,7 +2420,7 @@ class UI_TabWidget(object):
         if not self.CH_DiffBrutal.isChecked():
             difficulty_filter.add('Brutal')
         if not self.CH_DiffBrutalPlus.isChecked():
-            difficulty_filter = difficulty_filter.union({1,2,3,4,5,6})
+            difficulty_filter = difficulty_filter.union({1, 2, 3, 4, 5, 6})
 
         region_filter = set()
         if not self.CH_Region_NA.isChecked():
@@ -2430,20 +2445,18 @@ class UI_TabWidget(object):
         over_15 = True if self.CH_Over15.isChecked() else False
 
         ### Analyse
-        analysis = self.CAnalysis.analyse_replays(
-                                  include_mutations=include_mutations, 
-                                  include_normal_games=include_normal_games, 
-                                  difficulty_filter=difficulty_filter, 
-                                  region_filter=region_filter, 
-                                  mindate=mindate, 
-                                  maxdate=maxdate, 
-                                  minlength=minlength, 
-                                  maxLength=maxLength,
-                                  sub_15=sub_15,
-                                  over_15=over_15,
-                                  include_both_main=include_both_main
-                                  )
-        
+        analysis = self.CAnalysis.analyse_replays(include_mutations=include_mutations,
+                                                  include_normal_games=include_normal_games,
+                                                  difficulty_filter=difficulty_filter,
+                                                  region_filter=region_filter,
+                                                  mindate=mindate,
+                                                  maxdate=maxdate,
+                                                  minlength=minlength,
+                                                  maxLength=maxLength,
+                                                  sub_15=sub_15,
+                                                  over_15=over_15,
+                                                  include_both_main=include_both_main)
+
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
         ### Map stats
@@ -2458,28 +2471,38 @@ class UI_TabWidget(object):
 
         # Sort maps
         sort_by = self.MapsComboBox.currentText()
-        trans_dict = {'Frequency':'frequency','Wins':'Victory','Losses':'Defeat','Winrate':'winrate','Average time':'average_victory_time','Bonus':'bonus'}
-        trans_dict_reverse = {'Frequency':True,'Wins':True,'Losses':True,'Winrate':True,'Average time':False,'Bonus': True}
-        
+        trans_dict = {
+            'Frequency': 'frequency',
+            'Wins': 'Victory',
+            'Losses': 'Defeat',
+            'Winrate': 'winrate',
+            'Average time': 'average_victory_time',
+            'Bonus': 'bonus'
+        }
+        trans_dict_reverse = {'Frequency': True, 'Wins': True, 'Losses': True, 'Winrate': True, 'Average time': False, 'Bonus': True}
+
         if sort_by == 'Fastest time':
-            analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1]['Fastest']['length'])}
-        else: 
-            analysis['MapData'] = {k:v for k,v in sorted(analysis['MapData'].items(), key=lambda x:x[1][trans_dict[sort_by]], reverse=trans_dict_reverse[sort_by])}
+            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1]['Fastest']['length'])}
+        else:
+            analysis['MapData'] = {
+                k: v
+                for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1][trans_dict[sort_by]], reverse=trans_dict_reverse[sort_by])
+            }
 
         # Add map buttons & update the fastest map
         idx = 0
         for m in analysis['MapData']:
             idx += 1
-            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview, 
-                                                        idx*25, 
-                                                        m, 
-                                                        analysis['MapData'][m]['Fastest']['length'], 
-                                                        analysis['MapData'][m]['average_victory_time'], 
-                                                        analysis['MapData'][m]['Victory'], 
-                                                        analysis['MapData'][m]['Defeat'], 
-                                                        analysis['MapData'][m]['frequency'], 
-                                                        analysis['MapData'][m]['bonus'], 
-                                                        bg=idx%2 == 0)
+            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview,
+                                                      idx * 25,
+                                                      m,
+                                                      analysis['MapData'][m]['Fastest']['length'],
+                                                      analysis['MapData'][m]['average_victory_time'],
+                                                      analysis['MapData'][m]['Victory'],
+                                                      analysis['MapData'][m]['Defeat'],
+                                                      analysis['MapData'][m]['frequency'],
+                                                      analysis['MapData'][m]['bonus'],
+                                                      bg=idx % 2 == 0)
 
             self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
 
@@ -2498,7 +2521,6 @@ class UI_TabWidget(object):
         else:
             self.QB_FastestMap.show()
 
-
         ### Difficulty stats & region stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
             for item in set(self.stats_difficulty_UI_dict.keys()):
@@ -2507,34 +2529,35 @@ class UI_TabWidget(object):
         else:
             self.stats_difficulty_UI_dict = dict()
 
-        difficulties = ['Casual','Normal','Hard','Brutal','B+1','B+2','B+3','B+4','B+5','B+6']
+        difficulties = ['Casual', 'Normal', 'Hard', 'Brutal', 'B+1', 'B+2', 'B+3', 'B+4', 'B+5', 'B+6']
         idx = 0
-        AllDiff = {'Victory':0, 'Defeat':0}
+        AllDiff = {'Victory': 0, 'Defeat': 0}
         for difficulty in difficulties:
             if difficulty in analysis['DifficultyData']:
-                line = True if idx+1 == len(analysis['DifficultyData']) else False
-                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+','Brutal+'), 
-                                                                                analysis['DifficultyData'][difficulty]['Victory'], 
-                                                                                analysis['DifficultyData'][difficulty]['Defeat'], 
-                                                                                f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%", 
-                                                                                50, 
-                                                                                idx*18+20, 
-                                                                                bg=idx%2, 
-                                                                                parent=self.TAB_DifficultyRegions, 
+                line = True if idx + 1 == len(analysis['DifficultyData']) else False
+                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+', 'Brutal+'),
+                                                                                analysis['DifficultyData'][difficulty]['Victory'],
+                                                                                analysis['DifficultyData'][difficulty]['Defeat'],
+                                                                                f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%",
+                                                                                50,
+                                                                                idx * 18 + 20,
+                                                                                bg=idx % 2,
+                                                                                parent=self.TAB_DifficultyRegions,
                                                                                 line=line)
                 idx += 1
                 AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
                 AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
 
-        AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] + AllDiff['Defeat']) > 0  else '-'
+        AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] +
+                                                                                                           AllDiff['Defeat']) > 0 else '-'
 
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ', 
-                                                                    AllDiff['Victory'], 
-                                                                    AllDiff['Defeat'], 
-                                                                    AllDiff['Winrate'], 
-                                                                    50, 
-                                                                    idx*18+23, 
-                                                                    parent=self.TAB_DifficultyRegions)
+        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ',
+                                                                   AllDiff['Victory'],
+                                                                   AllDiff['Defeat'],
+                                                                   AllDiff['Winrate'],
+                                                                   50,
+                                                                   idx * 18 + 23,
+                                                                   parent=self.TAB_DifficultyRegions)
 
         # Region stats
         if hasattr(self, 'stats_region_UI_dict'):
@@ -2545,10 +2568,10 @@ class UI_TabWidget(object):
             self.stats_region_UI_dict = dict()
 
         for idx, region in enumerate(analysis['RegionData']):
-            self.stats_region_UI_dict[region] = MUI.RegionStats(region, 
-                                                                analysis['RegionData'][region], 
-                                                                20+idx*18, 
-                                                                bg=True if idx%2 else False, 
+            self.stats_region_UI_dict[region] = MUI.RegionStats(region,
+                                                                analysis['RegionData'][region],
+                                                                20 + idx * 18,
+                                                                bg=True if idx % 2 else False,
                                                                 parent=self.TAB_DifficultyRegions)
 
         ### Commander stats
@@ -2563,14 +2586,13 @@ class UI_TabWidget(object):
         if self.CAnalysis.full_analysis_finished:
             self.update_unit_stats(analysis['UnitData'])
 
-
     def update_unit_stats(self, unit_data):
         """ Update unit stats """
 
         # Create tab if it's not there yey
         if not hasattr(self, 'TAB_CommUnitStats'):
             self.TAB_CommUnitStats = QtWidgets.QWidget()
-            self.TABW_StatResults.insertTab(4, self.TAB_CommUnitStats,  "Unit stats")
+            self.TABW_StatResults.insertTab(4, self.TAB_CommUnitStats, "Unit stats")
 
         # Update commander units widget
         if not hasattr(self, 'WD_unit_stats'):
@@ -2582,7 +2604,7 @@ class UI_TabWidget(object):
         # Amon unit tab
         if not hasattr(self, 'TAB_AmonUnitStats'):
             self.TAB_AmonUnitStats = QtWidgets.QWidget()
-            self.TABW_StatResults.insertTab(5, self.TAB_AmonUnitStats,  "Amon stats")
+            self.TABW_StatResults.insertTab(5, self.TAB_AmonUnitStats, "Amon stats")
 
         # Update amon units widget
         if not hasattr(self, 'WD_amon_unit_stats'):
@@ -2590,12 +2612,21 @@ class UI_TabWidget(object):
         else:
             self.WD_amon_unit_stats.update_data(unit_data['amon'])
 
-        
     def my_commander_sort_update(self):
         """ Creates and updates widgets for my commander stats """
         sort_my_commanders_by = self.MyCommanderComboBox.currentText()
-        translate = {'APM':'MedianAPM','Winrate':'Winrate','Losses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
-        self.my_commander_analysis = {k:v for k,v in sorted(self.my_commander_analysis.items(), key=lambda x:x[1][translate[sort_my_commanders_by]], reverse=True)}
+        translate = {
+            'APM': 'MedianAPM',
+            'Winrate': 'Winrate',
+            'Losses': 'Defeat',
+            'Wins': 'Victory',
+            'Frequency': 'Frequency',
+            'Kills': 'KillFraction'
+        }
+        self.my_commander_analysis = {
+            k: v
+            for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_my_commanders_by]], reverse=True)
+        }
 
         if hasattr(self, 'stats_mycommander_UI_dict'):
             for item in set(self.stats_mycommander_UI_dict.keys()):
@@ -2612,30 +2643,30 @@ class UI_TabWidget(object):
                 continue
             if firstCommander is None:
                 firstCommander = co
-            self.stats_mycommander_UI_dict[co] = MUI.CommanderEntry(co, 
-                                                                    f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%", 
-                                                                    self.my_commander_analysis[co]['Victory'], 
-                                                                    self.my_commander_analysis[co]['Defeat'], 
-                                                                    f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%", 
-                                                                    f"{self.my_commander_analysis[co]['MedianAPM']:.0f}", 
-                                                                    f"{100*self.my_commander_analysis[co].get('KillFraction',0):.0f}%", 
-                                                                    idx*spacing+23, 
-                                                                    parent=self.TAB_MyCommanders, 
-                                                                    bg=True if idx%2==1 else False)
+            self.stats_mycommander_UI_dict[co] = MUI.CommanderEntry(co,
+                                                                    f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%",
+                                                                    self.my_commander_analysis[co]['Victory'],
+                                                                    self.my_commander_analysis[co]['Defeat'],
+                                                                    f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%",
+                                                                    f"{self.my_commander_analysis[co]['MedianAPM']:.0f}",
+                                                                    f"{100*self.my_commander_analysis[co].get('KillFraction',0):.0f}%",
+                                                                    idx * spacing + 23,
+                                                                    parent=self.TAB_MyCommanders,
+                                                                    bg=True if idx % 2 == 1 else False)
 
             self.stats_mycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_my_commander_stats_update, co))
             idx += 1
 
         self.stats_mycommander_UI_dict['any'] = MUI.CommanderEntry('Σ',
-                                                                    f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%", 
-                                                                    self.my_commander_analysis['any']['Victory'], 
-                                                                    self.my_commander_analysis['any']['Defeat'], 
-                                                                    f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%", 
-                                                                    f"{self.my_commander_analysis['any']['MedianAPM']:.0f}", 
-                                                                    f"{100*self.my_commander_analysis['any'].get('KillFraction',0):.0f}%", 
-                                                                    idx*spacing+23, 
-                                                                    parent=self.TAB_MyCommanders, 
-                                                                    button=False)
+                                                                   f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%",
+                                                                   self.my_commander_analysis['any']['Victory'],
+                                                                   self.my_commander_analysis['any']['Defeat'],
+                                                                   f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%",
+                                                                   f"{self.my_commander_analysis['any']['MedianAPM']:.0f}",
+                                                                   f"{100*self.my_commander_analysis['any'].get('KillFraction',0):.0f}%",
+                                                                   idx * spacing + 23,
+                                                                   parent=self.TAB_MyCommanders,
+                                                                   button=False)
 
         # Update details
         if hasattr(self, 'my_detailed_info') and self.my_detailed_info is not None:
@@ -2647,7 +2678,6 @@ class UI_TabWidget(object):
         elif len(self.my_commander_analysis) > 1:
             self.my_detailed_info = MUI.CommanderStats(firstCommander, self.my_commander_analysis, parent=self.TAB_MyCommanders)
 
-
     def detailed_my_commander_stats_update(self, commander):
         """ Updates my commander details"""
         self.my_commander_clicked = commander
@@ -2656,12 +2686,21 @@ class UI_TabWidget(object):
             self.my_detailed_info = None
         self.my_detailed_info = MUI.CommanderStats(commander, self.my_commander_analysis, parent=self.TAB_MyCommanders)
 
-
     def ally_commander_sort_update(self):
         """ Creates and updates widgets for allu commander stats """
         sort_commanders_by = self.AllyCommanderComboBox.currentText()
-        translate = {'APM':'MedianAPM','Winrate':'Winrate','Losses':'Defeat','Wins':'Victory','Frequency':'Frequency','Kills':'KillFraction'}
-        self.ally_commander_analysis = {k:v for k,v in sorted(self.ally_commander_analysis.items(), key=lambda x:x[1][translate[sort_commanders_by]], reverse=True)}
+        translate = {
+            'APM': 'MedianAPM',
+            'Winrate': 'Winrate',
+            'Losses': 'Defeat',
+            'Wins': 'Victory',
+            'Frequency': 'Frequency',
+            'Kills': 'KillFraction'
+        }
+        self.ally_commander_analysis = {
+            k: v
+            for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_commanders_by]], reverse=True)
+        }
 
         if hasattr(self, 'stats_allycommander_UI_dict'):
             for item in set(self.stats_allycommander_UI_dict.keys()):
@@ -2678,30 +2717,30 @@ class UI_TabWidget(object):
                 continue
             if firstCommander is None:
                 firstCommander = co
-            self.stats_allycommander_UI_dict[co] = MUI.CommanderEntry(co, 
-                                                                    f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%", 
-                                                                    self.ally_commander_analysis[co]['Victory'], 
-                                                                    self.ally_commander_analysis[co]['Defeat'], 
-                                                                    f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%", 
-                                                                    f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}", 
-                                                                    f"{100*self.ally_commander_analysis[co].get('KillFraction',0):.0f}%", 
-                                                                    idx*spacing+23, 
-                                                                    parent=self.TAB_AlliedCommanders, 
-                                                                    bg=True if idx%2==1 else False)
+            self.stats_allycommander_UI_dict[co] = MUI.CommanderEntry(co,
+                                                                      f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%",
+                                                                      self.ally_commander_analysis[co]['Victory'],
+                                                                      self.ally_commander_analysis[co]['Defeat'],
+                                                                      f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%",
+                                                                      f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}",
+                                                                      f"{100*self.ally_commander_analysis[co].get('KillFraction',0):.0f}%",
+                                                                      idx * spacing + 23,
+                                                                      parent=self.TAB_AlliedCommanders,
+                                                                      bg=True if idx % 2 == 1 else False)
 
             self.stats_allycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_ally_commander_stats_update, co))
             idx += 1
 
-        self.stats_allycommander_UI_dict['any'] = MUI.CommanderEntry('Σ', 
-                                                                    f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%", 
-                                                                    self.ally_commander_analysis['any']['Victory'], 
-                                                                    self.ally_commander_analysis['any']['Defeat'], 
-                                                                    f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%", 
-                                                                    f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}", 
-                                                                    f"{100*self.ally_commander_analysis['any'].get('KillFraction',0):.0f}%", 
-                                                                    idx*spacing+23, 
-                                                                    parent=self.TAB_AlliedCommanders, 
-                                                                    button=False)
+        self.stats_allycommander_UI_dict['any'] = MUI.CommanderEntry('Σ',
+                                                                     f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%",
+                                                                     self.ally_commander_analysis['any']['Victory'],
+                                                                     self.ally_commander_analysis['any']['Defeat'],
+                                                                     f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%",
+                                                                     f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}",
+                                                                     f"{100*self.ally_commander_analysis['any'].get('KillFraction',0):.0f}%",
+                                                                     idx * spacing + 23,
+                                                                     parent=self.TAB_AlliedCommanders,
+                                                                     button=False)
 
         # Update details
         if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info is not None:
@@ -2713,7 +2752,6 @@ class UI_TabWidget(object):
         elif len(self.ally_commander_analysis) > 1:
             self.ally_detailed_info = MUI.CommanderStats(firstCommander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
 
-
     def detailed_ally_commander_stats_update(self, commander):
         """ Updates allied commander details"""
         self.ally_commander_clicked = commander
@@ -2721,7 +2759,6 @@ class UI_TabWidget(object):
             self.ally_detailed_info.deleteLater()
             self.ally_detailed_info = None
         self.ally_detailed_info = MUI.CommanderStats(commander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
-
 
     def map_link_update(self, mapname=None, fdict=None):
         """ Updates the fastest map to clicked map """
@@ -2731,14 +2768,13 @@ class UI_TabWidget(object):
             self.QB_FastestMap.update_data(mapname, fdict, self.CAnalysis.main_handles)
             self.last_fastest_map = mapname
 
-
     def save_screenshot(self):
         """ Saves screenshot of the overlay and saves it on the desktop"""
         try:
             p = QtGui.QImage(self.WebView.grab())
-            height = p.height()*960/1200
-            width = p.height()*650/1200
-            p = p.copy(int(p.width()-width), int(p.height()*20/1200), int(width), int(height))
+            height = p.height() * 960 / 1200
+            width = p.height() * 650 / 1200
+            p = p.copy(int(p.width() - width), int(p.height() * 20 / 1200), int(width), int(height))
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 
             name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'
@@ -2756,7 +2792,6 @@ class UI_TabWidget(object):
         except:
             logger.error(traceback.format_exc())
 
-
     def start_stop_bot(self):
         """ Starts or stops the twitch bot """
         self.settings['twitchbot']['channel_name'] = self.ED_twitch_channel_name.text()
@@ -2771,22 +2806,21 @@ class UI_TabWidget(object):
         else:
             self.run_twitch_bot()
 
-
     def randomize_commander(self):
         """ Randomizes commander based on current selection """
 
         # Get values
         mastery_all_in = True if self.CB_RNG_Mastery.currentText() == 'All points into one' else False
         commander_dict = dict()
-       
+
         found = False
         for co in prestige_names:
             commander_dict[co] = set()
-            for prest in {0,1,2,3}:
+            for prest in {0, 1, 2, 3}:
                 if self.RNG_co_dict[(co, prest)].isChecked():
                     commander_dict[co].add(prest)
                     found = True
-       
+
         # Check if there are any prestiges selected
         if not found:
             logger.error('No commanders to randomize')
@@ -2800,7 +2834,8 @@ class UI_TabWidget(object):
         image_file = truePath(f'Layouts/Commanders/{commander}.png')
         if os.path.isfile(image_file):
             pixmap = QtGui.QPixmap(image_file)
-            pixmap = pixmap.scaled(self.FR_RNG_Result_BG.width(), self.FR_RNG_Result_BG.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+            pixmap = pixmap.scaled(self.FR_RNG_Result_BG.width(), self.FR_RNG_Result_BG.height(), QtCore.Qt.KeepAspectRatio,
+                                   QtCore.Qt.FastTransformation)
             self.FR_RNG_Result_BG.setPixmap(pixmap)
 
         # Commander and prestige
@@ -2808,7 +2843,7 @@ class UI_TabWidget(object):
         self.FR_RNG_Result_Prestige.setText(f"{prestige_names[commander][prestige]} (P{prestige})")
 
         # Mastery
-        mastery = mastery if self.CB_RNG_Mastery.currentText() != 'No mastery generated' else [0,0,0,0,0,0]
+        mastery = mastery if self.CB_RNG_Mastery.currentText() != 'No mastery generated' else [0, 0, 0, 0, 0, 0]
         mtext = ''
         for idx, m in enumerate(CommanderMastery[commander]):
             fill = '' if mastery[idx] > 9 else '&nbsp;&nbsp;'
@@ -2826,8 +2861,7 @@ class UI_TabWidget(object):
         else:
             self.FR_RNG_Result_MapRace.setText('')
 
-        MF.RNG_COMMANDER = {'Commander':commander, 'Prestige':prestige_names[commander][prestige]}
-
+        MF.RNG_COMMANDER = {'Commander': commander, 'Prestige': prestige_names[commander][prestige]}
 
     def update_twitch_chat_position(self):
         """ Updates state of the chat widget. Whether it can be moved or not."""
@@ -2838,27 +2872,20 @@ class UI_TabWidget(object):
 
         if self.chat_widget.fixed:
             self.chat_widget.fixed = False
-            self.chat_widget.setWindowFlags(QtCore.Qt.Window|
-                                            QtCore.Qt.CustomizeWindowHint|
-                                            QtCore.Qt.WindowTitleHint)
+            self.chat_widget.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
-            self.chat_widget.move(position.x()-8, position.y()-31)
+            self.chat_widget.move(position.x() - 8, position.y() - 31)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Fix chat position')
         else:
             self.chat_widget.fixed = True
-            self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint|
-                                            QtCore.Qt.WindowTransparentForInput|
-                                            QtCore.Qt.WindowStaysOnTopHint|
-                                            QtCore.Qt.CoverWindow|
-                                            QtCore.Qt.NoDropShadowWindowHint|
-                                            QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
+                                            | QtCore.Qt.CoverWindow | QtCore.Qt.NoDropShadowWindowHint | QtCore.Qt.WindowDoesNotAcceptFocus)
 
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
-            self.chat_widget.move(position.x()+8, position.y()+31)
+            self.chat_widget.move(position.x() + 8, position.y() + 31)
             self.chat_widget.show()
             self.bt_twitch_position.setText('Change chat position')
-
 
     def create_twitch_chat(self):
         """ Creates or updates twitch chat"""
@@ -2878,7 +2905,6 @@ class UI_TabWidget(object):
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget
 
-
     def update_performance_overlay_position(self):
         """ Updates state of the performance overlay widget. Whether it can be moved or not."""
         if not hasattr(self, 'performance_overlay'):
@@ -2891,26 +2917,20 @@ class UI_TabWidget(object):
 
         if self.performance_overlay.fixed:
             self.performance_overlay.fixed = False
-            self.performance_overlay.setWindowFlags(QtCore.Qt.Window|
-                                                    QtCore.Qt.CustomizeWindowHint|
-                                                    QtCore.Qt.WindowTitleHint)
+            self.performance_overlay.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.performance_overlay.show()
-            self.performance_overlay.move(position.x()-8, position.y()-31)
+            self.performance_overlay.move(position.x() - 8, position.y() - 31)
             self.bt_performance_overlay_position.setText('Fix overlay position')
         else:
             self.performance_overlay.fixed = True
-            self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint|
-                                                    QtCore.Qt.WindowTransparentForInput|
-                                                    QtCore.Qt.WindowStaysOnTopHint|
-                                                    QtCore.Qt.CoverWindow|
-                                                    QtCore.Qt.NoDropShadowWindowHint|
-                                                    QtCore.Qt.WindowDoesNotAcceptFocus)
+            self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput
+                                                    | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CoverWindow | QtCore.Qt.NoDropShadowWindowHint
+                                                    | QtCore.Qt.WindowDoesNotAcceptFocus)
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.performance_overlay.show()
             self.performance_overlay.move(position)
             self.bt_performance_overlay_position.setText('Change overlay position')
-
 
     def show_hide_performance_overlay(self):
         """ Shows/hides peformance overlay. Triggered by hotkey """
@@ -2926,28 +2946,26 @@ class UI_TabWidget(object):
             if not self.performance_overlay.started:
                 self.performance_overlay.start()
 
-
     def find_default_bank_location(self):
         """ Finds default bank location (Runs after mass analysis is finished)"""
 
         try:
             result = self.CAnalysis.find_banks()
             result = list(result.values())[0][1]
-            result = os.path.join(result,'MMTwitchIntegration.SC2Bank')
+            result = os.path.join(result, 'MMTwitchIntegration.SC2Bank')
             self.settings['twitchbot']['bank_locations']['Default'] = result
             logger.info(f"Setting default bank location to {result.strip()}")
             self.update_selected_bank_item(result)
         except:
             logger.error(traceback.format_exc())
 
-
     def search_games(self):
         """ Searches for games with given strings in them and updates games tab"""
-        
+
         if not hasattr(self, 'CAnalysis'):
             return
 
-        search_for = [i.replace('_',' ') for i in self.ed_games_search.text().split()]
+        search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
         if len(search_for) == 0:
             # Restore default
             new_replays = self.CAnalysis.get_last_replays(self.settings['list_games'])
@@ -2957,11 +2975,11 @@ class UI_TabWidget(object):
             logger.info(f'Searching games with {search_for} | found {len(new_replays)} replays')
 
         # Hide current replays that are not in there
-        for i in range(self.SC_GamesScrollAreaContentLayout.count()): 
+        for i in range(self.SC_GamesScrollAreaContentLayout.count()):
             widget = self.SC_GamesScrollAreaContentLayout.itemAt(i).widget()
             widget.hide()
-            
-        # Add replays 
+
+        # Add replays
         for r in new_replays[:self.settings['list_games']]:
             if r['file'] in self.game_UI_dict:
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r['file']].widget)
@@ -2970,13 +2988,12 @@ class UI_TabWidget(object):
                 self.game_UI_dict[r['file']] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r['file']].widget)
 
-
     def debug_function(self):
         """ Debug function """
         text = self.ED_Debug.text()
         if text == 'keyboard':
             self.reset_keyboard_thread()
-            return 
+            return
 
         try:
             print(f'Executing: {text}')

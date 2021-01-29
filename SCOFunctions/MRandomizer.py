@@ -20,7 +20,7 @@ def randomize(commander_dict, mastery_all_in=True):
     commander = random.choice(list(commander_dict.keys()))
     prestige = random.choice(list(commander_dict[commander]))
     mmap = random.choice(list(amon_player_ids.keys()))
-    race = random.choice(['Terran','Protoss','Zerg'])
+    race = random.choice(['Terran', 'Protoss', 'Zerg'])
 
     # Mastery is different for the two cases
     mastery = list()

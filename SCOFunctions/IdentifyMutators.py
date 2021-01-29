@@ -2,27 +2,15 @@ from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
 mutators_list = list(Mutators.keys())[:-19]
-for item in ('Nap Time',
-             'Stone Zealots',
-             'Chaos Studios',
-             'Undying Evil',
-             'Afraid of the Dark',
-             'Trick or Treat',
-             'Turkey Shoot',
-             'Sharing Is Caring',
-             'Gift Exchange',
-             'Naughty List',
-             'Extreme Caution',
-             'Insubordination',
-             'Fireworks',
-             'Lucky Envelopes',
+for item in ('Nap Time', 'Stone Zealots', 'Chaos Studios', 'Undying Evil', 'Afraid of the Dark', 'Trick or Treat', 'Turkey Shoot',
+             'Sharing Is Caring', 'Gift Exchange', 'Naughty List', 'Extreme Caution', 'Insubordination', 'Fireworks', 'Lucky Envelopes',
              'Sluggishness'):
     mutators_list.remove(item)
 
 
 def get_mutator(button, panel):
     """ Returns mutator based on button (41-83) and currently selected panel (1-4) """
-    button = (button - 41)//3 + (panel-1)*15
+    button = (button - 41) // 3 + (panel - 1) * 15
     if 0 <= button < len(mutators_list):
         return mutators_list[button]
     else:
@@ -49,21 +37,25 @@ def identify_mutators(events, extension=True, mm=False):
         # Get a list of dialog items used
         actions = list()
         offset = 0
-        last_game_loop = None # Save the last gameloop. Don't count multiple clicks done on the same loop, game will ignore them.
+        last_game_loop = None  # Save the last gameloop. Don't count multiple clicks done on the same loop, game will ignore them.
 
         for event in events:
-            if event['_gameloop'] == 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['m_eventType'] == 3 and 'SelectionChanged' in event['m_eventData']:
+            if event['_gameloop'] == 0 and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event[
+                    'm_eventType'] == 3 and 'SelectionChanged' in event['m_eventData']:
                 offset = 129 - event['m_controlId']
 
-            elif event['_gameloop'] > 0 and event['_gameloop'] != last_game_loop and event['_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
+            elif event['_gameloop'] > 0 and event['_gameloop'] != last_game_loop and event[
+                    '_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
                 actions.append(event['m_controlId'] + offset)
                 last_game_loop = event['_gameloop']
 
             # Break on game starting
-            elif event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1,2] and 'Spray' in event['m_upgradeTypeName'].decode():
-               break
+            elif event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [
+                    1, 2
+            ] and 'Spray' in event['m_upgradeTypeName'].decode():
+                break
 
-        panel = 1 # Currently visible mutator panel
+        panel = 1  # Currently visible mutator panel
         for action in actions:
             # Mutator clicked
             if 41 <= action <= 83:
@@ -79,7 +71,7 @@ def identify_mutators(events, extension=True, mm=False):
 
             # Mutator removed
             if 88 <= action <= 106:
-                del mutators[(action-88)//2]
+                del mutators[(action - 88) // 2]
 
     # Fix HftS old
-    return [m.replace('Heroes from the Storm (old)','Heroes from the Storm').replace('Extreme Caution','Afraid of the Dark') for m in mutators]
+    return [m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators]

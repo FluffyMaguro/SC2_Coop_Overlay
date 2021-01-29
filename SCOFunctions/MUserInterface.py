@@ -13,8 +13,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
-
-logger = logclass('UI','INFO')
+logger = logclass('UI', 'INFO')
 background_color = "#f1f1f1"
 
 
@@ -49,10 +48,10 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area_contents.setGeometry(QtCore.QRect(0, 25, 961, 561))
         self.scroll_area_contents_layout = QtWidgets.QVBoxLayout()
         self.scroll_area_contents_layout.setAlignment(QtCore.Qt.AlignTop)
-        self.scroll_area_contents_layout.setContentsMargins(10,0,0,0)
+        self.scroll_area_contents_layout.setContentsMargins(10, 0, 0, 0)
 
         # Add heading
-        self.heading = AmonUnitStatsUnit('Name',{'created':'Created','lost':'Lost','kills':'Kills','KD':'K/D'}, parent=self)
+        self.heading = AmonUnitStatsUnit('Name', {'created': 'Created', 'lost': 'Lost', 'kills': 'Kills', 'KD': 'K/D'}, parent=self)
         self.heading.setGeometry(QtCore.QRect(10, 0, self.width(), 21))
 
         # Search
@@ -89,24 +88,23 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area.setWidget(self.scroll_area_contents)
         self.show()
 
-
     def update_data(self, unit_data, init=False):
         """ Updates widget based on new unit data"""
         if not hasattr(self, 'units'):
             self.units = dict()
 
         # Contains widgets for units that are not present in currently generated data
-        self.hidden_units = set() 
+        self.hidden_units = set()
 
         # Either create widgets or update current ones
         for idx, unit in enumerate(unit_data):
             if not unit in self.units:
-                self.units[unit] = AmonUnitStatsUnit(unit, unit_data[unit], parent=self.scroll_area_contents, bg=idx%2)
+                self.units[unit] = AmonUnitStatsUnit(unit, unit_data[unit], parent=self.scroll_area_contents, bg=idx % 2)
                 self.scroll_area_contents_layout.addWidget(self.units[unit])
             else:
                 self.units[unit].update_data(unit_data[unit])
 
-        # Hide/show old widgets        
+        # Hide/show old widgets
         for unit in self.units:
             if not unit in unit_data:
                 self.units[unit].hide()
@@ -125,16 +123,14 @@ class AmonUnitStats(QtWidgets.QWidget):
             self.sort_units()
             self.filter_units()
 
-
     def update_backgrounds(self, init=False):
         """ Updates background for all Amon's units"""
         idx = 0
         for i in range(self.scroll_area_contents_layout.count()):
             widget = self.scroll_area_contents_layout.itemAt(i).widget()
-            if (init or widget.isVisible()) and not widget.search_name in {'sum','name'}:
+            if (init or widget.isVisible()) and not widget.search_name in {'sum', 'name'}:
                 idx += 1
-                widget.update_bg(idx%2)
-
+                widget.update_bg(idx % 2)
 
     def filter_units(self):
         """ Filters Amon's units based on text. Updates visibility and background."""
@@ -147,19 +143,18 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         self.update_backgrounds()
 
-
     def sort_units(self):
         """ Sorts Amon's units """
         sortby = self.sort_box.currentText()
-        trans_dict = {'Name':'Name','Created':'created','Lost':'lost','Kills':'kills','K/D':'KD'}
+        trans_dict = {'Name': 'Name', 'Created': 'created', 'Lost': 'lost', 'Kills': 'kills', 'K/D': 'KD'}
         sortby = trans_dict[sortby]
-        
+
         # Remove widgets from the layout
         for unit in self.units:
             self.scroll_area_contents_layout.removeWidget(self.units[unit])
 
         # Sort
-        self.units = {k:v for k,v in sorted(self.units.items(), key=self.get_sortingf(sortby), reverse=True if sortby != 'Name' else False)}
+        self.units = {k: v for k, v in sorted(self.units.items(), key=self.get_sortingf(sortby), reverse=True if sortby != 'Name' else False)}
 
         # Add widgets to the layout
         self.scroll_area_contents_layout.addWidget(self.units['sum'])
@@ -170,13 +165,11 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         self.update_backgrounds()
 
-
     def get_sortingf(self, sortby):
         """ Returns None if sorting by name, otherwise custom sorting function """
         if sortby == 'Name':
             return None
         return partial(self.sortingf, sortby=sortby)
-
 
     @staticmethod
     def sortingf(data, sortby=None):
@@ -205,7 +198,7 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.bg.setStyleSheet("background-color: #ddd")
         self.bg.hide()
 
-        if unit in {'Name','sum'}:
+        if unit in {'Name', 'sum'}:
             self.setStyleSheet("font-weight:bold")
 
         self.name = QtWidgets.QLabel(self)
@@ -222,18 +215,17 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.elements = dict()
         for idx, item in enumerate(unit_data):
             self.elements[item] = QtWidgets.QLabel(self)
-            self.elements[item].setGeometry(QtCore.QRect(100+100*(idx+1), 0, 100, height))           
+            self.elements[item].setGeometry(QtCore.QRect(100 + 100 * (idx + 1), 0, 100, height))
 
             if item == 'KD':
                 self.elements[item].setToolTip("Kill-death ratio")
             if unit == 'Name':
-                self.elements[item].setAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignRight)
+                self.elements[item].setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
             else:
                 self.elements[item].setAlignment(QtCore.Qt.AlignRight)
 
         self.update_data(unit_data)
         self.show()
-
 
     def update_data(self, unit_data):
         """ Updates Amon's unit widget based on data provided"""
@@ -249,7 +241,6 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
                 self.elements[item].setText(fi(unit_data[item]))
             else:
                 self.elements[item].setText(str(unit_data[item]))
-
 
     def update_bg(self, bg):
         """ Changes whether the unit widget is to have background or not"""
@@ -278,29 +269,30 @@ class UnitStats(QtWidgets.QWidget):
 
         self.elements = dict()
         for idx, commander in enumerate(sorted(unit_data['main'].keys())):
-            self.elements[('button','main',commander)] = QtWidgets.QPushButton(self)
-            self.elements[('button','main',commander)].setGeometry(QtCore.QRect(20, idx*22+20, 100, 25))
-            self.elements[('button','main',commander)].setText(commander)
-            self.elements[('button','main',commander)].clicked.connect(partial(self.update_units, commander=commander, main=True))
+            self.elements[('button', 'main', commander)] = QtWidgets.QPushButton(self)
+            self.elements[('button', 'main', commander)].setGeometry(QtCore.QRect(20, idx * 22 + 20, 100, 25))
+            self.elements[('button', 'main', commander)].setText(commander)
+            self.elements[('button', 'main', commander)].clicked.connect(partial(self.update_units, commander=commander, main=True))
 
         for idx, commander in enumerate(sorted(unit_data['ally'].keys())):
-            self.elements[('button','ally',commander)] = QtWidgets.QPushButton(self)
-            self.elements[('button','ally',commander)].setGeometry(QtCore.QRect(130, idx*22+20, 100, 25))
-            self.elements[('button','ally',commander)].setText(commander)
-            self.elements[('button','ally',commander)].clicked.connect(partial(self.update_units, commander=commander, main=False))
+            self.elements[('button', 'ally', commander)] = QtWidgets.QPushButton(self)
+            self.elements[('button', 'ally', commander)].setGeometry(QtCore.QRect(130, idx * 22 + 20, 100, 25))
+            self.elements[('button', 'ally', commander)].setText(commander)
+            self.elements[('button', 'ally', commander)].clicked.connect(partial(self.update_units, commander=commander, main=False))
 
         self.WD_units = QtWidgets.QGroupBox(self)
-        self.WD_units.setGeometry(QtCore.QRect(250, 10, self.width()-250, self.height()-20))
+        self.WD_units.setGeometry(QtCore.QRect(250, 10, self.width() - 250, self.height() - 20))
         self.WD_units.setTitle('Unit stats')
 
         self.left_offset = 10
         self.top_offset = 40
 
         self.heading = dict()
-        for idx, item in enumerate(['Unit','Created','Lost','Lost%','Kills','K/D','Kills%']):
+        for idx, item in enumerate(['Unit', 'Created', 'Lost', 'Lost%', 'Kills', 'K/D', 'Kills%']):
             self.heading[item] = QtWidgets.QLabel(self.WD_units)
-            self.heading[item].setGeometry(QtCore.QRect(self.left_offset+20 if item == 'Unit' else self.left_offset+120+idx*60, self.top_offset-18, 60, 17))
-            self.heading[item].setText(f"<b>{item}</b>") 
+            self.heading[item].setGeometry(
+                QtCore.QRect(self.left_offset + 20 if item == 'Unit' else self.left_offset + 120 + idx * 60, self.top_offset - 18, 60, 17))
+            self.heading[item].setText(f"<b>{item}</b>")
             if item != 'Unit':
                 self.heading[item].setAlignment(QtCore.Qt.AlignRight)
             if item == 'Kills%':
@@ -311,8 +303,8 @@ class UnitStats(QtWidgets.QWidget):
                 self.heading[item].setToolTip('Units lost / created')
             self.heading[item].hide()
 
-        self.note =  QtWidgets.QLabel(self.WD_units)
-        self.note.setGeometry(QtCore.QRect(self.WD_units.width()-410, self.WD_units.height()-20, 400, 20))
+        self.note = QtWidgets.QLabel(self.WD_units)
+        self.note.setGeometry(QtCore.QRect(self.WD_units.width() - 410, self.WD_units.height() - 20, 400, 20))
         self.note.setAlignment(QtCore.Qt.AlignRight)
         self.note.setText('* Kills from mind-controlled units are counted towards casters')
         self.note.setEnabled(False)
@@ -337,7 +329,6 @@ class UnitStats(QtWidgets.QWidget):
 
         self.show()
 
-
     @staticmethod
     def sortingf(x, sortby=None):
         """ Sorting function for units"""
@@ -346,7 +337,6 @@ class UnitStats(QtWidgets.QWidget):
         elif isinstance(x[1][sortby], int) or isinstance(x[1][sortby], float):
             return x[1][sortby]
         return 0
-
 
     def update_units(self, commander=None, main=True):
         """ Updates unit stats for given commander and main/ally"""
@@ -359,7 +349,7 @@ class UnitStats(QtWidgets.QWidget):
             self.which = which
 
         if commander == None and not hasattr(self, 'commander'):
-            return # Don't update if user hasn't clicked anything yet (updating after a new game)
+            return  # Don't update if user hasn't clicked anything yet (updating after a new game)
         elif commander == None:
             commander = self.commander
         else:
@@ -369,7 +359,7 @@ class UnitStats(QtWidgets.QWidget):
         self.WD_units.setTitle(f'Unit stats ({which.title()}) – {commander}')
         self.sortby.show()
         self.sortby_label.show()
-      
+
         # Clean old elements
         if hasattr(self, 'units') and len(self.units) > 0:
             for u in self.units:
@@ -387,49 +377,65 @@ class UnitStats(QtWidgets.QWidget):
 
         # Sort
         sortby = self.sortby.currentText()
-        sortby = {'Name':'Name','Created': 'created','Lost': 'lost','Lost%': 'lost_percent','Kills': 'kills','K/D': 'KD','Kills%': 'kill_percentage'}[sortby]
+        sortby = {
+            'Name': 'Name',
+            'Created': 'created',
+            'Lost': 'lost',
+            'Lost%': 'lost_percent',
+            'Kills': 'kills',
+            'K/D': 'KD',
+            'Kills%': 'kill_percentage'
+        }[sortby]
 
         if sortby == 'Name':
-            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items())}
+            self.unit_data[which][commander] = {k: v for k, v in sorted(self.unit_data[which][commander].items())}
         else:
-            self.unit_data[which][commander] = {k:v for k,v in sorted(self.unit_data[which][commander].items(), key=partial(self.sortingf, sortby=sortby), reverse=True)}
+            self.unit_data[which][commander] = {
+                k: v
+                for k, v in sorted(self.unit_data[which][commander].items(), key=partial(self.sortingf, sortby=sortby), reverse=True)
+            }
 
         # Create lines for UnitStats
         idx = -1
         for unit in self.unit_data[which][commander]:
             # Don't workers and other unlikely units to get kills, their created/lost numbers would be very off
-            if unit in {'count','Mecha Infestor','Havoc','SCV','Probe','Drone','Mecha Drone','Primal Drone','Infested SCV','Probius','Dominion Laborer','Primal Hive','Primal Warden','Imperial Intercessor','Archangel'}:
+            if unit in {
+                    'count', 'Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius',
+                    'Dominion Laborer', 'Primal Hive', 'Primal Warden', 'Imperial Intercessor', 'Archangel'
+            }:
                 continue
 
             # Not sure what happened here, but Disruptors were created for Karax. Brood Queen is from gift mutator.
-            if (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Stukov' and unit == 'Brood Queen') or (commander != 'Tychus' and unit == 'Auto-Turret'):
+            if (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Stukov' and unit == 'Brood Queen') or (commander != 'Tychus'
+                                                                                                                       and unit == 'Auto-Turret'):
                 continue
 
             # Don't show mind controlled units
-            if self.unit_data[which][commander][unit]['created'] == 0 or (commander in {'Tychus','Vorazun','Zeratul','Abathur'} and unit in {'Broodling','Infested Terran'}):
+            if self.unit_data[which][commander][unit]['created'] == 0 or (commander in {'Tychus', 'Vorazun', 'Zeratul', 'Abathur'}
+                                                                          and unit in {'Broodling', 'Infested Terran'}):
                 continue
 
             idx += 1
             if not idx % 2:
                 self.units[('bg', unit)] = QtWidgets.QFrame(self.WD_units)
-                self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset+15, self.top_offset-1+idx*17, 530, 17))
+                self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset + 15, self.top_offset - 1 + idx * 17, 530, 17))
                 self.units[('bg', unit)].setStyleSheet(f'background-color: {background_color}')
 
             self.units[('name', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('name', unit)].setGeometry(QtCore.QRect(self.left_offset+20, self.top_offset+idx*17, 150, 17))
+            self.units[('name', unit)].setGeometry(QtCore.QRect(self.left_offset + 20, self.top_offset + idx * 17, 150, 17))
             name = unit if unit != 'sum' else f'Σ ({self.unit_data[which][commander]["count"]} games)'
-            self.units[('name', unit)].setText(str(name)) 
+            self.units[('name', unit)].setText(str(name))
 
             self.units[('created', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('created', unit)].setGeometry(QtCore.QRect(self.left_offset+180, self.top_offset+idx*17, 60, 17))
-            self.units[('created', unit)].setText(fi(self.unit_data[which][commander][unit]['created'])) 
+            self.units[('created', unit)].setGeometry(QtCore.QRect(self.left_offset + 180, self.top_offset + idx * 17, 60, 17))
+            self.units[('created', unit)].setText(fi(self.unit_data[which][commander][unit]['created']))
 
             self.units[('lost', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('lost', unit)].setGeometry(QtCore.QRect(self.left_offset+240, self.top_offset+idx*17, 60, 17))
-            self.units[('lost', unit)].setText(fi(self.unit_data[which][commander][unit]['lost'])) 
+            self.units[('lost', unit)].setGeometry(QtCore.QRect(self.left_offset + 240, self.top_offset + idx * 17, 60, 17))
+            self.units[('lost', unit)].setText(fi(self.unit_data[which][commander][unit]['lost']))
 
             self.units[('lost_percent', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset+300, self.top_offset+idx*17, 60, 17))
+            self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 300, self.top_offset + idx * 17, 60, 17))
 
             if self.unit_data[which][commander][unit]['lost_percent'] != None:
                 lost_percent = f"{100*self.unit_data[which][commander][unit]['lost_percent']:.0f}%"
@@ -439,11 +445,11 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('lost_percent', unit)].setToolTip('Units lost / created')
 
             self.units[('kills', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('kills', unit)].setGeometry(QtCore.QRect(self.left_offset+360, self.top_offset+idx*17, 60, 17))
-            self.units[('kills', unit)].setText(fi(self.unit_data[which][commander][unit]['kills'])) 
+            self.units[('kills', unit)].setGeometry(QtCore.QRect(self.left_offset + 360, self.top_offset + idx * 17, 60, 17))
+            self.units[('kills', unit)].setText(fi(self.unit_data[which][commander][unit]['kills']))
 
             self.units[('KD', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset+420, self.top_offset+idx*17, 60, 17))
+            self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset + 420, self.top_offset + idx * 17, 60, 17))
             self.units[('KD', unit)].setToolTip(f"Kill / death ratio")
             kd = self.unit_data[which][commander][unit]['KD']
             if kd != None:
@@ -452,14 +458,14 @@ class UnitStats(QtWidgets.QWidget):
                 self.units[('KD', unit)].setText("-")
 
             self.units[('percent', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset+480, self.top_offset+idx*17, 60, 17))
+            self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 480, self.top_offset + idx * 17, 60, 17))
             percent = self.unit_data[which][commander][unit]['kill_percentage']
             percent = percent if percent != None else 0
             self.units[('percent', unit)].setText(f"{100*percent:.1f}%")
             self.units[('percent', unit)].setToolTip(f"Typical percent of total kills")
 
         for unit in self.units:
-            if not unit[0] in {'name','bg'}:
+            if not unit[0] in {'name', 'bg'}:
                 self.units[unit].setAlignment(QtCore.Qt.AlignRight)
             if unit[1] == 'sum':
                 self.units[unit].setStyleSheet('font-weight: bold')
@@ -468,16 +474,16 @@ class UnitStats(QtWidgets.QWidget):
 
 class RegionStats(QtWidgets.QWidget):
     """Widget for region stats """
-    def __init__(self, region, fdict, y, parent=None, bold=False, line=False,  bg=False):
+    def __init__(self, region, fdict, y, parent=None, bold=False, line=False, bg=False):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(15, y+20, 700, 20))
+        self.setGeometry(QtCore.QRect(15, y + 20, 700, 20))
 
         xspacing = 65
         width = 120
 
         if bg:
             self.bg = QtWidgets.QFrame(self)
-            self.bg.setGeometry(QtCore.QRect(35, 2, self.width()-30, 18))
+            self.bg.setGeometry(QtCore.QRect(35, 2, self.width() - 30, 18))
             self.bg.setAutoFillBackground(True)
 
         self.la_name = QtWidgets.QLabel(self)
@@ -486,7 +492,7 @@ class RegionStats(QtWidgets.QWidget):
 
         # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
-        self.la_frequency.setGeometry(QtCore.QRect(1*xspacing+2, 0, width, 20))
+        self.la_frequency.setGeometry(QtCore.QRect(1 * xspacing + 2, 0, width, 20))
         if isinstance(fdict['frequency'], str):
             self.la_frequency.setText(fdict['frequency'])
         else:
@@ -494,17 +500,17 @@ class RegionStats(QtWidgets.QWidget):
 
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
-        self.la_wins.setGeometry(QtCore.QRect(2*xspacing, 0, width, 20))
+        self.la_wins.setGeometry(QtCore.QRect(2 * xspacing, 0, width, 20))
         self.la_wins.setText(str(fdict['Victory']))
 
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
-        self.la_losses.setGeometry(QtCore.QRect(3*xspacing, 0, width, 20))
+        self.la_losses.setGeometry(QtCore.QRect(3 * xspacing, 0, width, 20))
         self.la_losses.setText(str(fdict['Defeat']))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
-        self.la_winrate.setGeometry(QtCore.QRect(4*xspacing, 0, width, 20))
+        self.la_winrate.setGeometry(QtCore.QRect(4 * xspacing, 0, width, 20))
         if isinstance(fdict['winrate'], str):
             self.la_winrate.setText(fdict['winrate'])
         else:
@@ -512,22 +518,22 @@ class RegionStats(QtWidgets.QWidget):
 
         # Ascension level
         self.la_asc = QtWidgets.QLabel(self)
-        self.la_asc.setGeometry(QtCore.QRect(5*xspacing+20, 0, width, 20))
+        self.la_asc.setGeometry(QtCore.QRect(5 * xspacing + 20, 0, width, 20))
         self.la_asc.setText(str(fdict['max_asc']))
 
         # Tried prestiges 4/18*3, tooltip
         self.la_prestiges = QtWidgets.QLabel(self)
-        self.la_prestiges.setGeometry(QtCore.QRect(6*xspacing+60, 0, width, 20))
+        self.la_prestiges.setGeometry(QtCore.QRect(6 * xspacing + 60, 0, width, 20))
         if isinstance(fdict['prestiges'], str):
             self.la_prestiges.setText(fdict['prestiges'])
         else:
             total = 0
             text = ''
-            for idx,co in enumerate(fdict['prestiges']):
+            for idx, co in enumerate(fdict['prestiges']):
                 total += len(fdict['prestiges'][co])
                 prest = {str(i) for i in fdict['prestiges'][co]}
                 prest = ', '.join(prest)
-                if idx+1 != len(fdict['prestiges']):
+                if idx + 1 != len(fdict['prestiges']):
                     text += f"{co}: {prest}\n"
                 else:
                     text += f"{co}: {prest}"
@@ -537,7 +543,7 @@ class RegionStats(QtWidgets.QWidget):
 
         # Maxed commanders list
         self.la_commanders = QtWidgets.QLabel(self)
-        self.la_commanders.setGeometry(QtCore.QRect(7*xspacing+95, 0, 160, 20))
+        self.la_commanders.setGeometry(QtCore.QRect(7 * xspacing + 95, 0, 160, 20))
         if isinstance(fdict['max_com'], str):
             self.la_commanders.setText(fdict['max_com'])
         else:
@@ -552,7 +558,9 @@ class RegionStats(QtWidgets.QWidget):
         if bold:
             self.setStyleSheet('font-weight: bold')
 
-        for item in {self.la_name, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_asc, self.la_prestiges, self.la_commanders}:
+        for item in {
+                self.la_name, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_asc, self.la_prestiges, self.la_commanders
+        }:
             item.setAlignment(QtCore.Qt.AlignCenter)
 
         if line:
@@ -580,17 +588,17 @@ class CommanderStats(QtWidgets.QWidget):
             pixmap = QtGui.QPixmap(image_file)
             pixmap = pixmap.scaled(self.fr_bg.width(), self.fr_bg.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
             self.fr_bg.setPixmap(pixmap)
-       
+
         # Commander name
         self.la_name = QtWidgets.QLabel(self)
-        self.la_name.setGeometry(QtCore.QRect(0, 0, self.width()-40, 87))
-        self.la_name.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        self.la_name.setGeometry(QtCore.QRect(0, 0, self.width() - 40, 87))
+        self.la_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.la_name.setText(str(commander))
         self.la_name.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
-        shadow = QtWidgets.QGraphicsDropShadowEffect() 
+        shadow = QtWidgets.QGraphicsDropShadowEffect()
         shadow.setBlurRadius(1)
         shadow.setOffset(2)
-        self.la_name.setGraphicsEffect(shadow) 
+        self.la_name.setGraphicsEffect(shadow)
 
         # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
@@ -620,7 +628,7 @@ class CommanderStats(QtWidgets.QWidget):
                 fill = '&nbsp;&nbsp;'
             else:
                 fill = '&nbsp;&nbsp;&nbsp;&nbsp;'
-            fill = fill if (idx%2 == 1 or idx==0) else '<br>'+fill
+            fill = fill if (idx % 2 == 1 or idx == 0) else '<br>' + fill
             text += f"{fill}<b>{100*fanalysis[commander]['Mastery'][idx]:.0f}%</b>&nbsp;&nbsp;{CommanderMastery[commander][idx]}<br>"
 
         self.la_mastery.setText(text)
@@ -653,8 +661,7 @@ class CommanderStats(QtWidgets.QWidget):
 
 
 class FastestMap(QtWidgets.QWidget):
-    """Custom widget for the fastest map""" 
-
+    """Custom widget for the fastest map"""
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -668,10 +675,10 @@ class FastestMap(QtWidgets.QWidget):
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(15, 20, 460, 40))
         self.la_name.setStyleSheet('font-weight: bold; font-size: 24px; color: white')
-        shadow = QtWidgets.QGraphicsDropShadowEffect() 
+        shadow = QtWidgets.QGraphicsDropShadowEffect()
         shadow.setBlurRadius(1)
         shadow.setOffset(2)
-        self.la_name.setGraphicsEffect(shadow) 
+        self.la_name.setGraphicsEffect(shadow)
 
         # Time & enemy race
         self.la_time_race = QtWidgets.QLabel(self)
@@ -708,7 +715,7 @@ class FastestMap(QtWidgets.QWidget):
 
         # Find file button
         self.bt_findfile = QtWidgets.QPushButton(self)
-        self.bt_findfile.setGeometry(QtCore.QRect(10, 325, 75, 23))       
+        self.bt_findfile.setGeometry(QtCore.QRect(10, 325, 75, 23))
         self.bt_findfile.setText("Find file")
 
         # Show overlay button
@@ -722,9 +729,11 @@ class FastestMap(QtWidgets.QWidget):
         self.la_date_difficulty.setAlignment(QtCore.Qt.AlignRight)
         self.la_date_difficulty.setEnabled(False)
 
-        for item in {self.la_name, self.la_time_race, self.la_p1name, self.la_p1apm, self.la_p1masteries,self.la_p2name, self.la_p2apm, self.la_p2masteries, self.la_date_difficulty}:
+        for item in {
+                self.la_name, self.la_time_race, self.la_p1name, self.la_p1apm, self.la_p1masteries, self.la_p2name, self.la_p2apm,
+                self.la_p2masteries, self.la_date_difficulty
+        }:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-
 
     def update_data(self, mapname, fdict, handles):
         """ Updates data based on replay dict from S2Parser"""
@@ -739,9 +748,9 @@ class FastestMap(QtWidgets.QWidget):
         self.la_name.setText(mapname)
 
         if fdict['length'] < 3600:
-            length = time.strftime('%M:%S',time.gmtime(fdict['length']))
+            length = time.strftime('%M:%S', time.gmtime(fdict['length']))
         else:
-            length = time.strftime('%H:%M:%S',time.gmtime(fdict['length']))
+            length = time.strftime('%H:%M:%S', time.gmtime(fdict['length']))
         self.la_time_race.setText(f"{length} | {fdict.get('enemy_race','')}")
 
         if fdict['players'][0]['handle'] in handles:
@@ -750,14 +759,16 @@ class FastestMap(QtWidgets.QWidget):
             p1, p2 = 1, 0
 
         prestige = prestige_names[fdict['players'][p1]['commander']][fdict['players'][p1]['prestige']]
-        self.la_p1name.setText(f"<h3>{fdict['players'][p1]['name']} ({fdict['players'][p1]['commander']})<br>{prestige} (P{fdict['players'][p1]['prestige']})</h3>")
+        self.la_p1name.setText(
+            f"<h3>{fdict['players'][p1]['name']} ({fdict['players'][p1]['commander']})<br>{prestige} (P{fdict['players'][p1]['prestige']})</h3>")
         self.la_p1apm.setText(f"{fdict['players'][p1]['apm']} APM")
-        self.la_p1masteries.setText(self.format_mastery(fdict['players'][p1]['commander'],fdict['players'][p1]['masteries']))
+        self.la_p1masteries.setText(self.format_mastery(fdict['players'][p1]['commander'], fdict['players'][p1]['masteries']))
 
         prestige = prestige_names[fdict['players'][p2]['commander']][fdict['players'][p2]['prestige']]
-        self.la_p2name.setText(f"<h3>{fdict['players'][p2]['name']} ({fdict['players'][p2]['commander']})<br>{prestige} (P{fdict['players'][p2]['prestige']})</h3>") 
+        self.la_p2name.setText(
+            f"<h3>{fdict['players'][p2]['name']} ({fdict['players'][p2]['commander']})<br>{prestige} (P{fdict['players'][p2]['prestige']})</h3>")
         self.la_p2apm.setText(f"{fdict['players'][p2]['apm']} APM")
-        self.la_p2masteries.setText(self.format_mastery(fdict['players'][p2]['commander'],fdict['players'][p2]['masteries']))
+        self.la_p2masteries.setText(self.format_mastery(fdict['players'][p2]['commander'], fdict['players'][p2]['masteries']))
 
         try:
             self.bt_findfile.clicked.disconnect()
@@ -771,24 +782,36 @@ class FastestMap(QtWidgets.QWidget):
         self.la_date_difficulty.setText(f"{fdict['difficulty']} | {fdict['date'].replace(':','-',2).replace(':',' ',1)}")
         self.show()
 
-
     @staticmethod
-    def format_mastery(commander:str, masterylist:list):
+    def format_mastery(commander: str, masterylist: list):
         text = ''
         for idx, mastery in enumerate(masterylist):
             fill = '' if mastery > 9 else '  '
             style = ' style="color:#aaa"' if mastery == 0 else ''
-            text += f"<span{style}>{fill}{mastery}  {CommanderMastery[commander][idx]}</span><br>" 
+            text += f"<span{style}>{fill}{mastery}  {CommanderMastery[commander][idx]}</span><br>"
         return text
 
 
 class CommanderEntry(QtWidgets.QWidget):
-    """Custom widget for ally commander entry in stats""" 
-    def __init__(self, commander, frequency, wins, losses, winrate, apm, percent, y, button=True, bold=False, bg=False, bgcolor=background_color, parent=None):
+    """Custom widget for ally commander entry in stats"""
+    def __init__(self,
+                 commander,
+                 frequency,
+                 wins,
+                 losses,
+                 winrate,
+                 apm,
+                 percent,
+                 y,
+                 button=True,
+                 bold=False,
+                 bg=False,
+                 bgcolor=background_color,
+                 parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(15, y, 450, 25))
-        
+
         # Button/label
         if button:
             self.bt_button = QtWidgets.QPushButton(self)
@@ -811,30 +834,30 @@ class CommanderEntry(QtWidgets.QWidget):
         self.la_wins.setGeometry(QtCore.QRect(200, 0, 50, 20))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(wins))
-      
+
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
         self.la_losses.setGeometry(QtCore.QRect(240, 0, 60, 20))
-        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
         self.la_losses.setText(str(losses))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
         self.la_winrate.setGeometry(QtCore.QRect(300, 0, 55, 20))
-        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.la_winrate.setText(str(winrate))
 
         # Apm
         self.la_apm = QtWidgets.QLabel(self)
         self.la_apm.setGeometry(QtCore.QRect(352, 0, 50, 20))
-        self.la_apm.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_apm.setAlignment(QtCore.Qt.AlignCenter)
         self.la_apm.setToolTip('Median APM')
         self.la_apm.setText(str(apm))
 
         # Kill percent
         self.la_killpercent = QtWidgets.QLabel(self)
         self.la_killpercent.setGeometry(QtCore.QRect(395, 0, 60, 20))
-        self.la_killpercent.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_killpercent.setAlignment(QtCore.Qt.AlignCenter)
         percent = str(percent) if percent != '0%' else '–'
         self.la_killpercent.setText(percent)
 
@@ -857,44 +880,56 @@ class CommanderEntry(QtWidgets.QWidget):
 
 
 class MapEntry(QtWidgets.QWidget):
-    """Custom widget for map entry in stats""" 
-    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, frequency, bonus, button=True, bold=False, bg=False, bgcolor=background_color):
+    """Custom widget for map entry in stats"""
+    def __init__(self,
+                 parent,
+                 y,
+                 name,
+                 time_fastest,
+                 time_average,
+                 wins,
+                 losses,
+                 frequency,
+                 bonus,
+                 button=True,
+                 bold=False,
+                 bg=False,
+                 bgcolor=background_color):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(7, y-6, parent.width(), 40))
+        self.setGeometry(QtCore.QRect(7, y - 6, parent.width(), 40))
         if bold:
             self.setStyleSheet('font-weight: bold')
-        
+
         # Button/label
         self.bt_button = QtWidgets.QPushButton(self) if button else QtWidgets.QLabel(self)
         self.bt_button.setGeometry(QtCore.QRect(0, 0, 135, 25))
         if not button:
             self.bt_button.setAlignment(QtCore.Qt.AlignCenter)
             self.bt_button.setGeometry(QtCore.QRect(0, 0, 135, 20))
-        
+
         if 'Lock' in name and 'Load' in name:
             name = "Lock and Load"
         self.bt_button.setText(name)
 
         # Average time
         self.la_average = QtWidgets.QLabel(self)
-        
+
         self.la_average.setAlignment(QtCore.Qt.AlignCenter)
         self.la_average.setToolTip('Average victory time')
         time_average = time_average if time_average != 999999 else '–'
         if isinstance(time_average, int) or isinstance(time_average, float):
             self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
             if time_average < 3600:
-                self.la_average.setText(time.strftime('%M:%S',time.gmtime(time_average)))
+                self.la_average.setText(time.strftime('%M:%S', time.gmtime(time_average)))
             else:
-                self.la_average.setText(time.strftime('%H:%M:%S',time.gmtime(time_average)))
+                self.la_average.setText(time.strftime('%H:%M:%S', time.gmtime(time_average)))
 
         elif time_average == '–':
             self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
         else:
             self.la_average.setGeometry(QtCore.QRect(131, 0, 60, 24))
             self.la_average.setText(time_average)
-            
 
         # Fastest time
         self.la_fastest = QtWidgets.QLabel(self)
@@ -904,16 +939,16 @@ class MapEntry(QtWidgets.QWidget):
         time_fastest = time_fastest if time_fastest != 999999 else '–'
         if isinstance(time_fastest, int) or isinstance(time_fastest, float):
             if time_fastest < 3600:
-                self.la_fastest.setText(time.strftime('%M:%S',time.gmtime(time_fastest)))
+                self.la_fastest.setText(time.strftime('%M:%S', time.gmtime(time_fastest)))
             else:
-                self.la_fastest.setText(time.strftime('%H:%M:%S',time.gmtime(time_fastest)))
+                self.la_fastest.setText(time.strftime('%H:%M:%S', time.gmtime(time_fastest)))
         else:
             self.la_fastest.setText(time_fastest)
 
-        # Frequency    
+        # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
         self.la_frequency.setGeometry(QtCore.QRect(235, 0, 50, 24))
-        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
         if isinstance(frequency, str):
             self.la_frequency.setText(frequency)
         else:
@@ -922,19 +957,19 @@ class MapEntry(QtWidgets.QWidget):
         # Wins
         self.la_wins = QtWidgets.QLabel(self)
         self.la_wins.setGeometry(QtCore.QRect(275, 0, 50, 24))
-        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(wins))
 
         # Losses
         self.la_losses = QtWidgets.QLabel(self)
         self.la_losses.setGeometry(QtCore.QRect(316, 0, 54, 24))
-        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
         self.la_losses.setText(str(losses))
 
         # Winrate
         self.la_winrate = QtWidgets.QLabel(self)
         self.la_winrate.setGeometry(QtCore.QRect(367, 0, 50, 24))
-        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)  
+        self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
         if isinstance(wins, str) or isinstance(losses, str):
             winrate = 'Winrate'
         else:
@@ -949,7 +984,8 @@ class MapEntry(QtWidgets.QWidget):
         self.la_bonus.setAlignment(QtCore.Qt.AlignCenter)
         if bonus == 0:
             self.la_bonus.setText('–')
-            self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.<br><br>Run full analysis for this statistic.')
+            self.la_bonus.setToolTip(
+                'Bonus objective completion. Completing half of bonus objectives counts as 50%.<br><br>Run full analysis for this statistic.')
         elif isinstance(bonus, int) or isinstance(bonus, float):
             self.la_bonus.setText(f'{100*bonus:.0f}%')
             self.la_bonus.setToolTip('Bonus objective completion. Completing half of bonus objectives counts as 50%.')
@@ -966,11 +1002,10 @@ class MapEntry(QtWidgets.QWidget):
 
 class DifficultyEntry(QtWidgets.QWidget):
     """Custom widget for difficulty entry in stats"""
-
     def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor=background_color, parent=None):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(x, y+150, 300, 40))
+        self.setGeometry(QtCore.QRect(x, y + 150, 300, 40))
 
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(10, 10, 70, 20))
@@ -1015,7 +1050,6 @@ class GameEntry:
     Class for UI elements in games tab. 
     It takes `replay_dict` generated by s2parser. 
     """
-
     def __init__(self, replay_dict, handles, parent):
         self.mapname = replay_dict['map_name']
         self.result = replay_dict['result']
@@ -1023,7 +1057,7 @@ class GameEntry:
         self.enemy = replay_dict['enemy_race']
         self.length = replay_dict['form_alength']
         self.file = replay_dict['file']
-        self.date = replay_dict['date'][:10].replace(':','-') + ' ' + replay_dict['date'][11:16]
+        self.date = replay_dict['date'][:10].replace(':', '-') + ' ' + replay_dict['date'][11:16]
         self.chat_showing = False
         self.message_count = len(replay_dict['messages'])
 
@@ -1031,9 +1065,9 @@ class GameEntry:
             self.p1_name = replay_dict['players'][1]['name']
             self.p1_commander = replay_dict['players'][1]['commander']
             self.p1_handle = replay_dict['players'][1]['handle']
-            self.p2_name = replay_dict['players'][2].get('name','')
+            self.p2_name = replay_dict['players'][2].get('name', '')
             self.p2_commander = replay_dict['players'][2].get('commander')
-            self.p2_handle = replay_dict['players'][2].get('handle','')
+            self.p2_handle = replay_dict['players'][2].get('handle', '')
         else:
             self.p1_name = replay_dict['players'][2].get('name')
             self.p1_commander = replay_dict['players'][2].get('commander')
@@ -1041,7 +1075,6 @@ class GameEntry:
             self.p2_name = replay_dict['players'][1]['name']
             self.p2_commander = replay_dict['players'][1]['commander']
             self.p2_handle = replay_dict['players'][1]['handle']
-
 
         height = 30
         line_spacing = 7
@@ -1054,11 +1087,11 @@ class GameEntry:
         self.line = QtWidgets.QFrame(self.widget)
         self.line.setGeometry(QtCore.QRect(10, 0, 921, 2))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)        
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.la_mapname = QtWidgets.QLabel(self.widget)
         self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 125, 21))
-        self.la_mapname.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.la_mapname.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.la_mapname.setText(self.mapname)
 
         self.la_result = QtWidgets.QLabel(self.widget)
@@ -1102,17 +1135,17 @@ class GameEntry:
         self.BT_show.clicked.connect(lambda: show_overlay(self.file))
 
         self.BT_chat = QtWidgets.QPushButton(self.widget)
-        self.BT_chat.setGeometry(QtCore.QRect(810, line_spacing, 55, 23))          
+        self.BT_chat.setGeometry(QtCore.QRect(810, line_spacing, 55, 23))
         self.BT_chat.setText("Chat")
         self.BT_chat.clicked.connect(self.show_chat)
 
         self.BT_file = QtWidgets.QPushButton(self.widget)
-        self.BT_file.setGeometry(QtCore.QRect(870, line_spacing, 55, 23))          
+        self.BT_file.setGeometry(QtCore.QRect(870, line_spacing, 55, 23))
         self.BT_file.setText("File")
         self.BT_file.clicked.connect(lambda: find_file(self.file))
 
         self.la_chat = QtWidgets.QLabel(self.widget)
-        self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 10+14*self.message_count))
+        self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 10 + 14 * self.message_count))
         self.la_chat.setAlignment(QtCore.Qt.AlignTop)
 
         testplayer = 2 if replay_dict['players'][1]['handle'] in handles else 1
@@ -1131,21 +1164,22 @@ class GameEntry:
         self.la_chat.hide()
 
         # Styling
-        for item in {self.la_chat, self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date}:
+        for item in {
+                self.la_chat, self.la_mapname, self.la_result, self.la_p1, self.la_p2, self.la_enemy, self.la_length, self.la_difficulty, self.la_date
+        }:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
                 item.setStyleSheet('color: red')
 
-
     def show_chat(self):
-        """ Shows/hides chat """       
+        """ Shows/hides chat """
         if self.chat_showing:
             self.chat_showing = False
             height = 30
             self.la_chat.hide()
         else:
             self.chat_showing = True
-            height = 30 + (10 + 14*self.message_count) if self.message_count > 0 else 50
+            height = 30 + (10 + 14 * self.message_count) if self.message_count > 0 else 50
             self.la_chat.show()
 
         self.widget.setGeometry(QtCore.QRect(0, 0, self.widget.width(), height))
@@ -1158,7 +1192,6 @@ class PlayerEntry:
     Class for UI elements in players tab. 
 
     """
-
     def __init__(self, player, winrate_data, note, parent):
         self.name = player
         self.note = note
@@ -1211,7 +1244,7 @@ class PlayerEntry:
         self.ed_note.setGeometry(QtCore.QRect(580, line_spacing, 300, 21))
         self.ed_note.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_note.setStyleSheet('color: #444')
-        if not self.note in {None,''}:
+        if not self.note in {None, ''}:
             self.ed_note.setText(self.note)
 
         # This is necessary only sometimes (when the user is looking at the tab while its updating )
@@ -1221,33 +1254,28 @@ class PlayerEntry:
         for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate}:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-
         self.update_winrates(winrate_data)
-
 
     def get_note(self):
         return self.ed_note.text()
 
-
     def show(self):
         self.widget.show()
 
-
     def hide(self):
         self.widget.hide()
-
 
     def update_winrates(self, data):
         """ Updates winrate for the player. """
         self.wins = data[0]
         self.losses = data[1]
-        self.winrate = 100*self.wins/(self.wins+self.losses)
+        self.winrate = 100 * self.wins / (self.wins + self.losses)
 
         self.la_wins.setText(str(self.wins))
         self.la_losses.setText(str(self.losses))
         self.la_winrate.setText(f'{self.winrate:.0f}%')
         self.la_apm.setText(f'{data[2]:.0f}')
-        self.la_commander.setText(str(data[3]))  
+        self.la_commander.setText(str(data[3]))
         self.la_frequency.setText(f'{100*data[4]:.0f}%')
 
 
@@ -1280,14 +1308,12 @@ class Worker(QtCore.QRunnable):
     `arg` Arguments to pass to the callback function
     `kwargs` Keywords to pass to the callback function
     """
-
     def __init__(self, fn, *args, **kwargs):
         super(Worker, self).__init__()
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
-
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -1312,7 +1338,7 @@ class Worker(QtCore.QRunnable):
 class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
     def __init__(self, parent=None):
         super(CustomKeySequenceEdit, self).__init__(parent)
- 
+
     def keyPressEvent(self, QKeyEvent):
         super(CustomKeySequenceEdit, self).keyPressEvent(QKeyEvent)
         value = self.keySequence()
@@ -1346,33 +1372,25 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
         self.settings = settings
 
-
-    @QtCore.pyqtSlot(bool)    
+    @QtCore.pyqtSlot(bool)
     def closeEvent(self, event):
         """ Overriding close event and minimizing instead """
         event.ignore()
         self.hide()
         self.show_minimize_message()
 
-
     def format_close_message(self):
         """ Shows few hotkeys in the notification area"""
         text = ''
-        setting_dict = {"hotkey_show/hide":"Show/Hide","hotkey_newer":"Newer replay","hotkey_older":"Older replay"}
+        setting_dict = {"hotkey_show/hide": "Show/Hide", "hotkey_newer": "Newer replay", "hotkey_older": "Older replay"}
         for key in setting_dict:
             if key in self.settings and self.settings[key] != '':
                 text += f"\n{self.settings[key]} → {setting_dict[key]}"
         return text
 
-
     def show_minimize_message(self, message=''):
-        self.tray_icon.showMessage(
-                "StarCraft Co-op Overlay",
-                f"App was minimized into the tray{self.format_close_message()}",
-                QtGui.QIcon(innerPath('src/OverlayIcon.ico')),
-                2000
-            )
-
+        self.tray_icon.showMessage("StarCraft Co-op Overlay", f"App was minimized into the tray{self.format_close_message()}",
+                                   QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
 
     def tray_activated(self, reason):
         """ Hides/shows main window when the tray icon is double clicked """
@@ -1393,9 +1411,8 @@ class CustomWebView(QtWebEngineWidgets.QWebEngineView):
         super().__init__(parent)
         self.loadFinished.connect(self.on_load_finished)
 
-
     @QtCore.pyqtSlot(bool)
-    def on_load_finished(self,ok):
+    def on_load_finished(self, ok):
         if ok:
             self.page().runJavaScript(f"do_not_use_websocket = true;")
             MF.resend_init_message()
@@ -1407,36 +1424,35 @@ class PatchNotes(QtWidgets.QWidget):
         super().__init__(parent)
 
         release = f"{str(version)[0]}.{str(version)[1:]}"
-        height = 50 + len(patchnotes)*18
+        height = 50 + len(patchnotes) * 18
         width = 490
         text = ''
 
         # Add text, calculate required width
         for line in patchnotes:
             text += f'&middot; {line}<br>'
-            width = width if width > len(line)*6 + 40 else len(line)*6 + 40
+            width = width if width > len(line) * 6 + 40 else len(line) * 6 + 40
 
         font = self.font()
-        font.setPointSize(font.pointSize()*1.2)
+        font.setPointSize(font.pointSize() * 1.2)
 
         self.setWindowTitle(f'New release changelog')
         self.setWindowIcon(icon)
-        self.setFixedSize(width, height)       
+        self.setFixedSize(width, height)
 
         self.la_heading = QtWidgets.QLabel(self)
         self.la_heading.setGeometry(QtCore.QRect(0, 10, self.width(), 30))
         self.la_heading.setText(f'<h1>StarCraft Co-op Overlay ({release})</h1>')
         self.la_heading.setAlignment(QtCore.Qt.AlignHCenter)
-        
+
         self.la_patchnotes = QtWidgets.QLabel(self)
-        self.la_patchnotes.setGeometry(QtCore.QRect(20, 40, self.width()-20, self.height()-40))
+        self.la_patchnotes.setGeometry(QtCore.QRect(20, 40, self.width() - 20, self.height() - 40))
         self.la_patchnotes.setText(text)
         self.la_patchnotes.setFont(font)
 
         self.show()
 
-
-    @QtCore.pyqtSlot(bool)    
+    @QtCore.pyqtSlot(bool)
     def closeEvent(self, event):
         """ Overriding close event. Otherwise it closes the app when it's minimized """
         event.ignore()
