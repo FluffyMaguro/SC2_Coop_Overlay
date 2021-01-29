@@ -443,10 +443,8 @@ def _process_dict(unit_data: dict):
                 unit_data[commander][unit]['lost_percent'] = None
 
             # Sum
-            if unit in (
-                    'Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius', 'Dominion Laborer',
-                    'Primal Hive', 'Primal Warden', 'Imperial Intercessor', 'Archangel')
-            }:
+            if unit in ('Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius',
+                        'Dominion Laborer', 'Primal Hive', 'Primal Warden', 'Imperial Intercessor', 'Archangel'):
                 continue
             if commander != 'Tychus' and unit == 'Auto-Turret':
                 continue
