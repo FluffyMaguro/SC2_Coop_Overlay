@@ -2367,10 +2367,14 @@ class UI_TabWidget(object):
         self.BT_FA_run.setEnabled(False)
         self.BT_FA_stop.setEnabled(True)
         self.full_analysis_running = True
-        self.CAnalysis.full_analysis_label = self.CH_FA_status
-        thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis)
+        thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis, progress_callback=True)
         thread_full_analysis.signals.result.connect(self.full_analysis_finished)
+        thread_full_analysis.signals.progress.connect(self.full_analysis_progress)
         self.threadpool.start(thread_full_analysis)
+
+    def full_analysis_progress(self, progress):
+        """ Updates progress from full analysis"""
+         self.CH_FA_status.setText(progress)
 
     def full_analysis_finished(self, finished_completely):
         self.generate_stats()

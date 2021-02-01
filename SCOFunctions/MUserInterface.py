@@ -1297,6 +1297,7 @@ class WorkerSignals(QtCore.QObject):
     finished = QtCore.pyqtSignal()
     error = QtCore.pyqtSignal(tuple)
     result = QtCore.pyqtSignal(object)
+    progress = QtCore.pyqtSignal(object)
 
 
 class Worker(QtCore.QRunnable):
@@ -1314,6 +1315,10 @@ class Worker(QtCore.QRunnable):
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
+
+        if 'progress_callback' in kwargs:
+            self.kwargs['progress_callback'] = self.signals.progress
+        
 
     @QtCore.pyqtSlot()
     def run(self):

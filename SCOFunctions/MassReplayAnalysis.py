@@ -521,7 +521,6 @@ class mass_replay_analysis:
         self.winrate_data = dict()
         self.current_replays = find_replays(ACCOUNTDIR)
         self.closing = False
-        self.full_analysis_label = None
         self.full_analysis_finished = False
         self.name_handle_dict = dict()
 
@@ -709,7 +708,7 @@ class mass_replay_analysis:
         """ Returns an ordered list of last `number` replays from the newest to the oldest. """
         return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':', '')), reverse=True)[:number]
 
-    def run_full_analysis(self):
+    def run_full_analysis(self, progress_callback):
         """ Run full analysis on all replays """
         self.closing = False
 
@@ -722,7 +721,7 @@ class mass_replay_analysis:
         if fully_parsed == len(self.ReplayDataAll):
             return True
         
-        self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+        progress_callback.emit(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         fully_parsed_at_start = fully_parsed
 
         # Start
@@ -771,16 +770,14 @@ class mass_replay_analysis:
                             r.update(formated)
                         except:
                             logger.error(traceback.format_exc())
-                        self.full_analysis_label.setText(
-                            f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
-                        )
+                        progress_callback.emit(f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
 
                 except:
                     logger.error(traceback.format_exc())
 
         if idx > 0:
             self.save_cache()
-        self.full_analysis_label.setText(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
+        progress_callback.emit(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')
         self.full_analysis_finished = True
         return True
