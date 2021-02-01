@@ -195,7 +195,7 @@ def get_enemy_comp(identified_waves):
     return 'Unidentified AI'
 
 
-def unitid(event, killer=False):
+def unitid(event, killer=False, creator=False):
     """ Returns and unique integer as unit id.
     `killer`=True for killer unique id, otherwise normal unit.
     Assuming index is less than 100000 (usually it's < 1000)
@@ -203,6 +203,9 @@ def unitid(event, killer=False):
     if killer:
         index = event['m_killerUnitTagIndex']
         recycleindex = event['m_killerUnitTagRecycle']
+    elif creator:
+        index = event['m_creatorUnitTagIndex']
+        recycleindex = event['m_creatorUnitTagRecycle']
     else:
         index = event['m_unitTagIndex']
         recycleindex = event['m_unitTagRecycle']
@@ -318,6 +321,8 @@ def analyse_replay(filepath, main_player_handles=None):
     AbathurKillLocusts = set()
     MutatorDehakaDragUnitIDs = set()
     MWBonusInitialTiming = [0, 0]
+    murvar_spawns = set()
+    glevig_spawns = set()
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
@@ -351,9 +356,18 @@ def analyse_replay(filepath, main_player_handles=None):
             _unit_type = event['m_unitTypeName'].decode()
             _ability_name = event.get('m_creatorAbilityName', None)
             _ability_name = _ability_name.decode() if _ability_name is not None else None
-
+            unit_id = unitid(event)
             _control_pid = event['m_controlPlayerId']
-            unit_dict[unitid(event)] = [_unit_type, _control_pid]
+            unit_dict[unit_id] = [_unit_type, _control_pid]
+
+            # Track Murvar's spawns
+            if _unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'}:
+                if event['m_creatorAbilityName'].decode() == 'CoopMurvarSpawnCreepers':
+                    murvar_spawns.add(unit_id)
+
+            # Track Glevig's spawns
+            if _unit_type in {'CoopDehakaGlevigEggZergling', 'CoopDehakaGlevigEggRoach', 'CoopDehakaGlevigEggHydralisk'}:
+                glevig_spawns.add(unit_id)
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
             if _unit_type in revival_types and _control_pid in [1, 2] and event['_gameloop'] / 16 > START_TIME + 1:
@@ -484,8 +498,6 @@ def analyse_replay(filepath, main_player_handles=None):
 
             # Mind-controlled units
             _losing_player = unit_dict[unitid(event)][1]
-            # _unit = unit_dict[unitid(event)][0]
-            # logger.info(f"{_unit} ({_losing_player}) mind-controlled by {event['m_controlPlayerId']}")
 
             if event['m_controlPlayerId'] == main_player and _losing_player in amon_players:
                 if not 'mc' in replay_report_dict['mainIcons']:
@@ -561,6 +573,15 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Abathur locusts
                 if _killing_unit_type == 'Locust' and _commander == 'Abathur' and not _killing_unit_id in AbathurKillLocusts:
                     _killing_unit_type = 'SwarmHost'
+
+                # Glevig's spawns
+                if _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'} and _killing_unit_id in glevig_spawns:
+                    _killing_unit_type = 'Glevig'
+
+                # Murvars's spawns
+                if _killing_unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'
+                                          } and _killing_unit_id in murvar_spawns:
+                    _killing_unit_type = 'Murvar'
 
                 # Custom kill count
                 if _killing_player in [1, 2] and _losing_player in amon_players:
