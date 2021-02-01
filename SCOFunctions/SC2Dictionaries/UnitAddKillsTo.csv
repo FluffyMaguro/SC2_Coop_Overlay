@@ -10,6 +10,9 @@ Interceptor,Carrier
 InterceptorAiur,Carrier
 InterceptorStetmann,Mecha Battlecarrier Lord
 LocustMP,Swarm Host
+DehakaLocust,Primal Host
+DehakaLocustFlying,Primal Host
+DehakaCreeperFlying,Creeper Host
 NovaBoombot,Nova
 NovaBoombotBurrowed,Nova
 NovaCoopDecoy,Nova
