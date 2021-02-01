@@ -39,7 +39,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 229
+APPVERSION = 230
 SETTING_FILE = truePath('Settings.json')
 
 

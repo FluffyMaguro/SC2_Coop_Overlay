@@ -239,8 +239,12 @@ def s2_parse_replay(file,
         replay['ext_difficulty'] = f'{diff_1}/{diff_2}'
 
     # Messages
-    messages = [m for m in messages if m.get('m_string', None) != None]
-    replay['messages'] = [{'text': m['m_string'].decode(), 'player': m['_userid']['m_userId'] + 1, 'time': m['_gameloop'] / 16} for m in messages]
+    replay['messages'] = []
+    for msg in messages:
+        if msg.get('m_string', None) is not None:  # Chat message
+            replay['messages'].append({'text': msg['m_string'].decode(), 'player': msg['_userid']['m_userId'] + 1, 'time': msg['_gameloop'] / 16})
+        elif msg['_event'] == 'NNet.Game.SPingMessage':  # Ping
+            replay['messages'].append({'text': f"*pings*", 'player': msg['m_recipient'], 'time': msg['_gameloop'] / 16})
 
     # Events
     if return_events:
