@@ -577,7 +577,7 @@ class mass_replay_analysis:
                     break
 
         out += self.ReplayDataAll
-        out = [r for r in out if r != None]
+        out = [r for r in out if r is not None]
 
         with lock:
             self.ReplayDataAll = out
@@ -595,19 +595,15 @@ class mass_replay_analysis:
         """ Adds already parsed replay. Format has to be from my S2Parser"""
         parsed_data = full_data.get('parser')
 
-        if parsed_data != None and \
-            len(parsed_data) > 1 and \
-            not '[MM]' in parsed_data['file'] and \
-            parsed_data['isBlizzard'] and \
-            len(parsed_data['players']) > 2 and \
-            parsed_data['players'][1].get('commander') != None:
+        if (parsed_data is not None and len(parsed_data) > 1 and not '[MM]' in parsed_data['file'] and parsed_data['isBlizzard']
+                and len(parsed_data['players']) > 2 and parsed_data['players'][1].get('commander') is not None):
 
-            parsed_data = self.format_data(full_data)
+            full_data = self.format_data(full_data)
 
             with lock:
-                self.ReplayDataAll.append(parsed_data)
-                self.parsed_replays.add(parsed_data['hash'])
-                self.current_replays.add(parsed_data['file'])
+                self.ReplayDataAll.append(full_data)
+                self.parsed_replays.add(full_data['hash'])
+                self.current_replays.add(full_data['file'])
                 self.update_data()
 
     def format_data(self, full_data):
@@ -666,7 +662,7 @@ class mass_replay_analysis:
 
         # Save file again
         with open(file_name, 'w') as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f)
 
     def update_accountdir(self, ACCOUNTDIR):
         """ Updates player handles and checks for new replays in the new accountdir.
@@ -722,6 +718,10 @@ class mass_replay_analysis:
         for r in self.ReplayDataAll:
             if 'full_analysis' in r or 'comp' in r:
                 fully_parsed += 1
+        
+        if fully_parsed == len(self.ReplayDataAll):
+            return True
+        
         self.full_analysis_label.setText(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         fully_parsed_at_start = fully_parsed
 
@@ -743,41 +743,44 @@ class mass_replay_analysis:
 
             # Analyze those that are not fully parsed yet
             if not 'full_analysis' in r and not 'comp' in r:
-                if not os.path.isfile(r['file']):
-                    continue
+                try:
+                    if not os.path.isfile(r['file']):
+                        continue
 
-                full_data = analyse_replay(r['file'])
+                    full_data = analyse_replay(r['file'])
 
-                full_data['full_analysis'] = True
-                if len(full_data) < 2:
+                    full_data['full_analysis'] = True
+                    if len(full_data) < 2:
+                        with lock:
+                            r['full_analysis'] = False
+                        continue
+
+                    # Update data
+                    idx += 1
+                    fully_parsed += 1
+
+                    # Calculate eta
+                    if (fully_parsed - fully_parsed_at_start) > 15 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
+                        eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
+                        eta = time.strftime("%H:%M:%S", time.gmtime(eta))
+
+                    # Update widget
                     with lock:
-                        r['full_analysis'] = False
-                    continue
+                        try:
+                            formated = self.format_data(full_data)
+                            r.update(formated)
+                        except:
+                            logger.error(traceback.format_exc())
+                        self.full_analysis_label.setText(
+                            f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
+                        )
 
-                # Update data
-                idx += 1
-                fully_parsed += 1
-
-                # Calculate eta
-                if (fully_parsed - fully_parsed_at_start) > 15 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
-                    eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
-                    eta = time.strftime("%H:%M:%S", time.gmtime(eta))
-
-                # Update widget
-                with lock:
-                    try:
-                        formated = self.format_data(full_data)
-                        r.update(formated)
-                    except:
-                        logger.error(traceback.format_exc())
-                    self.full_analysis_label.setText(
-                        f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
-                    )
+                except:
+                    logger.error(traceback.format_exc())
 
         if idx > 0:
             self.save_cache()
-        self.full_analysis_label.setText(
-            f'Full analysis completed! {fully_parsed}/{len(self.ReplayDataAll)} | {100*fully_parsed/len(self.ReplayDataAll):.0f}%')
+        self.full_analysis_label.setText(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')
         self.full_analysis_finished = True
         return True
@@ -888,19 +891,19 @@ class mass_replay_analysis:
         if not include_normal_games:
             data = [r for r in data if r['extension']]
 
-        if mindate != None:
+        if mindate is not None:
             data = [r for r in data if int(r['date'].replace(':', '')) > mindate]
 
-        if maxdate != None:
+        if maxdate is not None:
             data = [r for r in data if int(r['date'].replace(':', '')) < maxdate]
 
-        if minlength != None:
+        if minlength is not None:
             data = [r for r in data if r['length'] >= minlength * 60]
 
-        if maxLength != None:
+        if maxLength is not None:
             data = [r for r in data if r['length'] <= maxLength * 60]
 
-        if difficulty_filter != None and len(difficulty_filter) > 0:
+        if difficulty_filter is not None and len(difficulty_filter) > 0:
             logger.info(f'{difficulty_filter=}')
             for difficulty in difficulty_filter:
                 if isinstance(difficulty, str):
@@ -910,7 +913,7 @@ class mass_replay_analysis:
                 elif isinstance(difficulty, int):
                     data = [r for r in data if not difficulty == r['brutal_plus']]
 
-        if region_filter != None and len(region_filter) > 0:
+        if region_filter is not None and len(region_filter) > 0:
             logger.info(f'{region_filter=}')
             data = [r for r in data if not r['region'] in region_filter and r['region'] in ('NA', 'EU', 'KR', 'CN')]
 

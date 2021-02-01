@@ -2383,6 +2383,7 @@ class UI_TabWidget(object):
             self.full_analysis_running = False
             self.BT_FA_run.setEnabled(True)
             self.BT_FA_stop.setEnabled(False)
+            self.CAnalysis.save_cache()
 
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """

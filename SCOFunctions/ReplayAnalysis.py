@@ -362,7 +362,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
             # Track Murvar's spawns
             if _unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'}:
-                if event['m_creatorAbilityName'].decode() == 'CoopMurvarSpawnCreepers':
+                if event['m_creatorAbilityName'] is not None and event['m_creatorAbilityName'].decode() == 'CoopMurvarSpawnCreepers':
                     murvar_spawns.add(unit_id)
 
             # Track Glevig's spawns
@@ -551,8 +551,9 @@ def analyse_replay(filepath, main_player_handles=None):
             try:
                 _killing_unit_id = unitid(event, killer=True)
                 _killing_player = event['m_killerPlayerId']
-                _killed_unit_type = unit_dict[unitid(event)][0]
-                _losing_player = int(unit_dict[unitid(event)][1])
+                unit_id = unitid(event)
+                _killed_unit_type = unit_dict[unit_id][0]
+                _losing_player = int(unit_dict[unit_id][1])
                 _commander = commander_fallback.get(_killing_player, None)
 
                 # Get killing unit
@@ -723,13 +724,11 @@ def analyse_replay(filepath, main_player_handles=None):
                         f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
                     )
 
-                # Add deaths
-
                 # Don't include salvage
-                if _killed_unit_type in salvage_units and _losing_player == _killing_player:
+                if (_killed_unit_type in salvage_units and _losing_player == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns:
                     continue
 
-                # Add
+                # Add losses
                 if main_player == _losing_player and event['_gameloop'] / 16 > 0 and event[
                         '_gameloop'] / 16 > START_TIME + 1:  # Don't count deaths on game init
                     if _killed_unit_type in unit_type_dict_main:

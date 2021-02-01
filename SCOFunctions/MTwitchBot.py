@@ -112,6 +112,7 @@ class TwitchBot:
             if self.widget != None and not ('/color' in message):
                 self.widget.add_message(self.bot_name, message)
         except BrokenPipeError:
+            logger.error('BrokenPipeError. Opening socket again')
             self.openSocket()
             self.s.send("{messageTemp}\r\n".encode("utf-8"))
 
@@ -175,10 +176,13 @@ class TwitchBot:
 
     def run_bot(self):
         """ Initialize and runs the bot """
-        self.openSocket()
-        self.joinRoom()
-        self.RUNNING = True
-        self.pingsAndMessages()
+        try:
+            self.openSocket()
+            self.joinRoom()
+            self.RUNNING = True
+            self.pingsAndMessages()
+        except:
+            logger.error(traceback.format_exc())
 
     def pingsAndMessages(self):
         """ Loop that manages twitch chat and sending messages to the game """
