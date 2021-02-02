@@ -323,6 +323,7 @@ def analyse_replay(filepath, main_player_handles=None):
     MWBonusInitialTiming = [0, 0]
     murvar_spawns = set()
     glevig_spawns = set()
+    broodlord_broodlings = set()
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
@@ -368,6 +369,12 @@ def analyse_replay(filepath, main_player_handles=None):
             # Track Glevig's spawns
             if _unit_type in {'CoopDehakaGlevigEggZergling', 'CoopDehakaGlevigEggRoach', 'CoopDehakaGlevigEggHydralisk'}:
                 glevig_spawns.add(unit_id)
+
+            # Kerrigan's and Stetmann's Broodlings
+            if _unit_type in {'Broodling','BroodlingStetmann'} and unitid(event, creator=True) is not None:
+                creator = unit_dict[unitid(event, creator=True)][0]
+                if creator in {'BroodlingEscort','BroodlingEscortStetmann'}:
+                    broodlord_broodlings.add(unit_id)
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
             if _unit_type in revival_types and _control_pid in [1, 2] and event['_gameloop'] / 16 > START_TIME + 1:
@@ -576,13 +583,20 @@ def analyse_replay(filepath, main_player_handles=None):
                     _killing_unit_type = 'SwarmHost'
 
                 # Glevig's spawns
-                if _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'} and _killing_unit_id in glevig_spawns:
+                elif _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'} and _killing_unit_id in glevig_spawns:
                     _killing_unit_type = 'Glevig'
 
                 # Murvars's spawns
-                if _killing_unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'
+                elif _killing_unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'
                                           } and _killing_unit_id in murvar_spawns:
                     _killing_unit_type = 'Murvar'
+
+                # Kerrigan's and Stetmann's Broodlings
+                elif _killing_unit_id in broodlord_broodlings:
+                    if _killing_unit_type == 'Broodling':
+                        _killing_unit_type = 'BroodLord'
+                    elif _killing_unit_type == 'BroodlingStetmann':
+                        _killing_unit_type = 'BroodLordStetmann'
 
                 # Custom kill count
                 if _killing_player in [1, 2] and _losing_player in amon_players:
