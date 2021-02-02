@@ -2777,7 +2777,7 @@ class UI_TabWidget(object):
         """ Saves screenshot of the overlay and saves it on the desktop"""
         try:
             p = QtGui.QImage(self.WebView.grab())
-            height = p.height() * 960 / 1200
+            height = p.height() * 1060 / 1200
             width = p.height() * 650 / 1200
             p = p.copy(int(p.width() - width), int(p.height() * 20 / 1200), int(width), int(height))
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
