@@ -2374,7 +2374,7 @@ class UI_TabWidget(object):
 
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
-         self.CH_FA_status.setText(progress)
+        self.CH_FA_status.setText(progress)
 
     def full_analysis_finished(self, finished_completely):
         self.generate_stats()
