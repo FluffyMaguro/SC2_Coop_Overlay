@@ -1579,10 +1579,16 @@ class UI_TabWidget(object):
         # Create and run install.bat file
         installfile = truePath('install.bat')
         with open(installfile, 'w') as f:
-            f.write(
-                f'@echo off\necho Installation will start shortly...\ntimeout /t 7 /nobreak > NUL\nrobocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" \
-                    /E\ntimeout /t 5 /nobreak > NUL\nrmdir /s /q "{truePath("Updates")}"\necho Installation completed...\n"{truePath("SCO.exe")}"')
-
+            f.write('\n'.join(('@echo off',
+                                'echo Installation will start shortly...',
+                                'timeout /t 7 /nobreak > NUL',
+                                f'robocopy "{where_to_extract}" "{os.path.abspath(app_folder)}"/E',
+                                'timeout /t 7 /nobreak > NUL',
+                                f'rmdir /s /q "{truePath("Updates")}"',
+                                'echo Installation completed...',
+                                f'"{truePath("SCO.exe")}"'
+                                )))
+                
         self.saveSettings()
         os.startfile(installfile)
         app.quit()
