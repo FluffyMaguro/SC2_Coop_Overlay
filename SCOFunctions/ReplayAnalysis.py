@@ -408,19 +408,19 @@ def analyse_replay(filepath, main_player_handles=None):
                     else:
                         unit_type_dict_main[_unit_type] = [1, 0, 0, 0]
 
-                if ally_player == _control_pid:
+                elif ally_player == _control_pid:
                     if _unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[_unit_type][0] += 1
                     else:
                         unit_type_dict_ally[_unit_type] = [1, 0, 0, 0]
 
-            if _control_pid in amon_players:
-                if _ability_name == 'MutatorAmonDehakaDrag':
-                    MutatorDehakaDragUnitIDs.add(unitid(event))
-                elif _unit_type in unit_type_dict_amon:
-                    unit_type_dict_amon[_unit_type][0] += 1
-                else:
-                    unit_type_dict_amon[_unit_type] = [1, 0, 0, 0]
+                elif _control_pid in amon_players:
+                    if _ability_name == 'MutatorAmonDehakaDrag':
+                        MutatorDehakaDragUnitIDs.add(unitid(event))
+                    elif _unit_type in unit_type_dict_amon:
+                        unit_type_dict_amon[_unit_type][0] += 1
+                    else:
+                        unit_type_dict_amon[_unit_type] = [1, 0, 0, 0]
 
             # Outlaw order
             if _unit_type in tychus_outlaws and _control_pid in [1, 2] and not (_unit_type in outlaw_order):
@@ -489,13 +489,13 @@ def analyse_replay(filepath, main_player_handles=None):
                         else:
                             unit_type_dict_main[_unit_type] = [1, 0, 0, 0]
 
-                    if ally_player == _control_pid:
+                    elif ally_player == _control_pid:
                         if _unit_type in unit_type_dict_ally:
                             unit_type_dict_ally[_unit_type][0] += 1
                         else:
                             unit_type_dict_ally[_unit_type] = [1, 0, 0, 0]
 
-                    if _control_pid in amon_players:
+                    elif _control_pid in amon_players:
                         if _unit_type in unit_type_dict_amon:
                             unit_type_dict_amon[_unit_type][0] += 1
                         else:
