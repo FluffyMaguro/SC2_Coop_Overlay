@@ -371,9 +371,9 @@ def analyse_replay(filepath, main_player_handles=None):
                 glevig_spawns.add(unit_id)
 
             # Kerrigan's and Stetmann's Broodlings
-            if _unit_type in {'Broodling','BroodlingStetmann'} and unitid(event, creator=True) is not None:
+            if _unit_type in {'Broodling', 'BroodlingStetmann'} and unitid(event, creator=True) is not None:
                 creator = unit_dict[unitid(event, creator=True)][0]
-                if creator in {'BroodlingEscort','BroodlingEscortStetmann'}:
+                if creator in {'BroodlingEscort', 'BroodlingEscortStetmann'}:
                     broodlord_broodlings.add(unit_id)
 
             # Certain hero units don't die, instead lets track their revival beacons/cocoons. Let's assume they will finish reviving.
@@ -393,18 +393,19 @@ def analyse_replay(filepath, main_player_handles=None):
                 if ally_player == _control_pid:
                     unit_type_dict_ally[primal_combat_predecessors[_unit_type]][1] -= 2
 
+            if not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings):
             # Save stats for units created
-            if main_player == _control_pid:
-                if _unit_type in unit_type_dict_main:
-                    unit_type_dict_main[_unit_type][0] += 1
-                else:
-                    unit_type_dict_main[_unit_type] = [1, 0, 0, 0]
+                if main_player == _control_pid:
+                    if _unit_type in unit_type_dict_main:
+                        unit_type_dict_main[_unit_type][0] += 1
+                    else:
+                        unit_type_dict_main[_unit_type] = [1, 0, 0, 0]
 
-            if ally_player == _control_pid:
-                if _unit_type in unit_type_dict_ally:
-                    unit_type_dict_ally[_unit_type][0] += 1
-                else:
-                    unit_type_dict_ally[_unit_type] = [1, 0, 0, 0]
+                if ally_player == _control_pid:
+                    if _unit_type in unit_type_dict_ally:
+                        unit_type_dict_ally[_unit_type][0] += 1
+                    else:
+                        unit_type_dict_ally[_unit_type] = [1, 0, 0, 0]
 
             if _control_pid in amon_players:
                 if _ability_name == 'MutatorAmonDehakaDrag':
@@ -470,7 +471,9 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Don't add into created units if it's just a morph
                 # Don't count wreckages morhping back
-                if UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo:
+                # Don't count certain unit spawns (Murvar, Glevig, Broodlings from Broodlords)
+                if (UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo
+                        and not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings)):
 
                     # Increase unit type created for controlling player
                     if main_player == _control_pid:
@@ -583,12 +586,13 @@ def analyse_replay(filepath, main_player_handles=None):
                     _killing_unit_type = 'SwarmHost'
 
                 # Glevig's spawns
-                elif _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'} and _killing_unit_id in glevig_spawns:
+                elif _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'
+                                            } and _killing_unit_id in glevig_spawns:
                     _killing_unit_type = 'Glevig'
 
                 # Murvars's spawns
                 elif _killing_unit_type in {'DehakaLocust', 'DehakaCreeperFlying', 'DehakaLocustFlying', 'DehakaCreeper'
-                                          } and _killing_unit_id in murvar_spawns:
+                                            } and _killing_unit_id in murvar_spawns:
                     _killing_unit_type = 'Murvar'
 
                 # Kerrigan's and Stetmann's Broodlings
@@ -738,8 +742,9 @@ def analyse_replay(filepath, main_player_handles=None):
                         f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
                     )
 
-                # Don't include salvage
-                if (_killed_unit_type in salvage_units and _losing_player == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns:
+                # Don't include salvage and spawns
+                if (_killed_unit_type in salvage_units and _losing_player
+                        == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
                     continue
 
                 # Add losses
