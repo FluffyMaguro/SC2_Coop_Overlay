@@ -7,7 +7,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.29/SC2CoopOverlay.2.29.zip)
+* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.30/SC2CoopOverlay.2.30.zip)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -95,6 +95,19 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.30 version
+
+      - Chat log shows when a player pings
+      - Added a new checkbox "override folder selection" which forces showing stats for all replays regardless of a selected folder
+      - All data can be dumped to a json file
+      - Fixed stats for certain Abathur morphs
+      - Kills from Glevig's and Murvar's spawns count toward Primal Pack Leaders
+      - Kills from Broodlings count towards Kerrigan's & Stetmann's Brood Lords
+      - Screenshot height fix
+      - Fixed crashes during full analysis
+      - Full analysis won't parse replays from the last session again
+      - Added an option to custom javascript modification (in custom.js) to show units without kills
 
 * 2.29 version
 
