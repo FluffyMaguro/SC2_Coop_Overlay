@@ -1,3 +1,10 @@
+"""
+Main module for parsing data from Co-op replays
+
+It's a bit messy, and there are many tweaks done to get good data from replays.
+I shouldn't have differentiated between "main" and "ally" player here, perhaps only mark him on the end.
+
+"""
 import time
 import traceback
 from pprint import pprint
@@ -394,7 +401,7 @@ def analyse_replay(filepath, main_player_handles=None):
                     unit_type_dict_ally[primal_combat_predecessors[_unit_type]][1] -= 2
 
             if not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings):
-            # Save stats for units created
+                # Save stats for units created
                 if main_player == _control_pid:
                     if _unit_type in unit_type_dict_main:
                         unit_type_dict_main[_unit_type][0] += 1
