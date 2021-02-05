@@ -190,7 +190,7 @@ def s2_parse_replay(file,
     commander_found = False
     for idx, player in enumerate(detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots']):
         if idx < len(replay['players']):
-            replay['players'][idx]['masteries'] = player['m_commanderMasteryTalents']
+            replay['players'][idx]['masteries'] = tuple(player['m_commanderMasteryTalents'])
             replay['players'][idx]['commander'] = player['m_commander'].decode()
             replay['players'][idx]['commander_level'] = player['m_commanderLevel']
             replay['players'][idx]['commander_mastery_level'] = player['m_commanderMasteryLevel']

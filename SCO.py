@@ -1587,8 +1587,8 @@ class UI_TabWidget(object):
                                 f'rmdir /s /q "{truePath("Updates")}"',
                                 'echo Installation completed...',
                                 f'"{truePath("SCO.exe")}"'
-                                )))
-                
+                                ))) # yapf: disable
+
         self.saveSettings()
         os.startfile(installfile)
         app.quit()
@@ -3008,7 +3008,7 @@ class UI_TabWidget(object):
 
         try:
             print(f'Executing: {text}')
-            eval(text)
+            exec(text)
             self.sendInfoMessage(f'Executing: {text}', color='blue')
         except:
             print(traceback.format_exc())

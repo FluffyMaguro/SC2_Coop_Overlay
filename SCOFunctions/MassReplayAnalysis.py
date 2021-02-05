@@ -99,7 +99,7 @@ def calculate_map_data(ReplayData):
 
 def get_masterises(replay, player):
     """ Return masteries. Contains fix for mastery switches (e.g. Zagara)"""
-    masteries = replay['players'][player]['masteries'].copy()
+    masteries = list(replay['players'][player]['masteries'])
     commander = replay['players'][player]['commander']
 
     # Zagara mastery fix (at least some)
@@ -615,6 +615,9 @@ class mass_replay_analysis:
         parsed_data['full_analysis'] = True
         parsed_data['hash'] = parsed_data.get('hash', self.get_hash(full_data['filepath']))
 
+        self.remove_useless_keys(parsed_data)
+        parsed_data['players'] = parsed_data['players'][:3]
+
         main = full_data['positions']['main']
         for p in (1, 2):
             parsed_data['players'][p]['kills'] = full_data['mainkills'] if p == main else full_data['allykills']
@@ -708,6 +711,14 @@ class mass_replay_analysis:
         """ Returns an ordered list of last `number` replays from the newest to the oldest. """
         return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':', '')), reverse=True)[:number]
 
+    @staticmethod
+    def remove_useless_keys(pdict):
+        """ Removes keys from the dictionary that are no longer useful"""
+        to_remove = ('start_time','end_time','isBlizzard','last_deselect_event')
+        for k in to_remove:
+            if k in pdict:
+                del pdict[k]
+
     def run_full_analysis(self, progress_callback):
         """ Run full analysis on all replays """
         self.closing = False
@@ -768,6 +779,7 @@ class mass_replay_analysis:
                         try:
                             formated = self.format_data(full_data)
                             r.update(formated)
+                            self.remove_useless_keys(r)
                         except:
                             logger.error(traceback.format_exc())
                         progress_callback.emit(f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')

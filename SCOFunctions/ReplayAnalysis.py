@@ -794,14 +794,14 @@ def analyse_replay(filepath, main_player_handles=None):
     # Main player
     replay_report_dict['mainCommander'] = replay['players'][main_player].get('commander', '')
     replay_report_dict['mainCommanderLevel'] = replay['players'][main_player].get('commander_level', 0)
-    replay_report_dict['mainMasteries'] = replay['players'][main_player].get('masteries', [0, 0, 0, 0, 0, 0])
+    replay_report_dict['mainMasteries'] = replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0))
     replay_report_dict['mainkills'] = killcounts[main_player]
     replay_report_dict['mainPrestige'] = PrestigeTalents[main_player]
 
     # Ally player
     replay_report_dict['allyCommander'] = replay['players'][ally_player].get('commander', '')
     replay_report_dict['allyCommanderLevel'] = replay['players'][ally_player].get('commander_level', 0)
-    replay_report_dict['allyMasteries'] = replay['players'][ally_player].get('masteries', [0, 0, 0, 0, 0, 0])
+    replay_report_dict['allyMasteries'] = replay['players'][ally_player].get('masteries', (0, 0, 0, 0, 0, 0))
     replay_report_dict['allykills'] = killcounts[ally_player]
     replay_report_dict['allyPrestige'] = PrestigeTalents[ally_player]
 
@@ -898,6 +898,10 @@ def analyse_replay(filepath, main_player_handles=None):
         if Zeratul_artifacts_collected > 0:
             replay_report_dict[iconkey]['Artifact'] = Zeratul_artifacts_collected
 
+        # Tuple
+        for unit in replay_report_dict[unitkey]:
+            replay_report_dict[unitkey][unit] = tuple(replay_report_dict[unitkey][unit])
+
     fill_unit_kills_and_icons(main_player, unit_type_dict_main)
     fill_unit_kills_and_icons(ally_player, unit_type_dict_ally)
 
@@ -925,5 +929,9 @@ def analyse_replay(filepath, main_player_handles=None):
         if not contains_skip_strings(unit):
             replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
             replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2] / total_amon_kills, 2)
+
+    # Tuple
+    for unit in replay_report_dict['amonUnits']:
+        replay_report_dict['amonUnits'][unit] = tuple(replay_report_dict['amonUnits'][unit])
 
     return replay_report_dict
