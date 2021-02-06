@@ -784,7 +784,7 @@ def analyse_replay(filepath, main_player_handles=None):
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
-    replay_report_dict['bonus'] = [time.strftime('%M:%S', time.gmtime(i)) for i in bonus_timings]
+    replay_report_dict['bonus'] = tuple(time.strftime('%M:%S', time.gmtime(i)) for i in bonus_timings)
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length'] / 1.4
     del replay['events']

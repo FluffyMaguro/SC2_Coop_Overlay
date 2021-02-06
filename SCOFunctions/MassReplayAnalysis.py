@@ -616,7 +616,7 @@ class mass_replay_analysis:
         parsed_data['hash'] = parsed_data.get('hash', self.get_hash(full_data['filepath']))
 
         self.remove_useless_keys(parsed_data)
-        parsed_data['players'] = parsed_data['players'][:3]
+        parsed_data['players'] = tuple(parsed_data['players'][:3])
 
         main = full_data['positions']['main']
         for p in (1, 2):
