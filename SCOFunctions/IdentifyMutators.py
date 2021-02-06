@@ -74,4 +74,4 @@ def identify_mutators(events, extension=True, mm=False):
                 del mutators[(action - 88) // 2]
 
     # Fix HftS old
-    return [m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators]
+    return tuple(m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators)

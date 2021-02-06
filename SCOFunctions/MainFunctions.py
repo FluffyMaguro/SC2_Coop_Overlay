@@ -1,3 +1,10 @@
+"""
+A bit messy module containing functionality responsible for 
+sending info to the overlay with socket/JS
+
+Checking for new replays and games. Uploading replays to AOM.
+And more.
+"""
 import os
 import json
 import time

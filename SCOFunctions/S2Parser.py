@@ -161,14 +161,12 @@ def s2_parse_replay(file,
         replay['accurate_length'] = replay['length'] - replay['start_time']
         replay['end_time'] = replay['length']
 
+    replay['mutators'] = tuple()
     if parse_events:
         try:
             replay['mutators'] = identify_mutators(events, extension=replay['extension'], mm='[MM]' in file)
         except:
-            replay['mutators'] = list()
             logger.error(traceback.format_exc())
-    else:
-        replay['mutators'] = list()
 
     replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
     replay['form_alength'] = replay['form_alength'] if not replay['form_alength'].startswith('00:') else replay['form_alength'][3:]
@@ -245,6 +243,8 @@ def s2_parse_replay(file,
             replay['messages'].append({'text': msg['m_string'].decode(), 'player': msg['_userid']['m_userId'] + 1, 'time': msg['_gameloop'] / 16})
         elif msg['_event'] == 'NNet.Game.SPingMessage':  # Ping
             replay['messages'].append({'text': f"*pings*", 'player': msg['_userid']['m_userId'] + 1, 'time': msg['_gameloop'] / 16})
+
+    replay['messages'] = tuple(replay['messages'])
 
     # Events
     if return_events:
