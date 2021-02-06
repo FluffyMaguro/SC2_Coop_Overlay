@@ -2296,8 +2296,8 @@ class UI_TabWidget(object):
         # Update game tab
         self.game_UI_dict = dict()
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
-            self.game_UI_dict[game['file']] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game['file']].widget)
+            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
         # Update stats tab
         player_names = (', ').join(self.CAnalysis.main_names)
@@ -2992,12 +2992,12 @@ class UI_TabWidget(object):
 
         # Add replays
         for r in new_replays[:self.settings['list_games']]:
-            if r['file'] in self.game_UI_dict:
-                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r['file']].widget)
-                self.game_UI_dict[r['file']].widget.show()
+            if r.file in self.game_UI_dict:
+                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
+                self.game_UI_dict[r.file].widget.show()
             else:
-                self.game_UI_dict[r['file']] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r['file']].widget)
+                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
 
     def debug_function(self):
         """ Debug function """

@@ -814,8 +814,8 @@ def analyse_replay(filepath, main_player_handles=None):
 
     # MM mastery fallback
     if '[MM]' in filepath:
-        replay_report_dict['mainMasteries'] = mastery_fallback[main_player]
-        replay_report_dict['allyMasteries'] = mastery_fallback[ally_player]
+        replay_report_dict['mainMasteries'] = tuple(mastery_fallback[main_player])
+        replay_report_dict['allyMasteries'] = tuple(mastery_fallback[ally_player])
 
         # Assume commander level of 15
         replay_report_dict['mainCommanderLevel'] = 15

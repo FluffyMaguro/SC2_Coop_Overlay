@@ -18,6 +18,7 @@ from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units
+from SCOFunctions.MReplayData import replay_data
 
 logger = logclass('MASS', 'INFO')
 lock = threading.Lock()
@@ -39,7 +40,7 @@ def calculate_difficulty_data(ReplayData):
     DifficultyData = dict()
 
     for r in ReplayData:
-        diff = r['ext_difficulty']
+        diff = r.ext_difficulty
         # Skip mixed difficulties
         if '/' in diff:
             continue
@@ -47,7 +48,7 @@ def calculate_difficulty_data(ReplayData):
         if not diff in DifficultyData:
             DifficultyData[diff] = {'Victory': 0, 'Defeat': 0}
 
-        DifficultyData[diff][r['result']] += 1
+        DifficultyData[diff][r.result] += 1
 
     for diff in DifficultyData:
         DifficultyData[diff]['Winrate'] = DifficultyData[diff]['Victory'] / (DifficultyData[diff]['Victory'] + DifficultyData[diff]['Defeat'])
@@ -60,26 +61,26 @@ def calculate_map_data(ReplayData):
     MapData = dict()
 
     for r in ReplayData:
-        if not r['map_name'] in MapData:
-            MapData[r['map_name']] = {'Victory': 0, 'Defeat': 0, 'Fastest': {'length': 999999}, 'average_victory_time': list(), 'bonus': list()}
+        if not r.map_name in MapData:
+            MapData[r.map_name] = {'Victory': 0, 'Defeat': 0, 'Fastest': {'length': 999999}, 'average_victory_time': list(), 'bonus': list()}
 
-        MapData[r['map_name']][r['result']] += 1
+        MapData[r.map_name][r.result] += 1
 
-        if r['result'] == 'Victory':
-            MapData[r['map_name']]['average_victory_time'].append(r['accurate_length'])
+        if r.result == 'Victory':
+            MapData[r.map_name]['average_victory_time'].append(r.accurate_length)
 
             # Append a fraction of bonus completed
-            if 'bonus' in r:
-                MapData[r['map_name']]['bonus'].append(len(r['bonus']) / bonus_objectives[r['map_name']])
+            if r.bonus is not None:
+                MapData[r.map_name]['bonus'].append(len(r.bonus) / bonus_objectives[r.map_name])
 
         # Fastest clears
-        if r['result'] == 'Victory' and r['accurate_length'] < MapData[r['map_name']]['Fastest']['length']:
-            MapData[r['map_name']]['Fastest']['length'] = r['accurate_length']
-            MapData[r['map_name']]['Fastest']['file'] = r['file']
-            MapData[r['map_name']]['Fastest']['players'] = r['players'][1:3]
-            MapData[r['map_name']]['Fastest']['enemy_race'] = r['enemy_race']
-            MapData[r['map_name']]['Fastest']['date'] = r['date']
-            MapData[r['map_name']]['Fastest']['difficulty'] = r['ext_difficulty']
+        if r.result == 'Victory' and r.accurate_length < MapData[r.map_name]['Fastest']['length']:
+            MapData[r.map_name]['Fastest']['length'] = r.accurate_length
+            MapData[r.map_name]['Fastest']['file'] = r.file
+            MapData[r.map_name]['Fastest']['players'] = r.players[1:3]
+            MapData[r.map_name]['Fastest']['enemy_race'] = r.enemy_race
+            MapData[r.map_name]['Fastest']['date'] = r.date
+            MapData[r.map_name]['Fastest']['difficulty'] = r.ext_difficulty
 
     for m in MapData:
         MapData[m]['frequency'] = (MapData[m]['Victory'] + MapData[m]['Defeat']) / len(ReplayData)
@@ -99,11 +100,11 @@ def calculate_map_data(ReplayData):
 
 def get_masterises(replay, player):
     """ Return masteries. Contains fix for mastery switches (e.g. Zagara)"""
-    masteries = list(replay['players'][player]['masteries'])
-    commander = replay['players'][player]['commander']
+    masteries = list(replay.players[player]['masteries'])
+    commander = replay.players[player]['commander']
 
     # Zagara mastery fix (at least some)
-    if commander == 'Zagara' and int(replay['date'].replace(':', '')) < 20200825000000:
+    if commander == 'Zagara' and int(replay.date.replace(':', '')) < 20200825000000:
         masteries[2], masteries[5] = masteries[5], masteries[2]
 
     return masteries
@@ -119,10 +120,10 @@ def calculate_commander_data(ReplayData, main_handles):
     AllyCommanderData['any'] = {'Victory': 0, 'Defeat': 0, 'MedianAPM': list(), 'KillFraction': list()}
 
     for r in ReplayData:
-        total_kills = r['players'][1].get('kills', 0) + r['players'][2].get('kills', 0)
+        total_kills = r.players[1].get('kills', 0) + r.players[2].get('kills', 0)
         for p in (1, 2):
-            commander = r['players'][p]['commander']
-            if r['players'][p]['handle'] in main_handles:
+            commander = r.players[p]['commander']
+            if r.players[p]['handle'] in main_handles:
                 if not commander in CommanderData:
                     CommanderData[commander] = {
                         'Victory': 0,
@@ -133,20 +134,20 @@ def calculate_commander_data(ReplayData, main_handles):
                         'KillFraction': list()
                     }
 
-                CommanderData[commander][r['result']] += 1
-                CommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
-                CommanderData['any'][r['result']] += 1
-                CommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
+                CommanderData[commander][r.result] += 1
+                CommanderData[commander]['MedianAPM'].append(r.players[p]['apm'])
+                CommanderData['any'][r.result] += 1
+                CommanderData['any']['MedianAPM'].append(r.players[p]['apm'])
 
                 if total_kills > 0:
-                    CommanderData[commander]['KillFraction'].append(r['players'][p]['kills'] / total_kills)
-                    CommanderData['any']['KillFraction'].append(r['players'][p]['kills'] / total_kills)
+                    CommanderData[commander]['KillFraction'].append(r.players[p]['kills'] / total_kills)
+                    CommanderData['any']['KillFraction'].append(r.players[p]['kills'] / total_kills)
 
                 games += 1
 
                 # Count prestige only after they were released
-                if int(r['date'].replace(':', '')) > 20200726000000:
-                    CommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
+                if int(r.date.replace(':', '')) > 20200726000000:
+                    CommanderData[commander]['Prestige'].append(r.players[p]['prestige'])
 
                 # Add masteries, use relative values to properly reflect player preferences
                 masteries = get_masterises(r, p)
@@ -165,18 +166,18 @@ def calculate_commander_data(ReplayData, main_handles):
                         'KillFraction': list()
                     }
 
-                AllyCommanderData[commander][r['result']] += 1
-                AllyCommanderData[commander]['MedianAPM'].append(r['players'][p]['apm'])
+                AllyCommanderData[commander][r.result] += 1
+                AllyCommanderData[commander]['MedianAPM'].append(r.players[p]['apm'])
                 if total_kills > 0:
-                    AllyCommanderData[commander]['KillFraction'].append(r['players'][p]['kills'] / total_kills)
-                    AllyCommanderData['any']['KillFraction'].append(r['players'][p]['kills'] / total_kills)
+                    AllyCommanderData[commander]['KillFraction'].append(r.players[p]['kills'] / total_kills)
+                    AllyCommanderData['any']['KillFraction'].append(r.players[p]['kills'] / total_kills)
 
                 # Count prestige only after they were released
-                if int(r['date'].replace(':', '')) > 20200726000000:
-                    AllyCommanderData[commander]['Prestige'].append(r['players'][p]['prestige'])
+                if int(r.date.replace(':', '')) > 20200726000000:
+                    AllyCommanderData[commander]['Prestige'].append(r.players[p]['prestige'])
 
-                AllyCommanderData['any'][r['result']] += 1
-                AllyCommanderData['any']['MedianAPM'].append(r['players'][p]['apm'])
+                AllyCommanderData['any'][r.result] += 1
+                AllyCommanderData['any']['MedianAPM'].append(r.players[p]['apm'])
 
                 # Add masteries, use relative values to properly reflect player preferences
                 masteries = get_masterises(r, p)
@@ -280,25 +281,25 @@ def calculate_region_data(ReplayData, main_handles):
     """ Calculates region data - frequency, wins, losses, winrate, max ascension level, leveled commanders """
     dRegion = dict()
     for r in ReplayData:
-        if not r['region'] in dRegion:
-            dRegion[r['region']] = {'Victory': 0, 'Defeat': 0, 'max_asc': 0, 'max_com': set(), 'prestiges': dict()}
+        if not r.region in dRegion:
+            dRegion[r.region] = {'Victory': 0, 'Defeat': 0, 'max_asc': 0, 'max_com': set(), 'prestiges': dict()}
 
-        dRegion[r['region']][r['result']] += 1
+        dRegion[r.region][r.result] += 1
 
         for p in (1, 2):
-            if r['players'][p]['handle'] in main_handles:
+            if r.players[p]['handle'] in main_handles:
                 # Add leveled commanders:
-                if r['players'][p]['commander_level'] == 15:
-                    dRegion[r['region']]['max_com'].add(r['players'][p]['commander'])
+                if r.players[p]['commander_level'] == 15:
+                    dRegion[r.region]['max_com'].add(r.players[p]['commander'])
                 # Track max ascension
-                if r['players'][p]['commander_mastery_level'] > dRegion[r['region']]['max_asc']:
-                    dRegion[r['region']]['max_asc'] = r['players'][p]['commander_mastery_level']
+                if r.players[p]['commander_mastery_level'] > dRegion[r.region]['max_asc']:
+                    dRegion[r.region]['max_asc'] = r.players[p]['commander_mastery_level']
 
-                if r['players'][p]['prestige'] > 0:
-                    if not r['players'][p]['commander'] in dRegion[r['region']]['prestiges']:
-                        dRegion[r['region']]['prestiges'][r['players'][p]['commander']] = set()
+                if r.players[p]['prestige'] > 0:
+                    if not r.players[p]['commander'] in dRegion[r.region]['prestiges']:
+                        dRegion[r.region]['prestiges'][r.players[p]['commander']] = set()
 
-                    dRegion[r['region']]['prestiges'][r['players'][p]['commander']].add(r['players'][p]['prestige'])
+                    dRegion[r.region]['prestiges'][r.players[p]['commander']].add(r.players[p]['prestige'])
 
     for region in dRegion:
         dRegion[region]['winrate'] = dRegion[region]['Victory'] / (dRegion[region]['Victory'] + dRegion[region]['Defeat'])
@@ -310,10 +311,10 @@ def calculate_region_data(ReplayData, main_handles):
 def _add_units(unit_data: dict, r: dict, p: int):
     """ Add units to the dictionary"""
 
-    if not 'units' in r['players'][p]:
+    if not 'units' in r.players[p]:
         return
 
-    commander = r['players'][p]['commander']
+    commander = r.players[p]['commander']
     if not commander in unit_data:
         unit_data[commander] = dict()
         unit_data[commander]['count'] = 0
@@ -322,17 +323,17 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
     # Count kills done by mind-controlled units
     mc_unit_bonus_kills = 0
-    if commander in mc_units and mc_units[commander] in r['players'][p]['units']:
-        for unit in r['players'][p]['units']:
+    if commander in mc_units and mc_units[commander] in r.players[p]['units']:
+        for unit in r.players[p]['units']:
             # If unit wasn't created, but still got kills
-            if r['players'][p]['units'][unit][0] == 0 or (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Tychus'
-                                                                                                            and unit == 'Auto-Turret'):
-                mc_unit_bonus_kills += r['players'][p]['units'][unit][2]
+            if r.players[p]['units'][unit][0] == 0 or (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Tychus'
+                                                                                                         and unit == 'Auto-Turret'):
+                mc_unit_bonus_kills += r.players[p]['units'][unit][2]
 
     # Go over units
-    for unit in r['players'][p]['units']:
+    for unit in r.players[p]['units']:
         # Don't count units without kills
-        if r['players'][p]['units'][unit][2] <= 0:
+        if r.players[p]['units'][unit][2] <= 0:
             continue
 
         if not unit in unit_data[commander]:
@@ -341,35 +342,35 @@ def _add_units(unit_data: dict, r: dict, p: int):
         # Add unit [created, lost, kills]
         names = {0: 'created', 1: 'lost', 2: 'kills'}
         for i, s in names.items():
-            if not isinstance(r['players'][p]['units'][unit][i], str) and not isinstance(unit_data[commander][unit][s], str):
-                unit_data[commander][unit][s] += r['players'][p]['units'][unit][i]
+            if not isinstance(r.players[p]['units'][unit][i], str) and not isinstance(unit_data[commander][unit][s], str):
+                unit_data[commander][unit][s] += r.players[p]['units'][unit][i]
             else:
-                unit_data[commander][unit][s] = r['players'][p]['units'][unit][i]
+                unit_data[commander][unit][s] = r.players[p]['units'][unit][i]
 
         # Add bonus kills to mind-controlling unit
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
             unit_data[commander][unit]['kills'] += mc_unit_bonus_kills
-            kills_ingame = r['players'][p]['units'][unit][2] + mc_unit_bonus_kills
-            unit_data[commander][unit]['kill_percentage'].append(kills_ingame / r['players'][p]['kills'])
+            kills_ingame = r.players[p]['units'][unit][2] + mc_unit_bonus_kills
+            unit_data[commander][unit]['kill_percentage'].append(kills_ingame / r.players[p]['kills'])
             mc_unit_bonus_kills = 0
 
         # Calculate kill fraction for the rest
-        elif r['players'][p]['kills'] > 0:
-            unit_data[commander][unit]['kill_percentage'].append(r['players'][p]['units'][unit][2] / r['players'][p]['kills'])
+        elif r.players[p]['kills'] > 0:
+            unit_data[commander][unit]['kill_percentage'].append(r.players[p]['units'][unit][2] / r.players[p]['kills'])
 
 
 def _add_units_amon(unit_data: dict, r: dict):
     """ Add units from the replay into amon's dictionary"""
     if not 'amon_units' in r:
         return
-    for unit in r['amon_units']:
+    for unit in r.amon_units:
         if not unit in unit_data:
             unit_data[unit] = {'created': 0, 'lost': 0, 'kills': 0}
 
         names = {0: 'created', 1: 'lost', 2: 'kills'}
         for i in range(3):
-            if isinstance(r['amon_units'][unit][i], int) or isinstance(r['amon_units'][unit][i], float):
-                unit_data[unit][names[i]] += r['amon_units'][unit][i]
+            if isinstance(r.amon_units[unit][i], int) or isinstance(r.amon_units[unit][i], float):
+                unit_data[unit][names[i]] += r.amon_units[unit][i]
 
 
 def _process_dict_amon(unit_data: dict):
@@ -478,7 +479,7 @@ def calculate_unit_stats(ReplayData, main_handles):
     for r in ReplayData:
         _add_units_amon(amon_unit_data, r)
         for p in (1, 2):
-            if r['players'][p]['handle'] in main_handles:
+            if r.players[p]['handle'] in main_handles:
                 _add_units(main_unit_data, r, p)
             else:
                 _add_units(ally_unit_data, r, p)
@@ -495,7 +496,7 @@ def calculate_words(ReplayData):
 
     words = dict()
     for r in ReplayData:
-        for m in r['messages']:
+        for m in r.messages:
             message = m['text'].split(' ')
             for word in message:
                 if word in words:
@@ -536,7 +537,7 @@ class mass_replay_analysis:
             for arg in args:
                 # Special filter for races. Check enemy race directly.
                 if arg in races:
-                    if arg == r['enemy_race'].lower():
+                    if arg == r.enemy_race.lower():
                         args_found += 1
 
                 elif arg in struct:
@@ -545,16 +546,20 @@ class mass_replay_analysis:
             if args_found == len(args):
                 replays.append(r)
 
-        return sorted(replays, key=lambda x: int(x['date'].replace(':', '')), reverse=True)
+        return sorted(replays, key=lambda x: int(getattr(x, 'date').replace(':', '')), reverse=True)
 
     def load_cache(self):
         """ Try to load previously parsed replays """
         try:
             if os.path.isfile(self.cachefile):
                 with open(self.cachefile, 'rb') as f:
-                    self.ReplayDataAll = pickle.load(f)
+                    loaded = pickle.load(f)
+                if len(loaded) > 0 and type(loaded[0]) == replay_data:
+                    self.ReplayDataAll = loaded
+                elif len(loaded) > 0:
+                    logger.error(f"Cache not loaded. Old data type.")
 
-                self.parsed_replays = {r.get('hash', self.get_hash(r['file'])) for r in self.ReplayDataAll}
+                self.parsed_replays = {r.hash for r in self.ReplayDataAll}
         except:
             logger.error(traceback.format_exc())
 
@@ -569,7 +574,12 @@ class mass_replay_analysis:
         for r in replays:
             rhash = self.get_hash(r)
             if not rhash in self.parsed_replays:
-                out.append(parse_replay(r))
+                parsed = parse_replay(r)
+                if parsed is not None:
+                    parsed['hash'] = rhash
+                    self.remove_useless_keys(parsed)
+                    parsed = replay_data(**parsed)
+                    out.append(parsed)
                 new_hashes.add(rhash)
                 new_files.add(r)
                 if self.closing:
@@ -601,8 +611,8 @@ class mass_replay_analysis:
 
             with lock:
                 self.ReplayDataAll.append(full_data)
-                self.parsed_replays.add(full_data['hash'])
-                self.current_replays.add(full_data['file'])
+                self.parsed_replays.add(full_data.hash)
+                self.current_replays.add(full_data.file)
                 self.update_data()
 
     def format_data(self, full_data):
@@ -623,7 +633,8 @@ class mass_replay_analysis:
             parsed_data['players'][p]['kills'] = full_data['mainkills'] if p == main else full_data['allykills']
             parsed_data['players'][p]['icons'] = full_data['mainIcons'] if p == main else full_data['allyIcons']
             parsed_data['players'][p]['units'] = full_data['mainUnits'] if p == main else full_data['allyUnits']
-        return parsed_data
+
+        return replay_data(**parsed_data)
 
     def save_cache(self):
         """ Saves cache """
@@ -657,10 +668,7 @@ class mass_replay_analysis:
 
         # Go through current replays, get file hashes, see if they are added
         for r in self.ReplayDataAll:
-            if not 'hash' in r:
-                r['hash'] = self.get_hash(r['file'])
-
-            data[r['hash']] = r
+            data[r.hash] = r._asdict()
 
         # Save file again
         with open(file_name, 'w') as f:
@@ -685,7 +693,7 @@ class mass_replay_analysis:
         if showAll:
             self.ReplayData = self.ReplayDataAll
         else:
-            self.ReplayData = [r for r in self.ReplayDataAll if r['file'] in self.current_replays]
+            self.ReplayData = [r for r in self.ReplayDataAll if r.file in self.current_replays]
 
     def initialize(self):
         """ Executes full initialization """
@@ -703,18 +711,18 @@ class mass_replay_analysis:
                 break
 
             for p in (1, 2):
-                handle = self.ReplayDataAll[i]['players'][p]['handle']
+                handle = self.ReplayDataAll[i].players[p]['handle']
                 if handle in self.main_handles and not handle in self.name_handle_dict:
-                    self.name_handle_dict[handle] = self.ReplayDataAll[i]['players'][p]['name']
+                    self.name_handle_dict[handle] = self.ReplayDataAll[i].players[p]['name']
 
     def get_last_replays(self, number):
         """ Returns an ordered list of last `number` replays from the newest to the oldest. """
-        return sorted(self.ReplayData, key=lambda x: int(x['date'].replace(':', '')), reverse=True)[:number]
+        return sorted(self.ReplayData, key=lambda x: int(getattr(x, 'date').replace(':', '')), reverse=True)[:number]
 
     @staticmethod
     def remove_useless_keys(pdict):
         """ Removes keys from the dictionary that are no longer useful"""
-        to_remove = ('start_time','end_time','isBlizzard','last_deselect_event')
+        to_remove = ('start_time', 'end_time', 'isBlizzard', 'last_deselect_event')
         for k in to_remove:
             if k in pdict:
                 del pdict[k]
@@ -726,12 +734,12 @@ class mass_replay_analysis:
         # Get current status & updated
         fully_parsed = 0
         for r in self.ReplayDataAll:
-            if 'full_analysis' in r or 'comp' in r:
+            if r.full_analysis:
                 fully_parsed += 1
-        
+
         if fully_parsed == len(self.ReplayDataAll):
             return True
-        
+
         progress_callback.emit(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
         fully_parsed_at_start = fully_parsed
 
@@ -740,7 +748,7 @@ class mass_replay_analysis:
         start = time.time()
         idx = 0
         eta = '?'
-        for r in self.ReplayDataAll:
+        for i, r in enumerate(self.ReplayDataAll):
             # Save cache every now and then
             if idx >= 20:
                 idx = 0
@@ -752,17 +760,15 @@ class mass_replay_analysis:
                 return False
 
             # Analyze those that are not fully parsed yet
-            if not 'full_analysis' in r and not 'comp' in r:
+            if not r.full_analysis:
                 try:
-                    if not os.path.isfile(r['file']):
+                    if not os.path.isfile(r.file):
                         continue
 
-                    full_data = analyse_replay(r['file'])
+                    full_data = analyse_replay(r.file)
 
                     full_data['full_analysis'] = True
                     if len(full_data) < 2:
-                        with lock:
-                            r['full_analysis'] = False
                         continue
 
                     # Update data
@@ -778,11 +784,12 @@ class mass_replay_analysis:
                     with lock:
                         try:
                             formated = self.format_data(full_data)
-                            r.update(formated)
-                            self.remove_useless_keys(r)
+                            self.ReplayDataAll[i] = formated
                         except:
                             logger.error(traceback.format_exc())
-                        progress_callback.emit(f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+                        progress_callback.emit(
+                            f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
+                        )
 
                 except:
                     logger.error(traceback.format_exc())
@@ -797,14 +804,14 @@ class mass_replay_analysis:
     def main_player_is_sub_15(self, replay):
         """ Returns True if the main player is level 1-14"""
         for idx in (1, 2):
-            if replay['players'][idx]['handle'] in self.main_handles and replay['players'][idx]['commander_level'] < 15:
+            if replay.players[idx]['handle'] in self.main_handles and replay.players[idx]['commander_level'] < 15:
                 return True
         return False
 
     def both_main_players(self, replay):
         """ Checks if both players are the main players """
         try:
-            if replay['players'][1]['handle'] in self.main_handles and replay['players'][2]['handle'] in self.main_handles:
+            if replay.players[1]['handle'] in self.main_handles and replay.players[2]['handle'] in self.main_handles:
                 return True
             return False
         except:
@@ -815,17 +822,17 @@ class mass_replay_analysis:
         winrate_data = dict()
         for replay in self.ReplayData:
             for p in (1, 2):
-                player = replay['players'][p]['name']
+                player = replay.players[p]['name']
                 if not player in winrate_data:
                     winrate_data[player] = [0, 0, list(), list(), 0]  # Wins, losses, apm, commander, commander frequency
 
-                if replay['result'] == 'Victory':
+                if replay.result == 'Victory':
                     winrate_data[player][0] += 1
                 else:
                     winrate_data[player][1] += 1
 
-                winrate_data[player][2].append(replay['players'][p]['apm'])
-                winrate_data[player][3].append(replay['players'][p]['commander'])
+                winrate_data[player][2].append(replay.players[p]['apm'])
+                winrate_data[player][3].append(replay.players[p]['commander'])
 
         for player in winrate_data:
             # Median APM
@@ -860,12 +867,12 @@ class mass_replay_analysis:
                 break
 
             for p in (1, 2):
-                if r['players'][p]['handle'] in unknown_handles:
-                    unknown_handles.remove(r['players'][p]['handle'])
-                    folder = r['file'].split('Replays\\Multiplayer')[0]
+                if r.players[p]['handle'] in unknown_handles:
+                    unknown_handles.remove(r.players[p]['handle'])
+                    folder = r.file.split('Replays\\Multiplayer')[0]
                     handle = folder.split('\\')[-2]
                     folder = os.path.join(folder, 'Banks', handle)
-                    known_handles[r['players'][p]['handle']] = [r['region'], folder]
+                    known_handles[r.players[p]['handle']] = [r.region, folder]
 
         return known_handles
 
@@ -895,36 +902,35 @@ class mass_replay_analysis:
         data = self.ReplayData
 
         if not include_mutations:
-            data = [r for r in data if not r['extension']]
+            data = [r for r in data if not r.extension]
 
         if not include_normal_games:
-            data = [r for r in data if r['extension']]
+            data = [r for r in data if r.extension]
 
         if mindate is not None:
-            data = [r for r in data if int(r['date'].replace(':', '')) > mindate]
+            data = [r for r in data if int(r.date.replace(':', '')) > mindate]
 
         if maxdate is not None:
-            data = [r for r in data if int(r['date'].replace(':', '')) < maxdate]
+            data = [r for r in data if int(r.date.replace(':', '')) < maxdate]
 
         if minlength is not None:
-            data = [r for r in data if r['length'] >= minlength * 60]
+            data = [r for r in data if r.length >= minlength * 60]
 
         if maxLength is not None:
-            data = [r for r in data if r['length'] <= maxLength * 60]
+            data = [r for r in data if r.length <= maxLength * 60]
 
         if difficulty_filter is not None and len(difficulty_filter) > 0:
             logger.info(f'{difficulty_filter=}')
             for difficulty in difficulty_filter:
                 if isinstance(difficulty, str):
-                    data = [r for r in data
-                            if not difficulty in r['difficulty'] or r['brutal_plus'] > 0]  # Don't filter out B+ if filtering out "Brutal"
+                    data = [r for r in data if not difficulty in r.difficulty or r.brutal_plus > 0]  # Don't filter out B+ if filtering out "Brutal"
 
                 elif isinstance(difficulty, int):
-                    data = [r for r in data if not difficulty == r['brutal_plus']]
+                    data = [r for r in data if not difficulty == r.brutal_plus]
 
         if region_filter is not None and len(region_filter) > 0:
             logger.info(f'{region_filter=}')
-            data = [r for r in data if not r['region'] in region_filter and r['region'] in ('NA', 'EU', 'KR', 'CN')]
+            data = [r for r in data if not r.region in region_filter and r.region in {'NA', 'EU', 'KR', 'CN'}]
 
         if not sub_15:
             data = [r for r in data if not self.main_player_is_sub_15(r)]
