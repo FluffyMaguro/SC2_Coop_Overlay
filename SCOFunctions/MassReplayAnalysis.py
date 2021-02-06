@@ -6,7 +6,6 @@ import os
 import time
 import json
 import pickle
-import hashlib
 import traceback
 import statistics
 import s2protocol
@@ -16,6 +15,7 @@ from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
+from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units
 from SCOFunctions.MReplayData import replay_data
@@ -572,7 +572,7 @@ class mass_replay_analysis:
         new_files = set()
 
         for r in replays:
-            rhash = self.get_hash(r)
+            rhash = get_hash(r)
             if not rhash in self.parsed_replays:
                 parsed = parse_replay(r)
                 if parsed is not None:
@@ -623,7 +623,7 @@ class mass_replay_analysis:
         parsed_data['comp'] = full_data['comp']
         parsed_data['amon_units'] = full_data['amonUnits']
         parsed_data['full_analysis'] = True
-        parsed_data['hash'] = parsed_data.get('hash', self.get_hash(full_data['filepath']))
+        parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['filepath']))
 
         self.remove_useless_keys(parsed_data)
         parsed_data['players'] = tuple(parsed_data['players'][:3])
@@ -641,18 +641,6 @@ class mass_replay_analysis:
         with lock:
             with open(self.cachefile, 'wb') as f:
                 pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-    @staticmethod
-    def get_hash(file):
-        """ Returns MD5 file hash for a file """
-        try:
-            with open(file, "rb") as f:
-                bytesread = f.read()
-                readable_hash = hashlib.md5(bytesread).hexdigest()
-            return readable_hash
-        except:
-            logger.error(traceback.format_exc())
-            return None
 
     def dump_all(self):
         """ Dumps all data to a json file """

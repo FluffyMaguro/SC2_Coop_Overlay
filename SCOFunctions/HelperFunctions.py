@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import string
+import hashlib
 import requests
 import zipfile
 import traceback
@@ -26,6 +27,18 @@ if isWindows():
     from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
+
+
+def get_hash(file):
+    """ Returns MD5 file hash for a file """
+    try:
+        with open(file, "rb") as f:
+            bytesread = f.read()
+            readable_hash = hashlib.md5(bytesread).hexdigest()
+        return readable_hash
+    except:
+        logger.error(traceback.format_exc())
+        return None
 
 
 def write_permission_granted():
