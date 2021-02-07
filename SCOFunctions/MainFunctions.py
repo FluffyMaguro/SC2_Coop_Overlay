@@ -58,7 +58,6 @@ def update_settings(d):
 
 def sendEvent(event):
     """ Send message to the overlay """
-
     global globalOverlayMessagesSent
 
     with lock:
@@ -108,7 +107,6 @@ def resend_init_message():
 
 def find_names_and_handles(ACCOUNTDIR, replays=None):
     """ Finds player handles and names from the account directory (or its subfolder) """
-
     # First walk up as far as possible in-case the user has selected one the of subfolders.
     folder = ACCOUNTDIR
     while True:
@@ -152,7 +150,6 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
 
 def names_fallback(handles, replays):
     """ Finds new main player names from handles and replays.Assumes S2Parser format of replays. """
-
     shandles = set(handles)
     snames = set()
 
@@ -163,7 +160,6 @@ def names_fallback(handles, replays):
             if r['players'][p]['handle'] in shandles:
                 snames.add(r['players'][p]['name'])
                 shandles.remove(r['players'][p]['handle'])
-
     return snames
 
 
@@ -198,19 +194,16 @@ def find_replays(directory):
                     file_path = '\\\?\\' + file_path
                 file_path = os.path.normpath(file_path)
                 replays.add(file_path)
-
     return replays
 
 
 def initialize_AllReplays(ACCOUNTDIR):
     """ Creates a sorted dictionary of all replays with their last modified times """
-
     try:
         AllReplays = find_replays(ACCOUNTDIR)
         # Get dictionary of all replays with their last modification time
         AllReplays = ((rep, os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k: {'created': v} for k, v in sorted(AllReplays, key=lambda x: x[1])}
-
     except:
         logger.error(f'Error during replay initialization\n{traceback.format_exc()}')
     finally:
@@ -291,7 +284,6 @@ def check_replays():
                             # No output
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
-
                             with lock:
                                 ReplayPosition = len(AllReplays) - 1
 
@@ -313,7 +305,6 @@ def check_replays():
 
 def upload_to_aom(file_path, replay_dict):
     """ Function handling uploading the replay on the Aommaster's server"""
-
     # Credentials need to be set up
     if SETTINGS['aom_account'] in {'', None} or SETTINGS['aom_secret_key'] in {'', None}:
         return
@@ -386,7 +377,6 @@ async def manager(websocket, path):
                 try:  # Send the message
                     await asyncio.wait_for(asyncio.gather(websocket.send(message)), timeout=1)
                     logger.info(f'#{overlayMessagesSent-1} message sent')
-
                 except asyncio.TimeoutError:
                     logger.error(f'#{overlayMessagesSent-1} message was timed-out.')
                 except websockets.exceptions.ConnectionClosedOK:
@@ -400,7 +390,6 @@ async def manager(websocket, path):
                     break
                 except:
                     logger.error(traceback.format_exc())
-
         except:
             logger.error(traceback.format_exc())
         finally:
@@ -430,9 +419,6 @@ def move_in_AllReplays(delta):
     if newPosition < 0 or newPosition >= len(AllReplays):
         logger.info(f'We have gone too far. Staying at {ReplayPosition}')
         return
-
-    # with lock:
-    #     ReplayPosition = newPosition
 
     # Get replay_dict of given replay
     file = list(AllReplays.keys())[newPosition]
@@ -484,7 +470,6 @@ def wait_for_wake():
     It will be checking time, and if there is a big discrepancy, it will return it.
     This function will be run on a separate thread.
     """
-
     while True:
         start = time.time()
 
@@ -503,7 +488,6 @@ def wait_for_wake():
 def check_for_new_game():
     global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
-
     # Wait a bit for the replay initialization to complete
     time.sleep(4)
     """
