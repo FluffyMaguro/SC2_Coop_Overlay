@@ -213,16 +213,22 @@ def s2_parse_replay(file,
 
     # Insert dummy players to positions: zero & two if playing alone.
     replay['players'].insert(0, {'pid': 0})
-    if replay['players'][2]['pid'] != 2:
+    if len(replay['players'])==2 or replay['players'][2]['pid'] != 2:
         replay['players'].insert(2, {'pid': 2})
 
     # Enemy race
-    replay['enemy_race'] = replay['players'][3]['race']
+    try:
+        replay['enemy_race'] = replay['players'][3]['race']
+    except:
+        replay['enemy_race'] = None
 
     # Difficulty
-    diff_1 = diff_dict.get(replay['players'][3]['difficulty'], '')
-    diff_2 = diff_dict.get(replay['players'][4]['difficulty'], '')
-    replay['difficulty'] = (diff_1, diff_2)
+    try:
+        diff_1 = diff_dict.get(replay['players'][3]['difficulty'], '')
+        diff_2 = diff_dict.get(replay['players'][4]['difficulty'], '')
+        replay['difficulty'] = (diff_1, diff_2)
+    except:
+        replay['difficulty'] = None
 
     # Delete difficulty per player as it's not accurate for human players and we are returning map difficulty already
     for player in replay['players']:
@@ -231,6 +237,8 @@ def s2_parse_replay(file,
     # Extended difficulty (including B+)
     if replay['brutal_plus'] > 0:
         replay['ext_difficulty'] = f'B+{replay["brutal_plus"]}'
+    elif replay['difficulty'] == None:
+        replay['ext_difficulty'] = None
     elif diff_1 == diff_2:
         replay['ext_difficulty'] = diff_1
     else:

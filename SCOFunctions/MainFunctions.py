@@ -26,7 +26,6 @@ globalOverlayMessagesSent = 0  # Global variable to keep track of messages sent.
 lock = threading.Lock()
 logger = logclass('MAIN', 'INFO')
 initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60}
-analysis_log_file = truePath('cache_replay_analysis.txt')
 ReplayPosition = 0
 AllReplays = dict()
 player_winrate_data = dict()
@@ -212,18 +211,6 @@ def initialize_AllReplays(ACCOUNTDIR):
         AllReplays = ((rep, os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k: {'created': v} for k, v in sorted(AllReplays, key=lambda x: x[1])}
 
-        # Append data from already parsed replays
-        if os.path.isfile(analysis_log_file):
-            with open(analysis_log_file, 'rb') as file:
-                for line in file.readlines():
-                    try:
-                        replay_dict = eval(line.decode('utf-8'))
-                        if 'replaydata' in replay_dict and 'filepath' in replay_dict:
-                            if replay_dict['filepath'] in AllReplays:
-                                AllReplays[replay_dict['filepath']]['replay_dict'] = replay_dict
-                    except:
-                        logger.error("Failed to parse a line from replay analysis log\n", traceback.format_exc())
-
     except:
         logger.error(f'Error during replay initialization\n{traceback.format_exc()}')
     finally:
@@ -301,14 +288,11 @@ def check_replays():
                                     out.update(RNG_COMMANDER)
                                 sendEvent(out)
 
-                                with open(analysis_log_file, 'ab') as file:  #save into a text file
-                                    file.write((str(replay_dict) + '\n').encode('utf-8'))
                             # No output
                             else:
                                 logger.error(f'ERROR: No output from replay analysis ({file})')
 
                             with lock:
-                                AllReplays[file_path]['replay_dict'] = replay_dict
                                 ReplayPosition = len(AllReplays) - 1
 
                         except:
@@ -359,6 +343,11 @@ def upload_to_aom(file_path, replay_dict):
 
 def show_overlay(file):
     """ Shows overlay. If it wasn't analysed before, analyse now."""
+    global ReplayPosition
+
+    if file in AllReplays.keys():
+        with lock:
+            ReplayPosition = list(AllReplays.keys()).index(file)
 
     # Try to find if the replay is analysed in CAnalysis
     rhash = get_hash(file)
@@ -378,6 +367,7 @@ def show_overlay(file):
         else:
             logger.error('No output from replay analysis')
     except:
+        return 'Error'
         logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
 
 
@@ -441,39 +431,14 @@ def move_in_AllReplays(delta):
         logger.info(f'We have gone too far. Staying at {ReplayPosition}')
         return
 
-    with lock:
-        ReplayPosition = newPosition
+    # with lock:
+    #     ReplayPosition = newPosition
 
     # Get replay_dict of given replay
-    key = list(AllReplays.keys())[ReplayPosition]
-    if 'replay_dict' in AllReplays[key]:
-        if AllReplays[key]['replay_dict'] != None:
-            sendEvent(AllReplays[key]['replay_dict'])
-        else:
-            logger.info(f"This replay couldn't be analysed {key}")
-            move_in_AllReplays(delta)
-    else:
-        # Replay_dict is missing, analyse replay
-        try:
-            replay_dict = analyse_replay(key, PLAYER_HANDLES)
-            if len(replay_dict) > 1:
-                sendEvent(replay_dict)
-                with lock:
-                    AllReplays[key]['replay_dict'] = replay_dict
-                with open(analysis_log_file, 'ab') as file:
-                    file.write((str(replay_dict) + '\n').encode('utf-8'))
-                if CAnalysis != None:
-                    CAnalysis.add_parsed_replay(replay_dict)
-            else:
-                # No output from analysis
-                with lock:
-                    AllReplays[key]['replay_dict'] = None
-                move_in_AllReplays(delta)
-        except:
-            logger.error(f'Failed to analyse replay: {key}\n{traceback.format_exc()}')
-            with lock:
-                AllReplays[key]['replay_dict'] = None
-            move_in_AllReplays(delta)
+    file = list(AllReplays.keys())[newPosition]
+    result = show_overlay(file)
+    if result == 'Error':
+        move_in_AllReplays(delta)
 
 
 def keyboard_OLDER():

@@ -272,7 +272,7 @@ function format_length(seconds) {
     }
 
     if (min == 0) {
-        min = ''
+        min = '00:'
     } else if (min < 10) {
         min = '0' + min + ':'
     } else {
