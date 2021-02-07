@@ -548,6 +548,47 @@ class mass_replay_analysis:
 
         return sorted(replays, key=lambda x: int(getattr(x, 'date').replace(':', '')), reverse=True)
 
+    def get_data_for_overlay(self, rhash):
+        """ Looks if we have data to show for overlay.
+            If not returns None"""
+        for r in self.ReplayDataAll:
+            if r.hash == rhash:
+                if r.full_analysis:
+                    new = r._asdict()
+                    new['replaydata'] = True
+
+                    main, ally = 1, 2
+                    if r.players[2]['handle'] in self.main_handles:
+                        main, ally = 2, 1
+
+                    new['main'] = r.players[main]['name']
+                    new['mainAPM'] = r.players[main]['apm']
+                    new['mainCommander'] = r.players[main]['commander']
+                    new['mainCommanderLevel'] = r.players[main]['commander_level']
+                    new['mainIcons'] = r.players[main]['icons']
+                    new['mainMasteries'] = r.players[main]['masteries']
+                    new['mainPrestige'] = r.players[main]['prestige']
+                    new['mainUnits'] = r.players[main]['units']
+                    new['mainkills'] = r.players[main]['kills']
+
+                    new['ally'] = r.players[ally]['name']
+                    new['allyAPM'] = r.players[ally]['apm']
+                    new['allyCommander'] = r.players[ally]['commander']
+                    new['allyCommanderLevel'] = r.players[ally]['commander_level']
+                    new['allyIcons'] = r.players[ally]['icons']
+                    new['allyMasteries'] = r.players[ally]['masteries']
+                    new['allyPrestige'] = r.players[ally]['prestige']
+                    new['allyUnits'] = r.players[ally]['units']
+                    new['allykills'] = r.players[ally]['kills']
+
+                    new['map'] = new['map_name']
+                    # new['B+'] = 0
+                    del new['players']
+                    return new
+                else:
+                    return None
+        return None
+
     def load_cache(self):
         """ Try to load previously parsed replays """
         try:
@@ -608,6 +649,12 @@ class mass_replay_analysis:
                 and len(parsed_data['players']) > 2 and parsed_data['players'][1].get('commander') is not None):
 
             full_data = self.format_data(full_data)
+
+            # Remove replay if it was already there:
+            for i, r in enumerate(self.ReplayDataAll):
+                if r.hash == full_data.hash:
+                    del self.ReplayDataAll[i]
+                    break
 
             with lock:
                 self.ReplayDataAll.append(full_data)

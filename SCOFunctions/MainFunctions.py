@@ -19,6 +19,7 @@ import websockets
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import analyse_replay
+from SCOFunctions.HelperFunctions import get_hash
 
 OverlayMessages = []  # Storage for all messages
 globalOverlayMessagesSent = 0  # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
@@ -359,34 +360,25 @@ def upload_to_aom(file_path, replay_dict):
 def show_overlay(file):
     """ Shows overlay. If it wasn't analysed before, analyse now."""
 
-    # Replay already analysed
-    if 'replay_dict' in AllReplays[file]:
-        if AllReplays[file]['replay_dict'] != None:
-            sendEvent(AllReplays[file]['replay_dict'])
+    # Try to find if the replay is analysed in CAnalysis
+    rhash = get_hash(file)
+    if CAnalysis is not None:
+        data = CAnalysis.get_data_for_overlay(rhash)
+        if data is not None:
+            sendEvent(data)
+            return
+
+    # Didn't find the replay, analyse
+    try:
+        replay_dict = analyse_replay(file, PLAYER_HANDLES)
+        if len(replay_dict) > 1:
+            if CAnalysis is not None:
+                CAnalysis.add_parsed_replay(replay_dict)
+            sendEvent(replay_dict)
         else:
-            logger.info(f"This replay couldn't be analysed {file}")
-
-    # Replay_dict is missing, analyse replay
-    else:
-        try:
-            replay_dict = analyse_replay(file, PLAYER_HANDLES)
-            if len(replay_dict) > 1:
-                sendEvent(replay_dict)
-                with lock:
-                    AllReplays[file]['replay_dict'] = replay_dict
-                with open(analysis_log_file, 'ab') as f:
-                    f.write((str(replay_dict) + '\n').encode('utf-8'))
-                if CAnalysis != None:
-                    CAnalysis.add_parsed_replay(replay_dict)
-
-            # No output from analysis
-            else:
-                with lock:
-                    AllReplays[file]['replay_dict'] = None
-        except:
-            logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
-            with lock:
-                AllReplays[file]['replay_dict'] = None
+            logger.error('No output from replay analysis')
+    except:
+        logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
 
 
 async def manager(websocket, path):

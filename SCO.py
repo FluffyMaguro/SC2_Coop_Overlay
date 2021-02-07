@@ -39,7 +39,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 230
+APPVERSION = 231
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -1341,7 +1341,7 @@ class UI_TabWidget(object):
             'aom_secret_key': None,
             'player_notes': dict(),
             'main_names': list(),
-            'list_games': 200,
+            'list_games': 100,
             'right_offset': 0,
             'width': 0.5,
             'height': 1,
