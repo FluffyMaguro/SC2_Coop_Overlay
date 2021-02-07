@@ -13,10 +13,8 @@ import traceback
 
 import requests
 import asyncio
-import keyboard
 import websockets
 
-from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash

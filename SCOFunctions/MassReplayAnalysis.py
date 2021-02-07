@@ -361,7 +361,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
 def _add_units_amon(unit_data: dict, r: dict):
     """ Add units from the replay into amon's dictionary"""
-    if not 'amon_units' in r:
+    if r.amon_units is None:
         return
     for unit in r.amon_units:
         if not unit in unit_data:
@@ -791,6 +791,7 @@ class mass_replay_analysis:
                 fully_parsed += 1
 
         if fully_parsed == len(self.ReplayDataAll):
+            self.full_analysis_finished = True
             return True
 
         progress_callback.emit(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')

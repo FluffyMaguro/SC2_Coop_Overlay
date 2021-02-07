@@ -35,7 +35,7 @@ class AmonUnitStats(QtWidgets.QWidget):
     """ Widget for amon's unit stats """
     def __init__(self, unit_data, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(0, 0, 967, 450))
+        self.setGeometry(QtCore.QRect(0, 0, 967, 446))
 
         # Scroll
         self.scroll_area = QtWidgets.QScrollArea(self)
