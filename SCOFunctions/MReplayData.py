@@ -2,7 +2,8 @@ from typing import NamedTuple
 
 
 class replay_data(NamedTuple):
-    """ Data structure for storing information for replays in a more memory efficient way. """
+    """ Data structure for storing information for replays in a more memory efficient way. 
+    Although this data isn't the memory hog for this app."""
     accurate_length: float
     brutal_plus: int 
     build: dict

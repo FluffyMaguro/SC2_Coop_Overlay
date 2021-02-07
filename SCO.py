@@ -2183,7 +2183,7 @@ class UI_TabWidget(object):
             for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
                 item.setStyleSheet('color:blue')
 
-    def update_player_tab(self, winrate_data):
+    def update_player_tab(self, winrate_data, show_max = 50):
         """ Updates player tab based on provide winrate data """
         if self.LA_Winrates_Wait is not None:
             self.LA_Winrates_Wait.deleteLater()
@@ -2192,19 +2192,27 @@ class UI_TabWidget(object):
         if not hasattr(self, 'player_winrate_UI_dict'):
             self.player_winrate_UI_dict = dict()
 
+        # Create new or update top `show_nax` players
         for idx, player in enumerate(winrate_data):
+            if idx >= show_max:
+                break
             if not player in self.player_winrate_UI_dict:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player, winrate_data[player], self.settings['player_notes'].get(player, None),
-                                                                      self.SC_PlayersScrollAreaContents)
+                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
+                                                                      winrate_data[player],
+                                                                      self.settings['player_notes'].get(player, None),
+                                                                      self.SC_PlayersScrollAreaContents) #yapf: disable
                 self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
             else:
                 self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])
 
-            if idx > 50:
-                self.player_winrate_UI_dict[player].hide()
-            else:
+        # Show top `show_max` and hide the rest
+        for idx, player in enumerate(self.player_winrate_UI_dict):
+            if idx < show_max:
                 self.player_winrate_UI_dict[player].show()
+            else:
+                self.player_winrate_UI_dict[player].hide()
 
+        # Hide players not in winrate data
         for player in self.player_winrate_UI_dict:
             if not player in winrate_data:
                 self.player_winrate_UI_dict[player].hide()
@@ -2278,17 +2286,38 @@ class UI_TabWidget(object):
         """ Filters only players with string in name or note """
         text = self.ED_Winrate_Search.text().lower()
         idx = 0
+        show_max = 50 if self.CH_OnlyTop50.isChecked() else 10000
+
+        # First hide all
         for player in self.player_winrate_UI_dict:
-            note = self.player_winrate_UI_dict[player].get_note().lower()
+            self.player_winrate_UI_dict[player].hide()
 
-            if self.CH_OnlyTop50.isChecked() and idx >= 50:
-                self.player_winrate_UI_dict[player].hide()
-
-            elif text in player.lower() or text in note or ('note' in text and not note in {None, ''}):
+        # Go through winrate data and check for player names
+        for player in self.winrate_data:
+            if text in player and idx < show_max:
+                # Create element if necessary and show
+                if not player in self.player_winrate_UI_dict:
+                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
+                                                                        self.winrate_data[player],
+                                                                        self.settings['player_notes'].get(player, None),
+                                                                        self.SC_PlayersScrollAreaContents) #yapf: disable
+                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
-            else:
-                self.player_winrate_UI_dict[player].hide()
+
+        # Go though notes
+        for player, note in self.settings['player_notes'].items():
+            if text in note and idx < show_max:
+                # Create element if necessary and show
+                if not player in self.player_winrate_UI_dict:
+                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
+                                                                        self.winrate_data[player],
+                                                                        self.settings['player_notes'].get(player, None),
+                                                                        self.SC_PlayersScrollAreaContents) #yapf: disable
+                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
+                self.player_winrate_UI_dict[player].show()
+                idx += 1                
+        
 
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
@@ -2398,9 +2427,9 @@ class UI_TabWidget(object):
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """
         if hasattr(self, 'CAnalysis'):
-            winrate_data = self.CAnalysis.calculate_player_winrate_data()
-            self.update_player_tab(winrate_data)
-            MF.set_player_winrate_data(winrate_data)
+            self.winrate_data = self.CAnalysis.calculate_player_winrate_data()
+            self.update_player_tab(self.winrate_data)
+            MF.set_player_winrate_data(self.winrate_data)
         else:
             logger.error('Can\'t update winrate data before mass analysis is finished')
 
