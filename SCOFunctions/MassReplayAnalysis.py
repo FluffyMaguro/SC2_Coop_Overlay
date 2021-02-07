@@ -688,6 +688,7 @@ class mass_replay_analysis:
         parsed_data['comp'] = full_data['comp']
         parsed_data['full_analysis'] = True
         parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['file']))
+        parsed_data['amon_units'] = full_data['amon_units']
 
         self.remove_useless_keys(parsed_data)
         parsed_data['players'] = tuple(parsed_data['players'][:3])
