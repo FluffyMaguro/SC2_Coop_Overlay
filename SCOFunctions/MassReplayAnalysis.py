@@ -17,7 +17,7 @@ from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
-from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units
+from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names
 from SCOFunctions.MReplayData import replay_data
 
 logger = logclass('MASS', 'INFO')
@@ -567,7 +567,10 @@ class mass_replay_analysis:
                     new['mainCommanderLevel'] = r.players[main]['commander_level']
                     new['mainIcons'] = r.players[main]['icons']
                     new['mainMasteries'] = r.players[main]['masteries']
-                    new['mainPrestige'] = r.players[main]['prestige']
+                    if r.players[main]['prestige'] != 0:
+                        new['mainPrestige'] = prestige_names.get(r.players[main]['commander'],{}).get(r.players[main]['prestige'])
+                    else:
+                        new['mainPrestige'] = ''
                     new['mainUnits'] = r.players[main]['units']
                     new['mainkills'] = r.players[main]['kills']
 
@@ -577,13 +580,28 @@ class mass_replay_analysis:
                     new['allyCommanderLevel'] = r.players[ally]['commander_level']
                     new['allyIcons'] = r.players[ally]['icons']
                     new['allyMasteries'] = r.players[ally]['masteries']
-                    new['allyPrestige'] = r.players[ally]['prestige']
+                    if r.players[ally]['prestige'] != 0:
+                        new['allyPrestige'] = prestige_names.get(r.players[ally]['commander'],{}).get(r.players[ally]['prestige'])
+                    else:
+                        new['allyPrestige'] = ''
                     new['allyUnits'] = r.players[ally]['units']
                     new['allykills'] = r.players[ally]['kills']
 
+                    # Difficulty
+                    diff_1 = new['difficulty'][0]
+                    diff_2 = new['difficulty'][1]
+                    if diff_1 == diff_2:
+                        new['difficulty'] = diff_1
+                    elif main == 1:
+                        new['difficulty'] = f'{diff_1}/{diff_2}'
+                    else:
+                        new['difficulty'] = f'{diff_2}/{diff_1}'
+
+                    # Other
                     new['map'] = new['map_name']
-                    # new['B+'] = 0
+                    new['length'] = new['accurate_length'] / 1.4
                     del new['players']
+
                     return new
                 else:
                     return None
@@ -668,9 +686,8 @@ class mass_replay_analysis:
         parsed_data['accurate_length'] = full_data['length'] * 1.4
         parsed_data['bonus'] = full_data['bonus']
         parsed_data['comp'] = full_data['comp']
-        parsed_data['amon_units'] = full_data['amonUnits']
         parsed_data['full_analysis'] = True
-        parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['filepath']))
+        parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['file']))
 
         self.remove_useless_keys(parsed_data)
         parsed_data['players'] = tuple(parsed_data['players'][:3])

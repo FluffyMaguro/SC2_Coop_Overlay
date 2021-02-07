@@ -42,97 +42,6 @@ setTimeout(function(){
         document.getElementById('ibgdiv').style.display = 'block';              
        }, 500);
 
-// DEBUG START
-// debug();
-// document.body.style.backgroundColor = "black";
-// DEBUG END
-
-
-function debug() {
-    DURATION = 60;
-    var dummydata = {
-        'replaydata': true,
-        'bonus': ['10:23', '15:49', '20:15'],
-        'result': 'Victory',
-        'map': 'Dead of Night',
-        'allyPrestige': 'Heavy Weapons Specialist',
-        'mainPrestige': 'Desolate Queen',
-        'filepath': 'C:\\Users\\Maguro\\Documents\\StarCraft II\\Accounts\\452875987\\2-S2-1-7503439\\Replays\\Multiplayer\\Dead of Night (47).SC2Replay',
-        'date': '2020-06-19 20:53:27',
-        'extension': 1,
-        'B+': 0,
-        'comp': 'Dominion Battlegroup',
-        'length': 745.0,
-        'main': 'Maguro',
-        'mainAPM': 117,
-        'mainCommander': 'Kerrigan',
-        'mainCommanderLevel': 14,
-        'mainMasteries': [30, 0, 30, 0, 30, 0],
-        'mainkills': 2801,
-        'mainIcons': {
-            'deadofnight': 117,
-            'tus': 25,
-
-        },
-        'ally': 'Tichondrius',
-        'allyAPM': 30,
-        'allyCommander': 'Stukov',
-        'allyCommanderLevel': 7,
-        'allyMasteries': [15, 15, 30, 0, 30, 0],
-        'allykills': 2801,
-        'allyIcons': {
-            'propagators': 5,
-            'Infested Bunker': 6,
-        },
-        'mainUnits': {
-            'Mutalisk': [60, 12, 1675, 0.6],
-            'Kerrigan': [1, 0, 1124, 0.4]
-        },
-        'allyUnits': {
-            'Infested Trooper': [432, 354, 981, 0.73],
-            'Apocalisk': [2, 2, 184, 0.14],
-            'Infested Civilian': [301, 241, 80, 0.06],
-            'Broodling': [485, 485, 44, 0.03],
-            'Volatile Infested': [17, 13, 26, 0.02],
-            'Infested Bunker': [18, 2, 15, 0.01],
-            'Aleksander': [1, 0, 7, 0.01]
-        },
-        'amonUnits': {
-            'Infested Marine': [571, 571, 100, 0.31],
-            'Kaboomer': [14, 14, 48, 0.15],
-            'Infested Terran': [2946, 2946, 37, 0.12],
-            'Aberration': [93, 93, 31, 0.1],
-            'Hellbat': [23, 23, 24, 0.07],
-            'Broodling': [483, 483, 14, 0.04],
-            'Marine': [121, 121, 13, 0.04],
-            'Marauder': [23, 23, 7, 0.02],
-            'Hunterling': [11, 11, 7, 0.02],
-            'Hybrid Reaver': [4, 4, 7, 0.02],
-            'Hybrid Destroyer': [8, 8, 6, 0.02],
-            'Siege Tank': [7, 7, 6, 0.02],
-            'Banshee': [6, 2, 3, 0.01],
-            'Thor': [1, 1, 2, 0.01],
-            'Viking': [21, 18, 1, 0.0],
-            'Raven': [9, 6, 1, 0.0],
-            'Ghost': [5, 5, 1, 0.0],
-            'Cyclone': [4, 4, 1, 0.0],
-            'Hybrid Dominator': [1, 1, 1, 0.0]
-        },
-        'Victory':5,
-        'Defeat':2,
-        'Commander': 'Alarak',
-        'Prestige': 'Shadow of Death',
-        'mutators': ['Lucky Envelopes','Just Die!','Aggressive Deployment','Transmutation'],
-        'difficulty': 'Brutal'
-
-    };
-    // data = {'data': {'LilArrin': [3, 13,'Dirty speedrunner']}};
-    // playerWinrate(data)
-    postGameStatsTimed(dummydata);
-    // setTimeout(uploadStatus,1500,'Error - some error');
-}
-
-
 function connect_to_socket() {
     if (function_is_running) {
         return
@@ -335,7 +244,7 @@ function postGameStatsTimed(data) {
     if ((document.getElementById('stats').style.right != '-50vh') && (document.getElementById('stats').style.right != '')) {
 
         // If we are about to show the same data, hide instead
-        if (last_shown_file == data['filepath']) {
+        if (last_shown_file == data['file']) {
             hidestats()
         } else {
             document.getElementById('stats').style.opacity = '0';
@@ -362,11 +271,18 @@ function format_length(seconds) {
         hr = ''
     }
 
-    if (sec < 10) {
-        return hr + min + ':0' + sec
+    if (min == 0) {
+        min = ''
+    } else if (min < 10) {
+        min = '0' + min + ':'
     } else {
-        return hr + min + ':' + sec
+        min = min + ':'
     }
+
+    if (sec < 10) {
+        sec = '0' + sec
+    }
+    return hr + min + sec
 }
 
 function fillCommander(el, commander, commander_level) {
@@ -394,7 +310,7 @@ function postGameStats(data, showing = false) {
     fill('comp', data['comp']);
 
     // save file name
-    last_shown_file = data['filepath'];
+    last_shown_file = data['file'];
 
     //Bonus objectives
     var bonus_text = '';
@@ -505,7 +421,7 @@ function postGameStats(data, showing = false) {
     fillunits('CMunits2', data['allyUnits'], data['allyCommander']);
 
     fill('CMname3', 'Amon');
-    fillunits('CMunits3', data['amonUnits'], null);
+    fillunits('CMunits3', data['amon_units'], null);
     //show
     showstats();
 

@@ -280,7 +280,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
     # Start saving data
     replay_report_dict = dict()
-    replay_report_dict['filepath'] = filepath
+    replay_report_dict['file'] = filepath
     replay_report_dict['replaydata'] = True
     replay_report_dict['map'] = replay['map_name']
     replay_report_dict['extension'] = replay['extension']
@@ -923,15 +923,15 @@ def analyse_replay(filepath, main_player_handles=None):
     total_amon_kills = total_amon_kills if total_amon_kills != 0 else 1
 
     # Calculate Amon unit percentages and fill data
-    replay_report_dict['amonUnits'] = dict()
+    replay_report_dict['amon_units'] = dict()
 
     for unit in sorted_amon:
         if not contains_skip_strings(unit):
-            replay_report_dict['amonUnits'][unit] = sorted_amon[unit]
-            replay_report_dict['amonUnits'][unit][3] = round(replay_report_dict['amonUnits'][unit][2] / total_amon_kills, 2)
+            replay_report_dict['amon_units'][unit] = sorted_amon[unit]
+            replay_report_dict['amon_units'][unit][3] = round(replay_report_dict['amon_units'][unit][2] / total_amon_kills, 2)
 
     # Tuple
-    for unit in replay_report_dict['amonUnits']:
-        replay_report_dict['amonUnits'][unit] = tuple(replay_report_dict['amonUnits'][unit])
+    for unit in replay_report_dict['amon_units']:
+        replay_report_dict['amon_units'][unit] = tuple(replay_report_dict['amon_units'][unit])
 
     return replay_report_dict
