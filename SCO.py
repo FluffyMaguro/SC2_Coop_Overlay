@@ -2253,24 +2253,27 @@ class UI_TabWidget(object):
 
         if hasattr(self, 'CAnalysis'):
             # Add game to game tab
-            self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles,
-                                                                             self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
+            try:
+                self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles,
+                                                                                self.SC_GamesScrollAreaContent)
+                self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
 
-            # Update mass replay analysis
-            self.CAnalysis.add_parsed_replay(replay_dict)
+                # Update mass replay analysis
+                self.CAnalysis.add_parsed_replay(replay_dict)
 
-            # Update player tab & set winrate data in MF & generate stats
-            self.update_winrate_data()
-            self.generate_stats()
+                # Update player tab & set winrate data in MF & generate stats
+                self.update_winrate_data()
+                self.generate_stats()
 
-            # Put the last player on top of player tab
-            for player in {1, 2}:
-                name = replay_dict['parser']['players'][player].get('name', '-')
-                if not replay_dict['parser']['players'][player].get('handle',
-                                                                    '-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
-                    self.put_player_first(name)
-                    break
+                # Put the last player on top of player tab
+                for player in {1, 2}:
+                    name = replay_dict['parser']['players'][player].get('name', '-')
+                    if not replay_dict['parser']['players'][player].get('handle',
+                                                                        '-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
+                        self.put_player_first(name)
+                        break
+            except:
+                logger.error(traceback.format_exc())
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""

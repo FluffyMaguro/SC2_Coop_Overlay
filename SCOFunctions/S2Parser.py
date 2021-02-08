@@ -223,12 +223,9 @@ def s2_parse_replay(file,
         replay['enemy_race'] = None
 
     # Difficulty
-    try:
-        diff_1 = diff_dict.get(replay['players'][3]['difficulty'], '')
-        diff_2 = diff_dict.get(replay['players'][4]['difficulty'], '')
-        replay['difficulty'] = (diff_1, diff_2)
-    except:
-        replay['difficulty'] = None
+    diff_1 = diff_dict.get(replay['players'][3]['difficulty'], '')
+    diff_2 = diff_dict.get(replay['players'][4]['difficulty'], '')
+    replay['difficulty'] = (diff_1, diff_2)
 
     # Delete difficulty per player as it's not accurate for human players and we are returning map difficulty already
     for player in replay['players']:
@@ -237,8 +234,6 @@ def s2_parse_replay(file,
     # Extended difficulty (including B+)
     if replay['brutal_plus'] > 0:
         replay['ext_difficulty'] = f'B+{replay["brutal_plus"]}'
-    elif replay['difficulty'] == None:
-        replay['ext_difficulty'] = None
     elif diff_1 == diff_2:
         replay['ext_difficulty'] = diff_1
     else:
