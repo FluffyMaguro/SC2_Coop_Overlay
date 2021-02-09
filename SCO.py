@@ -2251,15 +2251,18 @@ class UI_TabWidget(object):
 
         self.RNG_Overlay_changed()
 
-        if hasattr(self, 'CAnalysis'):
+        if hasattr(self, 'CAnalysis') and replay_dict is not None:
             # Add game to game tab
             try:
-                self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(replay_dict['parser'], self.CAnalysis.main_handles,
+                # Update mass replay analysis
+                full_data = self.CAnalysis.add_parsed_replay(replay_dict)
+                if full_data is None:
+                    return
+
+                # Update UI in game tab
+                self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(full_data, self.CAnalysis.main_handles,
                                                                                 self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
-
-                # Update mass replay analysis
-                self.CAnalysis.add_parsed_replay(replay_dict)
 
                 # Update player tab & set winrate data in MF & generate stats
                 self.update_winrate_data()

@@ -351,7 +351,7 @@ function postGameStats(data, showing = false) {
 
     fill('name1', data['main']);
     
-    fill('map', data['map'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
+    fill('map', data['map_name'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
     fill('name2', data['ally']);
     fillCommander('com1', data['mainCommander'], data['mainCommanderLevel'])
     fillCommander('com2', data['allyCommander'], data['allyCommanderLevel'])

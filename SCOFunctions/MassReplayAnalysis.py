@@ -598,7 +598,7 @@ class mass_replay_analysis:
                         new['difficulty'] = f'{diff_2}/{diff_1}'
 
                     # Other
-                    new['map'] = new['map_name']
+                    new['map_name']
                     new['length'] = new['accurate_length'] / 1.4
                     del new['players']
 
@@ -663,6 +663,7 @@ class mass_replay_analysis:
         """ Adds already parsed replay. Format has to be from my S2Parser"""
         parsed_data = full_data.get('parser')
 
+        full_data = None
         if (parsed_data is not None and len(parsed_data) > 1 and not '[MM]' in parsed_data['file'] and parsed_data['isBlizzard']
                 and len(parsed_data['players']) > 2 and parsed_data['players'][1].get('commander') is not None):
 
@@ -679,6 +680,8 @@ class mass_replay_analysis:
                 self.parsed_replays.add(full_data.hash)
                 self.current_replays.add(full_data.file)
                 self.update_data()
+                
+        return full_data
 
     def format_data(self, full_data):
         """ Formats data returned by replay analysis into a single datastructure used here"""
