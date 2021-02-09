@@ -350,15 +350,15 @@ def show_overlay(file):
     try:
         replay_dict = analyse_replay(file, PLAYER_HANDLES)
         if len(replay_dict) > 1:
+            sendEvent(replay_dict)
             if CAnalysis is not None:
                 CAnalysis.add_parsed_replay(replay_dict)
-            sendEvent(replay_dict)
         else:
             logger.error('No output from replay analysis')
     except:
-        return 'Error'
         logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
-
+        return 'Error'
+        
 
 async def manager(websocket, path):
     """ Manages websocket connection for each client """

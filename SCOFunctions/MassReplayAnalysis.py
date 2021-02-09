@@ -8,8 +8,10 @@ import json
 import pickle
 import traceback
 import statistics
-import s2protocol
 import threading
+from pprint import pprint
+
+import s2protocol
 
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
@@ -598,7 +600,6 @@ class mass_replay_analysis:
                         new['difficulty'] = f'{diff_2}/{diff_1}'
 
                     # Other
-                    new['map_name']
                     new['length'] = new['accurate_length'] / 1.4
                     del new['players']
 
@@ -659,29 +660,29 @@ class mass_replay_analysis:
             self.main_names = names_fallback(self.main_handles, self.ReplayDataAll)
             logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
 
-    def add_parsed_replay(self, full_data):
+    def add_parsed_replay(self, input_data):
         """ Adds already parsed replay. Format has to be from my S2Parser"""
-        parsed_data = full_data.get('parser')
+        parsed_data = input_data.get('parser')
 
-        full_data = None
+        formatted_data = None
         if (parsed_data is not None and len(parsed_data) > 1 and not '[MM]' in parsed_data['file'] and parsed_data['isBlizzard']
                 and len(parsed_data['players']) > 2 and parsed_data['players'][1].get('commander') is not None):
 
-            full_data = self.format_data(full_data)
+            formatted_data = self.format_data(input_data)
 
             # Remove replay if it was already there:
             for i, r in enumerate(self.ReplayDataAll):
-                if r.hash == full_data.hash:
+                if r.hash == formatted_data.hash:
                     del self.ReplayDataAll[i]
                     break
 
             with lock:
-                self.ReplayDataAll.append(full_data)
-                self.parsed_replays.add(full_data.hash)
-                self.current_replays.add(full_data.file)
+                self.ReplayDataAll.append(formatted_data)
+                self.parsed_replays.add(formatted_data.hash)
+                self.current_replays.add(formatted_data.file)
                 self.update_data()
                 
-        return full_data
+        return formatted_data
 
     def format_data(self, full_data):
         """ Formats data returned by replay analysis into a single datastructure used here"""
@@ -692,16 +693,13 @@ class mass_replay_analysis:
         parsed_data['full_analysis'] = True
         parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['file']))
         parsed_data['amon_units'] = full_data['amon_units']
-
         self.remove_useless_keys(parsed_data)
         parsed_data['players'] = tuple(parsed_data['players'][:3])
-
         main = full_data['positions']['main']
         for p in (1, 2):
             parsed_data['players'][p]['kills'] = full_data['mainkills'] if p == main else full_data['allykills']
             parsed_data['players'][p]['icons'] = full_data['mainIcons'] if p == main else full_data['allyIcons']
             parsed_data['players'][p]['units'] = full_data['mainUnits'] if p == main else full_data['allyUnits']
-
         return replay_data(**parsed_data)
 
     def save_cache(self):
