@@ -551,7 +551,6 @@ def check_for_new_game():
                 last_replay_amount = len(AllReplays)
 
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
-
                 if len(PLAYER_NAMES) > 0:
                     test_names_against = [p.lower() for p in PLAYER_NAMES]
                 elif len(SETTINGS['main_names']) > 0:
@@ -562,7 +561,7 @@ def check_for_new_game():
 
                 player_names = set()
                 for player in players:
-                    if player['id'] in {1, 2} and not player['name'].lower() in test_names_against:
+                    if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
                         player_names.add(player['name'])
                         break
 
