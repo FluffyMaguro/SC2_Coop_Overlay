@@ -374,7 +374,6 @@ async def manager(websocket, path):
 
                 try:  # Send the message
                     await asyncio.wait_for(asyncio.gather(websocket.send(message)), timeout=1)
-                    logger.info(f'#{overlayMessagesSent-1} message sent')
                 except asyncio.TimeoutError:
                     logger.error(f'#{overlayMessagesSent-1} message was timed-out.')
                 except websockets.exceptions.ConnectionClosedOK:

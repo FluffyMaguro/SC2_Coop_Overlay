@@ -2174,16 +2174,27 @@ class UI_TabWidget(object):
                 item.setStyleSheet('color:black')
 
         # New player to top
+        self.last_ally_player = player
         if player in self.player_winrate_UI_dict:
-            self.last_ally_player = player
+            # If it's there remove
             w = self.player_winrate_UI_dict[player]
             self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
-            self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
-            w.widget.show()
-            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
-                item.setStyleSheet('color:blue')
 
-    def update_player_tab(self, winrate_data, show_max = 50):
+        else:
+            # It's not there, create new one
+            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
+                                                                    self.winrate_data[player],
+                                                                    self.settings['player_notes'].get(player, None),
+                                                                    self.SC_PlayersScrollAreaContents) #yapf: disable
+            w = self.player_winrate_UI_dict[player]
+
+        # Insert to top, show and change colors
+        self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
+        w.widget.show()
+        for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
+            item.setStyleSheet('color:blue')
+
+    def update_player_tab(self, winrate_data, show_max=50):
         """ Updates player tab based on provide winrate data """
         if self.LA_Winrates_Wait is not None:
             self.LA_Winrates_Wait.deleteLater()
@@ -2261,7 +2272,7 @@ class UI_TabWidget(object):
 
                 # Update UI in game tab
                 self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(full_data, self.CAnalysis.main_handles,
-                                                                                self.SC_GamesScrollAreaContent)
+                                                                                 self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
 
                 # Update player tab & set winrate data in MF & generate stats
@@ -2271,8 +2282,7 @@ class UI_TabWidget(object):
                 # Put the last player on top of player tab
                 for player in {1, 2}:
                     name = replay_dict['parser']['players'][player].get('name', '-')
-                    if not replay_dict['parser']['players'][player].get('handle',
-                                                                        '-') in self.CAnalysis.main_handles and name in self.player_winrate_UI_dict:
+                    if not replay_dict['parser']['players'][player].get('handle', '-') in self.CAnalysis.main_handles:
                         self.put_player_first(name)
                         break
             except:
@@ -2322,8 +2332,7 @@ class UI_TabWidget(object):
                                                                         self.SC_PlayersScrollAreaContents) #yapf: disable
                     self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
                 self.player_winrate_UI_dict[player].show()
-                idx += 1                
-        
+                idx += 1
 
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
