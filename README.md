@@ -7,7 +7,7 @@ The overlay can be added as another layer in Open Broadcaster Software (OBS) or 
 For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
 
 **Download links:**
-* [Github](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.30/SC2CoopOverlay.2.30.zip)
+* [Download here (GitHub)](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.31/SC2CoopOverlay.2.31.zip)
 * Or run the script with Python 3.8 or newer:
 
 ```
@@ -26,6 +26,8 @@ python SCO.py
 4. Some anti-virus programs are very sensitive to packaged python apps. If you have issues, add an exception to your anti-virus for the directory the app is in.
 5. Use hotkeys or buttons in the app to control the overlay. It will show automatically after each game as well.
 5. In StarCraft II set display mode to Windowed fullscreen (borderless)
+
+To exit the app right click the icon in the system tray and click "Quit".
 
 ![Screenshot](./Screenshots/Display.jpg)
 
@@ -82,19 +84,23 @@ If you are using game capture, you have to add overlay to OBS manually.
 
 
 # Other notes
-* Close the app by right clicking the icon in the system tray and clicking "Quit"
-* If you delete replays, delete also `cache_replay_analysis.txt` so new replays with the same name and path will not show old cached data.
 * The overlay targets Windows 10. It might not work correctly on older versions of windows (black background under overlay).
 On Windows 7 enable aero theme and set “Enable Transparency” in “Window Color”.
 * On MacOS or Linux run the script with "`sudo python3 SCO.py`" after installing required packages. It has been successfully tested on both MacOS and Linux, however every distribution and OS version has its own quirks.
 * The app connects to the internet only at start to look for a new version, or if you setup automatic replay upload by filling in accout name and password.
 * The app is not in conflict with Blizzard's Terms of Service. It uses official Blizzard's library (s2protocol) to parse replays, and what information StarCraft II provides while running.
 * If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
-* You can edit the layout .html file. Changing its style through CSS or other formatting with javascript.
+* You can edit the layout .html file. Changing its style through CSS (custom.css) or other functionality with javascript (custom.js).
 * Indirectly killed Interceptors are counted towards player kills which is not the case in kills showed in-game. Directly killed interceptors are counted in both cases.
 
 
 # Changelog
+
+* 2.31 version
+
+      - Reduced RAM usage
+      - Merged cache files into one
+      - Minor fixes and tweaks
 
 * 2.30 version
 

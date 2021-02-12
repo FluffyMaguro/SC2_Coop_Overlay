@@ -75,5 +75,11 @@
     "Fixed crashes during full analysis",
     "Full analysis won't parse replays from the last session again",
     "Added an option to custom javascript modification (in custom.js) to show units without kills"
+  ],
+    "231": [
+    "Reduced RAM usage",
+    "Merged cache files into one",
+    "The app will need to redo analysis due to changes above",
+    "Minor fixes and tweaks"
   ]
 }
