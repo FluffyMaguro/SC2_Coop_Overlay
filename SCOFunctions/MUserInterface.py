@@ -12,9 +12,17 @@ from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
+from SCOFunctions.MTheming import set_dark_theme
 
 logger = logclass('UI', 'INFO')
-background_color = "#f1f1f1"
+
+
+def get_shadow():
+    shadow = QtWidgets.QGraphicsDropShadowEffect()
+    shadow.setBlurRadius(1)
+    shadow.setOffset(2)
+    shadow.setColor(QtGui.QColor(22, 22, 22))
+    return shadow
 
 
 def find_file(file):
@@ -35,7 +43,7 @@ class AmonUnitStats(QtWidgets.QWidget):
     """ Widget for amon's unit stats """
     def __init__(self, unit_data, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(0, 0, 967, 446))
+        self.setGeometry(QtCore.QRect(0, 0, 967, 433))
 
         # Scroll
         self.scroll_area = QtWidgets.QScrollArea(self)
@@ -49,6 +57,7 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area_contents_layout = QtWidgets.QVBoxLayout()
         self.scroll_area_contents_layout.setAlignment(QtCore.Qt.AlignTop)
         self.scroll_area_contents_layout.setContentsMargins(10, 0, 0, 0)
+        self.scroll_area_contents_layout.setSpacing(0)
 
         # Add heading
         self.heading = AmonUnitStatsUnit('Name', {'created': 'Created', 'lost': 'Lost', 'kills': 'Kills', 'KD': 'K/D'}, parent=self)
@@ -56,22 +65,22 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         # Search
         self.search_label = QtWidgets.QLabel(self)
-        self.search_label.setGeometry(QtCore.QRect(700, 10, 100, 21))
+        self.search_label.setGeometry(QtCore.QRect(700, 35, 100, 21))
         self.search_label.setText('<b>Search for units</b>')
 
         self.ed_search = QtWidgets.QLineEdit(self)
-        self.ed_search.setGeometry(QtCore.QRect(700, 30, 200, 20))
+        self.ed_search.setGeometry(QtCore.QRect(700, 55, 200, 20))
         self.ed_search.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_search.setPlaceholderText("Search for units")
         self.ed_search.textChanged.connect(self.filter_units)
 
         # Sort by
         self.sort_label = QtWidgets.QLabel(self)
-        self.sort_label.setGeometry(QtCore.QRect(700, 70, 100, 21))
+        self.sort_label.setGeometry(QtCore.QRect(700, 95, 100, 21))
         self.sort_label.setText('<b>Sort by</b>')
 
         self.sort_box = QtWidgets.QComboBox(self)
-        self.sort_box.setGeometry(QtCore.QRect(700, 90, 100, 21))
+        self.sort_box.setGeometry(QtCore.QRect(700, 115, 100, 21))
         self.sort_box.addItem('Name')
         self.sort_box.addItem('Created')
         self.sort_box.addItem('Lost')
@@ -194,8 +203,10 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.search_name = unit.lower()
 
         self.bg = QtWidgets.QFrame(self)
-        self.bg.setGeometry(QtCore.QRect(30, 0, 580, height))
-        self.bg.setStyleSheet("background-color: #ddd")
+        self.bg.setGeometry(QtCore.QRect(30, 1, 580, height))
+        self.bg.setAutoFillBackground(True)
+        self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
+
         self.bg.hide()
 
         if unit in {'Name', 'sum'}:
@@ -206,9 +217,8 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.name.setText(str(unit if unit != 'sum' else 'Total'))
         if unit == 'Name':
             self.name.setAlignment(QtCore.Qt.AlignVCenter)
-
             self.line = QtWidgets.QFrame(self)
-            self.line.setGeometry(QtCore.QRect(20, 24, 600, 2))
+            self.line.setGeometry(QtCore.QRect(20, 24, 600, 1))
             self.line.setFrameShape(QtWidgets.QFrame.HLine)
             self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
@@ -219,10 +229,9 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
 
             if item == 'KD':
                 self.elements[item].setToolTip("Kill-death ratio")
-            if unit == 'Name':
                 self.elements[item].setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
             else:
-                self.elements[item].setAlignment(QtCore.Qt.AlignRight)
+                self.elements[item].setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
 
         self.update_data(unit_data)
         self.show()
@@ -419,7 +428,8 @@ class UnitStats(QtWidgets.QWidget):
             if not idx % 2:
                 self.units[('bg', unit)] = QtWidgets.QFrame(self.WD_units)
                 self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset + 15, self.top_offset - 1 + idx * 17, 530, 17))
-                self.units[('bg', unit)].setStyleSheet(f'background-color: {background_color}')
+                self.units[('bg', unit)].setAutoFillBackground(True)
+                self.units[('bg', unit)].setBackgroundRole(QtGui.QPalette.AlternateBase)
 
             self.units[('name', unit)] = QtWidgets.QLabel(self.WD_units)
             self.units[('name', unit)].setGeometry(QtCore.QRect(self.left_offset + 20, self.top_offset + idx * 17, 150, 17))
@@ -485,6 +495,7 @@ class RegionStats(QtWidgets.QWidget):
             self.bg = QtWidgets.QFrame(self)
             self.bg.setGeometry(QtCore.QRect(35, 2, self.width() - 30, 18))
             self.bg.setAutoFillBackground(True)
+            self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(0, 0, width, 20))
@@ -565,7 +576,7 @@ class RegionStats(QtWidgets.QWidget):
 
         if line:
             self.line = QtWidgets.QFrame(self)
-            self.line.setGeometry(QtCore.QRect(34, 19, 660, 2))
+            self.line.setGeometry(QtCore.QRect(34, 19, 660, 1))
             self.line.setFrameShape(QtWidgets.QFrame.HLine)
             self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
@@ -595,10 +606,7 @@ class CommanderStats(QtWidgets.QWidget):
         self.la_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.la_name.setText(str(commander))
         self.la_name.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
-        shadow = QtWidgets.QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(1)
-        shadow.setOffset(2)
-        self.la_name.setGraphicsEffect(shadow)
+        self.la_name.setGraphicsEffect(get_shadow())
 
         # Frequency
         self.la_frequency = QtWidgets.QLabel(self)
@@ -675,10 +683,7 @@ class FastestMap(QtWidgets.QWidget):
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(15, 20, 460, 40))
         self.la_name.setStyleSheet('font-weight: bold; font-size: 24px; color: white')
-        shadow = QtWidgets.QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(1)
-        shadow.setOffset(2)
-        self.la_name.setGraphicsEffect(shadow)
+        self.la_name.setGraphicsEffect(get_shadow())
 
         # Time & enemy race
         self.la_time_race = QtWidgets.QLabel(self)
@@ -794,20 +799,7 @@ class FastestMap(QtWidgets.QWidget):
 
 class CommanderEntry(QtWidgets.QWidget):
     """Custom widget for ally commander entry in stats"""
-    def __init__(self,
-                 commander,
-                 frequency,
-                 wins,
-                 losses,
-                 winrate,
-                 apm,
-                 percent,
-                 y,
-                 button=True,
-                 bold=False,
-                 bg=False,
-                 bgcolor=background_color,
-                 parent=None):
+    def __init__(self, commander, frequency, wins, losses, winrate, apm, percent, y, button=True, bold=False, bg=False, parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(15, y, 450, 25))
@@ -870,31 +862,19 @@ class CommanderEntry(QtWidgets.QWidget):
         if bold:
             style += 'font-weight: bold;'
             self.bt_button.setStyleSheet('font-weight: bold')
-        if bg:
-            style += f'background-color: {bgcolor}'
 
         for item in {self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_apm, self.la_killpercent}:
             item.setStyleSheet(style)
+            if bg:
+                item.setAutoFillBackground(True)
+                item.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
         self.show()
 
 
 class MapEntry(QtWidgets.QWidget):
     """Custom widget for map entry in stats"""
-    def __init__(self,
-                 parent,
-                 y,
-                 name,
-                 time_fastest,
-                 time_average,
-                 wins,
-                 losses,
-                 frequency,
-                 bonus,
-                 button=True,
-                 bold=False,
-                 bg=False,
-                 bgcolor=background_color):
+    def __init__(self, parent, y, name, time_fastest, time_average, wins, losses, frequency, bonus, button=True, bold=False, bg=False):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(7, y - 6, parent.width(), 40))
@@ -919,16 +899,16 @@ class MapEntry(QtWidgets.QWidget):
         self.la_average.setToolTip('Average victory time')
         time_average = time_average if time_average != 999999 else '–'
         if isinstance(time_average, int) or isinstance(time_average, float):
-            self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
+            self.la_average.setGeometry(QtCore.QRect(135, 0, 56, 24))
             if time_average < 3600:
                 self.la_average.setText(time.strftime('%M:%S', time.gmtime(time_average)))
             else:
                 self.la_average.setText(time.strftime('%H:%M:%S', time.gmtime(time_average)))
 
         elif time_average == '–':
-            self.la_average.setGeometry(QtCore.QRect(134, 0, 56, 24))
+            self.la_average.setGeometry(QtCore.QRect(135, 0, 56, 24))
         else:
-            self.la_average.setGeometry(QtCore.QRect(131, 0, 60, 24))
+            self.la_average.setGeometry(QtCore.QRect(132, 0, 60, 24))
             self.la_average.setText(time_average)
 
         # Fastest time
@@ -997,15 +977,22 @@ class MapEntry(QtWidgets.QWidget):
 
         if bg:
             for item in {self.la_average, self.la_fastest, self.la_frequency, self.la_wins, self.la_losses, self.la_winrate, self.la_bonus}:
-                item.setStyleSheet(f'background-color: {bgcolor}')
+                item.setAutoFillBackground(True)
+                item.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
 
 class DifficultyEntry(QtWidgets.QWidget):
     """Custom widget for difficulty entry in stats"""
-    def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, bgcolor=background_color, parent=None):
+    def __init__(self, name, wins, losses, winrate, x, y, bold=False, line=False, bg=False, parent=None):
         super().__init__(parent)
 
         self.setGeometry(QtCore.QRect(x, y + 150, 300, 40))
+
+        if bg:
+            self.bg = QtWidgets.QFrame(self)
+            self.bg.setGeometry(QtCore.QRect(0, 13, 180, 16))
+            self.bg.setAutoFillBackground(True)
+            self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
         self.la_name = QtWidgets.QLabel(self)
         self.la_name.setGeometry(QtCore.QRect(10, 10, 70, 20))
@@ -1026,19 +1013,12 @@ class DifficultyEntry(QtWidgets.QWidget):
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.la_winrate.setText(str(winrate))
 
-        style = ''
-
         if bold:
-            style += 'font-weight: bold;'
-
-        if bg:
-            style += f'background-color: {bgcolor}'
-
-        self.setStyleSheet(style)
+            self.setStyleSheet('font-weight: bold;')
 
         if line:
             self.line = QtWidgets.QFrame(self)
-            self.line.setGeometry(QtCore.QRect(0, 30, 235, 2))
+            self.line.setGeometry(QtCore.QRect(0, 30, 235, 1))
             self.line.setFrameShape(QtWidgets.QFrame.HLine)
             self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
@@ -1085,7 +1065,7 @@ class GameEntry:
         self.widget.setMaximumHeight(height)
 
         self.line = QtWidgets.QFrame(self.widget)
-        self.line.setGeometry(QtCore.QRect(10, 0, 921, 2))
+        self.line.setGeometry(QtCore.QRect(10, 0, 921, 1))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
@@ -1147,6 +1127,7 @@ class GameEntry:
         self.la_chat = QtWidgets.QLabel(self.widget)
         self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 10 + 14 * self.message_count))
         self.la_chat.setAlignment(QtCore.Qt.AlignTop)
+        self.la_chat.setGraphicsEffect(get_shadow())
 
         testplayer = 2 if replay_dict.players[1]['handle'] in handles else 1
 
@@ -1169,7 +1150,7 @@ class GameEntry:
         }:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
-                item.setStyleSheet('color: red')
+                item.setStyleSheet('color: #ff2f2f')
 
     def show_chat(self):
         """ Shows/hides chat """
@@ -1205,7 +1186,7 @@ class PlayerEntry:
         self.widget.setMaximumHeight(height)
 
         self.line = QtWidgets.QFrame(self.widget)
-        self.line.setGeometry(QtCore.QRect(10, 0, 921, 2))
+        self.line.setGeometry(QtCore.QRect(10, 0, 921, 1))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
@@ -1243,7 +1224,6 @@ class PlayerEntry:
         self.ed_note = QtWidgets.QLineEdit(self.widget)
         self.ed_note.setGeometry(QtCore.QRect(580, line_spacing, 300, 21))
         self.ed_note.setAlignment(QtCore.Qt.AlignCenter)
-        self.ed_note.setStyleSheet('color: #444')
         if not self.note in {None, ''}:
             self.ed_note.setText(self.note)
 
@@ -1318,7 +1298,6 @@ class Worker(QtCore.QRunnable):
 
         if 'progress_callback' in kwargs:
             self.kwargs['progress_callback'] = self.signals.progress
-        
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -1350,6 +1329,41 @@ class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
         self.setKeySequence(QtGui.QKeySequence(value))
 
 
+class TitleBar(QtWidgets.QFrame):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setGeometry(QtCore.QRect(512, 0, 468, 24))
+        self.moving = False
+        self.offset = None
+        self.parent = parent
+
+        # New title
+        self.new_title = QtWidgets.QLabel(self)
+        self.new_title.setGeometry(QtCore.QRect(130, 1, 200, 20))
+        self.new_title.setStyleSheet("color: white; font-weight: bold")
+
+        # Minimize button
+        self.minimize = QtWidgets.QToolButton(self)
+        self.minimize.setGeometry(QtCore.QRect(425, 2, 20, 20))
+        self.minimize.setText('–')
+        self.minimize.clicked.connect(parent.showMinimized)
+
+        # Maximize button
+        self.close = QtWidgets.QToolButton(self)
+        self.close.setGeometry(QtCore.QRect(445, 2, 20, 20))
+        self.close.setText('⨉')
+        self.close.clicked.connect(parent.minimize_to_tray)
+
+    def mousePressEvent(self, event):
+        if self.parent.dark_mode_active and event.button() == QtCore.Qt.LeftButton:
+            self.moving = True
+            self.offset = event.pos()
+
+    def mouseMoveEvent(self, event):
+        if self.parent.dark_mode_active and self.moving:
+            self.parent.move(event.globalPos() - self.offset - QtCore.QPoint(512, 0))
+
+
 class CustomQTabWidget(QtWidgets.QTabWidget):
     def __init__(self, parent=None, settings=dict()):
         super(CustomQTabWidget, self).__init__(parent)
@@ -1377,10 +1391,18 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
         self.settings = settings
 
+        # For dark mode
+        self.dark_mode_active = False
+        self.title_bar = TitleBar(self)
+        self.title_bar.hide()
+
     @QtCore.pyqtSlot(bool)
     def closeEvent(self, event):
         """ Overriding close event and minimizing instead """
         event.ignore()
+        self.minimize_to_tray()
+
+    def minimize_to_tray(self):
         self.hide()
         self.show_minimize_message()
 
@@ -1406,7 +1428,10 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                 #Change flags briefly to bring to front
                 self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
                 self.show()
-                self.setWindowFlags(QtCore.Qt.Window)
+                if self.dark_mode_active:
+                    self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Window)
+                else:
+                    self.setWindowFlags(QtCore.Qt.Window)
                 self.show()
 
 

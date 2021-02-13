@@ -34,6 +34,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
+from SCOFunctions.MTheming import set_dark_theme, get_msg_color
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 logger = logclass('SCO', 'INFO')
@@ -120,14 +121,21 @@ class UI_TabWidget(object):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 60, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(250, 50, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 60, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
+
+        # Dark theme
+        self.CH_DarkTheme = QtWidgets.QCheckBox(self.TAB_Main)
+        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 95, 300, 17))
+        self.CH_DarkTheme.setText("Dark theme")
+        self.CH_DarkTheme.setToolTip("Enables dark theme. Requires restart!")
+        self.CH_DarkTheme.stateChanged.connect(self.change_theme)
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
@@ -359,6 +367,7 @@ class UI_TabWidget(object):
         self.IMG_Front_Donate = QtWidgets.QLabel(self.TAB_Main)
         self.IMG_Front_Donate.setGeometry(QtCore.QRect(835, y, 145, 50))
         self.IMG_Front_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
+        self.IMG_Front_Donate.setGraphicsEffect(MUI.get_shadow())
 
         self.BT_Front_Donate = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_Front_Donate.setGeometry(QtCore.QRect(x - 5, y, 140, 50))
@@ -496,7 +505,9 @@ class UI_TabWidget(object):
         # Heading
         self.WD_RecentGamesHeading = QtWidgets.QWidget(self.TAB_Games)
         self.WD_RecentGamesHeading.setGeometry(QtCore.QRect(0, 0, 990, 32))
-        self.WD_RecentGamesHeading.setStyleSheet("font-weight: bold; background-color: #F0F0F0")
+        self.WD_RecentGamesHeading.setStyleSheet("font-weight: bold")
+        self.WD_RecentGamesHeading.setAutoFillBackground(True)
+        self.WD_RecentGamesHeading.setBackgroundRole(QtGui.QPalette.Background)
 
         self.LA_Difficulty = QtWidgets.QLabel(self.WD_RecentGamesHeading)
         self.LA_Difficulty.setGeometry(QtCore.QRect(580, 0, 81, 31))
@@ -541,7 +552,7 @@ class UI_TabWidget(object):
         self.ed_games_search = QtWidgets.QLineEdit(self.WD_RecentGamesHeading)
         self.ed_games_search.setGeometry(QtCore.QRect(740, 5, 160, 20))
         self.ed_games_search.setAlignment(QtCore.Qt.AlignCenter)
-        self.ed_games_search.setStyleSheet("font-weight: normal; background-color: white")
+        self.ed_games_search.setStyleSheet("font-weight: normal")
         self.ed_games_search.setPlaceholderText("search")
 
         self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
@@ -1325,6 +1336,7 @@ class UI_TabWidget(object):
             'force_hide_overlay': False,
             'show_session': True,
             'show_random_on_overlay': False,
+            'dark_theme': False,
             'account_folder': None,
             'screenshot_folder': None,
             'hotkey_show/hide': 'Ctrl+Shift+*',
@@ -1423,6 +1435,10 @@ class UI_TabWidget(object):
         else:
             font.setPointSize(font.pointSize() * self.settings['font_scale'])
         app.setFont(font)
+
+        # Dark theme
+        if self.settings['dark_theme']:
+            set_dark_theme(app, TabWidget, APPVERSION)
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
@@ -1600,6 +1616,7 @@ class UI_TabWidget(object):
         self.CH_EnableLogging.setChecked(self.settings['enable_logging'])
         self.CH_ShowPlayerWinrates.setChecked(self.settings['show_player_winrates'])
         self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
+        self.CH_DarkTheme.setChecked(self.settings['dark_theme'])
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
         self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
@@ -1618,13 +1635,13 @@ class UI_TabWidget(object):
         self.ED_AomSecretKey.setText(self.settings['aom_secret_key'])
 
         self.LA_P1.setText(f"Player 1 | {self.settings['color_player1']}")
-        self.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}")
+        self.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}; color: black")
         self.LA_P2.setText(f"Player 2 | {self.settings['color_player2']}")
-        self.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}")
+        self.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}; color: black")
         self.LA_Amon.setText(f"  Amon | {self.settings['color_amon']}")
-        self.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}")
+        self.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}; color: black")
         self.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
-        self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}")
+        self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}; color: black")
 
         self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
         self.ch_twitch_chat.setChecked(self.settings['show_chat'])
@@ -1660,6 +1677,7 @@ class UI_TabWidget(object):
         self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
         self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
         self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
+        self.settings['dark_theme'] = self.CH_DarkTheme.isChecked()
         self.settings['show_session'] = self.CH_ShowSession.isChecked()
         self.settings['duration'] = self.SP_Duration.value()
         self.settings['monitor'] = self.SP_Monitor.value()
@@ -1901,10 +1919,10 @@ class UI_TabWidget(object):
             else:
                 self.sendInfoMessage('Invalid account folder!', color='red')
 
-    def sendInfoMessage(self, message, color='#555'):
+    def sendInfoMessage(self, message, color=None):
         """ Sends info message. `color` specifies message color"""
         self.LA_InfoLabel.setText(message)
-        self.LA_InfoLabel.setStyleSheet(f'color: {color}')
+        self.LA_InfoLabel.setStyleSheet(f'color: {color if color is not None else get_msg_color()}')
 
     def validateAOM(self):
         """ Validates if name/key combination is valid """
@@ -1930,7 +1948,7 @@ class UI_TabWidget(object):
 
         if color.isValid():
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
-            button.setStyleSheet(f'background-color: {color.name()};')
+            button.setStyleSheet(f'background-color: {color.name()}')
             self.settings[settings_dict[button]] = color.name()
             MF.update_settings(self.settings)
             MF.resend_init_message()
@@ -3043,6 +3061,13 @@ class UI_TabWidget(object):
                 self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
 
+    def change_theme(self):
+        """ Changes theme to dark or asks for restart"""
+        if self.CH_DarkTheme.isChecked():
+            set_dark_theme(app, TabWidget, APPVERSION)
+        else:
+            self.sendInfoMessage('Restart to change back to the light theme!', color='red')
+
     def debug_function(self):
         """ Debug function """
         text = self.ED_Debug.text()
@@ -3066,9 +3091,7 @@ class UI_TabWidget(object):
 if __name__ == "__main__":
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
-
     TabWidget = MUI.CustomQTabWidget()
-
     try:
         ui = UI_TabWidget()
         ui.setupUI(TabWidget)
