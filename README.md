@@ -1,19 +1,21 @@
 # StarCraft II Coop Overlay (SCO)
 
-This app looks for recent replays from StarCraft II Co-op, parses them and shows the information as overlay onscreen. The newly added user interface also provides additional information about games, players and other various statistics generated from user's replays. New features were added including commander randomizer or twitch bot for integration with my SC2 arcade maps.
- 
-The overlay can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications. It's fully customizable through simple editing of the HTML file. Its style can be changed, new functions or elements can be added to the visible overlay (images, text, etc).
-
-For bugs, feedback and suggestions - [discord](https://discord.com/invite/FtGdhqD).
-
-**Download links:**
-* [Download here (GitHub)](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.31/SC2CoopOverlay.2.31.zip)
-* Or run the script with Python 3.8 or newer:
+* [DOWNLOAD HERE](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.31/SC2CoopOverlay.2.31.zip)
+* Or run the script with Python 3.8+:
 
 ```
 pip install -r requirements.txt
 python SCO.py
 ```
+
+
+The app shows an overlay with replay analysis of StarCraft II Co-op games. It also provides match history, various statistics based on your replays, commander randomizer, info about players shown at the start of the game, custom twitch bot with game integration into MM maps, and more.
+
+For streamers the the overlay can be added as another layer in Open Broadcaster Software (OBS) or other streaming software applications. It's fully customizable through simple editing of the HTML, CSS and JS files. 
+
+For bugs, feedback and suggestions check [my discord](https://discord.com/invite/FtGdhqD).
+
+
 
 
 ![Screenshot](./Screenshots/widescreen.jpg)
@@ -40,7 +42,7 @@ If you are using game capture, you have to add overlay to OBS manually.
 
 <img width="52.38%" alt="Fit the layout to screen" src="https://i.imgur.com/dNSWhq4.png">
 
-# The app
+# Screenshots
 **Settings:**
 
 ![Screenshot](./Screenshots/1_Settings.png)
@@ -89,7 +91,6 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * On MacOS or Linux run the script with "`sudo python3 SCO.py`" after installing required packages. It has been successfully tested on both MacOS and Linux, however every distribution and OS version has its own quirks.
 * The app connects to the internet only at start to look for a new version, or if you setup automatic replay upload by filling in accout name and password.
 * The app is not in conflict with Blizzard's Terms of Service. It uses official Blizzard's library (s2protocol) to parse replays, and what information StarCraft II provides while running.
-* If you want it add it as overlay in OBS separatedly, add the HTML to your sources in OBS, and set its width and height to your screen resolution.
 * You can edit the layout .html file. Changing its style through CSS (custom.css) or other functionality with javascript (custom.js).
 * Indirectly killed Interceptors are counted towards player kills which is not the case in kills showed in-game. Directly killed interceptors are counted in both cases.
 

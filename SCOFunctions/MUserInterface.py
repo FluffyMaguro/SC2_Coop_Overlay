@@ -1330,6 +1330,7 @@ class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
 
 
 class TitleBar(QtWidgets.QFrame):
+    """ Custom title bar used in the dark theme. Handles minimization, closing and dragging the window."""
     def __init__(self, parent):
         super().__init__(parent)
         self.setGeometry(QtCore.QRect(512, 0, 468, 24))
@@ -1365,6 +1366,7 @@ class TitleBar(QtWidgets.QFrame):
 
 
 class CustomQTabWidget(QtWidgets.QTabWidget):
+    """ Main app widget """
     def __init__(self, parent=None, settings=dict()):
         super(CustomQTabWidget, self).__init__(parent)
 
