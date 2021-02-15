@@ -21,7 +21,7 @@ def get_shadow():
     shadow = QtWidgets.QGraphicsDropShadowEffect()
     shadow.setBlurRadius(1)
     shadow.setOffset(2)
-    shadow.setColor(QtGui.QColor(22, 22, 22))
+    shadow.setColor(QtGui.QColor(33, 33, 33))
     return shadow
 
 

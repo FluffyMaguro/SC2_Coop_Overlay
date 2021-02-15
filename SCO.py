@@ -287,9 +287,6 @@ class UI_TabWidget(object):
         self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
         self.KEY_Winrates.keySequenceChanged.connect(self.hotkey_changed)
 
-        for item in {self.KEY_ShowHide, self.KEY_Show, self.KEY_Hide, self.KEY_Newer, self.KEY_Older, self.KEY_Winrates}:
-            item.setStyleSheet("color: #444;")
-
         # Colors
         self.FR_CustomizeColors = QtWidgets.QFrame(self.TAB_Main)
         self.FR_CustomizeColors.setGeometry(QtCore.QRect(445, 170, 241, 211))
