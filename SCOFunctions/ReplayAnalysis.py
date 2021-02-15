@@ -801,7 +801,7 @@ def analyse_replay(filepath, main_player_handles=None):
     messages = list(replay_report_dict['parser']['messages'])
     for player in user_leave_times:
         if player in {1,2}:
-            messages.append({'player': player, 'text': f"player {player} has left the game", 'time': user_leave_times[player]})
+            messages.append({'player': player, 'text': f"*has left the game*", 'time': user_leave_times[player]})
     messages = sorted(messages, key=lambda x:x['time'])
     replay_report_dict['parser']['messages'] = tuple(messages)
 

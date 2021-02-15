@@ -1127,13 +1127,12 @@ class GameEntry:
         self.la_chat = QtWidgets.QLabel(self.widget)
         self.la_chat.setGeometry(QtCore.QRect(20, 35, 500, 10 + 14 * self.message_count))
         self.la_chat.setAlignment(QtCore.Qt.AlignTop)
-        self.la_chat.setGraphicsEffect(get_shadow())
 
         testplayer = 2 if replay_dict.players[1]['handle'] in handles else 1
 
         text = ''
         for message in replay_dict.messages:
-            color = '#338F00' if message['player'] == testplayer else 'blue'
+            color = '#558F22' if message['player'] == testplayer else '#55f'
             if message['time'] >= 3600:
                 t = time.strftime('%H:%M:%S', time.gmtime(message['time']))
             else:
