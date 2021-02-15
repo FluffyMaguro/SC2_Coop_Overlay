@@ -960,20 +960,29 @@ class UI_TabWidget(object):
         # Map
         self.CB_RNG_Map = QtWidgets.QCheckBox(self.TAB_Randomizer)
         self.CB_RNG_Map.setGeometry(QtCore.QRect(530, 85, 140, 21))
+        self.CB_RNG_Map.setChecked(True)
         self.CB_RNG_Map.setText('Random map')
 
         # Race
         self.CB_RNG_Race = QtWidgets.QCheckBox(self.TAB_Randomizer)
         self.CB_RNG_Race.setGeometry(QtCore.QRect(530, 105, 140, 21))
+        self.CB_RNG_Race.setChecked(True)
         self.CB_RNG_Race.setText('Random enemy race')
 
         ### Commanders & prestiges
-        self.FR_RNG_GB = QtWidgets.QGroupBox(self.TAB_Randomizer)
+        self.FR_RNG_GB = QtWidgets.QFrame(self.TAB_Randomizer)
+        self.FR_RNG_GB.setAutoFillBackground(True)
+        self.FR_RNG_GB.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.FR_RNG_GB.setFrameShadow(QtWidgets.QFrame.Plain)
         self.FR_RNG_GB.setGeometry(QtCore.QRect(40, 20, 280, 450))
-        self.FR_RNG_GB.setTitle('Choose commanders and prestiges')
+
+        self.RNG_co_desc = QtWidgets.QLabel(self.FR_RNG_GB)
+        self.RNG_co_desc.setGeometry(QtCore.QRect(0, 5, 280, 20))
+        self.RNG_co_desc.setAlignment(QtCore.Qt.AlignCenter)
+        self.RNG_co_desc.setText('Choose commanders and prestiges')
 
         self.FR_RNG_Commanders = QtWidgets.QFrame(self.FR_RNG_GB)
-        self.FR_RNG_Commanders.setGeometry(QtCore.QRect(20, 20, 400, 400))
+        self.FR_RNG_Commanders.setGeometry(QtCore.QRect(35, 30, 260, 400))
         self.FR_RNG_Commanders.show()
 
         # Heading
@@ -982,7 +991,8 @@ class UI_TabWidget(object):
         self.RNG_co_heading.setText('<b>Commander</b>')
 
         self.RNG_co_heading_prestige = QtWidgets.QLabel(self.FR_RNG_Commanders)
-        self.RNG_co_heading_prestige.setGeometry(QtCore.QRect(100, 5, 300, 20))
+        self.RNG_co_heading_prestige.setGeometry(QtCore.QRect(100, 5, 110, 20))
+        self.RNG_co_heading_prestige.setAlignment(QtCore.Qt.AlignCenter)
         self.RNG_co_heading_prestige.setText('<b>Prestige</b>')
 
         self.RNG_co_dict = dict()
@@ -1005,9 +1015,11 @@ class UI_TabWidget(object):
                     self.RNG_co_dict[(co, prest)].setChecked(True)
 
         ### Result
-        self.FR_RNG_Result = QtWidgets.QGroupBox(self.TAB_Randomizer)
+        self.FR_RNG_Result = QtWidgets.QFrame(self.TAB_Randomizer)
         self.FR_RNG_Result.setGeometry(QtCore.QRect(370, 150, 500, 320))
-        self.FR_RNG_Result.setTitle('Result')
+        self.FR_RNG_Result.setAutoFillBackground(True)
+        self.FR_RNG_Result.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.FR_RNG_Result.setFrameShadow(QtWidgets.QFrame.Plain)
 
         # Background
         self.FR_RNG_Result_BG = QtWidgets.QLabel(self.FR_RNG_Result)
@@ -1015,7 +1027,7 @@ class UI_TabWidget(object):
 
         # Commander name
         self.FR_RNG_Result_CO = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_CO.setGeometry(QtCore.QRect(0, 12, self.FR_RNG_Result.width() - 20, 87))
+        self.FR_RNG_Result_CO.setGeometry(QtCore.QRect(0, 20, self.FR_RNG_Result.width() - 20, 71))
         self.FR_RNG_Result_CO.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.FR_RNG_Result_CO.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
         shadow = QtWidgets.QGraphicsDropShadowEffect()
@@ -1025,7 +1037,7 @@ class UI_TabWidget(object):
 
         # Prestige
         self.FR_RNG_Result_Prestige = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_Prestige.setGeometry(QtCore.QRect(0, 35, self.FR_RNG_Result.width() - 20, 87))
+        self.FR_RNG_Result_Prestige.setGeometry(QtCore.QRect(0, 43, self.FR_RNG_Result.width() - 20, 71))
         self.FR_RNG_Result_Prestige.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.FR_RNG_Result_Prestige.setStyleSheet('font-size: 13px; color: white')
         self.FR_RNG_Result_Prestige.setGraphicsEffect(shadow)
@@ -1052,17 +1064,19 @@ class UI_TabWidget(object):
 
         self.TAB_TwitchBot = QtWidgets.QWidget()
 
-        self.qb_twitch_text = QtWidgets.QGroupBox(self.TAB_TwitchBot)
-        self.qb_twitch_text.setTitle('About the twitch bot')
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 370 if HF.isWindows() else 555))
+        self.qb_twitch_text = QtWidgets.QFrame(self.TAB_TwitchBot)
+        self.qb_twitch_text.setAutoFillBackground(True)
+        self.qb_twitch_text.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.qb_twitch_text.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 380 if HF.isWindows() else 555))
 
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
-        self.la_twitch_text.setGeometry(QtCore.QRect(15, 25, 530, 700))
+        self.la_twitch_text.setGeometry(QtCore.QRect(15, 10, 530, 700))
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
         self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.la_twitch_text.setText("""This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
+        self.la_twitch_text.setText("""<b>About the twitch bot:</b><br><br>This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
                                     Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. \
                                     Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
@@ -1141,15 +1155,17 @@ class UI_TabWidget(object):
         self.TAB_ResourceTab = QtWidgets.QWidget()
 
         # Performance group box
-        self.gb_Resources = QtWidgets.QGroupBox(self.TAB_ResourceTab)
-        self.gb_Resources.setTitle('Performance overlay')
+        self.gb_Resources = QtWidgets.QFrame(self.TAB_ResourceTab)
+        self.gb_Resources.setAutoFillBackground(True)
+        self.gb_Resources.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.gb_Resources.setFrameShadow(QtWidgets.QFrame.Plain)
         self.gb_Resources.setGeometry(QtCore.QRect(15, 15, 550, 310))
 
         # Performance description
         self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
-        self.la_performance_description.setGeometry(QtCore.QRect(14, 25, self.gb_Resources.width() - 20, 300))
+        self.la_performance_description.setGeometry(QtCore.QRect(14, 10, self.gb_Resources.width() - 20, 300))
         self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
-        self.la_performance_description.setText('Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
+        self.la_performance_description.setText('<b>Performance overlay:</b><br><br>Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
                                                 <br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).\
                                                 <br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
         self.la_performance_description.setWordWrap(True)
@@ -1191,41 +1207,41 @@ class UI_TabWidget(object):
 
         # Links
         self.FR_Links = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Links.setGeometry(QtCore.QRect(20, 20, 471, 235))
+        self.FR_Links.setGeometry(QtCore.QRect(15, 15, 550, 235))
         self.FR_Links.setAutoFillBackground(True)
         self.FR_Links.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Links.setFrameShadow(QtWidgets.QFrame.Plain)
 
         # Maguro.one
         self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_MaguroOne.setGeometry(QtCore.QRect(20, 20, 31, 41))
+        self.IMG_MaguroOne.setGeometry(QtCore.QRect(30, 20, 31, 41))
         self.IMG_MaguroOne.setPixmap(QtGui.QPixmap(innerPath("src/maguro.jpg")))
 
         self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.LA_MaguroOne.setGeometry(QtCore.QRect(70, 20, 131, 41))
+        self.LA_MaguroOne.setGeometry(QtCore.QRect(80, 20, 131, 41))
         self.LA_MaguroOne.setText('<a href="www.maguro.one">Maguro.one</a>')
 
         # My discord
         self.IMG_MDiscord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_MDiscord.setGeometry(QtCore.QRect(20, 70, 41, 51))
+        self.IMG_MDiscord.setGeometry(QtCore.QRect(30, 70, 41, 51))
         self.IMG_MDiscord.setPixmap(QtGui.QPixmap(innerPath("src/mdiscord.png")))
 
         self.LA_MDiscord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_MDiscord.setGeometry(QtCore.QRect(70, 80, 131, 31))
+        self.LA_MDiscord.setGeometry(QtCore.QRect(80, 80, 131, 31))
         self.LA_MDiscord.setText('<a href="https://discord.gg/FtGdhqD">My discord</a>')
 
         # Twitter
         self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Twitter.setGeometry(QtCore.QRect(20, 120, 41, 51))
+        self.IMG_Twitter.setGeometry(QtCore.QRect(30, 120, 41, 51))
         self.IMG_Twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
 
         self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Twitter.setGeometry(QtCore.QRect(70, 130, 160, 31))
+        self.LA_Twitter.setGeometry(QtCore.QRect(80, 130, 160, 31))
         self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">@FluffyMaguro</a>')
 
         # GitHub
         self.IMG_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_GitHub.setGeometry(QtCore.QRect(20, 175, 41, 41))
+        self.IMG_GitHub.setGeometry(QtCore.QRect(30, 175, 41, 41))
         self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
 
         self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
@@ -1235,44 +1251,44 @@ class UI_TabWidget(object):
 
         # Subreddit
         self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Reddit.setGeometry(QtCore.QRect(250, 20, 41, 41))
+        self.IMG_Reddit.setGeometry(QtCore.QRect(300, 20, 41, 41))
         self.IMG_Reddit.setPixmap(QtGui.QPixmap(innerPath("src/reddit.png")))
 
         self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Subreddit.setGeometry(QtCore.QRect(300, 20, 161, 41))
+        self.LA_Subreddit.setGeometry(QtCore.QRect(350, 20, 161, 41))
         self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
 
         # Forums
         self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_BattleNet.setGeometry(QtCore.QRect(250, 70, 41, 51))
+        self.IMG_BattleNet.setGeometry(QtCore.QRect(300, 70, 41, 51))
         self.IMG_BattleNet.setPixmap(QtGui.QPixmap(innerPath("src/sc2.png")))
 
         self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.LA_BattleNet.setGeometry(QtCore.QRect(300, 80, 131, 31))
+        self.LA_BattleNet.setGeometry(QtCore.QRect(350, 80, 131, 31))
         self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
 
         # Discord
         self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Discord.setGeometry(QtCore.QRect(250, 130, 31, 41))
+        self.IMG_Discord.setGeometry(QtCore.QRect(300, 130, 31, 41))
         self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
 
         self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Discord.setGeometry(QtCore.QRect(300, 130, 141, 31))
+        self.LA_Discord.setGeometry(QtCore.QRect(350, 130, 141, 31))
         self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
 
         # Donate
         self.FR_Donate = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Donate.setGeometry(QtCore.QRect(20, 275, 471, 100))
+        self.FR_Donate.setGeometry(QtCore.QRect(15, 270, 550, 100))
         self.FR_Donate.setAutoFillBackground(True)
         self.FR_Donate.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Donate.setFrameShadow(QtWidgets.QFrame.Plain)
 
         self.IMG_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.IMG_Donate.setGeometry(QtCore.QRect(170, 14, 200, 41))
+        self.IMG_Donate.setGeometry(QtCore.QRect(210, 14, 200, 41))
         self.IMG_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
 
         self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.LA_Donate.setGeometry(QtCore.QRect(130, 47, 250, 41))
+        self.LA_Donate.setGeometry(QtCore.QRect(170, 47, 250, 41))
         self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if you feel generous</a>')
 
@@ -1435,7 +1451,7 @@ class UI_TabWidget(object):
 
         # Dark theme
         if self.settings['dark_theme']:
-            set_dark_theme(app, TabWidget, APPVERSION)
+            set_dark_theme(self, app, TabWidget, APPVERSION)
 
         # Check if account directory valid, update if not
         self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
@@ -3061,7 +3077,7 @@ class UI_TabWidget(object):
     def change_theme(self):
         """ Changes theme to dark or asks for restart"""
         if self.CH_DarkTheme.isChecked():
-            set_dark_theme(app, TabWidget, APPVERSION)
+            set_dark_theme(self, app, TabWidget, APPVERSION)
         else:
             self.sendInfoMessage('Restart to change back to the light theme!', color='red')
 

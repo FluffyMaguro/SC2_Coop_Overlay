@@ -7,7 +7,7 @@ def get_msg_color():
     return MGS_COLOR
 
 
-def set_dark_theme(app, tab, version):
+def set_dark_theme(main, app, tab, version):
     global MGS_COLOR
     MGS_COLOR = "#FFF"
 
