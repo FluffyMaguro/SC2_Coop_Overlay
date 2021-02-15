@@ -358,6 +358,12 @@ function postGameStats(data, showing = false) {
     fill('apm1', data['mainAPM'] + ' APM');
     fill('apm2', data['allyAPM'] + ' APM');
 
+    if (data['fastest'] == true) {
+        document.getElementById('record').style.display = 'block';
+    } else {
+        document.getElementById('record').style.display = 'none';
+    }
+
     if (data['Victory'] != null) {
         fill('session', 'Session: ' + data['Victory'] + ' wins/' + (data['Victory'] + data['Defeat']) + ' games');
     } else {

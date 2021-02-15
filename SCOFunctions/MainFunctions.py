@@ -68,32 +68,32 @@ def sendEvent(event):
     if WEBPAGE == None:
         return
 
-    elif event.get('replaydata') != None:
+    elif event.get('replaydata') is not None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"postGameStatsTimed({data});")
 
-    elif event.get('mutatordata') != None:
+    elif event.get('mutatordata') is not None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"mutatorInfo({data['data']})")
 
-    elif event.get('hideEvent') != None:
+    elif event.get('hideEvent') is not None:
         WEBPAGE.runJavaScript("hidestats()")
 
-    elif event.get('showEvent') != None:
+    elif event.get('showEvent') is not None:
         WEBPAGE.runJavaScript("showstats()")
 
-    elif event.get('showHideEvent') != None:
+    elif event.get('showHideEvent') is not None:
         WEBPAGE.runJavaScript("showhide()")
 
-    elif event.get('uploadEvent') != None:
+    elif event.get('uploadEvent') is not None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"setTimeout(uploadStatus, 1500, '{event['response']}')")
 
-    elif event.get('initEvent') != None:
+    elif event.get('initEvent') is not None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"initColorsDuration({data})")
 
-    elif event.get('playerEvent') != None:
+    elif event.get('playerEvent') is not None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"showHidePlayerWinrate({data})")
 
@@ -277,6 +277,9 @@ def check_replays():
                                     out.update(session_games)
                                 if SETTINGS.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
                                     out.update(RNG_COMMANDER)
+                                if CAnalysis is not None:
+                                    out['fastest'] = CAnalysis.check_for_record(replay_dict)
+
                                 sendEvent(out)
 
                             # No output

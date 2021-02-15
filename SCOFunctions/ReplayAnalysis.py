@@ -331,12 +331,18 @@ def analyse_replay(filepath, main_player_handles=None):
     murvar_spawns = set()
     glevig_spawns = set()
     broodlord_broodlings = set()
+    user_leave_times = dict()
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
         last_aoe_unit_killed[player] = [None, 0] if player in amon_players else None
 
     for event in replay['events']:
+        # Save when user leaves
+        if event['_event'] == 'NNet.Game.SGameUserLeaveEvent':
+            user = event['_userid']['m_userId'] + 1
+            user_leave_times[user] = event['_gameloop']/16
+
         # Skip events after the game ended
         if event['_gameloop'] / 16 > END_TIME:
             continue
@@ -790,6 +796,14 @@ def analyse_replay(filepath, main_player_handles=None):
     del replay['events']
     replay_report_dict['parser'] = replay
     replay_report_dict['mutators'] = replay['mutators']
+
+    # Update messages with player leave times
+    messages = list(replay_report_dict['parser']['messages'])
+    for player in user_leave_times:
+        if player in {1,2}:
+            messages.append({'player': player, 'text': f"player {player} has left the game", 'time': user_leave_times[player]})
+    messages = sorted(messages, key=lambda x:x['time'])
+    replay_report_dict['parser']['messages'] = tuple(messages)
 
     # Main player
     replay_report_dict['mainCommander'] = replay['players'][main_player].get('commander', '')

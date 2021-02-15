@@ -2081,7 +2081,7 @@ class UI_TabWidget(object):
     def update_selected_bank_item(self, bank_path):
         """ Updates selected bank indirectly (when user didn't click it directly)"""
         if bank_path in {'', None}:
-            logger.error('not valid bank path, not changing')
+            logger.error('Not valid bank path, not changing')
             return
 
         logger.info(f'Changing bank indirectly to {bank_path.strip()}')
@@ -2096,7 +2096,7 @@ class UI_TabWidget(object):
                     logger.error('Failed to set bank for twitch bot')
                 break
 
-        logger.info('bank changed indirectly succesfully')
+        logger.info('Bank changed indirectly succesfully')
 
     def run_twitch_bot(self):
         """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """

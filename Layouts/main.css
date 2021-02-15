@@ -170,6 +170,17 @@ body {
     font-size: 1.7vh;
 }
 
+#record {
+    position: absolute;
+    top: 9.5vh;
+    left: 63%;
+    width: 37%;
+    text-align: left;
+    font-size: 1.5vh;
+    color: rgb(216, 62, 255);
+    display: none
+}
+
 #brutal {
     position: absolute;
     top: 10vh;
