@@ -95,6 +95,7 @@ def sendEvent(event):
 
     elif event.get('playerEvent') is not None:
         data = json.dumps(event)
+        logger.info(f'Sending player event with JS: {event}')
         WEBPAGE.runJavaScript(f"showHidePlayerWinrate({data})")
 
 
@@ -458,7 +459,6 @@ def keyboard_SHOW():
 def keyboard_PLAYERWINRATES():
     """Show/hide winrate & notes """
     if most_recent_playerdata:
-        logger.info(f'Player Winrate key triggered, sending player data event: {most_recent_playerdata}')
         sendEvent({'playerEvent': True, 'data': most_recent_playerdata})
     else:
         logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
@@ -577,7 +577,6 @@ def check_for_new_game():
                             data[player].append(SETTINGS['player_notes'][player])
 
                     most_recent_playerdata = data
-                    logger.info(f'Sending player data event: {data}')
                     sendEvent({'playerEvent': True, 'data': data})
 
         except requests.exceptions.ConnectionError:

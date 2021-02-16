@@ -115,7 +115,7 @@ class UI_TabWidget(object):
         self.CH_MinimizeToTray = QtWidgets.QCheckBox(self.TAB_Main)
         self.CH_MinimizeToTray.setGeometry(QtCore.QRect(20, 3 * ch_distance, 300, 17))
         self.CH_MinimizeToTray.setText("Minimize to tray")
-        self.CH_MinimizeToTray.setToolTip("On closing the app will minimize to tray\nThe app can be closed there.")
+        self.CH_MinimizeToTray.setToolTip("On closing the app will minimize to tray. The app can be closed there.")
 
         # Duration
         self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
@@ -394,53 +394,53 @@ class UI_TabWidget(object):
 
         # Controls
         self.FR_Winrate_Controls = QtWidgets.QFrame(self.TAB_Players)
-        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 540, TabWidget.frameGeometry().width(), 60))
+        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 550, TabWidget.frameGeometry().width(), 50))
         self.FR_Winrate_Controls.setAutoFillBackground(True)
         self.FR_Winrate_Controls.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_Winrate_Controls.setFrameShadow(QtWidgets.QFrame.Raised)
 
         # Search
         self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 12, 610, 20))
+        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 7, 610, 20))
         self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
 
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 13, 200, 17))
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
         self.CH_OnlyTop50.setText("Show max 50 players")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
 
         # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 0, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 70))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 31, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 91))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
 
         self.SC_PlayersScrollAreaContents = QtWidgets.QWidget()
-        self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 961, 561))
+        self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 31, 961, 530))
         self.SC_PlayersScrollAreaContentsLayout = QtWidgets.QVBoxLayout()
         self.SC_PlayersScrollAreaContentsLayout.setAlignment(QtCore.Qt.AlignTop)
         self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(10, 0, 0, 0)
+        self.SC_PlayersScrollAreaContentsLayout.setSpacing(0)
 
         # Heading
-        self.WD_WinratesHeading = QtWidgets.QWidget(self.SC_PlayersScrollAreaContents)
-        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 10, 931, 31))
+        self.WD_WinratesHeading = QtWidgets.QWidget(self.TAB_Players)
+        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 0, 981, 31))
         self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
-        self.WD_WinratesHeading.setMinimumHeight(25)
-        self.WD_WinratesHeading.setMaximumHeight(25)
-        self.SC_PlayersScrollAreaContentsLayout.addWidget(self.WD_WinratesHeading)
+        self.WD_WinratesHeading.setAutoFillBackground(True)
+        self.WD_WinratesHeading.setBackgroundRole(QtGui.QPalette.Background)
 
         self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Name.setGeometry(QtCore.QRect(40, 0, 41, 31))
+        self.LA_Name.setGeometry(QtCore.QRect(30, 0, 41, 31))
         self.LA_Name.setText("Name")
 
         self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Wins.setGeometry(QtCore.QRect(160, 0, 50, 31))
+        self.LA_Wins.setGeometry(QtCore.QRect(145, 0, 50, 31))
         self.LA_Wins.setText("▼ Wins")
 
         self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
@@ -475,6 +475,9 @@ class UI_TabWidget(object):
         self.LA_Note.setGeometry(QtCore.QRect(580, 0, 300, 31))
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Note.setText("Player note (displayed together with winrates)")
+
+        self.PlayerTabLine = MUI.Cline(self.WD_WinratesHeading)
+        self.PlayerTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
 
         # Wait
         self.LA_Winrates_Wait = QtWidgets.QLabel(self.TAB_Players)
@@ -552,6 +555,9 @@ class UI_TabWidget(object):
         self.LA_Date.setGeometry(QtCore.QRect(655, 0, 101, 31))
         self.LA_Date.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Date.setText("Time")
+
+        self.GameTabLine = MUI.Cline(self.WD_RecentGamesHeading)
+        self.GameTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
 
         self.ed_games_search = QtWidgets.QLineEdit(self.WD_RecentGamesHeading)
         self.ed_games_search.setGeometry(QtCore.QRect(740, 5, 160, 20))
@@ -981,7 +987,7 @@ class UI_TabWidget(object):
         self.FR_RNG_GB.setAutoFillBackground(True)
         self.FR_RNG_GB.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.FR_RNG_GB.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.FR_RNG_GB.setGeometry(QtCore.QRect(40, 20, 280, 450))
+        self.FR_RNG_GB.setGeometry(QtCore.QRect(15, 15, 280, 455))
 
         self.RNG_co_desc = QtWidgets.QLabel(self.FR_RNG_GB)
         self.RNG_co_desc.setGeometry(QtCore.QRect(0, 5, 280, 20))
@@ -989,7 +995,7 @@ class UI_TabWidget(object):
         self.RNG_co_desc.setText('Choose commanders and prestiges')
 
         self.FR_RNG_Commanders = QtWidgets.QFrame(self.FR_RNG_GB)
-        self.FR_RNG_Commanders.setGeometry(QtCore.QRect(35, 30, 260, 400))
+        self.FR_RNG_Commanders.setGeometry(QtCore.QRect(35, 35, 260, 400))
         self.FR_RNG_Commanders.show()
 
         # Heading
@@ -2215,7 +2221,7 @@ class UI_TabWidget(object):
 
             # Color back
             for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
-                item.setStyleSheet('color:black')
+                item.setStyleSheet('')
 
         # New player to top
         self.last_ally_player = player
@@ -2236,7 +2242,7 @@ class UI_TabWidget(object):
         self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
         w.widget.show()
         for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
-            item.setStyleSheet('color:blue')
+            item.setStyleSheet('color: #55f; font-weight: bold')
 
     def update_player_tab(self, winrate_data, show_max=50):
         """ Updates player tab based on provide winrate data """

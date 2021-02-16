@@ -1176,7 +1176,7 @@ class PlayerEntry:
         self.name = player
         self.note = note
 
-        height = 30
+        height = 35
         line_spacing = 7
 
         self.widget = QtWidgets.QWidget(parent)
@@ -1185,36 +1185,36 @@ class PlayerEntry:
         self.widget.setMaximumHeight(height)
 
         self.line = Cline(self.widget)
-        self.line.setGeometry(QtCore.QRect(10, 0, 921, 1))
+        self.line.setGeometry(QtCore.QRect(10, 33, 921, 1))
 
         self.la_name = QtWidgets.QLabel(self.widget)
-        self.la_name.setGeometry(QtCore.QRect(40, line_spacing, 150, 21))
+        self.la_name.setGeometry(QtCore.QRect(20, line_spacing, 150, 21))
         self.la_name.setText(self.name)
 
         self.la_wins = QtWidgets.QLabel(self.widget)
-        self.la_wins.setGeometry(QtCore.QRect(170, line_spacing, 31, 21))
+        self.la_wins.setGeometry(QtCore.QRect(150, line_spacing, 31, 21))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_losses = QtWidgets.QLabel(self.widget)
-        self.la_losses.setGeometry(QtCore.QRect(230, line_spacing, 41, 21))
+        self.la_losses.setGeometry(QtCore.QRect(220, line_spacing, 41, 21))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_winrate = QtWidgets.QLabel(self.widget)
-        self.la_winrate.setGeometry(QtCore.QRect(300, line_spacing, 51, 21))
+        self.la_winrate.setGeometry(QtCore.QRect(290, line_spacing, 51, 21))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_apm = QtWidgets.QLabel(self.widget)
-        self.la_apm.setGeometry(QtCore.QRect(370, line_spacing, 51, 21))
+        self.la_apm.setGeometry(QtCore.QRect(360, line_spacing, 51, 21))
         self.la_apm.setAlignment(QtCore.Qt.AlignCenter)
         self.la_apm.setToolTip("Median APM")
 
         self.la_commander = QtWidgets.QLabel(self.widget)
-        self.la_commander.setGeometry(QtCore.QRect(425, line_spacing, 81, 21))
+        self.la_commander.setGeometry(QtCore.QRect(420, line_spacing, 81, 21))
         self.la_commander.setAlignment(QtCore.Qt.AlignCenter)
         self.la_commander.setToolTip("The most played commander")
 
         self.la_frequency = QtWidgets.QLabel(self.widget)
-        self.la_frequency.setGeometry(QtCore.QRect(510, line_spacing, 51, 21))
+        self.la_frequency.setGeometry(QtCore.QRect(500, line_spacing, 51, 21))
         self.la_frequency.setAlignment(QtCore.Qt.AlignCenter)
         self.la_frequency.setToolTip("The most played commander frequency")
 

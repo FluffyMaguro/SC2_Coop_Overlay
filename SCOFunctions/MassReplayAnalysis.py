@@ -931,7 +931,7 @@ class mass_replay_analysis:
 
         return known_handles
 
-    def check_for_record(map, input_data):
+    def check_for_record(self, input_data):
         """ Checks the replay (from replay analysis) is a new time record"""
         length = input_data['length'] * 1.4
         name = input_data['map_name']
