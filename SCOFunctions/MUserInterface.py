@@ -39,6 +39,14 @@ def fi(number):
         return str(number)
 
 
+class Cline(QtWidgets.QFrame):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAutoFillBackground(True)
+        self.setBackgroundRole(QtGui.QPalette.ButtonText)
+        self.setEnabled(False)
+
+
 class AmonUnitStats(QtWidgets.QWidget):
     """ Widget for amon's unit stats """
     def __init__(self, unit_data, parent=None):
@@ -217,10 +225,8 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         self.name.setText(str(unit if unit != 'sum' else 'Total'))
         if unit == 'Name':
             self.name.setAlignment(QtCore.Qt.AlignVCenter)
-            self.line = QtWidgets.QFrame(self)
+            self.line = Cline(self)
             self.line.setGeometry(QtCore.QRect(20, 24, 600, 1))
-            self.line.setFrameShape(QtWidgets.QFrame.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.elements = dict()
         for idx, item in enumerate(unit_data):
@@ -575,10 +581,8 @@ class RegionStats(QtWidgets.QWidget):
             item.setAlignment(QtCore.Qt.AlignCenter)
 
         if line:
-            self.line = QtWidgets.QFrame(self)
+            self.line = Cline(self)
             self.line.setGeometry(QtCore.QRect(34, 19, 660, 1))
-            self.line.setFrameShape(QtWidgets.QFrame.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.show()
 
@@ -1017,10 +1021,8 @@ class DifficultyEntry(QtWidgets.QWidget):
             self.setStyleSheet('font-weight: bold;')
 
         if line:
-            self.line = QtWidgets.QFrame(self)
+            self.line = Cline(self)
             self.line.setGeometry(QtCore.QRect(0, 30, 235, 1))
-            self.line.setFrameShape(QtWidgets.QFrame.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.show()
 
@@ -1064,10 +1066,8 @@ class GameEntry:
         self.widget.setMinimumHeight(height)
         self.widget.setMaximumHeight(height)
 
-        self.line = QtWidgets.QFrame(self.widget)
+        self.line = Cline(self.widget)
         self.line.setGeometry(QtCore.QRect(10, 0, 921, 1))
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.la_mapname = QtWidgets.QLabel(self.widget)
         self.la_mapname.setGeometry(QtCore.QRect(20, line_spacing, 125, 21))
@@ -1184,10 +1184,8 @@ class PlayerEntry:
         self.widget.setMinimumHeight(height)
         self.widget.setMaximumHeight(height)
 
-        self.line = QtWidgets.QFrame(self.widget)
+        self.line = Cline(self.widget)
         self.line.setGeometry(QtCore.QRect(10, 0, 921, 1))
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         self.la_name = QtWidgets.QLabel(self.widget)
         self.la_name.setGeometry(QtCore.QRect(40, line_spacing, 150, 21))
@@ -1404,7 +1402,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.minimize_to_tray()
 
     def minimize_to_tray(self):
-        if self.settings['minimize_to_tray']:    
+        if self.settings['minimize_to_tray']:
             self.hide()
             self.show_minimize_message()
         else:
