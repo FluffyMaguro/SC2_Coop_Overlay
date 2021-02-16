@@ -77,38 +77,45 @@ class UI_TabWidget(object):
         ##########################
 
         self.TAB_Main = QtWidgets.QWidget()
+        ch_distance = 20
 
         # Start with Windows
         self.CH_StartWithWindows = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, 20, 230, 17))
+        self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, ch_distance, 230, 17))
         self.CH_StartWithWindows.setText("Start with Windows")
         self.CH_StartWithWindows.setToolTip("The app will start automatically with the Windows")
 
         # Start minimized
         self.CH_StartMinimized = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 45, 230, 17))
+        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 2 * ch_distance, 230, 17))
         self.CH_StartMinimized.setText("Start minimized")
         self.CH_StartMinimized.setToolTip("The app will start minimized")
 
         # Enable logging
         self.CH_EnableLogging = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 70, 230, 17))
+        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 4 * ch_distance, 230, 17))
         self.CH_EnableLogging.setText("Enable logging")
         self.CH_EnableLogging.setToolTip(f"App logs will be saved into a text file")
 
         # Show session hidden
         self.CH_ShowSession = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowSession.setGeometry(QtCore.QRect(20, 95, 300, 17))
+        self.CH_ShowSession.setGeometry(QtCore.QRect(20, 5 * ch_distance, 300, 17))
         self.CH_ShowSession.setText("Show session stats")
         self.CH_ShowSession.setToolTip("Shows how many games you played and won in the current session on the overaly")
 
         # Show player winrate and notes
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 120, 230, 17))
+        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 6 * ch_distance, 230, 17))
         self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
         self.CH_ShowPlayerWinrates.setToolTip(
             "The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable."
         )
+
+        # Mnimized when clicked
+        self.CH_MinimizeToTray = QtWidgets.QCheckBox(self.TAB_Main)
+        self.CH_MinimizeToTray.setGeometry(QtCore.QRect(20, 3 * ch_distance, 300, 17))
+        self.CH_MinimizeToTray.setText("Minimize to tray")
+        self.CH_MinimizeToTray.setToolTip("On closing the app will minimize to tray\nThe app can be closed there.")
 
         # Duration
         self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
@@ -121,25 +128,25 @@ class UI_TabWidget(object):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 50, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(250, 55, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 50, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(300, 55, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         # Dark theme
         self.CH_DarkTheme = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 95, 300, 17))
+        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
         self.CH_DarkTheme.setText("Dark theme")
         self.CH_DarkTheme.setToolTip("Enables dark theme. Requires restart!")
         self.CH_DarkTheme.stateChanged.connect(self.change_theme)
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 120, 300, 17))
+        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 6 * ch_distance, 300, 17))
         self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
         self.CH_ForceHideOverlay.setToolTip(
             "The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
@@ -1076,7 +1083,8 @@ class UI_TabWidget(object):
         self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
         self.la_twitch_text.setOpenExternalLinks(True)
         self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.la_twitch_text.setText("""<b>About the twitch bot:</b><br><br>This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
+        self.la_twitch_text.setText(
+            """<b>About the twitch bot:</b><br><br>This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
                                     Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. \
                                     Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
                                     <br> 
@@ -1165,7 +1173,8 @@ class UI_TabWidget(object):
         self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
         self.la_performance_description.setGeometry(QtCore.QRect(14, 10, self.gb_Resources.width() - 20, 300))
         self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
-        self.la_performance_description.setText('<b>Performance overlay:</b><br><br>Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
+        self.la_performance_description.setText(
+            '<b>Performance overlay:</b><br><br>Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
                                                 <br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).\
                                                 <br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
         self.la_performance_description.setWordWrap(True)
@@ -1350,6 +1359,7 @@ class UI_TabWidget(object):
             'show_session': True,
             'show_random_on_overlay': False,
             'dark_theme': False,
+            'minimize_to_tray': True,
             'account_folder': None,
             'screenshot_folder': None,
             'hotkey_show/hide': 'Ctrl+Shift+*',
@@ -1630,6 +1640,8 @@ class UI_TabWidget(object):
         self.CH_ShowPlayerWinrates.setChecked(self.settings['show_player_winrates'])
         self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
         self.CH_DarkTheme.setChecked(self.settings['dark_theme'])
+        self.CH_MinimizeToTray.setChecked(self.settings['minimize_to_tray'])
+        self.CH_MinimizeToTray.stateChanged.connect(self.saveSettings)
         self.SP_Duration.setProperty("value", self.settings['duration'])
         self.SP_Monitor.setProperty("value", self.settings['monitor'])
         self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
@@ -1691,6 +1703,7 @@ class UI_TabWidget(object):
         self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
         self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
         self.settings['dark_theme'] = self.CH_DarkTheme.isChecked()
+        self.settings['minimize_to_tray'] = self.CH_MinimizeToTray.isChecked()
         self.settings['show_session'] = self.CH_ShowSession.isChecked()
         self.settings['duration'] = self.SP_Duration.value()
         self.settings['monitor'] = self.SP_Monitor.value()

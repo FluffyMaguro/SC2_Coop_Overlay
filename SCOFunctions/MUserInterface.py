@@ -1404,8 +1404,11 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.minimize_to_tray()
 
     def minimize_to_tray(self):
-        self.hide()
-        self.show_minimize_message()
+        if self.settings['minimize_to_tray']:    
+            self.hide()
+            self.show_minimize_message()
+        else:
+            QtWidgets.qApp.quit()
 
     def format_close_message(self):
         """ Shows few hotkeys in the notification area"""
