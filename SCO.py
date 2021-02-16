@@ -2239,7 +2239,7 @@ class UI_TabWidget(object):
             w = self.player_winrate_UI_dict[player]
 
         # Insert to top, show and change colors
-        self.SC_PlayersScrollAreaContentsLayout.insertWidget(1, w.widget)
+        self.SC_PlayersScrollAreaContentsLayout.insertWidget(0, w.widget)
         w.widget.show()
         for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
             item.setStyleSheet('color: #55f; font-weight: bold')
@@ -2360,7 +2360,8 @@ class UI_TabWidget(object):
 
         # Go through winrate data and check for player names
         for player in self.winrate_data:
-            if text in player and idx < show_max:
+            if text in player.lower() and idx < show_max:
+                
                 # Create element if necessary and show
                 if not player in self.player_winrate_UI_dict:
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
@@ -2373,7 +2374,7 @@ class UI_TabWidget(object):
 
         # Go though notes
         for player, note in self.settings['player_notes'].items():
-            if text in note and idx < show_max:
+            if text in note.lower() and idx < show_max:
                 # Create element if necessary and show
                 if not player in self.player_winrate_UI_dict:
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
