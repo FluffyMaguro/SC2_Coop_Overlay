@@ -404,8 +404,9 @@ class UI_TabWidget(object):
         self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 7, 610, 20))
         self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
+        self.filter_players_running = False
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
-
+        
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
         self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
@@ -568,7 +569,7 @@ class UI_TabWidget(object):
         self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
         self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))
         self.bt_games_search.setStyleSheet("font-weight: normal")
-        self.bt_games_search.setText("go")
+        self.bt_games_search.setText("GO")
         self.bt_games_search.clicked.connect(self.search_games)
         self.bt_games_search.setShortcut("Return")
 
@@ -2350,9 +2351,15 @@ class UI_TabWidget(object):
 
     def filter_players(self):
         """ Filters only players with string in name or note """
+        if self.filter_players_running:
+            logger.error('Filtering already running!')
+            self.ED_Winrate_Search.setText('Please wait a bit!')
+
+        self.filter_players_running = True
         text = self.ED_Winrate_Search.text().lower()
         idx = 0
         show_max = 50 if self.CH_OnlyTop50.isChecked() else 10000
+        created = 0
 
         # First hide all
         for player in self.player_winrate_UI_dict:
@@ -2361,9 +2368,17 @@ class UI_TabWidget(object):
         # Go through winrate data and check for player names
         for player in self.winrate_data:
             if text in player.lower() and idx < show_max:
-                
+
+                # If many created, pause for bit. Otherwise some PCs might struggle
+                if created > 100:
+                    loop = QtCore.QEventLoop()
+                    QtCore.QTimer.singleShot(5, loop.quit)
+                    loop.exec_()
+                    created = 0
+
                 # Create element if necessary and show
                 if not player in self.player_winrate_UI_dict:
+                    created += 1
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                         self.winrate_data[player],
                                                                         self.settings['player_notes'].get(player, None),
@@ -2384,6 +2399,8 @@ class UI_TabWidget(object):
                     self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
+
+        self.filter_players_running = False
 
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
@@ -3134,6 +3151,9 @@ if __name__ == "__main__":
         sys.exit()
     except:
         logger.error(traceback.format_exc())
+        TabWidget.tray_icon.hide()
+        MF.stop_threads()
+        sys.exit()
 
     # Do stuff before the app is closed
     exit_event = app.exec_()

@@ -1149,7 +1149,7 @@ class GameEntry:
         }:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
-                item.setStyleSheet('color: #ff2f2f')
+                item.setStyleSheet('color: #f44')
 
     def show_chat(self):
         """ Shows/hides chat """
