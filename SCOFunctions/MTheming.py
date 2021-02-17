@@ -11,10 +11,10 @@ def set_dark_theme(main, app, tab, version):
     global MGS_COLOR
     MGS_COLOR = "#FFF"
 
-    DARK0 = QtGui.QColor(33, 33, 33)  # bg of checkboxes, edit fields
-    DARK1 = QtGui.QColor(55, 55, 55)  # far background
-    DARK3 = QtGui.QColor(88, 88, 88)
-    LINK = QtGui.QColor(255, 255, 255)
+    DARK0 = QtGui.QColor(33, 33, 33)
+    DARK1 = QtGui.QColor(55, 55, 55)
+    ALT = QtGui.QColor(88, 88, 88)
+    LINK = QtGui.QColor(200, 200, 200)
     ORG = QtGui.QColor(255, 125, 0)
 
     dark_palette = QtGui.QPalette()
@@ -32,7 +32,7 @@ def set_dark_theme(main, app, tab, version):
     dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
     dark_palette.setColor(QtGui.QPalette.Highlight, QtCore.Qt.white)
     dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
-    dark_palette.setColor(QtGui.QPalette.AlternateBase, DARK3)
+    dark_palette.setColor(QtGui.QPalette.AlternateBase, ALT)
     dark_palette.setColor(QtGui.QPalette.Link, LINK)
 
     dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, QtCore.Qt.darkGray)

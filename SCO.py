@@ -365,7 +365,7 @@ class UI_TabWidget(object):
         self.BT_Front_Donate = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_Front_Donate.setGeometry(QtCore.QRect(x - 5, y, 140, 50))
         self.BT_Front_Donate.clicked.connect(self.paypal_clicked)
-        self.BT_Front_Donate.setStyleSheet("border: 0px")
+        self.BT_Front_Donate.setStyleSheet("QPushButton {border: 0px; background: transparent}")
         self.BT_Front_Donate.setToolTip(f'Donate to support this app')
 
         # Version
@@ -1250,7 +1250,7 @@ class UI_TabWidget(object):
         self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
 
         self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.LA_GitHub.setGeometry(QtCore.QRect(70, 175, 200, 41))
+        self.LA_GitHub.setGeometry(QtCore.QRect(80, 175, 200, 41))
         self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">Overlay on GitHub</a>')
 
