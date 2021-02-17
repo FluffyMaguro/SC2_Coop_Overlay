@@ -2307,7 +2307,7 @@ class UI_TabWidget(object):
 
                 # Update UI in game tab
                 self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(full_data, self.CAnalysis.main_handles,
-                                                                                 self.SC_GamesScrollAreaContent)
+                                                                                 self.SC_GamesScrollAreaContent, self)
                 self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
 
                 # Update player tab & set winrate data in MF & generate stats
@@ -2392,7 +2392,7 @@ class UI_TabWidget(object):
         # Update game tab
         self.game_UI_dict = dict()
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
-            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent, self)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
         # Update stats tab
@@ -3092,7 +3092,7 @@ class UI_TabWidget(object):
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
                 self.game_UI_dict[r.file].widget.show()
             else:
-                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
+                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent, self)
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
 
     def change_theme(self):
