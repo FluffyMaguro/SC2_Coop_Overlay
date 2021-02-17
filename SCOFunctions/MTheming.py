@@ -11,9 +11,8 @@ def set_dark_theme(main, app, tab, version):
     global MGS_COLOR
     MGS_COLOR = "#FFF"
 
-    DARK0 = QtGui.QColor(33, 33, 33)
-    DARK1 = QtGui.QColor(53, 53, 53)
-    DARK2 = QtGui.QColor(67, 67, 67)
+    DARK0 = QtGui.QColor(33, 33, 33)  # bg of checkboxes, edit fields
+    DARK1 = QtGui.QColor(55, 55, 55)  # far background
     DARK3 = QtGui.QColor(88, 88, 88)
     LINK = QtGui.QColor(255, 255, 255)
     ORG = QtGui.QColor(255, 125, 0)
@@ -23,7 +22,6 @@ def set_dark_theme(main, app, tab, version):
     dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
     dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
 
-    dark_palette.setColor(QtGui.QPalette.Window, DARK2)  # not here
     dark_palette.setColor(QtGui.QPalette.Button, DARK1)
     dark_palette.setColor(QtGui.QPalette.Background, DARK1)  # far background
     dark_palette.setColor(QtGui.QPalette.Base, DARK0)  # bg of checkboxes, edit fields
@@ -54,16 +52,19 @@ def set_dark_theme(main, app, tab, version):
     tab.title_bar.show()
 
     # Small tweaks
-    main.WD_RecentGamesHeading.setStyleSheet('background-color: #434343; font-weight: bold')
-    main.WD_WinratesHeading.setStyleSheet('background-color: #434343; font-weight: bold')
-    main.FR_Winrate_Controls.setStyleSheet('background-color: #434343')
+    main.WD_RecentGamesHeading.setStyleSheet('background-color: #454545; font-weight: bold')
+    main.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545; font-weight: bold}")
+    main.FR_Winrate_Controls.setStyleSheet('background-color: #454545')
     main.GameTabLine.setStyleSheet('background-color: #777')
     main.PlayerTabLine.setStyleSheet('background-color: #777')
     main.ed_games_search.setStyleSheet('background-color: #333; font-weight: normal')
     main.ED_Winrate_Search.setStyleSheet('background-color: #333')
+    main.BT_RNG_Description.setEnabled(True)
+    main.LA_GamesFound.setEnabled(True)
+    main.LA_IdentifiedPlayers.setEnabled(True)
 
     tab.setStyleSheet(
-        "QScrollArea > QWidget > QWidget {background: #434343}"
-        "QScrollArea QPushButton {background: #464646}"
+        "QScrollArea > QWidget > QWidget {background: #454545}"
+        "QPushButton {background: #454545}"
         "QScrollArea QLineEdit {background: #333}"
         ) 

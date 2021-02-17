@@ -35,6 +35,7 @@ from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.MTheming import set_dark_theme, get_msg_color
+from SCOFunctions.MDebugWindow import DebugWindow
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 logger = logclass('SCO', 'INFO')
@@ -187,18 +188,6 @@ class UI_TabWidget(object):
         self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 25))
         self.BT_MainApply.setText('Apply')
         self.BT_MainApply.clicked.connect(self.saveSettings)
-
-        # Debug
-        self.BT_MainDebug = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainDebug.setGeometry(QtCore.QRect(867, 430, 75, 25))
-        self.BT_MainDebug.setText('Debug')
-        self.BT_MainDebug.clicked.connect(self.debug_function)
-        self.BT_MainDebug.hide()
-
-        self.ED_Debug = QtWidgets.QLineEdit(self.TAB_Main)
-        self.ED_Debug.setGeometry(QtCore.QRect(410, 433, 450, 20))
-        self.ED_Debug.setPlaceholderText('write code here')
-        self.ED_Debug.hide()
 
         # Reset
         self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
@@ -406,7 +395,7 @@ class UI_TabWidget(object):
         self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
         self.filter_players_running = False
         self.ED_Winrate_Search.textChanged.connect(self.filter_players)
-        
+
         # Top 50
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
         self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
@@ -1685,12 +1674,7 @@ class UI_TabWidget(object):
         self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
 
         if self.settings['debug_button']:
-            self.BT_MainDebug.show()
-            self.BT_MainDebug.setShortcut("Enter")
-            self.ED_Debug.show()
-        else:
-            self.BT_MainDebug.hide()
-            self.ED_Debug.hide()
+            self.DebugWindow = DebugWindow(self)
 
         # RNG choices
         if len(self.settings['rng_choices']) > 18:
@@ -3117,21 +3101,6 @@ class UI_TabWidget(object):
             set_dark_theme(self, app, TabWidget, APPVERSION)
         else:
             self.sendInfoMessage('Restart to change back to the light theme!', color='red')
-
-    def debug_function(self):
-        """ Debug function """
-        text = self.ED_Debug.text()
-        if text == 'keyboard':
-            self.reset_keyboard_thread()
-            return
-
-        try:
-            print(f'Executing: {text}')
-            exec(text)
-            self.sendInfoMessage(f'Executing: {text}', color='blue')
-        except:
-            print(traceback.format_exc())
-            self.sendInfoMessage(f'Failed at executing: {text}', color='red')
 
     @staticmethod
     def paypal_clicked():
