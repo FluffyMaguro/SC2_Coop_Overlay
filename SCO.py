@@ -1617,7 +1617,7 @@ class UI_TabWidget(object):
             f.write('\n'.join(('@echo off',
                                 'echo Installation will start shortly...',
                                 'timeout /t 7 /nobreak > NUL',
-                                f'robocopy "{where_to_extract}" "{os.path.abspath(app_folder)}"/E',
+                                f'robocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E',
                                 'timeout /t 7 /nobreak > NUL',
                                 f'rmdir /s /q "{truePath("Updates")}"',
                                 'echo Installation completed...',
@@ -1965,7 +1965,7 @@ class UI_TabWidget(object):
 
         if color.isValid():
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
-            button.setStyleSheet(f'background-color: {color.name()}')
+            button.setStyleSheet(f'background-color: {color.name()}; color: black')
             self.settings[settings_dict[button]] = color.name()
             MF.update_settings(self.settings)
             MF.resend_init_message()
@@ -2070,7 +2070,7 @@ class UI_TabWidget(object):
         # Find MM Integration banks
         self.find_and_update_banks()
         # Select current index
-        self.update_selected_bank_item(self.settings['twitchbot']['bank_locations']['Current'])
+        self.update_selected_bank_item(self.settings['twitchbot']['bank_locations'].get('Current'))
 
     def find_and_update_banks(self):
         """ Finds banks, update UI """
