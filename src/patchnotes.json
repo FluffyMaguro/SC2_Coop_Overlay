@@ -81,5 +81,12 @@
     "Merged cache files into one",
     "The app will need to redo analysis due to changes above",
     "Minor fixes and tweaks"
+  ],
+    "232": [
+    "Dark theme added",
+    "Chat history shows when a player has left the game",
+    "Overlay shows if you did the mission in your personal best time",
+    "Added option to disable app going into tray",
+    "Small fixes and tweaks"
   ]
 }

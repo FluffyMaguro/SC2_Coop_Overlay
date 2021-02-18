@@ -2333,11 +2333,16 @@ class UI_TabWidget(object):
             elif player in self.settings['player_notes']:
                 del self.settings['player_notes'][player]
 
+    def wait_ms(self, time):
+        """ Pause executing for `time` in miliseconds"""
+        loop = QtCore.QEventLoop()
+        QtCore.QTimer.singleShot(time, loop.quit)
+        loop.exec_()
+
     def filter_players(self):
         """ Filters only players with string in name or note """
         if self.filter_players_running:
             logger.error('Filtering already running!')
-            self.ED_Winrate_Search.setText('Please wait a bit!')
 
         self.filter_players_running = True
         text = self.ED_Winrate_Search.text().lower()
@@ -2355,9 +2360,7 @@ class UI_TabWidget(object):
 
                 # If many created, pause for bit. Otherwise some PCs might struggle
                 if created > 100:
-                    loop = QtCore.QEventLoop()
-                    QtCore.QTimer.singleShot(5, loop.quit)
-                    loop.exec_()
+                    self.wait_ms(5)
                     created = 0
 
                 # Create element if necessary and show

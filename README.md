@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.31/SC2CoopOverlay.2.31.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.32/SC2CoopOverlay.2.32.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -96,6 +96,14 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.32 version
+
+      - Dark theme added
+      - Chat history shows when a player has left the game
+      - Overlay shows if you did the mission in your personal best time
+      - Added option to disable app going into tray
+      - Small fixes and tweaks
 
 * 2.31 version
 
