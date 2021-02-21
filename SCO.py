@@ -1,5 +1,6 @@
 """
-Main module for StarCraft II Co-op Overlay
+Main module for StarCraft II Co-op Overlay.
+It should have been broken into more separate files. This is way too long.
 
 Causal chain:
 Setup -> Load Settings -> UI
@@ -7,7 +8,7 @@ Setup -> Load Settings -> UI
                        -> Twitch bot (thread)
                        -> Check replays (loop of threads)
                        -> Mass replay analysis -> Player winrates (thread)
-                                               -> Generate stats (function)
+                                               -> Generate stats (function)                                          
 """
 import os
 import sys
