@@ -876,10 +876,13 @@ class mass_replay_analysis:
         """ Calculates player winrate data """
         winrate_data = dict()
         for replay in self.ReplayData:
+            if replay.full_analysis:
+                total_kills = replay.players[1]['kills'] + replay.players[2]['kills']
             for p in (1, 2):
                 player = replay.players[p]['name']
                 if not player in winrate_data:
-                    winrate_data[player] = [0, 0, list(), list(), 0]  # Wins, losses, apm, commander, commander frequency
+                    # Wins, losses, apm, commander, commander frequency, kills
+                    winrate_data[player] = [0, 0, list(), list(), 0, list()] 
 
                 if replay.result == 'Victory':
                     winrate_data[player][0] += 1
@@ -888,6 +891,8 @@ class mass_replay_analysis:
 
                 winrate_data[player][2].append(replay.players[p]['apm'])
                 winrate_data[player][3].append(replay.players[p]['commander'])
+                if replay.full_analysis and total_kills > 0:
+                    winrate_data[player][5].append(replay.players[p]['kills']/total_kills)
 
         for player in winrate_data:
             # Median APM
@@ -895,6 +900,12 @@ class mass_replay_analysis:
                 winrate_data[player][2] = statistics.median(winrate_data[player][2])
             else:
                 winrate_data[player][2] = 0
+
+            # Median kills
+            if len(winrate_data[player][5]) > 0:
+                winrate_data[player][5] = statistics.median(winrate_data[player][5])
+            else:
+                winrate_data[player][5] = 0
 
             # Commander mode and frequency
             if len(winrate_data[player][3]) > 0:

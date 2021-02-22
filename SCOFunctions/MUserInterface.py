@@ -1200,17 +1200,22 @@ class PlayerEntry:
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_losses = QtWidgets.QLabel(self.widget)
-        self.la_losses.setGeometry(QtCore.QRect(220, line_spacing, 41, 21))
+        self.la_losses.setGeometry(QtCore.QRect(205, line_spacing, 41, 21))
         self.la_losses.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_winrate = QtWidgets.QLabel(self.widget)
-        self.la_winrate.setGeometry(QtCore.QRect(290, line_spacing, 51, 21))
+        self.la_winrate.setGeometry(QtCore.QRect(260, line_spacing, 51, 21))
         self.la_winrate.setAlignment(QtCore.Qt.AlignCenter)
 
         self.la_apm = QtWidgets.QLabel(self.widget)
-        self.la_apm.setGeometry(QtCore.QRect(360, line_spacing, 51, 21))
+        self.la_apm.setGeometry(QtCore.QRect(315, line_spacing, 51, 21))
         self.la_apm.setAlignment(QtCore.Qt.AlignCenter)
         self.la_apm.setToolTip("Median APM")
+
+        self.la_kills = QtWidgets.QLabel(self.widget)
+        self.la_kills.setGeometry(QtCore.QRect(370, line_spacing, 51, 21))
+        self.la_kills.setAlignment(QtCore.Qt.AlignCenter)
+        self.la_kills.setToolTip("Median percent of kills")
 
         self.la_commander = QtWidgets.QLabel(self.widget)
         self.la_commander.setGeometry(QtCore.QRect(420, line_spacing, 81, 21))
@@ -1229,10 +1234,10 @@ class PlayerEntry:
             self.ed_note.setText(self.note)
 
         # This is necessary only sometimes (when the user is looking at the tab while its updating )
-        for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note}:
+        for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note, self.la_kills, self.la_apm}:
             item.show()
 
-        for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate}:
+        for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.la_kills, self.la_apm}:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         self.update_winrates(winrate_data)
@@ -1256,6 +1261,7 @@ class PlayerEntry:
         self.la_losses.setText(str(self.losses))
         self.la_winrate.setText(f'{self.winrate:.0f}%')
         self.la_apm.setText(f'{data[2]:.0f}')
+        self.la_kills.setText(f'{100*data[5]:.0f}%')
         self.la_commander.setText(str(data[3]))
         self.la_frequency.setText(f'{100*data[4]:.0f}%')
 

@@ -1,6 +1,7 @@
 """
 Main module for StarCraft II Co-op Overlay.
 It should have been broken into more separate files. This is way too long.
+Function cohesion could be increased, coupling decreased.
 
 Causal chain:
 Setup -> Load Settings -> UI
@@ -8,7 +9,7 @@ Setup -> Load Settings -> UI
                        -> Twitch bot (thread)
                        -> Check replays (loop of threads)
                        -> Mass replay analysis -> Player winrates (thread)
-                                               -> Generate stats (function)                                          
+                                               -> Generate stats (function)
 """
 import os
 import sys
@@ -42,7 +43,7 @@ from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 232
+APPVERSION = 233
 SETTING_FILE = truePath('Settings.json')
 
 
@@ -436,22 +437,28 @@ class UI_TabWidget(object):
 
         self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses.setGeometry(QtCore.QRect(230, 0, 45, 31))
+        self.LA_Losses.setGeometry(QtCore.QRect(215, 0, 45, 31))
         self.LA_Losses.setText("Losses")
 
         self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Winrate.setGeometry(QtCore.QRect(300, 0, 51, 31))
+        self.LA_Winrate.setGeometry(QtCore.QRect(270, 0, 51, 31))
         self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Winrate.setText("Winrate")
 
         self.LA_PL_APM = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_APM.setGeometry(QtCore.QRect(370, 0, 51, 31))
+        self.LA_PL_APM.setGeometry(QtCore.QRect(325, 0, 51, 31))
         self.LA_PL_APM.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_PL_APM.setText("APM")
         self.LA_PL_APM.setToolTip("Median APM")
 
+        self.LA_PL_Kills = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Kills.setGeometry(QtCore.QRect(380, 0, 51, 31))
+        self.LA_PL_Kills.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_PL_Kills.setText("Kills")
+        self.LA_PL_Kills.setToolTip("Median percent of kills")
+
         self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_Commander.setGeometry(QtCore.QRect(425, 0, 81, 31))
+        self.LA_PL_Commander.setGeometry(QtCore.QRect(430, 0, 81, 31))
         self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_PL_Commander.setText("#1 Com")
         self.LA_PL_Commander.setToolTip("The most played commander")
@@ -2206,7 +2213,7 @@ class UI_TabWidget(object):
                     break
 
             # Color back
-            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
+            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency, w.la_kills}:
                 item.setStyleSheet('')
 
         # New player to top
@@ -2227,8 +2234,8 @@ class UI_TabWidget(object):
         # Insert to top, show and change colors
         self.SC_PlayersScrollAreaContentsLayout.insertWidget(0, w.widget)
         w.widget.show()
-        for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency}:
-            item.setStyleSheet('color: #55f; font-weight: bold')
+        for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency, w.la_kills}:
+            item.setStyleSheet('QLabel {color: #55f; font-weight: bold}')
 
     def update_player_tab(self, winrate_data, show_max=50):
         """ Updates player tab based on provide winrate data """
