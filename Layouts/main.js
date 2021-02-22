@@ -122,21 +122,21 @@ function playerWinrate(dat) {
     for (let [key, value] of Object.entries(dat['data'])) {
         // no data ([None])
         if ((value.length == 1) && (value[0] == null)) {
-            text = text + 'No games played with <span class="player_stat">' + key + '</span>'
+            text += 'No games played with <span class="player_stat">' + key + '</span>'
 
         // no winrate data but with a player note ([None, note])
         } else if ((value.length == 2) && (value[0] == null)) {
-            text = text + 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]
+            text += 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]
 
         // winrate data ([wins, losses, apm, commander, frequency])
-        } else if (value.length == 5) {
-            let total_games = value[0] + value[1];
-            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)'
-
-        // winrate data and player note ([wins, losses, apm, commander, frequency, note])
         } else if (value.length == 6) {
             let total_games = value[0] + value[1];
-            text = text + 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate)<br>' + value[5]
+            text += 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate) (' + Math.round(100 * value[5]) + '% kills)'
+
+        // winrate data and player note ([wins, losses, apm, commander, frequency, note])
+        } else if (value.length == 7) {
+            let total_games = value[0] + value[1];
+            text += 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate) ('+ Math.round(100 * value[5]) + '% kills)<br>' + value[6]
         }
     }
     element.innerHTML = text;

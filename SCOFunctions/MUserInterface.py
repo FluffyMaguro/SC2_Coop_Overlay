@@ -1251,6 +1251,12 @@ class PlayerEntry:
     def hide(self):
         self.widget.hide()
 
+    def highlight(self, b: bool):
+        if b:
+            self.widget.setStyleSheet('QLabel {color: #55f; font-weight: bold}')
+        else:
+            self.widget.setStyleSheet('QLabel {}')
+
     def update_winrates(self, data):
         """ Updates winrate for the player. """
         self.wins = data[0]

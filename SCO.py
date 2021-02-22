@@ -2213,8 +2213,7 @@ class UI_TabWidget(object):
                     break
 
             # Color back
-            for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency, w.la_kills}:
-                item.setStyleSheet('')
+            w.highlight(False)
 
         # New player to top
         self.last_ally_player = player
@@ -2233,9 +2232,8 @@ class UI_TabWidget(object):
 
         # Insert to top, show and change colors
         self.SC_PlayersScrollAreaContentsLayout.insertWidget(0, w.widget)
+        w.highlight(True)
         w.widget.show()
-        for item in {w.la_name, w.la_wins, w.la_losses, w.la_winrate, w.la_apm, w.la_commander, w.la_frequency, w.la_kills}:
-            item.setStyleSheet('QLabel {color: #55f; font-weight: bold}')
 
     def update_player_tab(self, winrate_data, show_max=50):
         """ Updates player tab based on provide winrate data """
