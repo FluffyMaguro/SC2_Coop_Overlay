@@ -1445,9 +1445,7 @@ class UI_TabWidget(object):
                 os.replace(SETTING_FILE, f'{SETTING_FILE.replace(".json","")}_corrupted.json')
 
         # Make sure all keys are here
-        for key in self.default_settings:
-            if key not in self.settings:
-                self.settings[key] = self.default_settings[key]
+        HF.update_with_defaults(self.settings, self.default_settings)
 
         # Check for multiple instances
         if self.settings['check_for_multiple_instances'] and HF.isWindows():
