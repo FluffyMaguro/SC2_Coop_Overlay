@@ -34,14 +34,14 @@ def update_with_defaults(loaded: dict, default: dict):
         from `default` dictionary. This is done recursively for any dictionaries inside"""
     if not isinstance(default, dict) or not isinstance(loaded, dict):
         raise Exception('default and loaded has to be dictionaries')
-    
+
     for key in default:
         # If there is a new key
         if not key in loaded:
             loaded[key] = default[key]
         # If dictionary recursively do the same
         if isinstance(default[key], dict):
-            update_with_defaults(default[key], loaded[key])
+            update_with_defaults(loaded[key], default[key])
 
 
 def get_hash(file):
