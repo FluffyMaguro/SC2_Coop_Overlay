@@ -425,7 +425,7 @@ body {
     position: absolute;
     top: 5vh;
     right: -60vh;
-    width: 60vh;
+    width: 100vh;
     height: 8vh;
     text-align: right;    
     transition: all 1.5s;

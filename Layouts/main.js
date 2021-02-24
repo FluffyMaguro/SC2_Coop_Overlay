@@ -128,15 +128,15 @@ function playerWinrate(dat) {
         } else if ((value.length == 2) && (value[0] == null)) {
             text += 'No games played with <span class="player_stat">' + key + '</span><br>' + value[1]
 
-        // winrate data ([wins, losses, apm, commander, frequency])
-        } else if (value.length == 6) {
+        // winrate data ([wins, losses, apm, commander, frequency, kills])
+        } else if (value.length >= 6) {
             let total_games = value[0] + value[1];
-            text += 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate) (' + Math.round(100 * value[5]) + '% kills)'
-
-        // winrate data and player note ([wins, losses, apm, commander, frequency, note])
-        } else if (value.length == 7) {
-            let total_games = value[0] + value[1];
-            text += 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span> (' + Math.round(100 * value[0] / total_games) + '% winrate) ('+ Math.round(100 * value[5]) + '% kills)<br>' + value[6]
+            text += 'You played ' + total_games + ' games with <span class="player_stat">' + key + '</span>';
+            text += ' (' + Math.round(100 * value[0] / total_games) + '% winrate | ' + Math.round(100 * value[5]) + '% kills | ' + value[2] + ' APM)'
+        } 
+        // winrate data and player note ([wins, losses, apm, commander, frequency, kills,  note])
+        if (value.length == 7) {
+            text += '<br>' + value[6]
         }
     }
     element.innerHTML = text;

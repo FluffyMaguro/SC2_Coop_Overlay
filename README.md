@@ -47,6 +47,10 @@ If you are using game capture, you have to add overlay to OBS manually.
 
 ![Screenshot](./Screenshots/1_Settings.png)
 
+**Settings (Dark theme):**
+
+![Screenshot](./Screenshots/1_Settings_B.png)
+
 **List of games you recently played:**
 
 ![Screenshot](./Screenshots/2_Games.png)
