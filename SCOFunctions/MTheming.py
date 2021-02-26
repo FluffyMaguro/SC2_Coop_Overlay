@@ -1,15 +1,30 @@
+from dataclasses import dataclass
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-MGS_COLOR = "#555"
+
+@dataclass
+class Colors:
+    """ Dataclass for colors used in the app.
+    It's separate from a palette used by PyQt5 """
+    
+    msg = "#555"
+    msg_success = "green"
+    msg_failure = 'red'
+    chat_main = '#55f'
+    chat_other = '#558F22'
+    player_highlight = "#55f"
 
 
-def get_msg_color():
-    return MGS_COLOR
+MColors = Colors()
 
 
 def set_dark_theme(main, app, tab, version):
-    global MGS_COLOR
-    MGS_COLOR = "#FFF"
+    MColors.msg = "#ccc"
+    MColors.msg_success = '#4f4'
+    MColors.msg_failure = '#f44'
+    MColors.chat_main = '#6587FF'
+    MColors.chat_other = '#20DE49'
+    MColors.player_highlight = '#77f'
 
     DARK0 = QtGui.QColor(33, 33, 33)
     DARK1 = QtGui.QColor(55, 55, 55)

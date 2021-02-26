@@ -36,7 +36,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
-from SCOFunctions.MTheming import set_dark_theme, get_msg_color
+from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.MDebugWindow import DebugWindow
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
@@ -1487,7 +1487,7 @@ class UI_TabWidget(object):
         # Check write permissions
         self.write_permissions = HF.write_permission_granted()
         if not self.write_permissions:
-            self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color='red')
+            self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color=MColors.msg_failure)
 
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
 
@@ -1542,7 +1542,7 @@ class UI_TabWidget(object):
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
 
         if not HF.isWindows():
-            self.sendInfoMessage('Update available', color='green')
+            self.sendInfoMessage('Update available', color=MColors.msg_success)
             return
 
         if os.path.isfile(save_path):
@@ -1603,7 +1603,7 @@ class UI_TabWidget(object):
         # Check if it's corrupt
         if HF.archive_is_corrupt(archive):
             os.remove(archive)
-            self.sendInfoMessage('Archive corrupt. Removing file.', color='red')
+            self.sendInfoMessage('Archive corrupt. Removing file.', color=MColors.msg_failure)
 
             self.BT_NewUpdate.clicked.disconnect()
             self.BT_NewUpdate.clicked.connect(self.start_download)
@@ -1762,12 +1762,12 @@ class UI_TabWidget(object):
 
         hotkeys = [h for h in hotkeys if not h in {None, ''}]
         if len(hotkeys) > len(set(hotkeys)):
-            self.sendInfoMessage('Warning: Overlapping hotkeys!', color='red')
+            self.sendInfoMessage('Warning: Overlapping hotkeys!', color=MColors.msg_failure)
 
         # Registry
         out = HF.add_to_startup(self.settings['start_with_windows'])
         if out is not None:
-            self.sendInfoMessage(f'Warning: {out}', color='red')
+            self.sendInfoMessage(f'Warning: {out}', color=MColors.msg_failure)
             self.settings['start_with_windows'] = False
             self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
 
@@ -1853,7 +1853,8 @@ class UI_TabWidget(object):
                         self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
                     except:
                         logger.error(traceback.format_exc())
-                        self.sendInfoMessage(f'Failed to initialize hotkey ({key.replace("hotkey_","")})! Try a different one.', color='red')
+                        self.sendInfoMessage(f'Failed to initialize hotkey ({key.replace("hotkey_","")})! Try a different one.',
+                                             color=MColors.msg_failure)
         # Update
         else:
             for key in hotkey_func_dict:
@@ -1906,7 +1907,7 @@ class UI_TabWidget(object):
             logger.info(f'Changing screenshot_folder to {folder}')
             self.LA_ScreenshotLocation.setText(folder)
             self.settings['screenshot_folder'] = folder
-            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color='green')
+            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color=MColors.msg_success)
 
     def findReplayFolder(self):
         """ Finds and sets account folder """
@@ -1921,7 +1922,7 @@ class UI_TabWidget(object):
                 logger.info(f'Changing accountdir to {folder}')
                 self.settings['account_folder'] = folder
                 self.LA_CurrentReplayFolder.setText(folder)
-                self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color='green')
+                self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color=MColors.msg_success)
                 MF.update_names_and_handles(folder, MF.AllReplays)
                 if hasattr(self, 'CAnalysis'):
                     self.updating_maps = QtWidgets.QWidget()
@@ -1940,12 +1941,12 @@ class UI_TabWidget(object):
                     self.update_winrate_data()
 
             else:
-                self.sendInfoMessage('Invalid account folder!', color='red')
+                self.sendInfoMessage('Invalid account folder!', color=MColors.msg_failure)
 
     def sendInfoMessage(self, message, color=None):
         """ Sends info message. `color` specifies message color"""
         self.LA_InfoLabel.setText(message)
-        self.LA_InfoLabel.setStyleSheet(f'color: {color if color is not None else get_msg_color()}')
+        self.LA_InfoLabel.setStyleSheet(f'color: {color if color is not None else MColors.msg}')
 
     def validateAOM(self):
         """ Validates if name/key combination is valid """
@@ -1956,9 +1957,9 @@ class UI_TabWidget(object):
             response = HF.validate_aom_account_key(account, key)
 
             if 'Success' in response:
-                self.sendInfoMessage(response, color='green')
+                self.sendInfoMessage(response, color=MColors.msg_success)
             else:
-                self.sendInfoMessage(response, color='red')
+                self.sendInfoMessage(response, color=MColors.msg_failure)
         else:
             self.sendInfoMessage('Fill your account name and secret key first!')
 
@@ -2007,7 +2008,7 @@ class UI_TabWidget(object):
 
         # Load overlay
         if not os.path.isfile(truePath('Layouts/Layout.html')):
-            self.sendInfoMessage("Error! Failed to locate the html file", color='red')
+            self.sendInfoMessage("Error! Failed to locate the html file", color=MColors.msg_failure)
             logger.error("Error! Failed to locate the html file")
 
         else:
@@ -2311,7 +2312,7 @@ class UI_TabWidget(object):
 
                 # Update UI in game tab
                 self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(full_data, self.CAnalysis.main_handles,
-                                                                                 self.SC_GamesScrollAreaContent, self)
+                                                                                 self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
 
                 # Update player tab & set winrate data in MF & generate stats
@@ -2399,7 +2400,7 @@ class UI_TabWidget(object):
         # Update game tab
         self.game_UI_dict = dict()
         for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
-            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent, self)
+            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
         # Update stats tab
@@ -2898,11 +2899,11 @@ class UI_TabWidget(object):
 
             # Files smaller than 10kb consider as empty
             if os.path.getsize(path) < 10000:
-                self.sendInfoMessage(f'Show overlay before taking screenshot!', color='red')
+                self.sendInfoMessage(f'Show overlay before taking screenshot!', color=MColors.msg_failure)
                 os.remove(path)
             else:
                 logger.info(f'Taking screenshot! {path}')
-                self.sendInfoMessage(f'Taking screenshot! {path}', color='green')
+                self.sendInfoMessage(f'Taking screenshot! {path}', color=MColors.msg_success)
         except:
             logger.error(traceback.format_exc())
 
@@ -3099,7 +3100,7 @@ class UI_TabWidget(object):
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
                 self.game_UI_dict[r.file].widget.show()
             else:
-                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent, self)
+                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
 
     def change_theme(self):
@@ -3107,7 +3108,7 @@ class UI_TabWidget(object):
         if self.CH_DarkTheme.isChecked():
             set_dark_theme(self, app, TabWidget, APPVERSION)
         else:
-            self.sendInfoMessage('Restart to change back to the light theme!', color='red')
+            self.sendInfoMessage('Restart to change back to the light theme!', color=MColors.msg_failure)
 
     @staticmethod
     def paypal_clicked():
