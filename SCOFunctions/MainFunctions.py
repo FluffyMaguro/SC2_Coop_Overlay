@@ -36,6 +36,7 @@ APP_CLOSING = False
 session_games = {'Victory': 0, 'Defeat': 0}
 WEBPAGE = None
 RNG_COMMANDER = dict()
+session = requests.Session()
 
 
 def stop_threads():
@@ -299,7 +300,7 @@ def check_replays():
                                 return replay_dict
 
         # Wait while checking if the thread should end early
-        for i in range(6):
+        for i in range(int(SETTINGS['replay_check_interval'])):
             time.sleep(0.5)
             if APP_CLOSING:
                 return None
@@ -323,7 +324,7 @@ def upload_to_aom(file_path, replay_dict):
     url = f"https://starcraft2coop.com/scripts/assistant/replay.php?username={SETTINGS['aom_account']}&secretkey={SETTINGS['aom_secret_key']}"
     try:
         with open(file_path, 'rb') as file:
-            response = requests.post(url, files={'file': file})
+            response = session.post(url, files={'file': file})
         logger.info(f'Replay upload reponse: {response.text}')
 
         if 'Success' in response.text or 'Error' in response.text:
@@ -518,7 +519,7 @@ def check_for_new_game():
 
         try:
             # Request player data from the game
-            resp = requests.get('http://localhost:6119/game', timeout=6).json()
+            resp = session.get('http://localhost:6119/game', timeout=6).json()
             players = resp.get('players', list())
 
             # Don't show in if all players are type user - versus game

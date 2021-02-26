@@ -1,7 +1,5 @@
 """
 Main module for StarCraft II Co-op Overlay.
-It should have been broken into more separate files. This is way too long.
-Function cohesion could be increased, coupling decreased.
 
 Causal chain:
 Setup -> Load Settings -> UI
@@ -18,7 +16,6 @@ import shutil
 import platform
 import threading
 import traceback
-import webbrowser
 import urllib.request
 from functools import partial
 from datetime import datetime
@@ -30,7 +27,7 @@ import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
-from SCOFunctions.MRandomizer import randomize
+import SCOFunctions.Tabs as Tabs
 from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
@@ -38,7 +35,6 @@ from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.MDebugWindow import DebugWindow
-from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
@@ -75,1273 +71,26 @@ class UI_TabWidget(object):
         self.signal_manager = Signal_Manager()
         self.signal_manager.showHidePerfOverlay.connect(self.show_hide_performance_overlay)
 
-        ##########################
-        ######## MAIN TAB ########
-        ##########################
+        # Tabs
+        self.TAB_Main = Tabs.MainTab(self, APPVERSION)
+        self.TAB_Players = Tabs.PlayerTab(self, TabWidget)
+        self.TAB_Games = Tabs.GameTab(self, TabWidget)
+        self.TAB_Stats = Tabs.StatsTab(self)
+        self.TAB_Randomizer = Tabs.RngTab(self)
+        self.TAB_TwitchBot = Tabs.TwitchTab(self)
+        self.TAB_Resources = Tabs.ResourceTab(self)
+        self.TAB_Links = Tabs.LinkTab()
+
+        # Add tabs to the widget
+        TabWidget.addTab(self.TAB_Main, "Settings")
+        TabWidget.addTab(self.TAB_Games, "Games")
+        TabWidget.addTab(self.TAB_Players, "Players")
+        TabWidget.addTab(self.TAB_Stats, "Statistics")
+        TabWidget.addTab(self.TAB_Randomizer, "Randomizer")
+        TabWidget.addTab(self.TAB_TwitchBot, "Twitch")
+        TabWidget.addTab(self.TAB_Resources, "Performance")
+        TabWidget.addTab(self.TAB_Links, "Links")
 
-        self.TAB_Main = QtWidgets.QWidget()
-        ch_distance = 20
-
-        # Start with Windows
-        self.CH_StartWithWindows = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, ch_distance, 230, 17))
-        self.CH_StartWithWindows.setText("Start with Windows")
-        self.CH_StartWithWindows.setToolTip("The app will start automatically with the Windows")
-
-        # Start minimized
-        self.CH_StartMinimized = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_StartMinimized.setGeometry(QtCore.QRect(20, 2 * ch_distance, 230, 17))
-        self.CH_StartMinimized.setText("Start minimized")
-        self.CH_StartMinimized.setToolTip("The app will start minimized")
-
-        # Enable logging
-        self.CH_EnableLogging = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_EnableLogging.setGeometry(QtCore.QRect(20, 4 * ch_distance, 230, 17))
-        self.CH_EnableLogging.setText("Enable logging")
-        self.CH_EnableLogging.setToolTip(f"App logs will be saved into a text file")
-
-        # Show session hidden
-        self.CH_ShowSession = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowSession.setGeometry(QtCore.QRect(20, 5 * ch_distance, 300, 17))
-        self.CH_ShowSession.setText("Show session stats")
-        self.CH_ShowSession.setToolTip("Shows how many games you played and won in the current session on the overaly")
-
-        # Show player winrate and notes
-        self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ShowPlayerWinrates.setGeometry(QtCore.QRect(20, 6 * ch_distance, 230, 17))
-        self.CH_ShowPlayerWinrates.setText("Show player winrates and notes")
-        self.CH_ShowPlayerWinrates.setToolTip(
-            "The number of games and winrate you had with your ally will be shown when a game starts.\nPlayer note will show as well if specified. Requires restart to enable."
-        )
-
-        # Mnimized when clicked
-        self.CH_MinimizeToTray = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_MinimizeToTray.setGeometry(QtCore.QRect(20, 3 * ch_distance, 300, 17))
-        self.CH_MinimizeToTray.setText("Minimize to tray")
-        self.CH_MinimizeToTray.setToolTip("On closing the app will minimize to tray. The app can be closed there.")
-
-        # Duration
-        self.SP_Duration = QtWidgets.QSpinBox(self.TAB_Main)
-        self.SP_Duration.setGeometry(QtCore.QRect(250, 20, 42, 22))
-
-        self.LA_Duration = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Duration.setGeometry(QtCore.QRect(300, 20, 191, 21))
-        self.LA_Duration.setText("Duration")
-        self.LA_Duration.setToolTip("How long the overlay will show after a new game is analysed.")
-
-        # Monitor
-        self.SP_Monitor = QtWidgets.QSpinBox(self.TAB_Main)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 55, 42, 22))
-        self.SP_Monitor.setMinimum(1)
-        self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
-
-        self.LA_Monitor = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 55, 47, 20))
-        self.LA_Monitor.setText("Monitor")
-        self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
-
-        # Dark theme
-        self.CH_DarkTheme = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
-        self.CH_DarkTheme.setText("Dark theme")
-        self.CH_DarkTheme.setToolTip("Enables dark theme. Requires restart!")
-        self.CH_DarkTheme.stateChanged.connect(self.change_theme)
-
-        # Force hidden
-        self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self.TAB_Main)
-        self.CH_ForceHideOverlay.setGeometry(QtCore.QRect(250, 6 * ch_distance, 300, 17))
-        self.CH_ForceHideOverlay.setText("Don\'t show overlay on-screen")
-        self.CH_ForceHideOverlay.setToolTip(
-            "The overlay won't show directly on your screen. You can use this setting\nfor example when it's meant to be visible only on stream.")
-
-        # Replay folder
-        self.LA_AccountFolder = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_AccountFolder.setGeometry(QtCore.QRect(520, 15, 350, 16))
-        self.LA_AccountFolder.setText("Change locations of StarCraft II account folder and screenshot folder")
-
-        self.BT_ChooseFolder = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_ChooseFolder.setGeometry(QtCore.QRect(520, 36, 150, 25))
-        self.BT_ChooseFolder.setText('Account folder')
-        self.BT_ChooseFolder.setToolTip(
-            'Choose your account folder.\nThis is usually not necessary and the app will find its location automatically.')
-        self.BT_ChooseFolder.clicked.connect(self.findReplayFolder)
-
-        self.LA_CurrentReplayFolder = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_CurrentReplayFolder.setEnabled(False)
-        self.LA_CurrentReplayFolder.setGeometry(QtCore.QRect(520, 53, 400, 31))
-
-        # Screenshot folder
-        self.BT_ScreenshotLocation = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_ScreenshotLocation.setGeometry(QtCore.QRect(520, 90, 150, 25))
-        self.BT_ScreenshotLocation.setText('Screenshot folder')
-        self.BT_ScreenshotLocation.setToolTip('Choose the folder where screenshots are saved')
-        self.BT_ScreenshotLocation.clicked.connect(self.chooseScreenshotFolder)
-
-        self.LA_ScreenshotLocation = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_ScreenshotLocation.setEnabled(False)
-        self.LA_ScreenshotLocation.setGeometry(QtCore.QRect(520, 108, 400, 31))
-
-        # Info label
-        self.LA_InfoLabel = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_InfoLabel.setGeometry(QtCore.QRect(20, 560, 800, 20))
-
-        # Apply
-        self.BT_MainApply = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainApply.setGeometry(QtCore.QRect(867, 400, 75, 25))
-        self.BT_MainApply.setText('Apply')
-        self.BT_MainApply.clicked.connect(self.saveSettings)
-
-        # Reset
-        self.BT_MainReset = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
-        self.BT_MainReset.setText('Reset')
-        self.BT_MainReset.clicked.connect(self.resetSettings)
-        self.BT_MainReset.setToolTip("Reset all settings apart from player notes, settings for starcraft2coop and the twitch bot")
-
-        # Screenshot
-        self.BT_Screenshot = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_Screenshot.setGeometry(QtCore.QRect(19, 400, 157, 40))
-        self.BT_Screenshot.setText('Overlay screenshot')
-        self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop or chosen location')
-        self.BT_Screenshot.clicked.connect(self.save_screenshot)
-
-        ### Hotkey frame
-        self.FR_HotkeyFrame = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_HotkeyFrame.setGeometry(QtCore.QRect(20, 170, 411, 211))
-        self.FR_HotkeyFrame.setAutoFillBackground(True)
-        self.FR_HotkeyFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_HotkeyFrame.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        # Label
-        self.LA_Hotkeys = QtWidgets.QLabel(self.FR_HotkeyFrame)
-        self.LA_Hotkeys.setGeometry(QtCore.QRect(0, 10, 411, 20))
-        self.LA_Hotkeys.setStyleSheet("font-weight: bold")
-        self.LA_Hotkeys.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Hotkeys.setText("Hotkeys")
-
-        # Show/hide
-        self.BT_ShowHide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_ShowHide.setGeometry(QtCore.QRect(19, 50, 115, 25))
-        self.BT_ShowHide.setText("Show / Hide")
-        self.BT_ShowHide.clicked.connect(MF.keyboard_SHOWHIDE)
-
-        self.KEY_ShowHide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_ShowHide.setGeometry(QtCore.QRect(20, 80, 113, 20))
-        self.KEY_ShowHide.setToolTip('The key for both showing and hiding the overlay')
-        self.KEY_ShowHide.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Show
-        self.BT_Show = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Show.setGeometry(QtCore.QRect(149, 50, 115, 25))
-        self.BT_Show.setText("Show")
-        self.BT_Show.clicked.connect(MF.keyboard_SHOW)
-
-        self.KEY_Show = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Show.setGeometry(QtCore.QRect(150, 80, 113, 20))
-        self.KEY_Show.setToolTip('The key for just showing the overlay')
-        self.KEY_Show.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Hide
-        self.BT_Hide = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Hide.setGeometry(QtCore.QRect(279, 50, 115, 25))
-        self.BT_Hide.setText("Hide")
-        self.BT_Hide.clicked.connect(MF.keyboard_HIDE)
-
-        self.KEY_Hide = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Hide.setGeometry(QtCore.QRect(280, 80, 113, 20))
-        self.KEY_Hide.setToolTip('The key for just hiding the overlay')
-        self.KEY_Hide.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Newer
-        self.BT_Newer = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Newer.setGeometry(QtCore.QRect(19, 120, 115, 25))
-        self.BT_Newer.setText("Show newer replay")
-        self.BT_Newer.clicked.connect(MF.keyboard_NEWER)
-
-        self.KEY_Newer = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Newer.setGeometry(QtCore.QRect(20, 150, 113, 20))
-        self.KEY_Newer.setToolTip('The key for showing a newer replay than is currently displayed')
-        self.KEY_Newer.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Older
-        self.BT_Older = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Older.setGeometry(QtCore.QRect(149, 120, 115, 25))
-        self.BT_Older.setText("Show older replay")
-        self.BT_Older.clicked.connect(MF.keyboard_OLDER)
-
-        self.KEY_Older = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Older.setGeometry(QtCore.QRect(150, 150, 113, 20))
-        self.KEY_Older.setToolTip('The key for showing an older replay than is currently displayed')
-        self.KEY_Older.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Winrates
-        self.BT_Winrates = QtWidgets.QPushButton(self.FR_HotkeyFrame)
-        self.BT_Winrates.setGeometry(QtCore.QRect(279, 120, 115, 25))
-        self.BT_Winrates.setText("Show player info")
-        self.BT_Winrates.clicked.connect(MF.keyboard_PLAYERWINRATES)
-
-        self.KEY_Winrates = MUI.CustomKeySequenceEdit(self.FR_HotkeyFrame)
-        self.KEY_Winrates.setGeometry(QtCore.QRect(280, 150, 113, 20))
-        self.KEY_Winrates.setToolTip('The key for showing the last player winrates and notes')
-        self.KEY_Winrates.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Colors
-        self.FR_CustomizeColors = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_CustomizeColors.setGeometry(QtCore.QRect(445, 170, 241, 211))
-        self.FR_CustomizeColors.setAutoFillBackground(True)
-        self.FR_CustomizeColors.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_CustomizeColors.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        # Customize colors
-        self.LA_CustomizeColors = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_CustomizeColors.setGeometry(QtCore.QRect(0, 10, 241, 20))
-        self.LA_CustomizeColors.setStyleSheet("font-weight: bold")
-        self.LA_CustomizeColors.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_CustomizeColors.setText("Customize colors")
-
-        # Note
-        self.LA_More = QtWidgets.QLabel(self.FR_CustomizeColors)
-        self.LA_More.setEnabled(False)
-        self.LA_More.setGeometry(QtCore.QRect(0, 19, 241, 31))
-        self.LA_More.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_More.setText("more via editing custom.css")
-
-        color_x_offset = 50
-        color_height = 20
-        color_width = 140
-
-        self.LA_P1 = QtWidgets.QPushButton(self.FR_CustomizeColors)
-        self.LA_P1.setGeometry(QtCore.QRect(color_x_offset, 70, color_width, color_height))
-        self.LA_P1.clicked.connect(lambda: self.openColorDialog(self.LA_P1))
-
-        self.LA_P2 = QtWidgets.QPushButton(self.FR_CustomizeColors)
-        self.LA_P2.setGeometry(QtCore.QRect(color_x_offset, 100, color_width, color_height))
-        self.LA_P2.clicked.connect(lambda: self.openColorDialog(self.LA_P2))
-
-        self.LA_Amon = QtWidgets.QPushButton(self.FR_CustomizeColors)
-        self.LA_Amon.setGeometry(QtCore.QRect(color_x_offset, 130, color_width, color_height))
-        self.LA_Amon.clicked.connect(lambda: self.openColorDialog(self.LA_Amon))
-
-        self.LA_Mastery = QtWidgets.QPushButton(self.FR_CustomizeColors)
-        self.LA_Mastery.setGeometry(QtCore.QRect(color_x_offset, 160, color_width, color_height))
-        self.LA_Mastery.clicked.connect(lambda: self.openColorDialog(self.LA_Mastery))
-
-        # Aom
-        self.FR_Aom = QtWidgets.QFrame(self.TAB_Main)
-        self.FR_Aom.setGeometry(QtCore.QRect(700, 170, 241, 211))
-        self.FR_Aom.setAutoFillBackground(True)
-        self.FR_Aom.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Aom.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        self.LA_AomPage = QtWidgets.QLabel(self.FR_Aom)
-        self.LA_AomPage.setGeometry(QtCore.QRect(0, 10, 241, 20))
-        self.LA_AomPage.setStyleSheet("font-weight: bold")
-        self.LA_AomPage.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_AomPage.setText("Settings for starcraft2coop.com")
-
-        self.ED_AomAccount = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomAccount.setGeometry(QtCore.QRect(62, 70, 121, 20))
-        self.ED_AomAccount.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_AomAccount.setPlaceholderText("account name")
-
-        self.ED_AomSecretKey = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomSecretKey.setGeometry(QtCore.QRect(62, 100, 121, 20))
-        self.ED_AomSecretKey.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_AomSecretKey.setPlaceholderText("secret key")
-        self.ED_AomSecretKey.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
-
-        self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
-        self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 25))
-        self.BT_AomTest.clicked.connect(self.validateAOM)
-        self.BT_AomTest.setText("Verify")
-        self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
-
-        #Paypal
-        x = 835
-        y = 520
-        self.IMG_Front_Donate = QtWidgets.QLabel(self.TAB_Main)
-        self.IMG_Front_Donate.setGeometry(QtCore.QRect(835, y, 145, 50))
-        self.IMG_Front_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
-        self.IMG_Front_Donate.setGraphicsEffect(MUI.get_shadow())
-
-        self.BT_Front_Donate = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_Front_Donate.setGeometry(QtCore.QRect(x - 5, y, 140, 50))
-        self.BT_Front_Donate.clicked.connect(self.paypal_clicked)
-        self.BT_Front_Donate.setStyleSheet("QPushButton {border: 0px; background: transparent}")
-        self.BT_Front_Donate.setToolTip(f'Donate to support this app')
-
-        # Version
-        self.LA_Version = QtWidgets.QLabel(self.TAB_Main)
-        self.LA_Version.setGeometry(QtCore.QRect(825, 560, 141, 20))
-        self.LA_Version.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
-        self.LA_Version.setText(f"The app is up to date (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
-        self.LA_Version.setEnabled(False)
-
-        ##############################
-        ######### PLAYERS TAB ########
-        ##############################
-
-        self.TAB_Players = QtWidgets.QWidget()
-
-        # Controls
-        self.FR_Winrate_Controls = QtWidgets.QFrame(self.TAB_Players)
-        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 550, TabWidget.frameGeometry().width(), 50))
-        self.FR_Winrate_Controls.setAutoFillBackground(True)
-        self.FR_Winrate_Controls.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Winrate_Controls.setFrameShadow(QtWidgets.QFrame.Raised)
-
-        # Search
-        self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 7, 610, 20))
-        self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
-        self.filter_players_running = False
-        self.ED_Winrate_Search.textChanged.connect(self.filter_players)
-
-        # Top 50
-        self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
-        self.CH_OnlyTop50.setText("Show max 50 players")
-        self.CH_OnlyTop50.setChecked(True)
-        self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
-
-        # Scroll
-        self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self.TAB_Players)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 31, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 91))
-        self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.SC_PlayersScrollArea.setWidgetResizable(True)
-
-        self.SC_PlayersScrollAreaContents = QtWidgets.QWidget()
-        self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 31, 961, 530))
-        self.SC_PlayersScrollAreaContentsLayout = QtWidgets.QVBoxLayout()
-        self.SC_PlayersScrollAreaContentsLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_PlayersScrollAreaContentsLayout.setContentsMargins(10, 0, 0, 0)
-        self.SC_PlayersScrollAreaContentsLayout.setSpacing(0)
-
-        # Heading
-        self.WD_WinratesHeading = QtWidgets.QWidget(self.TAB_Players)
-        self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 0, 981, 31))
-        self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
-        self.WD_WinratesHeading.setAutoFillBackground(True)
-        self.WD_WinratesHeading.setBackgroundRole(QtGui.QPalette.Background)
-
-        self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Name.setGeometry(QtCore.QRect(30, 0, 41, 31))
-        self.LA_Name.setText("Name")
-
-        self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Wins.setGeometry(QtCore.QRect(145, 0, 50, 31))
-        self.LA_Wins.setText("▼ Wins")
-
-        self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Losses.setGeometry(QtCore.QRect(215, 0, 45, 31))
-        self.LA_Losses.setText("Losses")
-
-        self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Winrate.setGeometry(QtCore.QRect(270, 0, 51, 31))
-        self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Winrate.setText("Winrate")
-
-        self.LA_PL_APM = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_APM.setGeometry(QtCore.QRect(325, 0, 51, 31))
-        self.LA_PL_APM.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_APM.setText("APM")
-        self.LA_PL_APM.setToolTip("Median APM")
-
-        self.LA_PL_Kills = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_Kills.setGeometry(QtCore.QRect(380, 0, 51, 31))
-        self.LA_PL_Kills.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Kills.setText("Kills")
-        self.LA_PL_Kills.setToolTip("Median percent of kills")
-
-        self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_Commander.setGeometry(QtCore.QRect(430, 0, 81, 31))
-        self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Commander.setText("#1 Com")
-        self.LA_PL_Commander.setToolTip("The most played commander")
-
-        self.LA_PL_Frequency = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_PL_Frequency.setGeometry(QtCore.QRect(495, 0, 81, 31))
-        self.LA_PL_Frequency.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Frequency.setText("Frequency")
-        self.LA_PL_Frequency.setToolTip("The most played commander frequency")
-
-        self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Note.setGeometry(QtCore.QRect(580, 0, 300, 31))
-        self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Note.setText("Player note (displayed together with winrates)")
-
-        self.PlayerTabLine = MUI.Cline(self.WD_WinratesHeading)
-        self.PlayerTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
-
-        # Wait
-        self.LA_Winrates_Wait = QtWidgets.QLabel(self.TAB_Players)
-        self.LA_Winrates_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_PlayersScrollAreaContents.width(), self.SC_PlayersScrollAreaContents.height()))
-        self.LA_Winrates_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
-
-        ###########################
-        ######## GAMES TAB ########
-        ###########################
-
-        self.TAB_Games = QtWidgets.QWidget()
-
-        # Scroll
-        self.SC_GamesScrollArea = QtWidgets.QScrollArea(self.TAB_Games)
-        self.SC_GamesScrollArea.setGeometry(QtCore.QRect(0, 30, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 30))
-        self.SC_GamesScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.SC_GamesScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.SC_GamesScrollArea.setWidgetResizable(True)
-
-        self.SC_GamesScrollAreaContent = QtWidgets.QWidget()
-        self.SC_GamesScrollAreaContent.setGeometry(QtCore.QRect(0, 0, 931, 561))
-        self.SC_GamesScrollAreaContentLayout = QtWidgets.QVBoxLayout()
-        self.SC_GamesScrollAreaContentLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.SC_GamesScrollAreaContentLayout.setContentsMargins(10, 0, 0, 0)
-
-        self.LA_Games_Wait = QtWidgets.QLabel(self.SC_GamesScrollAreaContent)
-        self.LA_Games_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_GamesScrollAreaContent.width(), self.SC_GamesScrollAreaContent.height()))
-        self.LA_Games_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Games_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
-
-        # Heading
-        self.WD_RecentGamesHeading = QtWidgets.QWidget(self.TAB_Games)
-        self.WD_RecentGamesHeading.setGeometry(QtCore.QRect(0, 0, 990, 32))
-        self.WD_RecentGamesHeading.setStyleSheet("font-weight: bold")
-        self.WD_RecentGamesHeading.setAutoFillBackground(True)
-        self.WD_RecentGamesHeading.setBackgroundRole(QtGui.QPalette.Background)
-
-        self.LA_Difficulty = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Difficulty.setGeometry(QtCore.QRect(580, 0, 81, 31))
-        self.LA_Difficulty.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Difficulty.setText("Difficulty")
-
-        self.LA_Player2 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player2.setGeometry(QtCore.QRect(305, 0, 200, 31))
-        self.LA_Player2.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Player2.setText("Player 2")
-
-        self.LA_Enemy = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Enemy.setGeometry(QtCore.QRect(485, 0, 41, 31))
-        self.LA_Enemy.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Enemy.setText("Enemy")
-
-        self.LA_Length = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Length.setGeometry(QtCore.QRect(525, 0, 71, 31))
-        self.LA_Length.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Length.setText("Length")
-
-        self.LA_Map = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Map.setGeometry(QtCore.QRect(30, 0, 125, 31))
-        self.LA_Map.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.LA_Map.setText("Map")
-
-        self.LA_Player1 = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Player1.setGeometry(QtCore.QRect(170, 0, 200, 31))
-        self.LA_Player1.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Player1.setText("Player 1")
-
-        self.LA_Result = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Result.setGeometry(QtCore.QRect(145, 0, 50, 31))
-        self.LA_Result.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Result.setText("Result")
-
-        self.LA_Date = QtWidgets.QLabel(self.WD_RecentGamesHeading)
-        self.LA_Date.setGeometry(QtCore.QRect(655, 0, 101, 31))
-        self.LA_Date.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Date.setText("Time")
-
-        self.GameTabLine = MUI.Cline(self.WD_RecentGamesHeading)
-        self.GameTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
-
-        self.ed_games_search = QtWidgets.QLineEdit(self.WD_RecentGamesHeading)
-        self.ed_games_search.setGeometry(QtCore.QRect(740, 5, 160, 20))
-        self.ed_games_search.setAlignment(QtCore.Qt.AlignCenter)
-        self.ed_games_search.setStyleSheet("font-weight: normal")
-        self.ed_games_search.setPlaceholderText("search")
-
-        self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
-        self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))
-        self.bt_games_search.setStyleSheet("font-weight: normal")
-        self.bt_games_search.setText("GO")
-        self.bt_games_search.clicked.connect(self.search_games)
-        self.bt_games_search.setShortcut("Return")
-
-        # Finishing
-        self.SC_GamesScrollAreaContent.setLayout(self.SC_GamesScrollAreaContentLayout)
-        self.SC_GamesScrollArea.setWidget(self.SC_GamesScrollAreaContent)
-
-        ###########################
-        ######## STATS TAB ########
-        ###########################
-
-        self.TAB_Stats = QtWidgets.QWidget()
-        self.FR_Stats = QtWidgets.QFrame(self.TAB_Stats)
-        self.FR_Stats.setGeometry(QtCore.QRect(10, 0, 964, 151))
-
-        # Difficulty
-        self.CH_DiffCasual = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffCasual.setGeometry(QtCore.QRect(10, 20, 70, 17))
-        self.CH_DiffCasual.setChecked(True)
-        self.CH_DiffCasual.setText("Casual")
-        self.CH_DiffCasual.stateChanged.connect(self.generate_stats)
-
-        self.CH_DiffNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffNormal.setGeometry(QtCore.QRect(10, 40, 70, 17))
-        self.CH_DiffNormal.setChecked(True)
-        self.CH_DiffNormal.setText("Normal")
-        self.CH_DiffNormal.stateChanged.connect(self.generate_stats)
-
-        self.CH_DiffHard = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffHard.setGeometry(QtCore.QRect(10, 60, 70, 17))
-        self.CH_DiffHard.setChecked(True)
-        self.CH_DiffHard.setText("Hard")
-        self.CH_DiffHard.stateChanged.connect(self.generate_stats)
-
-        self.CH_DiffBrutal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutal.setGeometry(QtCore.QRect(10, 80, 70, 17))
-        self.CH_DiffBrutal.setChecked(True)
-        self.CH_DiffBrutal.setText("Brutal")
-        self.CH_DiffBrutal.stateChanged.connect(self.generate_stats)
-
-        self.CH_DiffBrutalPlus = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DiffBrutalPlus.setGeometry(QtCore.QRect(10, 100, 70, 17))
-        self.CH_DiffBrutalPlus.setChecked(True)
-        self.CH_DiffBrutalPlus.setText("Brutal+")
-        self.CH_DiffBrutalPlus.stateChanged.connect(self.generate_stats)
-
-        # Region
-        self.CH_Region_NA = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_NA.setGeometry(QtCore.QRect(90, 20, 71, 17))
-        self.CH_Region_NA.setChecked(True)
-        self.CH_Region_NA.setText("Americas")
-        self.CH_Region_NA.stateChanged.connect(self.generate_stats)
-
-        self.CH_Region_EU = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_EU.setGeometry(QtCore.QRect(90, 40, 71, 17))
-        self.CH_Region_EU.setChecked(True)
-        self.CH_Region_EU.setText("Europe")
-        self.CH_Region_EU.stateChanged.connect(self.generate_stats)
-
-        self.CH_Region_KR = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_KR.setGeometry(QtCore.QRect(90, 60, 61, 17))
-        self.CH_Region_KR.setChecked(True)
-        self.CH_Region_KR.setText("Asia")
-        self.CH_Region_KR.stateChanged.connect(self.generate_stats)
-
-        self.CH_Region_CN = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Region_CN.setGeometry(QtCore.QRect(90, 80, 61, 17))
-        self.CH_Region_CN.setChecked(True)
-        self.CH_Region_CN.setText("China")
-        self.CH_Region_CN.stateChanged.connect(self.generate_stats)
-
-        # Type
-        self.CH_TypeNormal = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeNormal.setGeometry(QtCore.QRect(180, 20, 110, 17))
-        self.CH_TypeNormal.setChecked(True)
-        self.CH_TypeNormal.setText("Normal games")
-        self.CH_TypeNormal.stateChanged.connect(self.generate_stats)
-
-        self.CH_TypeMutation = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_TypeMutation.setGeometry(QtCore.QRect(180, 40, 110, 17))
-        self.CH_TypeMutation.setChecked(True)
-        self.CH_TypeMutation.setText("Mutations")
-        self.CH_TypeMutation.stateChanged.connect(self.generate_stats)
-
-        self.CH_AllHistoric = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_AllHistoric.setGeometry(QtCore.QRect(290, 20, 180, 17))
-        self.CH_AllHistoric.setChecked(True)
-        self.CH_AllHistoric.setText("Override folder selection")
-        self.CH_AllHistoric.setToolTip("Shows stats from all replays regardless of which folder is selected")
-        self.CH_AllHistoric.stateChanged.connect(self.generate_stats)
-
-        self.CH_DualMain = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_DualMain.setGeometry(QtCore.QRect(290, 40, 250, 17))
-        self.CH_DualMain.setChecked(False)
-        self.CH_DualMain.setText("Include multi-box games")
-        self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
-        self.CH_DualMain.stateChanged.connect(self.generate_stats)
-
-        # Sub15 and both mains
-        self.CH_Sub15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Sub15.setGeometry(QtCore.QRect(290, 60, 150, 17))
-        self.CH_Sub15.setChecked(True)
-        self.CH_Sub15.setText("Include levels 1-14")
-        self.CH_Sub15.setToolTip("Include games where the main player was level 1-14")
-        self.CH_Sub15.stateChanged.connect(self.generate_stats)
-
-        self.CH_Over15 = QtWidgets.QCheckBox(self.FR_Stats)
-        self.CH_Over15.setGeometry(QtCore.QRect(290, 80, 150, 17))
-        self.CH_Over15.setChecked(True)
-        self.CH_Over15.setText("Include levels 15+")
-        self.CH_Over15.setToolTip("Include games where the main player was level 15+")
-        self.CH_Over15.stateChanged.connect(self.generate_stats)
-
-        # Games found
-        self.LA_GamesFound = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_GamesFound.setEnabled(False)
-        self.LA_GamesFound.setGeometry(QtCore.QRect(570, 110, 381, 20))
-        self.LA_GamesFound.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.LA_GamesFound.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-
-        # Main names
-        self.LA_IdentifiedPlayers = QtWidgets.QLabel(self.FR_Stats)
-        self.LA_IdentifiedPlayers.setEnabled(False)
-        self.LA_IdentifiedPlayers.setGeometry(QtCore.QRect(570, 125, 381, 20))
-        self.LA_IdentifiedPlayers.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.LA_IdentifiedPlayers.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-
-        # Date time frame
-        self.FR_DateTime = QtWidgets.QFrame(self.FR_Stats)
-        self.FR_DateTime.setGeometry(QtCore.QRect(470, 15, 500, 300))
-
-        # Date
-        self.LA_ReplayDate = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_ReplayDate.setGeometry(QtCore.QRect(160, 0, 101, 16))
-        self.LA_ReplayDate.setStyleSheet('font-weight: bold')
-        self.LA_ReplayDate.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.LA_ReplayDate.setText("Replay date")
-
-        self.LA_To = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_To.setGeometry(QtCore.QRect(280, 52, 31, 16))
-        self.LA_To.setText("To")
-        self.TM_ToDate = QtWidgets.QDateEdit(self.FR_DateTime)
-        self.TM_ToDate.setGeometry(QtCore.QRect(160, 52, 110, 22))
-        self.TM_ToDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2030, 12, 30), QtCore.QTime(0, 0, 0)))
-        self.TM_ToDate.setDisplayFormat("d/M/yyyy")
-        self.TM_ToDate.dateChanged.connect(self.generate_stats)
-
-        self.LA_From = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_From.setGeometry(QtCore.QRect(280, 22, 31, 16))
-        self.LA_From.setText("From")
-        self.TM_FromDate = QtWidgets.QDateEdit(self.FR_DateTime)
-        self.TM_FromDate.setGeometry(QtCore.QRect(160, 22, 110, 22))
-        self.TM_FromDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2015, 11, 10), QtCore.QTime(0, 0, 0)))
-        self.TM_FromDate.setDisplayFormat("d/M/yyyy")
-        self.TM_FromDate.dateChanged.connect(self.generate_stats)
-
-        # Game length
-        self.LA_GameLength = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_GameLength.setGeometry(QtCore.QRect(0, 0, 150, 16))
-        self.LA_GameLength.setStyleSheet('font-weight: bold')
-        self.LA_GameLength.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.LA_GameLength.setText("Game length (minutes)")
-
-        self.LA_Maximum = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_Maximum.setGeometry(QtCore.QRect(50, 52, 60, 16))
-        self.LA_Maximum.setText("Maximum")
-
-        self.LA_Minimum = QtWidgets.QLabel(self.FR_DateTime)
-        self.LA_Minimum.setGeometry(QtCore.QRect(50, 22, 60, 16))
-        self.LA_Minimum.setText("Minimum")
-
-        self.SP_MaxGamelength = QtWidgets.QSpinBox(self.FR_DateTime)
-        self.SP_MaxGamelength.setGeometry(QtCore.QRect(0, 52, 42, 22))
-        self.SP_MaxGamelength.setMinimum(0)
-        self.SP_MaxGamelength.setMaximum(1000)
-        self.SP_MaxGamelength.setProperty("value", 0)
-        self.SP_MaxGamelength.valueChanged.connect(self.generate_stats)
-
-        self.SP_MinGamelength = QtWidgets.QSpinBox(self.FR_DateTime)
-        self.SP_MinGamelength.setGeometry(QtCore.QRect(0, 22, 42, 22))
-        self.SP_MinGamelength.setMaximum(1000)
-        self.SP_MinGamelength.setProperty("value", 0)
-        self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
-
-        # Data dump
-        self.BT_FA_dump = QtWidgets.QPushButton(self.FR_Stats)
-        self.BT_FA_dump.setGeometry(QtCore.QRect(850, 10, 100, 25))
-        self.BT_FA_dump.setText('Dump Data')
-        self.BT_FA_dump.setToolTip('Dumps all replay data to "replay_data_dump.json" file')
-        self.BT_FA_dump.setEnabled(False)
-
-        ##### RESULTS #####
-        self.TABW_StatResults = QtWidgets.QTabWidget(self.TAB_Stats)
-        self.TABW_StatResults.setGeometry(QtCore.QRect(5, 126, 971, 459))
-
-        ### TAB Maps
-        self.TAB_Maps = QtWidgets.QWidget()
-        self.GB_MapsOverview = QtWidgets.QFrame(self.TAB_Maps)
-        self.GB_MapsOverview.setGeometry(QtCore.QRect(8, 8, 470, 420))
-        self.WD_Heading = MUI.MapEntry(self.GB_MapsOverview,
-                                       0,
-                                       'Map name',
-                                       'Fastest',
-                                       'Average',
-                                       'Wins',
-                                       'Losses',
-                                       'Freq',
-                                       'Bonus',
-                                       bold=True,
-                                       button=False)
-
-        self.MapsComboBoxLabel = QtWidgets.QLabel(self.TAB_Maps)
-        self.MapsComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
-        self.MapsComboBoxLabel.setText('<b>Sort by</b>')
-
-        self.MapsComboBox = QtWidgets.QComboBox(self.TAB_Maps)
-        self.MapsComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
-        self.MapsComboBox.addItem('Average time')
-        self.MapsComboBox.addItem('Fastest time')
-        self.MapsComboBox.addItem('Frequency')
-        self.MapsComboBox.addItem('Wins')
-        self.MapsComboBox.addItem('Losses')
-        self.MapsComboBox.addItem('Winrate')
-        self.MapsComboBox.addItem('Bonus')
-        self.MapsComboBox.activated[str].connect(self.generate_stats)
-
-        self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
-
-        self.LA_Stats_Wait = QtWidgets.QLabel(self.TAB_Maps)
-        self.LA_Stats_Wait.setGeometry(QtCore.QRect(0, 0, 470, self.TAB_Maps.height()))
-        self.LA_Stats_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
-        self.LA_Stats_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
-
-        ### TAB Difficulty & Regions
-        self.TAB_DifficultyRegions = QtWidgets.QWidget()
-        self.LA_Difficulty_header = MUI.DifficultyEntry('Difficuly',
-                                                        'Wins',
-                                                        'Losses',
-                                                        'Winrate',
-                                                        50,
-                                                        0,
-                                                        bold=True,
-                                                        line=True,
-                                                        parent=self.TAB_DifficultyRegions)
-        self.ProgressionStatsHeading = MUI.RegionStats('Region', {
-            'Defeat': 'Losses',
-            'Victory': 'Wins',
-            'frequency': 'Frequency',
-            'max_asc': 'Ascension level',
-            'max_com': 'Maxed commanders',
-            'winrate': 'Winrate',
-            'prestiges': 'Prestiges tried'
-        },
-                                                       0,
-                                                       parent=self.TAB_DifficultyRegions,
-                                                       bold=True,
-                                                       line=True)
-
-        ### TAB Commanders
-        self.TAB_MyCommanders = QtWidgets.QWidget()
-        self.MyCommanderHeading = MUI.CommanderEntry('Commander',
-                                                     'Freq',
-                                                     'Wins',
-                                                     'Losses',
-                                                     'Winrate',
-                                                     'APM',
-                                                     'Kills',
-                                                     2,
-                                                     bold=True,
-                                                     button=False,
-                                                     parent=self.TAB_MyCommanders)
-
-        self.MyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_MyCommanders)
-        self.MyCommanderComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
-        self.MyCommanderComboBoxLabel.setText('<b>Sort by</b>')
-
-        self.MyCommanderComboBox = QtWidgets.QComboBox(self.TAB_MyCommanders)
-        self.MyCommanderComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
-        self.MyCommanderComboBox.addItem('Frequency')
-        self.MyCommanderComboBox.addItem('Wins')
-        self.MyCommanderComboBox.addItem('Losses')
-        self.MyCommanderComboBox.addItem('Winrate')
-        self.MyCommanderComboBox.addItem('APM')
-        self.MyCommanderComboBox.addItem('Kills')
-        self.MyCommanderComboBox.activated[str].connect(self.my_commander_sort_update)
-
-        ### TAB Allied Commanders
-        self.TAB_AlliedCommanders = QtWidgets.QWidget()
-        self.LA_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
-        self.LA_AlliedCommanders.setGeometry(QtCore.QRect(555, 408, 400, 20))
-        self.LA_AlliedCommanders.setText("* Frequency has been corrected for your commander preferences")
-        self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
-        self.LA_AlliedCommanders.setEnabled(False)
-
-        self.AlliedCommanderHeading = MUI.CommanderEntry(
-            'Allied commander',
-            'Freq',
-            'Wins',
-            'Losses',
-            'Winrate',
-            'APM',
-            'Kills',
-            2,
-            bold=True,
-            button=False,
-            parent=self.TAB_AlliedCommanders,
-        )
-
-        self.AllyCommanderComboBoxLabel = QtWidgets.QLabel(self.TAB_AlliedCommanders)
-        self.AllyCommanderComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
-        self.AllyCommanderComboBoxLabel.setText('<b>Sort by</b>')
-
-        self.AllyCommanderComboBox = QtWidgets.QComboBox(self.TAB_AlliedCommanders)
-        self.AllyCommanderComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
-        self.AllyCommanderComboBox.addItem('Frequency')
-        self.AllyCommanderComboBox.addItem('Wins')
-        self.AllyCommanderComboBox.addItem('Losses')
-        self.AllyCommanderComboBox.addItem('Winrate')
-        self.AllyCommanderComboBox.addItem('APM')
-        self.AllyCommanderComboBox.addItem('Kills')
-        self.AllyCommanderComboBox.activated[str].connect(self.ally_commander_sort_update)
-
-        # Full analysis
-        self.TAB_FullAnalysis = QtWidgets.QWidget()
-
-        self.CH_FA_description = QtWidgets.QLabel(self.TAB_FullAnalysis)
-        self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
-        self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics \
-                                        related to player and unit kills, bonus objectives and other.<br><br><b>Warning! This might \
-                                        take few hours and the application will be less responsive.</b>')
-        self.CH_FA_description.setWordWrap(True)
-
-        self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)
-        self.BT_FA_run.setGeometry(QtCore.QRect(10, 85, 80, 25))
-        self.BT_FA_run.setText('Run')
-        self.BT_FA_run.setEnabled(False)
-
-        self.BT_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
-        self.BT_FA_stop.setGeometry(QtCore.QRect(105, 85, 80, 25))
-        self.BT_FA_stop.clicked.connect(self.stop_full_analysis)
-        self.BT_FA_stop.setText('Stop')
-        self.BT_FA_stop.setEnabled(False)
-
-        self.CH_FA_atstart = QtWidgets.QCheckBox(self.TAB_FullAnalysis)
-        self.CH_FA_atstart.setGeometry(QtCore.QRect(11, 115, 300, 25))
-        self.CH_FA_atstart.setText('Continue full analysis at start')
-
-        self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
-        self.CH_FA_status.setGeometry(QtCore.QRect(10, 140, 400, 40))
-
-        # Putting it together
-        self.TABW_StatResults.addTab(self.TAB_Maps, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")
-
-        self.TABW_StatResults.addTab(self.TAB_AlliedCommanders, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_AlliedCommanders), "Allied commanders")
-
-        self.TABW_StatResults.addTab(self.TAB_MyCommanders, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_MyCommanders), "My commanders")
-
-        self.TABW_StatResults.addTab(self.TAB_DifficultyRegions, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_DifficultyRegions), "Difficulty and regions")
-
-        self.TABW_StatResults.addTab(self.TAB_FullAnalysis, "")
-        self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_FullAnalysis), "Full analysis")
-
-        self.TABW_StatResults.setCurrentIndex(0)
-
-        ###########################
-        ######### RNG TAB #########
-        ###########################
-
-        self.TAB_Randomizer = QtWidgets.QWidget()
-
-        # Generate button
-        self.BT_RNG_Generate = QtWidgets.QPushButton(self.TAB_Randomizer)
-        self.BT_RNG_Generate.setGeometry(QtCore.QRect(720, 90, 150, 40))
-        self.BT_RNG_Generate.setText('Generate')
-        self.BT_RNG_Generate.clicked.connect(self.randomize_commander)
-
-        # Description
-        self.BT_RNG_Description = QtWidgets.QLabel(self.TAB_Randomizer)
-        self.BT_RNG_Description.setGeometry(QtCore.QRect(370, 20, 510, 60))
-        self.BT_RNG_Description.setWordWrap(True)
-        self.BT_RNG_Description.setEnabled(False)
-        self.BT_RNG_Description.setText('This commander randomizer randomly chooses a combination of commander, prestige and masteries.\
-                                        <br>Specify which commanders and prestiges can be picked. Mastery points will be randomized with\
-                                        either all points into one mastery choice, fully random or not at all.')
-
-        # Mastery label
-        self.CB_RNG_Mastery_Label = QtWidgets.QLabel(self.TAB_Randomizer)
-        self.CB_RNG_Mastery_Label.setGeometry(QtCore.QRect(370, 80, 200, 20))
-        self.CB_RNG_Mastery_Label.setText('<b>Mastery</b>')
-
-        # Mastery combo-box
-        self.CB_RNG_Mastery = QtWidgets.QComboBox(self.TAB_Randomizer)
-        self.CB_RNG_Mastery.setGeometry(QtCore.QRect(370, 100, 140, 21))
-        self.CB_RNG_Mastery.addItem('All points into one')
-        self.CB_RNG_Mastery.addItem('Fully random mastery')
-        self.CB_RNG_Mastery.addItem('No mastery generated')
-
-        # Map
-        self.CB_RNG_Map = QtWidgets.QCheckBox(self.TAB_Randomizer)
-        self.CB_RNG_Map.setGeometry(QtCore.QRect(530, 85, 140, 21))
-        self.CB_RNG_Map.setChecked(True)
-        self.CB_RNG_Map.setText('Random map')
-
-        # Race
-        self.CB_RNG_Race = QtWidgets.QCheckBox(self.TAB_Randomizer)
-        self.CB_RNG_Race.setGeometry(QtCore.QRect(530, 105, 140, 21))
-        self.CB_RNG_Race.setChecked(True)
-        self.CB_RNG_Race.setText('Random enemy race')
-
-        ### Commanders & prestiges
-        self.FR_RNG_GB = QtWidgets.QFrame(self.TAB_Randomizer)
-        self.FR_RNG_GB.setAutoFillBackground(True)
-        self.FR_RNG_GB.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_RNG_GB.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.FR_RNG_GB.setGeometry(QtCore.QRect(15, 15, 280, 455))
-
-        self.RNG_co_desc = QtWidgets.QLabel(self.FR_RNG_GB)
-        self.RNG_co_desc.setGeometry(QtCore.QRect(0, 5, 280, 20))
-        self.RNG_co_desc.setAlignment(QtCore.Qt.AlignCenter)
-        self.RNG_co_desc.setText('Choose commanders and prestiges')
-
-        self.FR_RNG_Commanders = QtWidgets.QFrame(self.FR_RNG_GB)
-        self.FR_RNG_Commanders.setGeometry(QtCore.QRect(35, 35, 260, 400))
-        self.FR_RNG_Commanders.show()
-
-        # Heading
-        self.RNG_co_heading = QtWidgets.QLabel(self.FR_RNG_Commanders)
-        self.RNG_co_heading.setGeometry(QtCore.QRect(0, 5, 200, 20))
-        self.RNG_co_heading.setText('<b>Commander</b>')
-
-        self.RNG_co_heading_prestige = QtWidgets.QLabel(self.FR_RNG_Commanders)
-        self.RNG_co_heading_prestige.setGeometry(QtCore.QRect(100, 5, 110, 20))
-        self.RNG_co_heading_prestige.setAlignment(QtCore.Qt.AlignCenter)
-        self.RNG_co_heading_prestige.setText('<b>Prestige</b>')
-
-        self.RNG_co_dict = dict()
-        for prest in {0, 1, 2, 3}:
-            self.RNG_co_dict[('heading', prest)] = QtWidgets.QLabel(self.FR_RNG_Commanders)
-            self.RNG_co_dict[('heading', prest)].setGeometry(QtCore.QRect(104 + prest * 30, 24, 300, 20))
-            self.RNG_co_dict[('heading', prest)].setText(str(prest))
-
-        # Fill commanders
-        for idx, co in enumerate(prestige_names):
-            self.RNG_co_dict[(co, 'label')] = QtWidgets.QLabel(self.FR_RNG_Commanders)
-            self.RNG_co_dict[(co, 'label')].setGeometry(QtCore.QRect(0, 40 + 20 * idx, 200, 20))
-            self.RNG_co_dict[(co, 'label')].setText(co)
-
-            for prest in {0, 1, 2, 3}:
-                self.RNG_co_dict[(co, prest)] = QtWidgets.QCheckBox(self.FR_RNG_Commanders)
-                self.RNG_co_dict[(co, prest)].setGeometry(QtCore.QRect(100 + prest * 30, 40 + 20 * idx, 50, 20))
-                self.RNG_co_dict[(co, prest)].setToolTip(prestige_names[co][prest])
-                if prest == 0:
-                    self.RNG_co_dict[(co, prest)].setChecked(True)
-
-        ### Result
-        self.FR_RNG_Result = QtWidgets.QFrame(self.TAB_Randomizer)
-        self.FR_RNG_Result.setGeometry(QtCore.QRect(370, 150, 500, 320))
-        self.FR_RNG_Result.setAutoFillBackground(True)
-        self.FR_RNG_Result.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_RNG_Result.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        # Background
-        self.FR_RNG_Result_BG = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_BG.setGeometry(QtCore.QRect(0, 20, self.FR_RNG_Result.width(), 87))
-
-        # Commander name
-        self.FR_RNG_Result_CO = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_CO.setGeometry(QtCore.QRect(0, 20, self.FR_RNG_Result.width() - 20, 71))
-        self.FR_RNG_Result_CO.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.FR_RNG_Result_CO.setStyleSheet(f'font-weight: bold; font-size: 30px; color: white;')
-        shadow = QtWidgets.QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(1)
-        shadow.setOffset(2)
-        self.FR_RNG_Result_CO.setGraphicsEffect(shadow)
-
-        # Prestige
-        self.FR_RNG_Result_Prestige = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_Prestige.setGeometry(QtCore.QRect(0, 43, self.FR_RNG_Result.width() - 20, 71))
-        self.FR_RNG_Result_Prestige.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.FR_RNG_Result_Prestige.setStyleSheet('font-size: 13px; color: white')
-        self.FR_RNG_Result_Prestige.setGraphicsEffect(shadow)
-
-        self.FR_RNG_Result_Mastery = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_Mastery.setGeometry(QtCore.QRect(20, 90, 480, 200))
-        self.FR_RNG_Result_Mastery.setStyleSheet('font-size: 13px')
-
-        self.FR_RNG_Result_MapRace = QtWidgets.QLabel(self.FR_RNG_Result)
-        self.FR_RNG_Result_MapRace.setGeometry(QtCore.QRect(10, 290, 480, 20))
-        self.FR_RNG_Result_MapRace.setStyleSheet('font-size: 13px')
-        self.FR_RNG_Result_MapRace.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
-
-        # Overlay checkbox
-        self.FR_RNG_Overlay = QtWidgets.QCheckBox(self.TAB_Randomizer)
-        self.FR_RNG_Overlay.setGeometry(QtCore.QRect(465, 480, 400, 17))
-        self.FR_RNG_Overlay.setText('Show next random commander with prestige on the overlay')
-        self.FR_RNG_Overlay.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.FR_RNG_Overlay.clicked.connect(self.RNG_Overlay_changed)
-
-        ############################
-        ###### TWITCH BOT TAB ######
-        ############################
-
-        self.TAB_TwitchBot = QtWidgets.QWidget()
-
-        self.qb_twitch_text = QtWidgets.QFrame(self.TAB_TwitchBot)
-        self.qb_twitch_text.setAutoFillBackground(True)
-        self.qb_twitch_text.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.qb_twitch_text.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 380 if HF.isWindows() else 555))
-
-        self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
-        self.la_twitch_text.setWordWrap(True)
-        self.la_twitch_text.setGeometry(QtCore.QRect(15, 10, 530, 700))
-        self.la_twitch_text.setAlignment(QtCore.Qt.AlignTop)
-        self.la_twitch_text.setOpenExternalLinks(True)
-        self.la_twitch_text.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.la_twitch_text.setText(
-            """<b>About the twitch bot:</b><br><br>This is a feature for twitch streamers. First, it lets you overlay stream chat on your screen. \
-                                    Second, it connects the twitch chat to the StarCraft II game when playing one of my [MM] maps. \
-                                    Viewers can spawn units, enemy waves, give resources, enable/disable mutators or join as a unit.<br> 
-                                    <br> 
-                                    This panel provides only the most basic control over the bot. Creating a new bot is not neccesary, \
-                                        but you can do so and fill its name and oauth in the Setting.json.
-                                    <br><br><br>
-                                    <u><b>Commands for the streamer:</b></u>
-                                    <br><br>
-                                    <b>!gm full</b> | <b>!gm stop</b> | <b>!gm</b></li><br> → Sets the level to of integration to full, none, \
-                                        or just messages and joins (not affecting gameplay!)<br><br>
-                                    <b>!cooldown X</b><br>→ Sets the cooldown on commands to X seconds per viewer (default cooldown is 30s)
-                                    <br><br>
-                                    <u><b>Commands for the viewers:</b></u>
-                                    <br>
-                                    <br><b>!join X</b>→ Join as a random unit for player X
-                                    <br><b>!message X</b>→ Send a message X to the game
-                                    <br><b>!spawn X Y Z</b>→ spawn Y units of type X for player Z (+rand → at random position)
-                                    <br><b>!mutator X</b>→ enables mutator X (+disable → disables)
-                                    <br><b>!resources X Y Z</b>→ Adds X minerals and Y vespene to player Z
-                                    <br><b>!wave X Y</b>→ Spawns an enemy wave of tech X and size Y
-                                    """)
-
-        self.la_twitch_channel_name = QtWidgets.QLabel(self.TAB_TwitchBot)
-        self.la_twitch_channel_name.setGeometry(QtCore.QRect(601, 25, 300, 20))
-        self.la_twitch_channel_name.setText("Use only for your own channel!")
-
-        self.ED_twitch_channel_name = QtWidgets.QLineEdit(self.TAB_TwitchBot)
-        self.ED_twitch_channel_name.setGeometry(QtCore.QRect(601, 50, 140, 20))
-        self.ED_twitch_channel_name.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_twitch_channel_name.setPlaceholderText("channel name")
-
-        self.bt_twitch = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch.setGeometry(QtCore.QRect(600, 110, 140, 25))
-        self.bt_twitch.setText('Run the bot')
-        self.bt_twitch.clicked.connect(self.start_stop_bot)
-
-        self.ch_twitch = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch.setGeometry(QtCore.QRect(601, 140, 200, 17))
-        self.ch_twitch.setText('Start the bot automatically')
-
-        self.bt_twitch_position = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.bt_twitch_position.setGeometry(QtCore.QRect(600, 190, 140, 25))
-        self.bt_twitch_position.setText('Change chat position')
-        self.bt_twitch_position.clicked.connect(self.update_twitch_chat_position)
-
-        self.ch_twitch_chat = QtWidgets.QCheckBox(self.TAB_TwitchBot)
-        self.ch_twitch_chat.setGeometry(QtCore.QRect(601, 220, 200, 17))
-        self.ch_twitch_chat.setText('Show chat as overlay')
-        self.ch_twitch_chat.clicked.connect(self.create_twitch_chat)
-
-        self.la_twitch_bank_desc = QtWidgets.QLabel(self.TAB_TwitchBot)
-        self.la_twitch_bank_desc.setGeometry(QtCore.QRect(22, 420, 800, 20))
-        self.la_twitch_bank_desc.setText(
-            "Choose bank location. It's different for every account and server. At start the app will try to find the correct bank.")
-
-        # Bank combo-box
-        self.CB_twitch_banks = QtWidgets.QComboBox(self.TAB_TwitchBot)
-        self.CB_twitch_banks.setGeometry(QtCore.QRect(20, 443, 800, 20))
-        self.CB_twitch_banks.setEnabled(False)
-
-        # Refresh button
-        self.BT_find_banks = QtWidgets.QPushButton(self.TAB_TwitchBot)
-        self.BT_find_banks.setGeometry(QtCore.QRect(830, 440, 100, 25))
-        self.BT_find_banks.setText('Refresh')
-        self.BT_find_banks.clicked.connect(self.find_and_update_banks)
-
-        # Info label
-        self.LA_InfoTwitch = QtWidgets.QLabel(self.TAB_TwitchBot)
-        self.LA_InfoTwitch.setGeometry(QtCore.QRect(20, 560, 700, 20))
-        self.LA_InfoTwitch.setStyleSheet('color: red')
-
-        ###########################
-        ###### RESOURCE TAB #######
-        ###########################
-
-        self.TAB_ResourceTab = QtWidgets.QWidget()
-
-        # Performance group box
-        self.gb_Resources = QtWidgets.QFrame(self.TAB_ResourceTab)
-        self.gb_Resources.setAutoFillBackground(True)
-        self.gb_Resources.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.gb_Resources.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.gb_Resources.setGeometry(QtCore.QRect(15, 15, 550, 310))
-
-        # Performance description
-        self.la_performance_description = QtWidgets.QLabel(self.gb_Resources)
-        self.la_performance_description.setGeometry(QtCore.QRect(14, 10, self.gb_Resources.width() - 20, 300))
-        self.la_performance_description.setAlignment(QtCore.Qt.AlignTop)
-        self.la_performance_description.setText(
-            '<b>Performance overlay:</b><br><br>Shows performance overlay with CPU/RAM/Disk/Network usage for system and StarCraft II.\
-                                                <br><br><b>Read</b> and <b>Write</b> stats are disk usage of StarCraft II (current & total).\
-                                                <br><b>CPUc</b> is per core CPU usage. 100% means one core fully used.')
-        self.la_performance_description.setWordWrap(True)
-
-        # Checks whether to show/hide
-        self.ch_performance_show = QtWidgets.QCheckBox(self.gb_Resources)
-        self.ch_performance_show.setGeometry(QtCore.QRect(14, 125, 200, 17))
-        self.ch_performance_show.setText('Show performance overlay')
-        self.ch_performance_show.clicked.connect(self.show_hide_performance_overlay)
-
-        # Position overlay
-        self.bt_performance_overlay_position = QtWidgets.QPushButton(self.gb_Resources)
-        self.bt_performance_overlay_position.setGeometry(QtCore.QRect(14, 150, 150, 25))
-        self.bt_performance_overlay_position.setText('Change overlay position')
-        self.bt_performance_overlay_position.clicked.connect(self.update_performance_overlay_position)
-
-        # Hotkey description
-        self.la_hotkey_performance_desc = QtWidgets.QLabel(self.gb_Resources)
-        self.la_hotkey_performance_desc.setGeometry(QtCore.QRect(15, 220, 300, 20))
-        self.la_hotkey_performance_desc.setText('<b>Hotkey for showing/hiding overlay</b>')
-
-        # Hotkey
-        self.KEY_Performance = MUI.CustomKeySequenceEdit(self.gb_Resources)
-        self.KEY_Performance.setGeometry(QtCore.QRect(15, 245, 113, 25))
-        self.KEY_Performance.setToolTip('Key for showing or hiding performance overlay')
-        self.KEY_Performance.keySequenceChanged.connect(self.hotkey_changed)
-
-        # Apply
-        self.bt_performance_apply = QtWidgets.QPushButton(self.gb_Resources)
-        self.bt_performance_apply.setGeometry(QtCore.QRect(150, 245, 75, 25))
-        self.bt_performance_apply.setText('Apply')
-        self.bt_performance_apply.clicked.connect(self.saveSettings)
-
-        ###########################
-        ######## LINKS TAB ########
-        ###########################
-
-        self.TAB_Links = QtWidgets.QWidget()
-
-        # Links
-        self.FR_Links = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Links.setGeometry(QtCore.QRect(15, 15, 550, 235))
-        self.FR_Links.setAutoFillBackground(True)
-        self.FR_Links.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Links.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        # Maguro.one
-        self.IMG_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_MaguroOne.setGeometry(QtCore.QRect(30, 20, 31, 41))
-        self.IMG_MaguroOne.setPixmap(QtGui.QPixmap(innerPath("src/maguro.jpg")))
-
-        self.LA_MaguroOne = QtWidgets.QLabel(self.FR_Links)
-        self.LA_MaguroOne.setGeometry(QtCore.QRect(80, 20, 131, 41))
-        self.LA_MaguroOne.setText('<a href="www.maguro.one">Maguro.one</a>')
-
-        # My discord
-        self.IMG_MDiscord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_MDiscord.setGeometry(QtCore.QRect(30, 70, 41, 51))
-        self.IMG_MDiscord.setPixmap(QtGui.QPixmap(innerPath("src/mdiscord.png")))
-
-        self.LA_MDiscord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_MDiscord.setGeometry(QtCore.QRect(80, 80, 131, 31))
-        self.LA_MDiscord.setText('<a href="https://discord.gg/FtGdhqD">My discord</a>')
-
-        # Twitter
-        self.IMG_Twitter = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Twitter.setGeometry(QtCore.QRect(30, 120, 41, 51))
-        self.IMG_Twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
-
-        self.LA_Twitter = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Twitter.setGeometry(QtCore.QRect(80, 130, 160, 31))
-        self.LA_Twitter.setText('<a href="https://twitter.com/FluffyMaguro">@FluffyMaguro</a>')
-
-        # GitHub
-        self.IMG_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_GitHub.setGeometry(QtCore.QRect(30, 175, 41, 41))
-        self.IMG_GitHub.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
-
-        self.LA_GitHub = QtWidgets.QLabel(self.FR_Links)
-        self.LA_GitHub.setGeometry(QtCore.QRect(80, 175, 200, 41))
-        self.LA_GitHub.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.LA_GitHub.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">Overlay on GitHub</a>')
-
-        # Subreddit
-        self.IMG_Reddit = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Reddit.setGeometry(QtCore.QRect(300, 20, 41, 41))
-        self.IMG_Reddit.setPixmap(QtGui.QPixmap(innerPath("src/reddit.png")))
-
-        self.LA_Subreddit = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Subreddit.setGeometry(QtCore.QRect(350, 20, 161, 41))
-        self.LA_Subreddit.setText('<a href="https://www.reddit.com/r/starcraft2coop/">Co-op subreddit</a>')
-
-        # Forums
-        self.IMG_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_BattleNet.setGeometry(QtCore.QRect(300, 70, 41, 51))
-        self.IMG_BattleNet.setPixmap(QtGui.QPixmap(innerPath("src/sc2.png")))
-
-        self.LA_BattleNet = QtWidgets.QLabel(self.FR_Links)
-        self.LA_BattleNet.setGeometry(QtCore.QRect(350, 80, 131, 31))
-        self.LA_BattleNet.setText('<a href="https://us.forums.blizzard.com/en/sc2/c/co-op-missions-discussion">Co-op forums</a>')
-
-        # Discord
-        self.IMG_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.IMG_Discord.setGeometry(QtCore.QRect(300, 130, 31, 41))
-        self.IMG_Discord.setPixmap(QtGui.QPixmap(innerPath("src/discord.png")))
-
-        self.LA_Discord = QtWidgets.QLabel(self.FR_Links)
-        self.LA_Discord.setGeometry(QtCore.QRect(350, 130, 141, 31))
-        self.LA_Discord.setText('<a href="https://discord.gg/VQnXMdm">Co-op discord</a>')
-
-        # Donate
-        self.FR_Donate = QtWidgets.QFrame(self.TAB_Links)
-        self.FR_Donate.setGeometry(QtCore.QRect(15, 270, 550, 100))
-        self.FR_Donate.setAutoFillBackground(True)
-        self.FR_Donate.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Donate.setFrameShadow(QtWidgets.QFrame.Plain)
-
-        self.IMG_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.IMG_Donate.setGeometry(QtCore.QRect(210, 14, 200, 41))
-        self.IMG_Donate.setPixmap(QtGui.QPixmap(innerPath("src/paypal.png")))
-
-        self.LA_Donate = QtWidgets.QLabel(self.FR_Donate)
-        self.LA_Donate.setGeometry(QtCore.QRect(170, 47, 250, 41))
-        self.LA_Donate.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.LA_Donate.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if you feel generous</a>')
-
-        # Styling
-        for item in {
-                self.LA_MaguroOne, self.LA_Subreddit, self.LA_Twitter, self.LA_GitHub, self.LA_Discord, self.LA_BattleNet, self.LA_Donate,
-                self.LA_MDiscord
-        }:
-            item.setStyleSheet("font-size: 18px")
-            item.setOpenExternalLinks(True)
-
-        ############################
-        ####### FINALIZATION #######
-        ############################
-
-        TabWidget.addTab(self.TAB_Main, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Main), "Settings")
-
-        TabWidget.addTab(self.TAB_Games, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Games), "Games")
-
-        TabWidget.addTab(self.TAB_Players, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Players), "Players")
-
-        TabWidget.addTab(self.TAB_Stats, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Stats), "Statistics")
-
-        TabWidget.addTab(self.TAB_Randomizer, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Randomizer), "Randomizer")
-
-        TabWidget.addTab(self.TAB_TwitchBot, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_TwitchBot), "Twitch")
-
-        TabWidget.addTab(self.TAB_ResourceTab, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_ResourceTab), "Performance")
-
-        TabWidget.addTab(self.TAB_Links, "")
-        TabWidget.setTabText(TabWidget.indexOf(self.TAB_Links), "Links")
-
-        TabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
         if not HF.isWindows():
@@ -1383,6 +132,7 @@ class UI_TabWidget(object):
             'list_games': 100,
             'right_offset': 0,
             'width': 0.5,
+            'replay_check_interval': 3,
             'height': 1,
             'debug': False,
             'font_scale': 1,
@@ -1529,7 +279,7 @@ class UI_TabWidget(object):
         if not self.new_version:
             return
 
-        self.LA_Version.setText('New version available!')
+        self.Tab_Main.LA_Version.setText('New version available!')
 
         # Create button
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
@@ -1636,57 +386,55 @@ class UI_TabWidget(object):
 
     def updateUI(self):
         """ Update UI elements based on the current settings """
-        self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
-        self.CH_StartMinimized.setChecked(self.settings['start_minimized'])
-        self.CH_EnableLogging.setChecked(self.settings['enable_logging'])
-        self.CH_ShowPlayerWinrates.setChecked(self.settings['show_player_winrates'])
-        self.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
-        self.CH_DarkTheme.setChecked(self.settings['dark_theme'])
-        self.CH_MinimizeToTray.setChecked(self.settings['minimize_to_tray'])
-        self.CH_MinimizeToTray.stateChanged.connect(self.saveSettings)
-        self.SP_Duration.setProperty("value", self.settings['duration'])
-        self.SP_Monitor.setProperty("value", self.settings['monitor'])
-        self.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
-        self.LA_ScreenshotLocation.setText(self.settings['screenshot_folder'])
-        self.CH_ShowSession.setChecked(self.settings['show_session'])
-        self.FR_RNG_Overlay.setChecked(self.settings['show_random_on_overlay'])
+        self.TAB_Main.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
+        self.TAB_Main.CH_StartMinimized.setChecked(self.settings['start_minimized'])
+        self.TAB_Main.CH_EnableLogging.setChecked(self.settings['enable_logging'])
+        self.TAB_Main.CH_ShowPlayerWinrates.setChecked(self.settings['show_player_winrates'])
+        self.TAB_Main.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
+        self.TAB_Main.CH_DarkTheme.setChecked(self.settings['dark_theme'])
+        self.TAB_Main.CH_MinimizeToTray.setChecked(self.settings['minimize_to_tray'])
+        self.TAB_Main.CH_MinimizeToTray.stateChanged.connect(self.saveSettings)
+        self.TAB_Main.SP_Duration.setProperty("value", self.settings['duration'])
+        self.TAB_Main.SP_Monitor.setProperty("value", self.settings['monitor'])
+        self.TAB_Main.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
+        self.TAB_Main.LA_ScreenshotLocation.setText(self.settings['screenshot_folder'])
+        self.TAB_Main.CH_ShowSession.setChecked(self.settings['show_session'])
 
-        self.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
-        self.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
-        self.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_hide']))
-        self.KEY_Newer.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_newer']))
-        self.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_older']))
-        self.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_winrates']))
+        self.TAB_Main.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
+        self.TAB_Main.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
+        self.TAB_Main.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_hide']))
+        self.TAB_Main.KEY_Newer.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_newer']))
+        self.TAB_Main.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_older']))
+        self.TAB_Main.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_winrates']))
 
-        self.ED_AomAccount.setText(self.settings['aom_account'])
-        self.ED_AomSecretKey.setText(self.settings['aom_secret_key'])
+        self.TAB_Main.ED_AomAccount.setText(self.settings['aom_account'])
+        self.TAB_Main.ED_AomSecretKey.setText(self.settings['aom_secret_key'])
 
-        self.LA_P1.setText(f"Player 1 | {self.settings['color_player1']}")
-        self.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}; color: black")
-        self.LA_P2.setText(f"Player 2 | {self.settings['color_player2']}")
-        self.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}; color: black")
-        self.LA_Amon.setText(f"  Amon | {self.settings['color_amon']}")
-        self.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}; color: black")
-        self.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
-        self.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}; color: black")
+        self.TAB_Main.LA_P1.setText(f"Player 1 | {self.settings['color_player1']}")
+        self.TAB_Main.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}; color: black")
+        self.TAB_Main.LA_P2.setText(f"Player 2 | {self.settings['color_player2']}")
+        self.TAB_Main.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}; color: black")
+        self.TAB_Main.LA_Amon.setText(f"  Amon | {self.settings['color_amon']}")
+        self.TAB_Main.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}; color: black")
+        self.TAB_Main.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
+        self.TAB_Main.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}; color: black")
 
-        self.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
-        self.ch_twitch_chat.setChecked(self.settings['show_chat'])
-        self.ED_twitch_channel_name.setText(self.settings['twitchbot']['channel_name'])
+        self.TAB_Randomizer.FR_RNG_Overlay.setChecked(self.settings['show_random_on_overlay'])
 
-        self.ch_performance_show.setChecked(self.settings['performance_show'])
-        self.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
+        self.TAB_TwitchBot.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
+        self.TAB_TwitchBot.ch_twitch_chat.setChecked(self.settings['show_chat'])
+        self.TAB_TwitchBot.ED_twitch_channel_name.setText(self.settings['twitchbot']['channel_name'])
 
-        self.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
+        self.TAB_Resources.ch_performance_show.setChecked(self.settings['performance_show'])
+        self.TAB_Resources.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
+
+        self.TAB_Stats.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
 
         if self.settings['debug_button']:
             self.DebugWindow = DebugWindow(self)
 
         # RNG choices
-        if len(self.settings['rng_choices']) > 18:
-            for co in prestige_names:
-                for prest in {0, 1, 2, 3}:
-                    self.RNG_co_dict[(co, prest)].setChecked(self.settings['rng_choices'][f"{co}_{prest}"])
+        self.TAB_Randomizer.load_choices(self.settings['rng_choices'])
 
     def saveSettings(self):
         """ Saves main settings in the settings file. """
@@ -1694,33 +442,33 @@ class UI_TabWidget(object):
 
         self.save_playernotes_to_settings()
 
-        self.settings['start_with_windows'] = self.CH_StartWithWindows.isChecked()
-        self.settings['start_minimized'] = self.CH_StartMinimized.isChecked()
-        self.settings['enable_logging'] = self.CH_EnableLogging.isChecked()
-        self.settings['show_player_winrates'] = self.CH_ShowPlayerWinrates.isChecked()
-        self.settings['force_hide_overlay'] = self.CH_ForceHideOverlay.isChecked()
-        self.settings['dark_theme'] = self.CH_DarkTheme.isChecked()
-        self.settings['minimize_to_tray'] = self.CH_MinimizeToTray.isChecked()
-        self.settings['show_session'] = self.CH_ShowSession.isChecked()
-        self.settings['duration'] = self.SP_Duration.value()
-        self.settings['monitor'] = self.SP_Monitor.value()
+        self.settings['start_with_windows'] = self.TAB_Main.CH_StartWithWindows.isChecked()
+        self.settings['start_minimized'] = self.TAB_Main.CH_StartMinimized.isChecked()
+        self.settings['enable_logging'] = self.TAB_Main.CH_EnableLogging.isChecked()
+        self.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
+        self.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
+        self.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
+        self.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
+        self.settings['show_session'] = self.TAB_Main.CH_ShowSession.isChecked()
+        self.settings['duration'] = self.TAB_Main.SP_Duration.value()
+        self.settings['monitor'] = self.TAB_Main.SP_Monitor.value()
 
-        self.settings['hotkey_show/hide'] = self.KEY_ShowHide.keySequence().toString()
-        self.settings['hotkey_show'] = self.KEY_Show.keySequence().toString()
-        self.settings['hotkey_hide'] = self.KEY_Hide.keySequence().toString()
-        self.settings['hotkey_newer'] = self.KEY_Newer.keySequence().toString()
-        self.settings['hotkey_older'] = self.KEY_Older.keySequence().toString()
-        self.settings['hotkey_winrates'] = self.KEY_Winrates.keySequence().toString()
+        self.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString()
+        self.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString()
+        self.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString()
+        self.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString()
+        self.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString()
+        self.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString()
 
-        self.settings['aom_account'] = self.ED_AomAccount.text()
-        self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
-        self.settings['twitchbot']['auto_start'] = self.ch_twitch.isChecked()
-        self.settings['twitchbot']['channel_name'] = self.ED_twitch_channel_name.text()
+        self.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        self.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
+        self.settings['twitchbot']['auto_start'] = self.TAB_TwitchBot.ch_twitch.isChecked()
+        self.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
 
-        self.settings['full_analysis_atstart'] = self.CH_FA_atstart.isChecked()
-        self.settings['show_random_on_overlay'] = self.FR_RNG_Overlay.isChecked()
+        self.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
+        self.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
 
-        self.settings['show_chat'] = self.ch_twitch_chat.isChecked()
+        self.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
             self.settings['chat_geometry'] = [
                 self.chat_widget.pos().x(),
@@ -1728,8 +476,8 @@ class UI_TabWidget(object):
                 self.chat_widget.width(), self.chat_widget.height()
             ]
 
-        self.settings['performance_show'] = self.ch_performance_show.isChecked()
-        self.settings['performance_hotkey'] = self.KEY_Performance.keySequence().toString()
+        self.settings['performance_show'] = self.TAB_Resources.ch_performance_show.isChecked()
+        self.settings['performance_hotkey'] = self.TAB_Resources.KEY_Performance.keySequence().toString()
         if hasattr(self, 'performance_overlay'):
             self.settings['performance_geometry'] = [
                 self.performance_overlay.pos().x(),
@@ -1739,9 +487,7 @@ class UI_TabWidget(object):
             ]
 
         # RNG choices
-        for co in prestige_names:
-            for prest in {0, 1, 2, 3}:
-                self.settings['rng_choices'][f"{co}_{prest}"] = self.RNG_co_dict[(co, prest)].isChecked()
+        self.settings['rng_choices'] = self.TAB_Randomizer.get_choices()
 
         # Save settings
         try:
@@ -1752,9 +498,9 @@ class UI_TabWidget(object):
             logger.error(f'Error while saving settings\n{traceback.format_exc()}')
 
         # Message
-        self.sendInfoMessage('Settings applied.')
+        self.sendInfoMessage('Settings applied')
 
-        # Warning
+        # Check for overlapping hoykeys
         hotkeys = [
             self.settings['performance_hotkey'], self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'],
             self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']
@@ -1769,7 +515,7 @@ class UI_TabWidget(object):
         if out is not None:
             self.sendInfoMessage(f'Warning: {out}', color=MColors.msg_failure)
             self.settings['start_with_windows'] = False
-            self.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
+            self.TAB_Main.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
 
         # Logging
         logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
@@ -1815,13 +561,13 @@ class UI_TabWidget(object):
     def check_to_remove_hotkeys(self):
         """ Checks if a key is 'Del' and sets it to None """
         key_dict = {
-            self.KEY_ShowHide: 'hotkey_show/hide',
-            self.KEY_Show: 'hotkey_show',
-            self.KEY_Hide: 'hotkey_hide',
-            self.KEY_Newer: 'hotkey_newer',
-            self.KEY_Older: 'hotkey_older',
-            self.KEY_Winrates: 'hotkey_winrates',
-            self.KEY_Performance: 'performance_hotkey'
+            self.TAB_Main.KEY_ShowHide: 'hotkey_show/hide',
+            self.TAB_Main.KEY_Show: 'hotkey_show',
+            self.TAB_Main.KEY_Hide: 'hotkey_hide',
+            self.TAB_Main.KEY_Newer: 'hotkey_newer',
+            self.TAB_Main.KEY_Older: 'hotkey_older',
+            self.TAB_Main.KEY_Winrates: 'hotkey_winrates',
+            self.TAB_Resources.KEY_Performance: 'performance_hotkey'
         }
 
         for key in key_dict:
@@ -1883,8 +629,8 @@ class UI_TabWidget(object):
         self.settings = self.default_settings.copy()
         self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
         self.settings['screenshot_folder'] = previous_settings['screenshot_folder']
-        self.settings['aom_account'] = self.ED_AomAccount.text()
-        self.settings['aom_secret_key'] = self.ED_AomSecretKey.text()
+        self.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        self.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
         self.settings['player_notes'] = previous_settings['player_notes']
         self.settings['twitchbot'] = previous_settings['twitchbot']
         self.settings['debug_button'] = previous_settings['debug_button']
@@ -1905,7 +651,7 @@ class UI_TabWidget(object):
         if dialog.exec_():
             folder = os.path.normpath(dialog.selectedFiles()[0])
             logger.info(f'Changing screenshot_folder to {folder}')
-            self.LA_ScreenshotLocation.setText(folder)
+            self.Tab_Main.LA_ScreenshotLocation.setText(folder)
             self.settings['screenshot_folder'] = folder
             self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color=MColors.msg_success)
 
@@ -1921,7 +667,7 @@ class UI_TabWidget(object):
             if 'StarCraft' in folder and '/Accounts' in folder:
                 logger.info(f'Changing accountdir to {folder}')
                 self.settings['account_folder'] = folder
-                self.LA_CurrentReplayFolder.setText(folder)
+                self.TAB_Main.LA_CurrentReplayFolder.setText(folder)
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color=MColors.msg_success)
                 MF.update_names_and_handles(folder, MF.AllReplays)
                 if hasattr(self, 'CAnalysis'):
@@ -1937,49 +683,15 @@ class UI_TabWidget(object):
                     self.updating_maps.show()
                     self.CAnalysis.update_accountdir(folder)
                     self.updating_maps.hide()
-                    self.generate_stats()
+                    self.TAB_Stats.generate_stats()
                     self.update_winrate_data()
 
             else:
                 self.sendInfoMessage('Invalid account folder!', color=MColors.msg_failure)
 
-    def sendInfoMessage(self, message, color=None):
-        """ Sends info message. `color` specifies message color"""
-        self.LA_InfoLabel.setText(message)
-        self.LA_InfoLabel.setStyleSheet(f'color: {color if color is not None else MColors.msg}')
-
-    def validateAOM(self):
-        """ Validates if name/key combination is valid """
-        key = self.ED_AomSecretKey.text()
-        account = self.ED_AomAccount.text()
-
-        if key != '' and account != '':
-            response = HF.validate_aom_account_key(account, key)
-
-            if 'Success' in response:
-                self.sendInfoMessage(response, color=MColors.msg_success)
-            else:
-                self.sendInfoMessage(response, color=MColors.msg_failure)
-        else:
-            self.sendInfoMessage('Fill your account name and secret key first!')
-
-    def openColorDialog(self, button):
-        """ Color picker. After the color is picked, color is saved into settings, and button updated (text and color) """
-        button_dict = {self.LA_P1: 'Player 1', self.LA_P2: 'Player 2', self.LA_Amon: '  Amon', self.LA_Mastery: 'Mastery'}
-        settings_dict = {self.LA_P1: 'color_player1', self.LA_P2: 'color_player2', self.LA_Amon: 'color_amon', self.LA_Mastery: 'color_mastery'}
-
-        color = QtWidgets.QColorDialog.getColor()
-
-        if color.isValid():
-            button.setText(f"{button_dict.get(button,'')} | {color.name()}")
-            button.setStyleSheet(f'background-color: {color.name()}; color: black')
-            self.settings[settings_dict[button]] = color.name()
-            MF.update_settings(self.settings)
-            MF.resend_init_message()
-
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'>>> Starting!\n{self.settings}')
+        logger.info(f'\n>>> Starting!\n{self.settings}')
 
         # Get monitor dimensions
         self.desktop_widget = QtWidgets.QDesktopWidget()
@@ -1987,9 +699,7 @@ class UI_TabWidget(object):
 
         # Debug files in MEI directory
         if self.settings['debug']:
-            folder = innerPath('')
-            folder = os.path.abspath(folder)
-
+            folder = os.path.abspath(innerPath(''))
             if os.path.isdir(folder):
                 for root, _, files in os.walk(folder):
                     for file in files:
@@ -2033,8 +743,10 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_settings(self.settings)
 
-        self.randomize_commander()
+        # Init randomization
+        self.TAB_Randomizer.randomize_commander()
 
+        # Start server thread
         self.thread_server = threading.Thread(target=MF.server_thread, daemon=True)
         self.thread_server.start()
 
@@ -2060,7 +772,7 @@ class UI_TabWidget(object):
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
 
-        # Create chat widget, when?
+        # Create chat widget
         if self.settings['show_chat']:
             self.create_twitch_chat()
 
@@ -2071,33 +783,18 @@ class UI_TabWidget(object):
         # Performance overlay
         self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
         if self.settings['performance_show']:
-            self.ch_performance_show.setChecked(True)
+            self.TAB_Resources.ch_performance_show.setChecked(True)
             self.performance_overlay.start()
 
         # Find MM Integration banks
-        self.find_and_update_banks()
-        # Select current index
+        self.TAB_TwitchBot.find_and_update_banks()
         self.update_selected_bank_item(self.settings['twitchbot']['bank_locations'].get('Current'))
-
-    def find_and_update_banks(self):
-        """ Finds banks, update UI """
-        if not hasattr(self, 'bank_found_locations'):
-            self.bank_found_locations = set()
-
-        folder = os.path.dirname(self.settings['account_folder'])
-
-        for root, _, files in os.walk(folder):
-            for file in files:
-                if file == 'MMTwitchIntegration.SC2Bank':
-                    path = os.path.join(root, file)
-                    if not path in self.bank_found_locations:
-                        self.CB_twitch_banks.addItem(path)
-                        self.bank_found_locations.add(path)
 
     def change_bank(self):
         """ Update currently used bank in the twitch bot.
         Used when user changes combo-box directly"""
-        bank_path = self.bank_name_to_location_dict.get(self.CB_twitch_banks.currentText(), self.CB_twitch_banks.currentText())
+        bank_path = self.bank_name_to_location_dict.get(self.TAB_TwitchBot.CB_twitch_banks.currentText(),
+                                                        self.TAB_TwitchBot.CB_twitch_banks.currentText())
         logger.info(f'Changing bank to {bank_path}')
         self.settings['twitchbot']['bank_locations']['Current'] = bank_path
         try:
@@ -2113,10 +810,10 @@ class UI_TabWidget(object):
 
         logger.info(f'Changing bank indirectly to {bank_path.strip()}')
 
-        for i in range(self.CB_twitch_banks.count()):
-            if bank_path in self.CB_twitch_banks.itemText(i):
+        for i in range(self.TAB_TwitchBot.CB_twitch_banks.count()):
+            if bank_path in self.TAB_TwitchBot.CB_twitch_banks.itemText(i):
                 self.settings['twitchbot']['bank_locations']['Current'] = bank_path
-                self.CB_twitch_banks.setCurrentIndex(i)
+                self.TAB_TwitchBot.CB_twitch_banks.setCurrentIndex(i)
                 try:
                     self.TwitchBot.bank = bank_path
                 except:
@@ -2146,12 +843,12 @@ class UI_TabWidget(object):
             logger.error(
                 f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}"
             )
-            self.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
+            self.TAB_TwitchBot.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
         else:
             self.TwitchBot = TwitchBot(twitchbot_settings, widget=self.chat_widget if hasattr(self, 'chat_widget') else None)
             self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
             self.thread_twitch_bot.start()
-            self.bt_twitch.setText('Stop the bot')
+            self.TAB_TwitchBot.bt_twitch.setText('Stop the bot')
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
@@ -2192,85 +889,6 @@ class UI_TabWidget(object):
         except:
             logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 
-    def put_player_first(self, player):
-        """ Moves a player to the top spot in the player tab.
-        Returns the last player on top (if any) to its position. """
-
-        if not hasattr(self, 'player_winrate_UI_dict'):
-            return
-
-        # Return the old player
-        if hasattr(self, 'last_ally_player'):
-            w = self.player_winrate_UI_dict[self.last_ally_player]
-            self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
-
-            # Find the position where to put it back
-            wins = w.wins
-            for idx, pplayer in enumerate(self.player_winrate_UI_dict):
-                if wins >= self.player_winrate_UI_dict[pplayer].wins and idx > 0:
-                    self.SC_PlayersScrollAreaContentsLayout.insertWidget(idx + 1, w.widget)
-                    break
-
-            # Color back
-            w.highlight(False)
-
-        # New player to top
-        self.last_ally_player = player
-        if player in self.player_winrate_UI_dict:
-            # If it's there remove
-            w = self.player_winrate_UI_dict[player]
-            self.SC_PlayersScrollAreaContentsLayout.removeWidget(w.widget)
-
-        else:
-            # It's not there, create new one
-            self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
-                                                                    self.winrate_data[player],
-                                                                    self.settings['player_notes'].get(player, None),
-                                                                    self.SC_PlayersScrollAreaContents) #yapf: disable
-            w = self.player_winrate_UI_dict[player]
-
-        # Insert to top, show and change colors
-        self.SC_PlayersScrollAreaContentsLayout.insertWidget(0, w.widget)
-        w.highlight(True)
-        w.widget.show()
-
-    def update_player_tab(self, winrate_data, show_max=50):
-        """ Updates player tab based on provide winrate data """
-        if self.LA_Winrates_Wait is not None:
-            self.LA_Winrates_Wait.deleteLater()
-            self.LA_Winrates_Wait = None
-
-        if not hasattr(self, 'player_winrate_UI_dict'):
-            self.player_winrate_UI_dict = dict()
-
-        # Create new or update top `show_nax` players
-        for idx, player in enumerate(winrate_data):
-            if idx >= show_max:
-                break
-            if not player in self.player_winrate_UI_dict:
-                self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
-                                                                      winrate_data[player],
-                                                                      self.settings['player_notes'].get(player, None),
-                                                                      self.SC_PlayersScrollAreaContents) #yapf: disable
-                self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
-            else:
-                self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])
-
-        # Show top `show_max` and hide the rest
-        for idx, player in enumerate(self.player_winrate_UI_dict):
-            if idx < show_max:
-                self.player_winrate_UI_dict[player].show()
-            else:
-                self.player_winrate_UI_dict[player].hide()
-
-        # Hide players not in winrate data
-        for player in self.player_winrate_UI_dict:
-            if not player in winrate_data:
-                self.player_winrate_UI_dict[player].hide()
-
-        self.SC_PlayersScrollAreaContents.setLayout(self.SC_PlayersScrollAreaContentsLayout)
-        self.SC_PlayersScrollArea.setWidget(self.SC_PlayersScrollAreaContents)
-
     def check_replays_finished(self, replay_dict):
         """ Launches function again. Adds game to game tab. Updates player winrate data. """
 
@@ -2289,52 +907,14 @@ class UI_TabWidget(object):
         self.timeoutTimer = QtCore.QTimer()
         self.timeoutTimer.setInterval(2000)
         self.timeoutTimer.setSingleShot(True)
-        self.timeoutTimer.timeout.connect(partial(self.add_new_game_data, replay_dict))
+        self.timeoutTimer.timeout.connect(partial(self.TAB_Games.add_new_game_data, replay_dict))
         self.timeoutTimer.start()
-
-    def RNG_Overlay_changed(self):
-        self.saveSettings()
-        if self.FR_RNG_Overlay.isChecked():
-            self.randomize_commander()
-
-    def add_new_game_data(self, replay_dict):
-        """ Updates game tab, player tab, sets winrate data in MF, updates mass replay analysis and generates stats anew """
-
-        self.RNG_Overlay_changed()
-
-        if hasattr(self, 'CAnalysis') and replay_dict is not None:
-            # Add game to game tab
-            try:
-                # Update mass replay analysis
-                full_data = self.CAnalysis.add_parsed_replay(replay_dict)
-                if full_data is None:
-                    return
-
-                # Update UI in game tab
-                self.game_UI_dict[replay_dict['parser']['file']] = MUI.GameEntry(full_data, self.CAnalysis.main_handles,
-                                                                                 self.SC_GamesScrollAreaContent)
-                self.SC_GamesScrollAreaContentLayout.insertWidget(0, self.game_UI_dict[replay_dict['parser']['file']].widget)
-
-                # Update player tab & set winrate data in MF & generate stats
-                self.update_winrate_data()
-                self.generate_stats()
-
-                # Put the last player on top of player tab
-                for player in {1, 2}:
-                    name = replay_dict['parser']['players'][player].get('name', '-')
-                    if not replay_dict['parser']['players'][player].get('handle', '-') in self.CAnalysis.main_handles:
-                        self.put_player_first(name)
-                        break
-            except:
-                logger.error(traceback.format_exc())
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
-        if not hasattr(self, 'player_winrate_UI_dict'):
-            return
-        for player in self.player_winrate_UI_dict:
-            if not self.player_winrate_UI_dict[player].get_note() in {None, ''}:
-                self.settings['player_notes'][player] = self.player_winrate_UI_dict[player].get_note()
+        for player in self.TAB_Players.player_winrate_UI_dict:
+            if not self.TAB_Players.player_winrate_UI_dict[player].get_note() in {None, ''}:
+                self.settings['player_notes'][player] = self.TAB_Players.player_winrate_UI_dict[player].get_note()
             elif player in self.settings['player_notes']:
                 del self.settings['player_notes'][player]
 
@@ -2344,72 +924,19 @@ class UI_TabWidget(object):
         QtCore.QTimer.singleShot(time, loop.quit)
         loop.exec_()
 
-    def filter_players(self):
-        """ Filters only players with string in name or note """
-        if self.filter_players_running:
-            logger.error('Filtering already running!')
-
-        self.filter_players_running = True
-        text = self.ED_Winrate_Search.text().lower()
-        idx = 0
-        show_max = 50 if self.CH_OnlyTop50.isChecked() else 10000
-        created = 0
-
-        # First hide all
-        for player in self.player_winrate_UI_dict:
-            self.player_winrate_UI_dict[player].hide()
-
-        # Go through winrate data and check for player names
-        for player in self.winrate_data:
-            if text in player.lower() and idx < show_max:
-
-                # If many created, pause for bit. Otherwise some PCs might struggle
-                if created > 100:
-                    self.wait_ms(5)
-                    created = 0
-
-                # Create element if necessary and show
-                if not player in self.player_winrate_UI_dict:
-                    created += 1
-                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
-                                                                        self.winrate_data[player],
-                                                                        self.settings['player_notes'].get(player, None),
-                                                                        self.SC_PlayersScrollAreaContents) #yapf: disable
-                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
-                self.player_winrate_UI_dict[player].show()
-                idx += 1
-
-        # Go though notes
-        for player, note in self.settings['player_notes'].items():
-            if text in note.lower() and idx < show_max:
-                # Create element if necessary and show
-                if not player in self.player_winrate_UI_dict:
-                    self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
-                                                                        self.winrate_data[player],
-                                                                        self.settings['player_notes'].get(player, None),
-                                                                        self.SC_PlayersScrollAreaContents) #yapf: disable
-                    self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
-                self.player_winrate_UI_dict[player].show()
-                idx += 1
-
-        self.filter_players_running = False
-
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
 
         # Update game tab
-        self.game_UI_dict = dict()
-        for game in self.CAnalysis.get_last_replays(self.settings['list_games']):
-            self.game_UI_dict[game.file] = MUI.GameEntry(game, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-            self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
+        self.TAB_Games.initialize_data(self.CAnalysis)
 
         # Update stats tab
         player_names = (', ').join(self.CAnalysis.main_names)
-        self.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
-        self.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
-        self.LA_Stats_Wait.deleteLater()
-        self.LA_Games_Wait.deleteLater()
-        self.generate_stats()
+        self.TAB_Stats.LA_IdentifiedPlayers.setText(f"Main players: {player_names}")
+        self.TAB_Stats.LA_GamesFound.setText(f"Games found: {len(self.CAnalysis.ReplayData)}")
+        self.TAB_Stats.LA_Stats_Wait.deleteLater()
+        self.TAB_Games.LA_Games_Wait.deleteLater()
+        self.TAB_Stats.generate_stats()
 
         self.update_winrate_data()
         MF.check_names_handles()
@@ -2421,8 +948,8 @@ class UI_TabWidget(object):
             self.thread_check_for_newgame.start()
 
         # Connect & run full analysis if set
-        self.BT_FA_run.setEnabled(True)
-        self.BT_FA_run.clicked.connect(self.run_f_analysis)
+        self.TAB_Stats.BT_FA_run.setEnabled(True)
+        self.TAB_Stats.BT_FA_run.clicked.connect(self.run_f_analysis)
         if self.settings['full_analysis_atstart']:
             self.run_f_analysis()
 
@@ -2430,42 +957,21 @@ class UI_TabWidget(object):
         self.find_default_bank_location()
 
         # Change bank names
-        self.bank_name_to_location_dict = dict()
-        for i in range(self.CB_twitch_banks.count()):
-            bank_path = self.CB_twitch_banks.itemText(i)
-            for handle in self.CAnalysis.name_handle_dict:
-                if handle in bank_path:
-                    if '\\1-S2-' in bank_path:
-                        region = 'NA'
-                    elif '\\2-S2-' in bank_path:
-                        region = 'EU'
-                    elif '\\3-S2-' in bank_path:
-                        region = 'KR'
-                    elif '\\5-S2-' in bank_path:
-                        region = 'CN'
-                    elif '\\98-S2-' in bank_path:
-                        region = 'PTR'
-                    else:
-                        region = '?'
-
-                    text = f"{self.CAnalysis.name_handle_dict[handle]} ({region}) - {bank_path}"
-                    self.bank_name_to_location_dict[text] = bank_path
-                    self.CB_twitch_banks.setItemText(i, text)
-                    break
+        self.bank_name_to_location_dict = self.TAB_TwitchBot.change_bank_names(self.CAnalysis)
 
         # Enable selecting banks
-        self.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
-        self.CB_twitch_banks.setEnabled(True)
+        self.TAB_TwitchBot.CB_twitch_banks.currentIndexChanged.connect(self.change_bank)
+        self.TAB_TwitchBot.CB_twitch_banks.setEnabled(True)
 
         # Dump & reinit
-        self.BT_FA_dump.setEnabled(True)
-        self.BT_FA_dump.clicked.connect(self.dump_all)
+        self.TAB_Stats.BT_FA_dump.setEnabled(True)
+        self.TAB_Stats.BT_FA_dump.clicked.connect(self.dump_all)
 
     def dump_all(self):
         """ Dumps all replay data from mass analysis into a file """
-        self.BT_FA_dump.setEnabled(False)
+        self.TAB_Stats.BT_FA_dump.setEnabled(False)
         thread_dump_all = MUI.Worker(self.CAnalysis.dump_all)
-        thread_dump_all.signals.result.connect(partial(self.BT_FA_dump.setEnabled, True))
+        thread_dump_all.signals.result.connect(partial(self.TAB_Stats.BT_FA_dump.setEnabled, True))
         self.threadpool.start(thread_dump_all)
 
     def run_f_analysis(self):
@@ -2474,8 +980,8 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
 
-        self.BT_FA_run.setEnabled(False)
-        self.BT_FA_stop.setEnabled(True)
+        self.TAB_Stats.BT_FA_run.setEnabled(False)
+        self.TAB_Stats.BT_FA_stop.setEnabled(True)
         self.full_analysis_running = True
         thread_full_analysis = MUI.Worker(self.CAnalysis.run_full_analysis, progress_callback=True)
         thread_full_analysis.signals.result.connect(self.full_analysis_finished)
@@ -2484,404 +990,29 @@ class UI_TabWidget(object):
 
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
-        self.CH_FA_status.setText(progress)
+        self.TAB_Stats.CH_FA_status.setText(progress)
 
     def full_analysis_finished(self, finished_completely):
-        self.generate_stats()
+        self.TAB_Stats.generate_stats()
         if finished_completely:
-            self.CH_FA_atstart.setChecked(True)
+            self.TAB_Stats.CH_FA_atstart.setChecked(True)
 
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
             self.CAnalysis.closing = True
             self.full_analysis_running = False
-            self.BT_FA_run.setEnabled(True)
-            self.BT_FA_stop.setEnabled(False)
+            self.TAB_Stats.BT_FA_run.setEnabled(True)
+            self.TAB_Stats.BT_FA_stop.setEnabled(False)
             self.CAnalysis.save_cache()
 
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """
         if hasattr(self, 'CAnalysis'):
             self.winrate_data = self.CAnalysis.calculate_player_winrate_data()
-            self.update_player_tab(self.winrate_data)
+            self.TAB_Players.update(self.winrate_data)
             MF.set_player_winrate_data(self.winrate_data)
         else:
             logger.error('Can\'t update winrate data before mass analysis is finished')
-
-    def generate_stats(self):
-        """ Generate stats and passes data to be shown"""
-
-        if not hasattr(self, 'CAnalysis'):
-            logger.error('Mass analysis hasn\'t finished yet')
-            return
-
-        # Check
-        if self.CH_AllHistoric.isChecked():
-            self.CAnalysis.update_data(showAll=True)
-        else:
-            self.CAnalysis.update_data(showAll=False)
-
-        # Filter
-        include_mutations = True if self.CH_TypeMutation.isChecked() else False
-        include_normal_games = True if self.CH_TypeNormal.isChecked() else False
-
-        difficulty_filter = set()
-        if not self.CH_DiffCasual.isChecked():
-            difficulty_filter.add('Casual')
-        if not self.CH_DiffNormal.isChecked():
-            difficulty_filter.add('Normal')
-        if not self.CH_DiffHard.isChecked():
-            difficulty_filter.add('Hard')
-        if not self.CH_DiffBrutal.isChecked():
-            difficulty_filter.add('Brutal')
-        if not self.CH_DiffBrutalPlus.isChecked():
-            difficulty_filter = difficulty_filter.union({1, 2, 3, 4, 5, 6})
-
-        region_filter = set()
-        if not self.CH_Region_NA.isChecked():
-            region_filter.add('NA')
-        if not self.CH_Region_EU.isChecked():
-            region_filter.add('EU')
-        if not self.CH_Region_KR.isChecked():
-            region_filter.add('KR')
-        if not self.CH_Region_CN.isChecked():
-            region_filter.add('CN')
-
-        mindate = self.TM_FromDate.date().toPyDate().strftime('%Y%m%d%H%M%S')
-        mindate = None if mindate == '20151110000000' else int(mindate)
-        maxdate = self.TM_ToDate.date().toPyDate().strftime('%Y%m%d%H%M%S')
-        maxdate = None if maxdate == '20301230000000' else int(maxdate)
-
-        minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
-        maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
-
-        include_both_main = True if self.CH_DualMain.isChecked() else False
-        sub_15 = True if self.CH_Sub15.isChecked() else False
-        over_15 = True if self.CH_Over15.isChecked() else False
-
-        ### Analyse
-        analysis = self.CAnalysis.analyse_replays(include_mutations=include_mutations,
-                                                  include_normal_games=include_normal_games,
-                                                  difficulty_filter=difficulty_filter,
-                                                  region_filter=region_filter,
-                                                  mindate=mindate,
-                                                  maxdate=maxdate,
-                                                  minlength=minlength,
-                                                  maxLength=maxLength,
-                                                  sub_15=sub_15,
-                                                  over_15=over_15,
-                                                  include_both_main=include_both_main)
-
-        self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
-
-        ### Map stats
-
-        # Delete buttons if not required
-        if hasattr(self, 'stats_maps_UI_dict'):
-            for item in set(self.stats_maps_UI_dict.keys()):
-                self.stats_maps_UI_dict[item].deleteLater()
-                del self.stats_maps_UI_dict[item]
-        else:
-            self.stats_maps_UI_dict = dict()
-
-        # Sort maps
-        sort_by = self.MapsComboBox.currentText()
-        trans_dict = {
-            'Frequency': 'frequency',
-            'Wins': 'Victory',
-            'Losses': 'Defeat',
-            'Winrate': 'winrate',
-            'Average time': 'average_victory_time',
-            'Bonus': 'bonus'
-        }
-        trans_dict_reverse = {'Frequency': True, 'Wins': True, 'Losses': True, 'Winrate': True, 'Average time': False, 'Bonus': True}
-
-        if sort_by == 'Fastest time':
-            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1]['Fastest']['length'])}
-        else:
-            analysis['MapData'] = {
-                k: v
-                for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1][trans_dict[sort_by]], reverse=trans_dict_reverse[sort_by])
-            }
-
-        # Add map buttons & update the fastest map
-        idx = 0
-        for m in analysis['MapData']:
-            idx += 1
-            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview,
-                                                      idx * 25,
-                                                      m,
-                                                      analysis['MapData'][m]['Fastest']['length'],
-                                                      analysis['MapData'][m]['average_victory_time'],
-                                                      analysis['MapData'][m]['Victory'],
-                                                      analysis['MapData'][m]['Defeat'],
-                                                      analysis['MapData'][m]['frequency'],
-                                                      analysis['MapData'][m]['bonus'],
-                                                      bg=idx % 2 == 0)
-
-            self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
-
-        # Try to show the last visible fastest map if it's there
-        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in analysis['MapData'].keys():
-            self.map_link_update(self.last_fastest_map, analysis['MapData'][self.last_fastest_map]['Fastest'])
-
-        elif len(analysis['MapData']) > 0:
-            for m in analysis['MapData']:
-                self.map_link_update(m, analysis['MapData'][m]['Fastest'])
-                break
-
-        # Show/hide the fastest map accordingly
-        if len(analysis['MapData']) == 0:
-            self.QB_FastestMap.hide()
-        else:
-            self.QB_FastestMap.show()
-
-        ### Difficulty stats & region stats
-        if hasattr(self, 'stats_difficulty_UI_dict'):
-            for item in set(self.stats_difficulty_UI_dict.keys()):
-                self.stats_difficulty_UI_dict[item].deleteLater()
-                del self.stats_difficulty_UI_dict[item]
-        else:
-            self.stats_difficulty_UI_dict = dict()
-
-        difficulties = ['Casual', 'Normal', 'Hard', 'Brutal', 'B+1', 'B+2', 'B+3', 'B+4', 'B+5', 'B+6']
-        idx = 0
-        AllDiff = {'Victory': 0, 'Defeat': 0}
-        for difficulty in difficulties:
-            if difficulty in analysis['DifficultyData']:
-                line = True if idx + 1 == len(analysis['DifficultyData']) else False
-                self.stats_difficulty_UI_dict[difficulty] = MUI.DifficultyEntry(difficulty.replace('B+', 'Brutal+'),
-                                                                                analysis['DifficultyData'][difficulty]['Victory'],
-                                                                                analysis['DifficultyData'][difficulty]['Defeat'],
-                                                                                f"{100*analysis['DifficultyData'][difficulty]['Winrate']:.0f}%",
-                                                                                50,
-                                                                                idx * 18 + 20,
-                                                                                bg=idx % 2,
-                                                                                parent=self.TAB_DifficultyRegions,
-                                                                                line=line)
-                idx += 1
-                AllDiff['Victory'] += analysis['DifficultyData'][difficulty]['Victory']
-                AllDiff['Defeat'] += analysis['DifficultyData'][difficulty]['Defeat']
-
-        AllDiff['Winrate'] = f"{100*AllDiff['Victory']/(AllDiff['Victory'] + AllDiff['Defeat']):.0f}%" if (AllDiff['Victory'] +
-                                                                                                           AllDiff['Defeat']) > 0 else '-'
-
-        self.stats_difficulty_UI_dict['All'] = MUI.DifficultyEntry('Σ',
-                                                                   AllDiff['Victory'],
-                                                                   AllDiff['Defeat'],
-                                                                   AllDiff['Winrate'],
-                                                                   50,
-                                                                   idx * 18 + 23,
-                                                                   parent=self.TAB_DifficultyRegions)
-
-        # Region stats
-        if hasattr(self, 'stats_region_UI_dict'):
-            for item in set(self.stats_region_UI_dict.keys()):
-                self.stats_region_UI_dict[item].deleteLater()
-                del self.stats_region_UI_dict[item]
-        else:
-            self.stats_region_UI_dict = dict()
-
-        for idx, region in enumerate(analysis['RegionData']):
-            self.stats_region_UI_dict[region] = MUI.RegionStats(region,
-                                                                analysis['RegionData'][region],
-                                                                20 + idx * 18,
-                                                                bg=True if idx % 2 else False,
-                                                                parent=self.TAB_DifficultyRegions)
-
-        ### Commander stats
-        self.my_commander_analysis = analysis['CommanderData']
-        self.my_commander_sort_update()
-
-        ### Ally commander stats
-        self.ally_commander_analysis = analysis['AllyCommanderData']
-        self.ally_commander_sort_update()
-
-        ### Unit stats
-        if self.CAnalysis.full_analysis_finished:
-            self.update_unit_stats(analysis['UnitData'])
-
-    def update_unit_stats(self, unit_data):
-        """ Update unit stats """
-
-        # Create tab if it's not there yey
-        if not hasattr(self, 'TAB_CommUnitStats'):
-            self.TAB_CommUnitStats = QtWidgets.QWidget()
-            self.TABW_StatResults.insertTab(4, self.TAB_CommUnitStats, "Unit stats")
-
-        # Update commander units widget
-        if not hasattr(self, 'WD_unit_stats'):
-            self.WD_unit_stats = MUI.UnitStats(unit_data, parent=self.TAB_CommUnitStats)
-        else:
-            self.WD_unit_stats.unit_data = unit_data
-            self.WD_unit_stats.update_units()
-
-        # Amon unit tab
-        if not hasattr(self, 'TAB_AmonUnitStats'):
-            self.TAB_AmonUnitStats = QtWidgets.QWidget()
-            self.TABW_StatResults.insertTab(5, self.TAB_AmonUnitStats, "Amon stats")
-
-        # Update amon units widget
-        if not hasattr(self, 'WD_amon_unit_stats'):
-            self.WD_amon_unit_stats = MUI.AmonUnitStats(unit_data['amon'], parent=self.TAB_AmonUnitStats)
-        else:
-            self.WD_amon_unit_stats.update_data(unit_data['amon'])
-
-    def my_commander_sort_update(self):
-        """ Creates and updates widgets for my commander stats """
-        sort_my_commanders_by = self.MyCommanderComboBox.currentText()
-        translate = {
-            'APM': 'MedianAPM',
-            'Winrate': 'Winrate',
-            'Losses': 'Defeat',
-            'Wins': 'Victory',
-            'Frequency': 'Frequency',
-            'Kills': 'KillFraction'
-        }
-        self.my_commander_analysis = {
-            k: v
-            for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_my_commanders_by]], reverse=True)
-        }
-
-        if hasattr(self, 'stats_mycommander_UI_dict'):
-            for item in set(self.stats_mycommander_UI_dict.keys()):
-                self.stats_mycommander_UI_dict[item].deleteLater()
-                del self.stats_mycommander_UI_dict[item]
-        else:
-            self.stats_mycommander_UI_dict = dict()
-
-        idx = 0
-        spacing = 21
-        firstCommander = None
-        for co in self.my_commander_analysis:
-            if co == 'any':
-                continue
-            if firstCommander is None:
-                firstCommander = co
-            self.stats_mycommander_UI_dict[co] = MUI.CommanderEntry(co,
-                                                                    f"{100*self.my_commander_analysis[co]['Frequency']:.1f}%",
-                                                                    self.my_commander_analysis[co]['Victory'],
-                                                                    self.my_commander_analysis[co]['Defeat'],
-                                                                    f"{100*self.my_commander_analysis[co]['Winrate']:.0f}%",
-                                                                    f"{self.my_commander_analysis[co]['MedianAPM']:.0f}",
-                                                                    f"{100*self.my_commander_analysis[co].get('KillFraction',0):.0f}%",
-                                                                    idx * spacing + 23,
-                                                                    parent=self.TAB_MyCommanders,
-                                                                    bg=True if idx % 2 == 1 else False)
-
-            self.stats_mycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_my_commander_stats_update, co))
-            idx += 1
-
-        self.stats_mycommander_UI_dict['any'] = MUI.CommanderEntry('Σ',
-                                                                   f"{100*self.my_commander_analysis['any']['Frequency']:.0f}%",
-                                                                   self.my_commander_analysis['any']['Victory'],
-                                                                   self.my_commander_analysis['any']['Defeat'],
-                                                                   f"{100*self.my_commander_analysis['any']['Winrate']:.0f}%",
-                                                                   f"{self.my_commander_analysis['any']['MedianAPM']:.0f}",
-                                                                   f"{100*self.my_commander_analysis['any'].get('KillFraction',0):.0f}%",
-                                                                   idx * spacing + 23,
-                                                                   parent=self.TAB_MyCommanders,
-                                                                   button=False)
-
-        # Update details
-        if hasattr(self, 'my_detailed_info') and self.my_detailed_info is not None:
-            self.my_detailed_info.deleteLater()
-            self.my_detailed_info = None
-
-        if hasattr(self, 'my_commander_clicked') and self.my_commander_clicked in self.my_commander_analysis:
-            self.my_detailed_info = MUI.CommanderStats(self.my_commander_clicked, self.my_commander_analysis, parent=self.TAB_MyCommanders)
-        elif len(self.my_commander_analysis) > 1:
-            self.my_detailed_info = MUI.CommanderStats(firstCommander, self.my_commander_analysis, parent=self.TAB_MyCommanders)
-
-    def detailed_my_commander_stats_update(self, commander):
-        """ Updates my commander details"""
-        self.my_commander_clicked = commander
-        if hasattr(self, 'my_detailed_info') and self.my_detailed_info is not None:
-            self.my_detailed_info.deleteLater()
-            self.my_detailed_info = None
-        self.my_detailed_info = MUI.CommanderStats(commander, self.my_commander_analysis, parent=self.TAB_MyCommanders)
-
-    def ally_commander_sort_update(self):
-        """ Creates and updates widgets for allu commander stats """
-        sort_commanders_by = self.AllyCommanderComboBox.currentText()
-        translate = {
-            'APM': 'MedianAPM',
-            'Winrate': 'Winrate',
-            'Losses': 'Defeat',
-            'Wins': 'Victory',
-            'Frequency': 'Frequency',
-            'Kills': 'KillFraction'
-        }
-        self.ally_commander_analysis = {
-            k: v
-            for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_commanders_by]], reverse=True)
-        }
-
-        if hasattr(self, 'stats_allycommander_UI_dict'):
-            for item in set(self.stats_allycommander_UI_dict.keys()):
-                self.stats_allycommander_UI_dict[item].deleteLater()
-                del self.stats_allycommander_UI_dict[item]
-        else:
-            self.stats_allycommander_UI_dict = dict()
-
-        idx = 0
-        spacing = 21
-        firstCommander = None
-        for co in self.ally_commander_analysis:
-            if co == 'any':
-                continue
-            if firstCommander is None:
-                firstCommander = co
-            self.stats_allycommander_UI_dict[co] = MUI.CommanderEntry(co,
-                                                                      f"{100*self.ally_commander_analysis[co]['Frequency']:.1f}%",
-                                                                      self.ally_commander_analysis[co]['Victory'],
-                                                                      self.ally_commander_analysis[co]['Defeat'],
-                                                                      f"{100*self.ally_commander_analysis[co]['Winrate']:.0f}%",
-                                                                      f"{self.ally_commander_analysis[co]['MedianAPM']:.0f}",
-                                                                      f"{100*self.ally_commander_analysis[co].get('KillFraction',0):.0f}%",
-                                                                      idx * spacing + 23,
-                                                                      parent=self.TAB_AlliedCommanders,
-                                                                      bg=True if idx % 2 == 1 else False)
-
-            self.stats_allycommander_UI_dict[co].bt_button.clicked.connect(partial(self.detailed_ally_commander_stats_update, co))
-            idx += 1
-
-        self.stats_allycommander_UI_dict['any'] = MUI.CommanderEntry('Σ',
-                                                                     f"{100*self.ally_commander_analysis['any']['Frequency']:.0f}%",
-                                                                     self.ally_commander_analysis['any']['Victory'],
-                                                                     self.ally_commander_analysis['any']['Defeat'],
-                                                                     f"{100*self.ally_commander_analysis['any']['Winrate']:.0f}%",
-                                                                     f"{self.ally_commander_analysis['any']['MedianAPM']:.0f}",
-                                                                     f"{100*self.ally_commander_analysis['any'].get('KillFraction',0):.0f}%",
-                                                                     idx * spacing + 23,
-                                                                     parent=self.TAB_AlliedCommanders,
-                                                                     button=False)
-
-        # Update details
-        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info is not None:
-            self.ally_detailed_info.deleteLater()
-            self.ally_detailed_info = None
-
-        if hasattr(self, 'ally_commander_clicked') and self.ally_commander_clicked in self.ally_commander_analysis:
-            self.ally_detailed_info = MUI.CommanderStats(self.ally_commander_clicked, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
-        elif len(self.ally_commander_analysis) > 1:
-            self.ally_detailed_info = MUI.CommanderStats(firstCommander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
-
-    def detailed_ally_commander_stats_update(self, commander):
-        """ Updates allied commander details"""
-        self.ally_commander_clicked = commander
-        if hasattr(self, 'ally_detailed_info') and self.ally_detailed_info is not None:
-            self.ally_detailed_info.deleteLater()
-            self.ally_detailed_info = None
-        self.ally_detailed_info = MUI.CommanderStats(commander, self.ally_commander_analysis, parent=self.TAB_AlliedCommanders)
-
-    def map_link_update(self, mapname=None, fdict=None):
-        """ Updates the fastest map to clicked map """
-        if len(fdict) <= 1:
-            self.QB_FastestMap.hide()
-        else:
-            self.QB_FastestMap.update_data(mapname, fdict, self.CAnalysis.main_handles)
-            self.last_fastest_map = mapname
 
     def save_screenshot(self):
         """ Saves screenshot of the overlay and saves it on the desktop"""
@@ -2909,74 +1040,17 @@ class UI_TabWidget(object):
 
     def start_stop_bot(self):
         """ Starts or stops the twitch bot """
-        self.settings['twitchbot']['channel_name'] = self.ED_twitch_channel_name.text()
+        self.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
 
         if hasattr(self, 'TwitchBot'):
             if self.TwitchBot.RUNNING:
                 self.TwitchBot.RUNNING = False
-                self.bt_twitch.setText('Run the bot')
+                self.TAB_TwitchBot.bt_twitch.setText('Run the bot')
             else:
                 self.TwitchBot.RUNNING = True
-                self.bt_twitch.setText('Stop the bot')
+                self.TAB_TwitchBot.bt_twitch.setText('Stop the bot')
         else:
             self.run_twitch_bot()
-
-    def randomize_commander(self):
-        """ Randomizes commander based on current selection """
-
-        # Get values
-        mastery_all_in = True if self.CB_RNG_Mastery.currentText() == 'All points into one' else False
-        commander_dict = dict()
-
-        found = False
-        for co in prestige_names:
-            commander_dict[co] = set()
-            for prest in {0, 1, 2, 3}:
-                if self.RNG_co_dict[(co, prest)].isChecked():
-                    commander_dict[co].add(prest)
-                    found = True
-
-        # Check if there are any prestiges selected
-        if not found:
-            logger.error('No commanders to randomize')
-            return
-
-        # Randomize
-        commander, prestige, mastery, mmap, race = randomize(commander_dict, mastery_all_in=mastery_all_in)
-
-        # Update image
-        self.FR_RNG_Result_BG.setStyleSheet(f'background-color: black;')
-        image_file = truePath(f'Layouts/Commanders/{commander}.png')
-        if os.path.isfile(image_file):
-            pixmap = QtGui.QPixmap(image_file)
-            pixmap = pixmap.scaled(self.FR_RNG_Result_BG.width(), self.FR_RNG_Result_BG.height(), QtCore.Qt.KeepAspectRatio,
-                                   QtCore.Qt.FastTransformation)
-            self.FR_RNG_Result_BG.setPixmap(pixmap)
-
-        # Commander and prestige
-        self.FR_RNG_Result_CO.setText(commander)
-        self.FR_RNG_Result_Prestige.setText(f"{prestige_names[commander][prestige]} (P{prestige})")
-
-        # Mastery
-        mastery = mastery if self.CB_RNG_Mastery.currentText() != 'No mastery generated' else [0, 0, 0, 0, 0, 0]
-        mtext = ''
-        for idx, m in enumerate(CommanderMastery[commander]):
-            fill = '' if mastery[idx] > 9 else '&nbsp;&nbsp;'
-            style = ' style="color: #aaa"' if mastery[idx] == 0 else ''
-            mtext += f"<span{style}>{fill}<b>{mastery[idx]}</b> {m}</span><br>"
-        self.FR_RNG_Result_Mastery.setText(mtext)
-
-        # Map and race
-        if self.CB_RNG_Map.isChecked() and self.CB_RNG_Race.isChecked():
-            self.FR_RNG_Result_MapRace.setText(f"{mmap} | {race}")
-        elif self.CB_RNG_Map.isChecked():
-            self.FR_RNG_Result_MapRace.setText(mmap)
-        elif self.CB_RNG_Race.isChecked():
-            self.FR_RNG_Result_MapRace.setText(race)
-        else:
-            self.FR_RNG_Result_MapRace.setText('')
-
-        MF.RNG_COMMANDER = {'Commander': commander, 'Prestige': prestige_names[commander][prestige]}
 
     def update_twitch_chat_position(self):
         """ Updates state of the chat widget. Whether it can be moved or not."""
@@ -2991,7 +1065,7 @@ class UI_TabWidget(object):
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.chat_widget.move(position.x() - 8, position.y() - 31)
             self.chat_widget.show()
-            self.bt_twitch_position.setText('Fix chat position')
+            self.TAB_TwitchBot.bt_twitch_position.setText('Fix chat position')
         else:
             self.chat_widget.fixed = True
             self.chat_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
@@ -3000,17 +1074,17 @@ class UI_TabWidget(object):
             self.chat_widget.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.chat_widget.move(position.x() + 8, position.y() + 31)
             self.chat_widget.show()
-            self.bt_twitch_position.setText('Change chat position')
+            self.TAB_TwitchBot.bt_twitch_position.setText('Change chat position')
 
     def create_twitch_chat(self):
         """ Creates or updates twitch chat"""
 
         # Hide
-        if hasattr(self, 'chat_widget') and not self.ch_twitch_chat.isChecked():
+        if hasattr(self, 'chat_widget') and not self.TAB_TwitchBot.ch_twitch_chat.isChecked():
             self.chat_widget.hide()
 
         # Show
-        elif hasattr(self, 'chat_widget') and self.ch_twitch_chat.isChecked():
+        elif hasattr(self, 'chat_widget') and self.TAB_TwitchBot.ch_twitch_chat.isChecked():
             self.chat_widget.show()
 
         # Creates twitch chat widget if it's not created already
@@ -3036,7 +1110,7 @@ class UI_TabWidget(object):
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
             self.performance_overlay.show()
             self.performance_overlay.move(position.x() - 8, position.y() - 31)
-            self.bt_performance_overlay_position.setText('Fix overlay position')
+            self.TAB_Resources.bt_performance_overlay_position.setText('Fix overlay position')
         else:
             self.performance_overlay.fixed = True
             self.performance_overlay.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput
@@ -3045,7 +1119,7 @@ class UI_TabWidget(object):
             self.performance_overlay.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
             self.performance_overlay.show()
             self.performance_overlay.move(position)
-            self.bt_performance_overlay_position.setText('Change overlay position')
+            self.TAB_Resources.bt_performance_overlay_position.setText('Change overlay position')
 
     def show_hide_performance_overlay(self):
         """ Shows/hides peformance overlay. Triggered by hotkey """
@@ -3054,10 +1128,10 @@ class UI_TabWidget(object):
 
         if self.performance_overlay.isVisible():
             self.performance_overlay.hide()
-            self.ch_performance_show.setChecked(False)
+            self.TAB_Resources.ch_performance_show.setChecked(False)
         else:
             self.performance_overlay.show()
-            self.ch_performance_show.setChecked(True)
+            self.TAB_Resources.ch_performance_show.setChecked(True)
             if not self.performance_overlay.started:
                 self.performance_overlay.start()
 
@@ -3074,45 +1148,17 @@ class UI_TabWidget(object):
         except:
             logger.error(traceback.format_exc())
 
-    def search_games(self):
-        """ Searches for games with given strings in them and updates games tab"""
-
-        if not hasattr(self, 'CAnalysis'):
-            return
-
-        search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
-        if len(search_for) == 0:
-            # Restore default
-            new_replays = self.CAnalysis.get_last_replays(self.settings['list_games'])
-        else:
-            # Search for replays with strings in them
-            new_replays = self.CAnalysis.search(*search_for)
-            logger.info(f'Searching games with {search_for} | found {len(new_replays)} replays')
-
-        # Hide current replays that are not in there
-        for i in range(self.SC_GamesScrollAreaContentLayout.count()):
-            widget = self.SC_GamesScrollAreaContentLayout.itemAt(i).widget()
-            widget.hide()
-
-        # Add replays
-        for r in new_replays[:self.settings['list_games']]:
-            if r.file in self.game_UI_dict:
-                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
-                self.game_UI_dict[r.file].widget.show()
-            else:
-                self.game_UI_dict[r.file] = MUI.GameEntry(r, self.CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
-                self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
+    def sendInfoMessage(self, message, color=None):
+        """ Sends info message. `color` specifies message color"""
+        self.TAB_Main.LA_InfoLabel.setText(message)
+        self.TAB_Main.LA_InfoLabel.setStyleSheet(f'color: {color if color is not None else MColors.msg}')
 
     def change_theme(self):
         """ Changes theme to dark or asks for restart"""
-        if self.CH_DarkTheme.isChecked():
+        if self.TAB_Main.CH_DarkTheme.isChecked():
             set_dark_theme(self, app, TabWidget, APPVERSION)
         else:
             self.sendInfoMessage('Restart to change back to the light theme!', color=MColors.msg_failure)
-
-    @staticmethod
-    def paypal_clicked():
-        webbrowser.open("https://www.paypal.com/paypalme/FluffyMaguro")
 
 
 if __name__ == "__main__":

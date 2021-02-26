@@ -67,16 +67,18 @@ def set_dark_theme(main, app, tab, version):
     tab.title_bar.show()
 
     # Small tweaks
-    main.WD_RecentGamesHeading.setStyleSheet('background-color: #454545; font-weight: bold')
-    main.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545; font-weight: bold}")
-    main.FR_Winrate_Controls.setStyleSheet('background-color: #454545')
-    main.GameTabLine.setStyleSheet('background-color: #777')
-    main.PlayerTabLine.setStyleSheet('background-color: #777')
-    main.ed_games_search.setStyleSheet('background-color: #333; font-weight: normal')
-    main.ED_Winrate_Search.setStyleSheet('background-color: #333')
-    main.BT_RNG_Description.setEnabled(True)
-    main.LA_GamesFound.setEnabled(True)
-    main.LA_IdentifiedPlayers.setEnabled(True)
+    main.TAB_Games.WD_RecentGamesHeading.setStyleSheet('background-color: #454545; font-weight: bold')
+    main.TAB_Games.GameTabLine.setStyleSheet('background-color: #777')
+    main.TAB_Games.ed_games_search.setStyleSheet('background-color: #333; font-weight: normal')
+
+    main.TAB_Players.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545; font-weight: bold}")
+    main.TAB_Players.FR_Winrate_Controls.setStyleSheet('background-color: #454545')
+    main.TAB_Players.PlayerTabLine.setStyleSheet('background-color: #777')
+    main.TAB_Players.ED_Winrate_Search.setStyleSheet('background-color: #333')
+
+    main.TAB_Randomizer.BT_RNG_Description.setEnabled(True)
+    main.TAB_Stats.LA_GamesFound.setEnabled(True)
+    main.TAB_Stats.LA_IdentifiedPlayers.setEnabled(True)
 
     tab.setStyleSheet(
         "QScrollArea > QWidget > QWidget {background: #454545}"
