@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 import SCOFunctions.MUserInterface as MUI
+from SCOFunctions.Settings import Setting_manager as SM
 
 
 class PlayerTab(QtWidgets.QWidget):
@@ -140,7 +141,7 @@ class PlayerTab(QtWidgets.QWidget):
             # It's not there, create new one
             self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                     self.p.winrate_data[player],
-                                                                    self.p.settings['player_notes'].get(player, None),
+                                                                    SM.settings['player_notes'].get(player, None),
                                                                     self.SC_PlayersScrollAreaContents) #yapf: disable
             w = self.player_winrate_UI_dict[player]
 
@@ -162,7 +163,7 @@ class PlayerTab(QtWidgets.QWidget):
             if not player in self.player_winrate_UI_dict:
                 self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                       winrate_data[player],
-                                                                      self.p.settings['player_notes'].get(player, None),
+                                                                      SM.settings['player_notes'].get(player, None),
                                                                       self.SC_PlayersScrollAreaContents) #yapf: disable
                 self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
             else:
@@ -209,20 +210,20 @@ class PlayerTab(QtWidgets.QWidget):
                     created += 1
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                         self.p.winrate_data[player],
-                                                                        self.p.settings['player_notes'].get(player, None),
+                                                                        SM.settings['player_notes'].get(player, None),
                                                                         self.SC_PlayersScrollAreaContents) #yapf: disable
                     self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
                 self.player_winrate_UI_dict[player].show()
                 idx += 1
 
         # Go though notes
-        for player, note in self.p.settings['player_notes'].items():
+        for player, note in SM.settings['player_notes'].items():
             if text in note.lower() and idx < show_max:
                 # Create element if necessary and show
                 if not player in self.player_winrate_UI_dict:
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                         self.p.winrate_data[player],
-                                                                        self.p.settings['player_notes'].get(player, None),
+                                                                        SM.settings['player_notes'].get(player, None),
                                                                         self.SC_PlayersScrollAreaContents) #yapf: disable
                     self.SC_PlayersScrollAreaContentsLayout.addWidget(self.player_winrate_UI_dict[player].widget)
                 self.player_winrate_UI_dict[player].show()

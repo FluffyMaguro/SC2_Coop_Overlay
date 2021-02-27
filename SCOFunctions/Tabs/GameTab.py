@@ -2,6 +2,7 @@ import traceback
 from PyQt5 import QtWidgets, QtGui, QtCore
 import SCOFunctions.MUserInterface as MUI
 from SCOFunctions.MLogging import logclass
+from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('GT', 'INFO')
 
@@ -99,7 +100,7 @@ class GameTab(QtWidgets.QWidget):
         self.SC_GamesScrollArea.setWidget(self.SC_GamesScrollAreaContent)
 
     def initialize_data(self, CAnalysis):
-        for game in CAnalysis.get_last_replays(self.p.settings['list_games']):
+        for game in CAnalysis.get_last_replays(SM.settings['list_games']):
             self.game_UI_dict[game.file] = MUI.GameEntry(game, CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
@@ -112,7 +113,7 @@ class GameTab(QtWidgets.QWidget):
         search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
         if len(search_for) == 0:
             # Restore default
-            new_replays = self.p.CAnalysis.get_last_replays(self.p.settings['list_games'])
+            new_replays = self.p.CAnalysis.get_last_replays(SM.settings['list_games'])
         else:
             # Search for replays with strings in them
             new_replays = self.p.CAnalysis.search(*search_for)
@@ -124,7 +125,7 @@ class GameTab(QtWidgets.QWidget):
             widget.hide()
 
         # Add replays
-        for r in new_replays[:self.p.settings['list_games']]:
+        for r in new_replays[:SM.settings['list_games']]:
             if r.file in self.game_UI_dict:
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
                 self.game_UI_dict[r.file].widget.show()

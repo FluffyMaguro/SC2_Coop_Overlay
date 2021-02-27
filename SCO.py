@@ -35,12 +35,12 @@ from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.MDebugWindow import DebugWindow
+from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
 APPVERSION = 233
-SETTING_FILE = truePath('Settings.json')
 
 
 class Signal_Manager(QtCore.QObject):
@@ -101,104 +101,10 @@ class UI_TabWidget(object):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
         self.downloading = False
 
-        self.default_settings = {
-            'start_with_windows': False,
-            'start_minimized': False,
-            'enable_logging': True,
-            'show_player_winrates': True,
-            'duration': 60,
-            'monitor': 1,
-            'force_hide_overlay': False,
-            'show_session': True,
-            'show_random_on_overlay': False,
-            'dark_theme': False,
-            'minimize_to_tray': True,
-            'account_folder': None,
-            'screenshot_folder': None,
-            'hotkey_show/hide': 'Ctrl+Shift+*',
-            'hotkey_show': None,
-            'hotkey_hide': None,
-            'hotkey_newer': 'Ctrl+Alt+/',
-            'hotkey_older': 'Ctrl+Alt+*',
-            'hotkey_winrates': 'Ctrl+Alt+-',
-            'color_player1': '#0080F8',
-            'color_player2': '#00D532',
-            'color_amon': '#FF0000',
-            'color_mastery': '#FFDC87',
-            'aom_account': None,
-            'aom_secret_key': None,
-            'player_notes': dict(),
-            'main_names': list(),
-            'list_games': 100,
-            'right_offset': 0,
-            'width': 0.5,
-            'replay_check_interval': 3,
-            'height': 1,
-            'debug': False,
-            'font_scale': 1,
-            'check_for_multiple_instances': True,
-            'subtract_height': 1,
-            'debug_button': False,
-            'rng_choices': dict(),
-            'performance_geometry': None,
-            'performance_show': False,
-            'performance_hotkey': None,
-            'performance_processes': ['SC2_x64.exe', 'SC2.exe'],
-            'show_chat': False,
-            'chat_geometry': (700, 300, 500, 500),
-            'chat_font_scale': 1.3,
-            'webflag': 'CoverWindow',
-            'full_analysis_atstart': False,
-            'twitchbot': {
-                'channel_name': '',
-                'bot_name': '',
-                'bot_oauth': '',
-                'bank_locations': {
-                    'Default': '',
-                    'Current': ''
-                },
-                'responses': {
-                    'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
-                    'syntax':
-                    '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player \
-                                                    (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
-                    'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
-                    'maguro': 'www.maguro.one',
-                    'names': 'https://www.maguro.one/p/unit-names.html'
-                },
-                'greetings': {
-                    'fluffymaguro': 'Hello Maguro!'
-                },
-                'banned_mutators': ['Vertigo', 'Propagators', 'Fatal Attraction'],
-                'banned_units': [
-                    '',
-                ],
-                'host': 'irc.twitch.tv',
-                'port': 6667,
-                'auto_start': False,
-            }
-        }
-
-        self.settings = self.default_settings.copy()
-
-        # Try to load base config if there is one
-        try:
-            if os.path.isfile(SETTING_FILE):
-                with open(SETTING_FILE, 'r') as f:
-                    self.settings = json.load(f)
-            else:
-                with open(SETTING_FILE, 'w') as f:
-                    json.dump(self.settings, f, indent=2)
-        except:
-            logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
-            if os.path.isfile(SETTING_FILE):
-                os.replace(SETTING_FILE, f'{SETTING_FILE.replace(".json","")}_corrupted.json')
-
-        # Make sure all keys are here
-        HF.update_with_defaults(self.settings, self.default_settings)
+        SM.load_settings(truePath('Settings.json'))
 
         # Check for multiple instances
-        if self.settings['check_for_multiple_instances'] and HF.isWindows():
+        if SM.settings['check_for_multiple_instances'] and HF.isWindows():
             if HF.app_running_multiple_instances():
                 logger.error('App running at multiple instances. Closing!')
                 raise MultipleInstancesRunning
@@ -206,29 +112,26 @@ class UI_TabWidget(object):
         # Update fix font size
         font = QtGui.QFont()
         if HF.isWindows():
-            font.fromString(f"MS Shell Dlg 2,{8.25*self.settings['font_scale']},-1,5,50,0,0,0,0,0")
+            font.fromString(f"MS Shell Dlg 2,{8.25*SM.settings['font_scale']},-1,5,50,0,0,0,0,0")
         else:
-            font.setPointSize(font.pointSize() * self.settings['font_scale'])
+            font.setPointSize(font.pointSize() * SM.settings['font_scale'])
         app.setFont(font)
 
         # Dark theme
-        if self.settings['dark_theme']:
+        if SM.settings['dark_theme']:
             set_dark_theme(self, app, TabWidget, APPVERSION)
 
         # Check if account directory valid, update if not
-        self.settings['account_folder'] = HF.get_account_dir(self.settings['account_folder'])
+        SM.settings['account_folder'] = HF.get_account_dir(SM.settings['account_folder'])
 
         # Screenshot folder
-        if self.settings['screenshot_folder'] in {None, ''} or not os.path.isdir(self.settings['screenshot_folder']):
-            self.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
+        if SM.settings['screenshot_folder'] in {None, ''} or not os.path.isdir(SM.settings['screenshot_folder']):
+            SM.settings['screenshot_folder'] = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop'))
 
         self.updateUI()
         self.check_for_updates()
 
-        # Show TabWidget or not
-        TabWidget.settings = self.settings
-
-        if self.settings['start_minimized']:
+        if SM.settings['start_minimized']:
             TabWidget.hide()
             TabWidget.show_minimize_message()
         else:
@@ -239,7 +142,7 @@ class UI_TabWidget(object):
         if not self.write_permissions:
             self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color=MColors.msg_failure)
 
-        logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
+        logclass.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
 
         self.manage_keyboard_threads()
 
@@ -386,100 +289,100 @@ class UI_TabWidget(object):
 
     def updateUI(self):
         """ Update UI elements based on the current settings """
-        self.TAB_Main.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
-        self.TAB_Main.CH_StartMinimized.setChecked(self.settings['start_minimized'])
-        self.TAB_Main.CH_EnableLogging.setChecked(self.settings['enable_logging'])
-        self.TAB_Main.CH_ShowPlayerWinrates.setChecked(self.settings['show_player_winrates'])
-        self.TAB_Main.CH_ForceHideOverlay.setChecked(self.settings['force_hide_overlay'])
-        self.TAB_Main.CH_DarkTheme.setChecked(self.settings['dark_theme'])
-        self.TAB_Main.CH_MinimizeToTray.setChecked(self.settings['minimize_to_tray'])
+        self.TAB_Main.CH_StartWithWindows.setChecked(SM.settings['start_with_windows'])
+        self.TAB_Main.CH_StartMinimized.setChecked(SM.settings['start_minimized'])
+        self.TAB_Main.CH_EnableLogging.setChecked(SM.settings['enable_logging'])
+        self.TAB_Main.CH_ShowPlayerWinrates.setChecked(SM.settings['show_player_winrates'])
+        self.TAB_Main.CH_ForceHideOverlay.setChecked(SM.settings['force_hide_overlay'])
+        self.TAB_Main.CH_DarkTheme.setChecked(SM.settings['dark_theme'])
+        self.TAB_Main.CH_MinimizeToTray.setChecked(SM.settings['minimize_to_tray'])
         self.TAB_Main.CH_MinimizeToTray.stateChanged.connect(self.saveSettings)
-        self.TAB_Main.SP_Duration.setProperty("value", self.settings['duration'])
-        self.TAB_Main.SP_Monitor.setProperty("value", self.settings['monitor'])
-        self.TAB_Main.LA_CurrentReplayFolder.setText(self.settings['account_folder'])
-        self.TAB_Main.LA_ScreenshotLocation.setText(self.settings['screenshot_folder'])
-        self.TAB_Main.CH_ShowSession.setChecked(self.settings['show_session'])
+        self.TAB_Main.SP_Duration.setProperty("value", SM.settings['duration'])
+        self.TAB_Main.SP_Monitor.setProperty("value", SM.settings['monitor'])
+        self.TAB_Main.LA_CurrentReplayFolder.setText(SM.settings['account_folder'])
+        self.TAB_Main.LA_ScreenshotLocation.setText(SM.settings['screenshot_folder'])
+        self.TAB_Main.CH_ShowSession.setChecked(SM.settings['show_session'])
 
-        self.TAB_Main.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show/hide']))
-        self.TAB_Main.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_show']))
-        self.TAB_Main.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_hide']))
-        self.TAB_Main.KEY_Newer.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_newer']))
-        self.TAB_Main.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_older']))
-        self.TAB_Main.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(self.settings['hotkey_winrates']))
+        self.TAB_Main.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_show/hide']))
+        self.TAB_Main.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_show']))
+        self.TAB_Main.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_hide']))
+        self.TAB_Main.KEY_Newer.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_newer']))
+        self.TAB_Main.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_older']))
+        self.TAB_Main.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_winrates']))
 
-        self.TAB_Main.ED_AomAccount.setText(self.settings['aom_account'])
-        self.TAB_Main.ED_AomSecretKey.setText(self.settings['aom_secret_key'])
+        self.TAB_Main.ED_AomAccount.setText(SM.settings['aom_account'])
+        self.TAB_Main.ED_AomSecretKey.setText(SM.settings['aom_secret_key'])
 
-        self.TAB_Main.LA_P1.setText(f"Player 1 | {self.settings['color_player1']}")
-        self.TAB_Main.LA_P1.setStyleSheet(f"background-color: {self.settings['color_player1']}; color: black")
-        self.TAB_Main.LA_P2.setText(f"Player 2 | {self.settings['color_player2']}")
-        self.TAB_Main.LA_P2.setStyleSheet(f"background-color: {self.settings['color_player2']}; color: black")
-        self.TAB_Main.LA_Amon.setText(f"  Amon | {self.settings['color_amon']}")
-        self.TAB_Main.LA_Amon.setStyleSheet(f"background-color: {self.settings['color_amon']}; color: black")
-        self.TAB_Main.LA_Mastery.setText(f"Mastery | {self.settings['color_mastery']}")
-        self.TAB_Main.LA_Mastery.setStyleSheet(f"background-color: {self.settings['color_mastery']}; color: black")
+        self.TAB_Main.LA_P1.setText(f"Player 1 | {SM.settings['color_player1']}")
+        self.TAB_Main.LA_P1.setStyleSheet(f"background-color: {SM.settings['color_player1']}; color: black")
+        self.TAB_Main.LA_P2.setText(f"Player 2 | {SM.settings['color_player2']}")
+        self.TAB_Main.LA_P2.setStyleSheet(f"background-color: {SM.settings['color_player2']}; color: black")
+        self.TAB_Main.LA_Amon.setText(f"  Amon | {SM.settings['color_amon']}")
+        self.TAB_Main.LA_Amon.setStyleSheet(f"background-color: {SM.settings['color_amon']}; color: black")
+        self.TAB_Main.LA_Mastery.setText(f"Mastery | {SM.settings['color_mastery']}")
+        self.TAB_Main.LA_Mastery.setStyleSheet(f"background-color: {SM.settings['color_mastery']}; color: black")
 
-        self.TAB_Randomizer.FR_RNG_Overlay.setChecked(self.settings['show_random_on_overlay'])
+        self.TAB_Randomizer.FR_RNG_Overlay.setChecked(SM.settings['show_random_on_overlay'])
 
-        self.TAB_TwitchBot.ch_twitch.setChecked(self.settings['twitchbot']['auto_start'])
-        self.TAB_TwitchBot.ch_twitch_chat.setChecked(self.settings['show_chat'])
-        self.TAB_TwitchBot.ED_twitch_channel_name.setText(self.settings['twitchbot']['channel_name'])
+        self.TAB_TwitchBot.ch_twitch.setChecked(SM.settings['twitchbot']['auto_start'])
+        self.TAB_TwitchBot.ch_twitch_chat.setChecked(SM.settings['show_chat'])
+        self.TAB_TwitchBot.ED_twitch_channel_name.setText(SM.settings['twitchbot']['channel_name'])
 
-        self.TAB_Resources.ch_performance_show.setChecked(self.settings['performance_show'])
-        self.TAB_Resources.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(self.settings['performance_hotkey']))
+        self.TAB_Resources.ch_performance_show.setChecked(SM.settings['performance_show'])
+        self.TAB_Resources.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['performance_hotkey']))
 
-        self.TAB_Stats.CH_FA_atstart.setChecked(self.settings['full_analysis_atstart'])
+        self.TAB_Stats.CH_FA_atstart.setChecked(SM.settings['full_analysis_atstart'])
 
-        if self.settings['debug_button']:
+        if SM.settings['debug_button']:
             self.DebugWindow = DebugWindow(self)
 
         # RNG choices
-        self.TAB_Randomizer.load_choices(self.settings['rng_choices'])
+        self.TAB_Randomizer.load_choices(SM.settings['rng_choices'])
 
     def saveSettings(self):
         """ Saves main settings in the settings file. """
-        previous_settings = self.settings.copy()
+        previous_settings = SM.settings.copy()
 
         self.save_playernotes_to_settings()
 
-        self.settings['start_with_windows'] = self.TAB_Main.CH_StartWithWindows.isChecked()
-        self.settings['start_minimized'] = self.TAB_Main.CH_StartMinimized.isChecked()
-        self.settings['enable_logging'] = self.TAB_Main.CH_EnableLogging.isChecked()
-        self.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
-        self.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
-        self.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
-        self.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
-        self.settings['show_session'] = self.TAB_Main.CH_ShowSession.isChecked()
-        self.settings['duration'] = self.TAB_Main.SP_Duration.value()
-        self.settings['monitor'] = self.TAB_Main.SP_Monitor.value()
+        SM.settings['start_with_windows'] = self.TAB_Main.CH_StartWithWindows.isChecked()
+        SM.settings['start_minimized'] = self.TAB_Main.CH_StartMinimized.isChecked()
+        SM.settings['enable_logging'] = self.TAB_Main.CH_EnableLogging.isChecked()
+        SM.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
+        SM.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
+        SM.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
+        SM.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
+        SM.settings['show_session'] = self.TAB_Main.CH_ShowSession.isChecked()
+        SM.settings['duration'] = self.TAB_Main.SP_Duration.value()
+        SM.settings['monitor'] = self.TAB_Main.SP_Monitor.value()
 
-        self.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString()
-        self.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString()
-        self.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString()
-        self.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString()
-        self.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString()
-        self.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString()
+        SM.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString()
+        SM.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString()
+        SM.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString()
+        SM.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString()
+        SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString()
+        SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString()
 
-        self.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
-        self.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
-        self.settings['twitchbot']['auto_start'] = self.TAB_TwitchBot.ch_twitch.isChecked()
-        self.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
+        SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
+        SM.settings['twitchbot']['auto_start'] = self.TAB_TwitchBot.ch_twitch.isChecked()
+        SM.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
 
-        self.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
-        self.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
+        SM.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
+        SM.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
 
-        self.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
+        SM.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
-            self.settings['chat_geometry'] = [
+            SM.settings['chat_geometry'] = [
                 self.chat_widget.pos().x(),
                 self.chat_widget.pos().y(),
                 self.chat_widget.width(), self.chat_widget.height()
             ]
 
-        self.settings['performance_show'] = self.TAB_Resources.ch_performance_show.isChecked()
-        self.settings['performance_hotkey'] = self.TAB_Resources.KEY_Performance.keySequence().toString()
+        SM.settings['performance_show'] = self.TAB_Resources.ch_performance_show.isChecked()
+        SM.settings['performance_hotkey'] = self.TAB_Resources.KEY_Performance.keySequence().toString()
         if hasattr(self, 'performance_overlay'):
-            self.settings['performance_geometry'] = [
+            SM.settings['performance_geometry'] = [
                 self.performance_overlay.pos().x(),
                 self.performance_overlay.pos().y(),
                 self.performance_overlay.width(),
@@ -487,23 +390,18 @@ class UI_TabWidget(object):
             ]
 
         # RNG choices
-        self.settings['rng_choices'] = self.TAB_Randomizer.get_choices()
+        SM.settings['rng_choices'] = self.TAB_Randomizer.get_choices()
 
         # Save settings
-        try:
-            with open(SETTING_FILE, 'w') as f:
-                json.dump(self.settings, f, indent=2)
-            logger.info('Settings saved')
-        except:
-            logger.error(f'Error while saving settings\n{traceback.format_exc()}')
+        SM.save_settings()
 
         # Message
         self.sendInfoMessage('Settings applied')
 
         # Check for overlapping hoykeys
         hotkeys = [
-            self.settings['performance_hotkey'], self.settings['hotkey_show/hide'], self.settings['hotkey_show'], self.settings['hotkey_hide'],
-            self.settings['hotkey_newer'], self.settings['hotkey_older'], self.settings['hotkey_winrates']
+            SM.settings['performance_hotkey'], SM.settings['hotkey_show/hide'], SM.settings['hotkey_show'], SM.settings['hotkey_hide'],
+            SM.settings['hotkey_newer'], SM.settings['hotkey_older'], SM.settings['hotkey_winrates']
         ]
 
         hotkeys = [h for h in hotkeys if not h in {None, ''}]
@@ -511,26 +409,23 @@ class UI_TabWidget(object):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color=MColors.msg_failure)
 
         # Registry
-        out = HF.add_to_startup(self.settings['start_with_windows'])
+        out = HF.add_to_startup(SM.settings['start_with_windows'])
         if out is not None:
             self.sendInfoMessage(f'Warning: {out}', color=MColors.msg_failure)
-            self.settings['start_with_windows'] = False
-            self.TAB_Main.CH_StartWithWindows.setChecked(self.settings['start_with_windows'])
+            SM.settings['start_with_windows'] = False
+            self.TAB_Main.CH_StartWithWindows.setChecked(SM.settings['start_with_windows'])
 
         # Logging
-        logclass.LOGGING = self.settings['enable_logging'] if self.write_permissions else False
-
-        # Update TabWidget for notification
-        TabWidget.settings = self.settings
+        logclass.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
 
         # Update settings for other threads
-        MF.update_settings(self.settings)
+        MF.update_init_message()
 
         # Compare
         changed_keys = set()
         for key in previous_settings:
-            if previous_settings[key] != self.settings[key] and not (previous_settings[key] is None and self.settings[key] == ''):
-                logger.info(f'Changed: {key}: {previous_settings[key]} → {self.settings[key]}')
+            if previous_settings[key] != SM.settings[key] and not (previous_settings[key] is None and SM.settings[key] == ''):
+                logger.info(f'Changed: {key}: {previous_settings[key]} → {SM.settings[key]}')
                 changed_keys.add(key)
 
         # Resend init message if duration has changed. Colors are handle in color picker.
@@ -539,15 +434,15 @@ class UI_TabWidget(object):
 
         # Monitor update
         if 'monitor' in changed_keys and hasattr(self, 'WebView'):
-            self.set_WebView_size_location(self.settings['monitor'])
+            self.set_WebView_size_location(SM.settings['monitor'])
 
         # Update keyboard threads
         self.manage_keyboard_threads(previous_settings=previous_settings)
 
         # Show/hide overlay
-        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
+        if hasattr(self, 'WebView') and SM.settings['force_hide_overlay'] and self.WebView.isVisible():
             self.WebView.hide()
-        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay'] and not self.WebView.isVisible():
+        elif hasattr(self, 'WebView') and not SM.settings['force_hide_overlay'] and not self.WebView.isVisible():
             self.WebView.show()
 
     def hotkey_changed(self):
@@ -594,9 +489,9 @@ class UI_TabWidget(object):
         if previous_settings is None:
             self.hotkey_hotkey_dict = dict()
             for key in hotkey_func_dict:
-                if not self.settings[key] in {None, ''}:
+                if not SM.settings[key] in {None, ''}:
                     try:
-                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
+                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(SM.settings[key], hotkey_func_dict[key])
                     except:
                         logger.error(traceback.format_exc())
                         self.sendInfoMessage(f'Failed to initialize hotkey ({key.replace("hotkey_","")})! Try a different one.',
@@ -605,17 +500,17 @@ class UI_TabWidget(object):
         else:
             for key in hotkey_func_dict:
                 # Update current value if the hotkey changed
-                if previous_settings[key] != self.settings[key] and not self.settings[key] in {None, ''}:
+                if previous_settings[key] != SM.settings[key] and not SM.settings[key] in {None, ''}:
                     if key in self.hotkey_hotkey_dict:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
                     try:
-                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(self.settings[key], hotkey_func_dict[key])
-                        logger.info(f'Changed hotkey of {key} to {self.settings[key]}')
+                        self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(SM.settings[key], hotkey_func_dict[key])
+                        logger.info(f'Changed hotkey of {key} to {SM.settings[key]}')
                     except:
                         logger.error(f'Failed to change hotkey {key}\n{traceback.format_exc()}')
 
                 # Remove current hotkey no value
-                elif self.settings[key] in {None, ''} and key in self.hotkey_hotkey_dict:
+                elif SM.settings[key] in {None, ''} and key in self.hotkey_hotkey_dict:
                     try:
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
                         del self.hotkey_hotkey_dict[key]
@@ -625,48 +520,48 @@ class UI_TabWidget(object):
 
     def resetSettings(self):
         """ Resets settings to default values and updates UI """
-        previous_settings = self.settings.copy()
-        self.settings = self.default_settings.copy()
-        self.settings['account_folder'] = HF.get_account_dir(path=self.settings['account_folder'])
-        self.settings['screenshot_folder'] = previous_settings['screenshot_folder']
-        self.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
-        self.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
-        self.settings['player_notes'] = previous_settings['player_notes']
-        self.settings['twitchbot'] = previous_settings['twitchbot']
-        self.settings['debug_button'] = previous_settings['debug_button']
-        self.settings['debug'] = previous_settings['debug']
+        previous_settings = SM.settings.copy()
+        SM.settings = SM.default_settings.copy()
+        SM.settings['account_folder'] = HF.get_account_dir(path=SM.settings['account_folder'])
+        SM.settings['screenshot_folder'] = previous_settings['screenshot_folder']
+        SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
+        SM.settings['player_notes'] = previous_settings['player_notes']
+        SM.settings['twitchbot'] = previous_settings['twitchbot']
+        SM.settings['debug_button'] = previous_settings['debug_button']
+        SM.settings['debug'] = previous_settings['debug']
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
-        MF.update_settings(self.settings)
+        MF.update_init_message()
         MF.resend_init_message()
         self.manage_keyboard_threads(previous_settings=previous_settings)
 
     def chooseScreenshotFolder(self):
         """ Changes screenshot folder location """
         dialog = QtWidgets.QFileDialog()
-        dialog.setDirectory(self.settings['screenshot_folder'])
+        dialog.setDirectory(SM.settings['screenshot_folder'])
         dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
 
         if dialog.exec_():
             folder = os.path.normpath(dialog.selectedFiles()[0])
             logger.info(f'Changing screenshot_folder to {folder}')
             self.Tab_Main.LA_ScreenshotLocation.setText(folder)
-            self.settings['screenshot_folder'] = folder
+            SM.settings['screenshot_folder'] = folder
             self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color=MColors.msg_success)
 
     def findReplayFolder(self):
         """ Finds and sets account folder """
         dialog = QtWidgets.QFileDialog()
-        if not self.settings['account_folder'] in {None, ''}:
-            dialog.setDirectory(self.settings['account_folder'])
+        if not SM.settings['account_folder'] in {None, ''}:
+            dialog.setDirectory(SM.settings['account_folder'])
         dialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
 
         if dialog.exec_():
             folder = dialog.selectedFiles()[0]
             if 'StarCraft' in folder and '/Accounts' in folder:
                 logger.info(f'Changing accountdir to {folder}')
-                self.settings['account_folder'] = folder
+                SM.settings['account_folder'] = folder
                 self.TAB_Main.LA_CurrentReplayFolder.setText(folder)
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color=MColors.msg_success)
                 MF.update_names_and_handles(folder, MF.AllReplays)
@@ -691,14 +586,14 @@ class UI_TabWidget(object):
 
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting!\n{self.settings}')
+        logger.info(f'\n>>> Starting!\n{SM.settings}')
 
         # Get monitor dimensions
         self.desktop_widget = QtWidgets.QDesktopWidget()
-        self.sg = self.desktop_widget.screenGeometry(int(self.settings['monitor'] - 1))
+        self.sg = self.desktop_widget.screenGeometry(int(SM.settings['monitor'] - 1))
 
         # Debug files in MEI directory
-        if self.settings['debug']:
+        if SM.settings['debug']:
             folder = os.path.abspath(innerPath(''))
             if os.path.isdir(folder):
                 for root, _, files in os.walk(folder):
@@ -724,24 +619,24 @@ class UI_TabWidget(object):
         else:
             self.WebView = MUI.CustomWebView()
             self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
-                                        | eval(f"QtCore.Qt.{self.settings['webflag']}") | QtCore.Qt.NoDropShadowWindowHint
+                                        | eval(f"QtCore.Qt.{SM.settings['webflag']}") | QtCore.Qt.NoDropShadowWindowHint
                                         | QtCore.Qt.WindowDoesNotAcceptFocus)
 
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
             self.WebPage = self.WebView.page()
             self.WebPage.setBackgroundColor(QtCore.Qt.transparent)
-            self.set_WebView_size_location(self.settings['monitor'])
+            self.set_WebView_size_location(SM.settings['monitor'])
 
             self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
 
-            if not self.settings['force_hide_overlay']:
+            if not SM.settings['force_hide_overlay']:
                 self.WebView.show()
 
             MF.WEBPAGE = self.WebPage
 
         # Pass current settings
-        MF.update_settings(self.settings)
+        MF.update_init_message()
 
         # Init randomization
         self.TAB_Randomizer.randomize_commander()
@@ -762,7 +657,7 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_replays)
 
         # Start mass replay analysis
-        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, self.settings['account_folder'])
+        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, SM.settings['account_folder'])
         thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
         self.threadpool.start(thread_mass_analysis)
         logger.info('Starting mass replay analysis')
@@ -773,22 +668,22 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_awakening)
 
         # Create chat widget
-        if self.settings['show_chat']:
+        if SM.settings['show_chat']:
             self.create_twitch_chat()
 
         # Create the twitch bot
-        if self.settings['twitchbot']['auto_start']:
+        if SM.settings['twitchbot']['auto_start']:
             self.run_twitch_bot()
 
         # Performance overlay
-        self.performance_overlay = SystemInfo(geometry=self.settings['performance_geometry'], process_names=self.settings['performance_processes'])
-        if self.settings['performance_show']:
+        self.performance_overlay = SystemInfo(geometry=SM.settings['performance_geometry'], process_names=SM.settings['performance_processes'])
+        if SM.settings['performance_show']:
             self.TAB_Resources.ch_performance_show.setChecked(True)
             self.performance_overlay.start()
 
         # Find MM Integration banks
         self.TAB_TwitchBot.find_and_update_banks()
-        self.update_selected_bank_item(self.settings['twitchbot']['bank_locations'].get('Current'))
+        self.update_selected_bank_item(SM.settings['twitchbot']['bank_locations'].get('Current'))
 
     def change_bank(self):
         """ Update currently used bank in the twitch bot.
@@ -796,7 +691,7 @@ class UI_TabWidget(object):
         bank_path = self.bank_name_to_location_dict.get(self.TAB_TwitchBot.CB_twitch_banks.currentText(),
                                                         self.TAB_TwitchBot.CB_twitch_banks.currentText())
         logger.info(f'Changing bank to {bank_path}')
-        self.settings['twitchbot']['bank_locations']['Current'] = bank_path
+        SM.settings['twitchbot']['bank_locations']['Current'] = bank_path
         try:
             self.TwitchBot.bank = bank_path
         except:
@@ -812,7 +707,7 @@ class UI_TabWidget(object):
 
         for i in range(self.TAB_TwitchBot.CB_twitch_banks.count()):
             if bank_path in self.TAB_TwitchBot.CB_twitch_banks.itemText(i):
-                self.settings['twitchbot']['bank_locations']['Current'] = bank_path
+                SM.settings['twitchbot']['bank_locations']['Current'] = bank_path
                 self.TAB_TwitchBot.CB_twitch_banks.setCurrentIndex(i)
                 try:
                     self.TwitchBot.bank = bank_path
@@ -824,10 +719,10 @@ class UI_TabWidget(object):
 
     def run_twitch_bot(self):
         """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """
-        twitchbot_settings = self.settings['twitchbot'].copy()
+        twitchbot_settings = SM.settings['twitchbot'].copy()
 
         # Fallback to my bot if the user doesn't have its own bot
-        if self.settings['twitchbot']['channel_name'] != '' and self.settings['twitchbot']['bot_name'] == '' and self.settings['twitchbot'][
+        if SM.settings['twitchbot']['channel_name'] != '' and SM.settings['twitchbot']['bot_name'] == '' and SM.settings['twitchbot'][
                 'bot_oauth'] == '':
             file = innerPath('src/secure.json')
             if os.path.isfile(file):
@@ -841,7 +736,7 @@ class UI_TabWidget(object):
         # Run the both if settings are ok
         if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
             logger.error(
-                f"Invalid data for the bot\n{self.settings['twitchbot']['channel_name']=}\n{self.settings['twitchbot']['bot_name']=}\n{self.settings['twitchbot']['bot_oauth']=}"
+                f"Invalid data for the bot\n{SM.settings['twitchbot']['channel_name']=}\n{SM.settings['twitchbot']['bot_name']=}\n{SM.settings['twitchbot']['bot_oauth']=}"
             )
             self.TAB_TwitchBot.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
         else:
@@ -853,15 +748,15 @@ class UI_TabWidget(object):
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         try:
-            self.WebView.setFixedSize(int(self.sg.width() * self.settings['width']),
-                                      int(self.sg.height() * self.settings['height']) - self.settings['subtract_height'])
+            self.WebView.setFixedSize(int(self.sg.width() * SM.settings['width']),
+                                      int(self.sg.height() * SM.settings['height']) - SM.settings['subtract_height'])
 
             # Calculate correct X offset when considering multiple monitors. Sum all widths including the current monitor.
             x_start = 0
-            for i in range(0, self.settings['monitor']):
+            for i in range(0, SM.settings['monitor']):
                 x_start += self.desktop_widget.screenGeometry(i).width()
             # Substract widget  width and offset
-            x = x_start - self.sg.width() * self.settings['width'] + self.settings['right_offset']
+            x = x_start - self.sg.width() * SM.settings['width'] + SM.settings['right_offset']
             # Move widget
             self.WebView.move(int(x), self.sg.top())
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
@@ -893,9 +788,9 @@ class UI_TabWidget(object):
         """ Launches function again. Adds game to game tab. Updates player winrate data. """
 
         # Show/hide overlay (just to make sure)
-        if hasattr(self, 'WebView') and self.settings['force_hide_overlay'] and self.WebView.isVisible():
+        if hasattr(self, 'WebView') and SM.settings['force_hide_overlay'] and self.WebView.isVisible():
             self.WebView.hide()
-        elif hasattr(self, 'WebView') and not self.settings['force_hide_overlay']:
+        elif hasattr(self, 'WebView') and not SM.settings['force_hide_overlay']:
             self.WebView.show()
 
         # Launch thread anew
@@ -914,9 +809,9 @@ class UI_TabWidget(object):
         """ Saves player notes from UI to settings dict"""
         for player in self.TAB_Players.player_winrate_UI_dict:
             if not self.TAB_Players.player_winrate_UI_dict[player].get_note() in {None, ''}:
-                self.settings['player_notes'][player] = self.TAB_Players.player_winrate_UI_dict[player].get_note()
-            elif player in self.settings['player_notes']:
-                del self.settings['player_notes'][player]
+                SM.settings['player_notes'][player] = self.TAB_Players.player_winrate_UI_dict[player].get_note()
+            elif player in SM.settings['player_notes']:
+                del SM.settings['player_notes'][player]
 
     def wait_ms(self, time):
         """ Pause executing for `time` in miliseconds"""
@@ -943,14 +838,14 @@ class UI_TabWidget(object):
         MF.CAnalysis = self.CAnalysis
 
         # Show player winrates
-        if self.settings['show_player_winrates']:
+        if SM.settings['show_player_winrates']:
             self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
             self.thread_check_for_newgame.start()
 
         # Connect & run full analysis if set
         self.TAB_Stats.BT_FA_run.setEnabled(True)
         self.TAB_Stats.BT_FA_run.clicked.connect(self.run_f_analysis)
-        if self.settings['full_analysis_atstart']:
+        if SM.settings['full_analysis_atstart']:
             self.run_f_analysis()
 
         # If try to find
@@ -1024,7 +919,7 @@ class UI_TabWidget(object):
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 
             name = f'Overlay_{datetime.now().strftime("%H%M%S")}.png'
-            path = os.path.abspath(os.path.join(self.settings['screenshot_folder'], name))
+            path = os.path.abspath(os.path.join(SM.settings['screenshot_folder'], name))
 
             p.save(path, 'png')
 
@@ -1040,7 +935,7 @@ class UI_TabWidget(object):
 
     def start_stop_bot(self):
         """ Starts or stops the twitch bot """
-        self.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
+        SM.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
 
         if hasattr(self, 'TwitchBot'):
             if self.TwitchBot.RUNNING:
@@ -1089,7 +984,7 @@ class UI_TabWidget(object):
 
         # Creates twitch chat widget if it's not created already
         elif not hasattr(self, 'chat_widget'):
-            self.chat_widget = ChatWidget(geometry=self.settings['chat_geometry'], chat_font_scale=self.settings['chat_font_scale'])
+            self.chat_widget = ChatWidget(geometry=SM.settings['chat_geometry'], chat_font_scale=SM.settings['chat_font_scale'])
 
             if hasattr(self, 'TwitchBot'):
                 self.TwitchBot.widget = self.chat_widget
@@ -1142,7 +1037,7 @@ class UI_TabWidget(object):
             result = self.CAnalysis.find_banks()
             result = list(result.values())[0][1]
             result = os.path.join(result, 'MMTwitchIntegration.SC2Bank')
-            self.settings['twitchbot']['bank_locations']['Default'] = result
+            SM.settings['twitchbot']['bank_locations']['Default'] = result
             logger.info(f"Setting default bank location to {result.strip()}")
             self.update_selected_bank_item(result)
         except:

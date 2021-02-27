@@ -1,9 +1,8 @@
 """
 A bit messy module containing functionality responsible for 
-sending info to the overlay with socket/JS
+sending info to the overlay with socket/JS. The oldest part of the app.
 
-Checking for new replays and games. Uploading replays to AOM.
-And more.
+Checking for new replays and games. Uploading replays to AOM. And more.
 """
 import os
 import json
@@ -18,6 +17,7 @@ import websockets
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash
+from SCOFunctions.Settings import Setting_manager as SM
 
 OverlayMessages = []  # Storage for all messages
 globalOverlayMessagesSent = 0  # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
@@ -30,7 +30,6 @@ player_winrate_data = dict()
 PLAYER_HANDLES = set()  # Set of handles of the main player
 PLAYER_NAMES = set()  # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
-SETTINGS = dict()
 CAnalysis = None
 APP_CLOSING = False
 session_games = {'Victory': 0, 'Defeat': 0}
@@ -45,14 +44,10 @@ def stop_threads():
     APP_CLOSING = True
 
 
-def update_settings(d):
+def update_init_message():
     """ Through this function the main script passes all its settings here """
-    global SETTINGS
-    global initMessage
-
-    SETTINGS = d
-    initMessage['colors'] = [SETTINGS['color_player1'], SETTINGS['color_player2'], SETTINGS['color_amon'], SETTINGS['color_mastery']]
-    initMessage['duration'] = SETTINGS['duration']
+    initMessage['colors'] = [SM.settings['color_player1'], SM.settings['color_player2'], SM.settings['color_amon'], SM.settings['color_mastery']]
+    initMessage['duration'] = SM.settings['duration']
 
 
 def sendEvent(event):
@@ -131,8 +126,8 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
                 names.add(file.split('_')[0])
 
     # Fallbacks for finding player names: settings, replays, winrates
-    if len(names) == 0 and len(SETTINGS['main_names']) > 0:
-        names = set(SETTINGS['main_names'])
+    if len(names) == 0 and len(SM.settings['main_names']) > 0:
+        names = set(SM.settings['main_names'])
         logger.info(f'No player names found, falling back to settings: {names}')
 
     if len(names) == 0 and len(handles) > 0 and replays != None:
@@ -222,7 +217,7 @@ def initialize_replays_names_handles():
     global ReplayPosition
 
     with lock:
-        AllReplays = initialize_AllReplays(SETTINGS['account_folder'])
+        AllReplays = initialize_AllReplays(SM.settings['account_folder'])
         logger.info(f'Initializing AllReplays with length: {len(AllReplays)}')
         ReplayPosition = len(AllReplays)
 
@@ -232,7 +227,7 @@ def initialize_replays_names_handles():
 
 def check_names_handles():
     try:
-        update_names_and_handles(SETTINGS['account_folder'], AllReplays)
+        update_names_and_handles(SM.settings['account_folder'], AllReplays)
     except:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
@@ -247,7 +242,7 @@ def check_replays():
         logger.debug('Checking for replays....')
         # Check for new replays
         current_time = time.time()
-        for root, directories, files in os.walk(SETTINGS['account_folder']):
+        for root, directories, files in os.walk(SM.settings['account_folder']):
             for file in files:
                 file_path = os.path.join(root, file)
                 if len(file_path) > 255:
@@ -275,9 +270,9 @@ def check_replays():
                                 # What to send
                                 out = replay_dict.copy()
                                 out['newReplay'] = True
-                                if SETTINGS.get('show_session', False):
+                                if SM.settings.get('show_session', False):
                                     out.update(session_games)
-                                if SETTINGS.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
+                                if SM.settings.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
                                     out.update(RNG_COMMANDER)
                                 if CAnalysis is not None:
                                     out['fastest'] = CAnalysis.check_for_record(replay_dict)
@@ -300,7 +295,7 @@ def check_replays():
                                 return replay_dict
 
         # Wait while checking if the thread should end early
-        for i in range(int(SETTINGS['replay_check_interval'])):
+        for i in range(int(SM.settings['replay_check_interval'])):
             time.sleep(0.5)
             if APP_CLOSING:
                 return None
@@ -309,7 +304,7 @@ def check_replays():
 def upload_to_aom(file_path, replay_dict):
     """ Function handling uploading the replay on the Aommaster's server"""
     # Credentials need to be set up
-    if SETTINGS['aom_account'] in {'', None} or SETTINGS['aom_secret_key'] in {'', None}:
+    if SM.settings['aom_account'] in {'', None} or SM.settings['aom_secret_key'] in {'', None}:
         return
 
     # Never upload old replays
@@ -321,7 +316,7 @@ def upload_to_aom(file_path, replay_dict):
         sendEvent({'uploadEvent': True, 'response': 'Not valid replay for upload'})
         return
 
-    url = f"https://starcraft2coop.com/scripts/assistant/replay.php?username={SETTINGS['aom_account']}&secretkey={SETTINGS['aom_secret_key']}"
+    url = f"https://starcraft2coop.com/scripts/assistant/replay.php?username={SM.settings['aom_account']}&secretkey={SM.settings['aom_secret_key']}"
     try:
         with open(file_path, 'rb') as file:
             response = session.post(url, files={'file': file})
@@ -556,8 +551,8 @@ def check_for_new_game():
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
                 if len(PLAYER_NAMES) > 0:
                     test_names_against = [p.lower() for p in PLAYER_NAMES]
-                elif len(SETTINGS['main_names']) > 0:
-                    test_names_against = [p.lower() for p in SETTINGS['main_names']]
+                elif len(SM.settings['main_names']) > 0:
+                    test_names_against = [p.lower() for p in SM.settings['main_names']]
                 else:
                     logger.error('No main names to test against')
                     continue
@@ -574,8 +569,8 @@ def check_for_new_game():
                     data = {p: player_winrate_data.get(p, [None]) for p in player_names}
                     # Get player notes
                     for player in data:
-                        if player in SETTINGS['player_notes']:
-                            data[player].append(SETTINGS['player_notes'][player])
+                        if player in SM.settings['player_notes']:
+                            data[player].append(SM.settings['player_notes'][player])
 
                     most_recent_playerdata = data
                     sendEvent({'playerEvent': True, 'data': data})

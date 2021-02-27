@@ -33,7 +33,7 @@ def update_with_defaults(loaded: dict, default: dict):
     """ Checks `loaded` dictionary, and fills all keys that are not present with values
         from `default` dictionary. This is done recursively for any dictionaries inside"""
     if not isinstance(default, dict) or not isinstance(loaded, dict):
-        raise Exception('default and loaded has to be dictionaries')
+        raise TypeError('default and loaded has to be dictionaries')
 
     for key in default:
         # If there is a new key

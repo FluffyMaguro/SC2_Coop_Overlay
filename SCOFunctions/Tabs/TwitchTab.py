@@ -2,6 +2,7 @@ import os
 from PyQt5 import QtWidgets, QtGui, QtCore
 import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.HelperFunctions as HF
+from SCOFunctions.Settings import Setting_manager as SM
 
 
 class TwitchTab(QtWidgets.QWidget):
@@ -97,7 +98,7 @@ class TwitchTab(QtWidgets.QWidget):
 
     def find_and_update_banks(self):
         """ Finds banks, update UI """
-        folder = os.path.dirname(self.p.settings['account_folder'])
+        folder = os.path.dirname(SM.settings['account_folder'])
 
         for root, _, files in os.walk(folder):
             for file in files:

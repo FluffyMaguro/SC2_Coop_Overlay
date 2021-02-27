@@ -13,6 +13,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 from SCOFunctions.MTheming import set_dark_theme, MColors
+from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('UI', 'INFO')
 
@@ -1377,7 +1378,7 @@ class TitleBar(QtWidgets.QFrame):
 
 class CustomQTabWidget(QtWidgets.QTabWidget):
     """ Main app widget """
-    def __init__(self, parent=None, settings=dict()):
+    def __init__(self, parent=None):
         super(CustomQTabWidget, self).__init__(parent)
 
         # Tray
@@ -1401,8 +1402,6 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.tray_icon.setContextMenu(self.tray_menu)
         self.tray_icon.show()
 
-        self.settings = settings
-
         # For dark mode
         self.dark_mode_active = False
         self.title_bar = TitleBar(self)
@@ -1415,7 +1414,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.minimize_to_tray()
 
     def minimize_to_tray(self):
-        if self.settings['minimize_to_tray']:
+        if SM.settings['minimize_to_tray']:
             self.hide()
             self.show_minimize_message()
         else:
@@ -1426,8 +1425,8 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         text = ''
         setting_dict = {"hotkey_show/hide": "Show/Hide", "hotkey_newer": "Newer replay", "hotkey_older": "Older replay"}
         for key in setting_dict:
-            if key in self.settings and self.settings[key] != '':
-                text += f"\n{self.settings[key]} → {setting_dict[key]}"
+            if key in SM.settings and SM.settings[key] != '':
+                text += f"\n{SM.settings[key]} → {setting_dict[key]}"
         return text
 
     def show_minimize_message(self, message=''):

@@ -6,6 +6,7 @@ import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MUserInterface as MUI
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MTheming import MColors
+from SCOFunctions.Settings import Setting_manager as SM
 
 
 class MainTab(QtWidgets.QWidget):
@@ -128,7 +129,7 @@ class MainTab(QtWidgets.QWidget):
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.p.resetSettings)
-        self.BT_MainReset.setToolTip("Reset all settings apart from player notes, settings for starcraft2coop and the twitch bot")
+        self.BT_MainReset.setToolTip("Resets all settings on this tab apart from login for starcraft2coop.com")
 
         # Screenshot
         self.BT_Screenshot = QtWidgets.QPushButton(self)
@@ -319,8 +320,8 @@ class MainTab(QtWidgets.QWidget):
         if color.isValid():
             button.setText(f"{button_dict.get(button,'')} | {color.name()}")
             button.setStyleSheet(f'background-color: {color.name()}; color: black')
-            self.p.settings[settings_dict[button]] = color.name()
-            MF.update_settings(self.p.settings)
+            SM.settings[settings_dict[button]] = color.name()
+            MF.update_init_message()
             MF.resend_init_message()
 
     def validateAOM(self):

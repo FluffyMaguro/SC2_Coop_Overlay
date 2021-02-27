@@ -1,0 +1,131 @@
+import os
+import json
+import traceback
+from datetime import datetime
+
+import SCOFunctions.HelperFunctions as HF
+from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MLogging import logclass
+logger = logclass('SETT', 'INFO')
+
+
+class CSettings:
+    def __init__(self):
+        self.filepath = None
+        self.default_settings = {
+            'start_with_windows': False,
+            'start_minimized': False,
+            'enable_logging': True,
+            'show_player_winrates': True,
+            'duration': 60,
+            'monitor': 1,
+            'force_hide_overlay': False,
+            'show_session': True,
+            'show_random_on_overlay': False,
+            'dark_theme': False,
+            'minimize_to_tray': True,
+            'account_folder': None,
+            'screenshot_folder': None,
+            'hotkey_show/hide': 'Ctrl+Shift+*',
+            'hotkey_show': None,
+            'hotkey_hide': None,
+            'hotkey_newer': 'Ctrl+Alt+/',
+            'hotkey_older': 'Ctrl+Alt+*',
+            'hotkey_winrates': 'Ctrl+Alt+-',
+            'color_player1': '#0080F8',
+            'color_player2': '#00D532',
+            'color_amon': '#FF0000',
+            'color_mastery': '#FFDC87',
+            'aom_account': None,
+            'aom_secret_key': None,
+            'player_notes': dict(),
+            'main_names': list(),
+            'list_games': 100,
+            'right_offset': 0,
+            'width': 0.5,
+            'replay_check_interval': 3,
+            'height': 1,
+            'debug': False,
+            'font_scale': 1,
+            'check_for_multiple_instances': True,
+            'subtract_height': 1,
+            'debug_button': False,
+            'rng_choices': dict(),
+            'performance_geometry': None,
+            'performance_show': False,
+            'performance_hotkey': None,
+            'performance_processes': ['SC2_x64.exe', 'SC2.exe'],
+            'show_chat': False,
+            'chat_geometry': (700, 300, 500, 500),
+            'chat_font_scale': 1.3,
+            'webflag': 'CoverWindow',
+            'full_analysis_atstart': False,
+            'twitchbot': {
+                'channel_name': '',
+                'bot_name': '',
+                'bot_oauth': '',
+                'bank_locations': {
+                    'Default': '',
+                    'Current': ''
+                },
+                'responses': {
+                    'commands': '!names, !syntax, !overlay, !join, !message, !mutator, !spawn, !wave, !resources',
+                    'syntax':
+                    '!spawn unit_type amount for_player (e.g. !spawn marine 10 2), !wave size tech (e.g. !wave 7 7), !resources minerals vespene for_player \
+                                                            (e.g. !resources 1000 500 2), !mutator mutator_name (e.g. !mutator avenger), !mutator mutator_name disable, !join player (e.g. !join 2).',
+                    'overlay': 'https://github.com/FluffyMaguro/SC2_Coop_overlay',
+                    'maguro': 'www.maguro.one',
+                    'names': 'https://www.maguro.one/p/unit-names.html'
+                },
+                'greetings': {
+                    'fluffymaguro': 'Hello Maguro!'
+                },
+                'banned_mutators': ['Vertigo', 'Propagators', 'Fatal Attraction'],
+                'banned_units': [
+                    '',
+                ],
+                'host': 'irc.twitch.tv',
+                'port': 6667,
+                'auto_start': False,
+            }
+        }
+
+        # We don't need a deepcopy here. When resetting only the lower level gets changed.
+        self.settings = self.default_settings.copy()
+
+    def load_settings(self, filepath):
+        """ Load settings from a file"""
+        self.filepath = filepath
+        try:
+            # Try to load base config if there is one
+            if os.path.isfile(self.filepath):
+                with open(self.filepath, 'r') as f:
+                    self.settings = json.load(f)
+
+            # If it's not there, save default settings
+            else:
+                with open(self.filepath, 'w') as f:
+                    json.dump(self.settings, f, indent=2)
+        except:
+            logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
+            if os.path.isfile(self.filepath):
+                now = datetime.now().strftime("%Y%m%d_%H%M%S")
+                os.replace(self.filepath, f'{self.filepath.replace(".json","")}_corrupted ({now}).json')
+
+        # Make sure all keys are here. This checks dictionaries recursively and fill missing keys.
+        HF.update_with_defaults(self.settings, self.default_settings)
+
+        # Return setting
+        return self.settings
+
+    def save_settings(self):
+        """ Save settings to an already definied filepath"""
+        try:
+            with open(self.filepath, 'w') as f:
+                json.dump(self.settings, f, indent=2)
+            logger.info('Settings saved')
+        except:
+            logger.error(f'Error while saving settings\n{traceback.format_exc()}')
+
+
+Setting_manager = CSettings()
