@@ -84,7 +84,8 @@ class GameTab(QtWidgets.QWidget):
         self.ed_games_search.setGeometry(QtCore.QRect(740, 5, 160, 20))
         self.ed_games_search.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_games_search.setStyleSheet("font-weight: normal")
-        self.ed_games_search.setPlaceholderText("search")
+        self.ed_games_search.setPlaceholderText("Search")
+        self.ed_games_search.setToolTip("Search for any data in a game. Separate words by spaces.")
 
         self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
         self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))

@@ -28,6 +28,7 @@ class PlayerTab(QtWidgets.QWidget):
         self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
         self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
         self.CH_OnlyTop50.setText("Show max 50 players")
+        self.CH_OnlyTop50.setToolTip("Unchecking this will likely cause lag. All players are always searched no matter the status of this setting.")
         self.CH_OnlyTop50.setChecked(True)
         self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
 

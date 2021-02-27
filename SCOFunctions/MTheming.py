@@ -69,10 +69,11 @@ def set_dark_theme(main, app, tab, version):
     # Small tweaks
     main.TAB_Games.WD_RecentGamesHeading.setStyleSheet('background-color: #454545; font-weight: bold')
     main.TAB_Games.GameTabLine.setStyleSheet('background-color: #777')
-    main.TAB_Games.ed_games_search.setStyleSheet('background-color: #333; font-weight: normal')
+    main.TAB_Games.ed_games_search.setStyleSheet('QLineEdit {background-color: #333; font-weight: normal}' 
+                                                 'QToolTip {color:black; background-color: #ffffe1; font-weight: normal}')
 
     main.TAB_Players.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545; font-weight: bold}")
-    main.TAB_Players.FR_Winrate_Controls.setStyleSheet('background-color: #454545')
+    main.TAB_Players.FR_Winrate_Controls.setStyleSheet('QFrame {background-color: #454545; border: 0px solid #454545}')
     main.TAB_Players.PlayerTabLine.setStyleSheet('background-color: #777')
     main.TAB_Players.ED_Winrate_Search.setStyleSheet('background-color: #333')
 
