@@ -94,8 +94,8 @@ class UI_TabWidget(object):
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
         if not HF.isWindows():
-            self.CH_StartWithWindows.setChecked(False)
-            self.CH_StartWithWindows.setEnabled(False)
+            self.TAB_Main.CH_StartWithWindows.setChecked(False)
+            self.TAB_Main.CH_StartWithWindows.setEnabled(False)
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
@@ -425,7 +425,10 @@ class UI_TabWidget(object):
         changed_keys = set()
         for key in previous_settings:
             if previous_settings[key] != SM.settings[key] and not (previous_settings[key] is None and SM.settings[key] == ''):
-                logger.info(f'Changed: {key}: {previous_settings[key]} → {SM.settings[key]}')
+                if key == 'aom_secret_key':
+                    logger.info(f'Changed: {key}: ... → ...')
+                else:
+                    logger.info(f'Changed: {key}: {previous_settings[key]} → {SM.settings[key]}')
                 changed_keys.add(key)
 
         # Resend init message if duration has changed. Colors are handle in color picker.

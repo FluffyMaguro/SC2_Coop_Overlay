@@ -3,10 +3,23 @@ import json
 import traceback
 from datetime import datetime
 
-import SCOFunctions.HelperFunctions as HF
-from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 logger = logclass('SETT', 'INFO')
+
+
+def update_with_defaults(loaded: dict, default: dict):
+    """ Checks `loaded` dictionary, and fills all keys that are not present with values
+    from `default` dictionary. This is done recursively for any dictionaries inside"""
+    if not isinstance(default, dict) or not isinstance(loaded, dict):
+        raise TypeError('default and loaded has to be dictionaries')
+
+    for key in default:
+        # If there is a new key
+        if not key in loaded:
+            loaded[key] = default[key]
+        # If dictionary recursively do the same
+        if isinstance(default[key], dict):
+            update_with_defaults(loaded[key], default[key])
 
 
 class CSettings:
@@ -108,15 +121,13 @@ class CSettings:
                     json.dump(self.settings, f, indent=2)
         except:
             logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
+            # Save corrupted file on the side
             if os.path.isfile(self.filepath):
                 now = datetime.now().strftime("%Y%m%d_%H%M%S")
                 os.replace(self.filepath, f'{self.filepath.replace(".json","")}_corrupted ({now}).json')
 
         # Make sure all keys are here. This checks dictionaries recursively and fill missing keys.
-        HF.update_with_defaults(self.settings, self.default_settings)
-
-        # Return setting
-        return self.settings
+        update_with_defaults(self.settings, self.default_settings)
 
     def save_settings(self):
         """ Save settings to an already definied filepath"""

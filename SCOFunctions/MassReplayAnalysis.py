@@ -831,7 +831,7 @@ class mass_replay_analysis:
                     fully_parsed += 1
 
                     # Calculate eta
-                    if (fully_parsed - fully_parsed_at_start) > 15 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
+                    if (fully_parsed - fully_parsed_at_start) > 10 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
                         eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
                         eta = time.strftime("%H:%M:%S", time.gmtime(eta))
 
