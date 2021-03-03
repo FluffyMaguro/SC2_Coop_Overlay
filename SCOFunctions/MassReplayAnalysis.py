@@ -793,6 +793,7 @@ class mass_replay_analysis:
 
         if fully_parsed == len(self.ReplayDataAll):
             self.full_analysis_finished = True
+            progress_callback.emit(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
             return True
 
         progress_callback.emit(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
