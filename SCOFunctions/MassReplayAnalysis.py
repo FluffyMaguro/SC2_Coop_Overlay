@@ -6,6 +6,7 @@ import os
 import time
 import json
 import pickle
+import pathlib
 import traceback
 import statistics
 import threading
@@ -936,8 +937,8 @@ class mass_replay_analysis:
             for p in (1, 2):
                 if r.players[p]['handle'] in unknown_handles:
                     unknown_handles.remove(r.players[p]['handle'])
-                    folder = r.file.split('Replays\\Multiplayer')[0]
-                    handle = folder.split('\\')[-2]
+                    folder = pathlib.Path(r.file).parent.parent.parent
+                    handle = folder.name
                     folder = os.path.join(folder, 'Banks', handle)
                     known_handles[r.players[p]['handle']] = [r.region, folder]
 
