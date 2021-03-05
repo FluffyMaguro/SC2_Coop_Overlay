@@ -88,5 +88,13 @@
     "Overlay shows if you did the mission in your personal best time",
     "Added option to disable app going into tray",
     "Small fixes and tweaks"
+  ],
+    "233": [
+    "Median kill percentage calculated for players",
+    "Median kills and APM showed with player info",
+    "Color tweaks",
+    "Safer loading of settings",
+    "Small tweaks and fixes"
   ]
+
 }

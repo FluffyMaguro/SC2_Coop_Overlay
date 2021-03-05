@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.32/SC2CoopOverlay.2.32.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.33/SC2CoopOverlay.2.33.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -100,6 +100,14 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.33 version
+
+      - Median kill percentage calculated for players
+      - Median kills and APM showed with player info
+      - Color tweaks
+      - Safer loading of settings
+      - Small fixes and tweaks
 
 * 2.32 version
 
