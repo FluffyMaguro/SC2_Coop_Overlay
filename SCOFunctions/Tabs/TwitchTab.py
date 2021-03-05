@@ -115,15 +115,15 @@ class TwitchTab(QtWidgets.QWidget):
             bank_path = self.CB_twitch_banks.itemText(i)
             for handle in CAnalysis.name_handle_dict:
                 if handle in bank_path:
-                    if '\\1-S2-' in bank_path:
+                    if '1-S2-' in bank_path:
                         region = 'NA'
-                    elif '\\2-S2-' in bank_path:
+                    elif '2-S2-' in bank_path:
                         region = 'EU'
-                    elif '\\3-S2-' in bank_path:
+                    elif '3-S2-' in bank_path:
                         region = 'KR'
-                    elif '\\5-S2-' in bank_path:
+                    elif '5-S2-' in bank_path:
                         region = 'CN'
-                    elif '\\98-S2-' in bank_path:
+                    elif '98-S2-' in bank_path:
                         region = 'PTR'
                     else:
                         region = '?'

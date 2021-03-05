@@ -152,18 +152,18 @@ def get_account_dir(path=None):
     # If we have user folder, try finding the account section
     if os.path.isdir(user_folder):
         # Typical folder location
-        account_path = os.path.abspath(os.path.join(user_folder, 'Documents\\StarCraft II\\Accounts'))
+        account_path = os.path.abspath(os.path.join(user_folder, 'Documents', 'StarCraft II', 'Accounts'))
         if os.path.isdir(account_path):
             return account_path
 
         # Mac
-        account_path = os.path.abspath(os.path.join(user_folder, 'Library/Application Support/Blizzard/StarCraft II/Accounts'))
+        account_path = os.path.abspath(os.path.join(user_folder, 'Library', 'Application Support', 'Blizzard', 'StarCraft II', 'Accounts'))
         if os.path.isdir(account_path):
             return account_path
 
         # One drive location
         if hasattr(os.environ, "ONEDRIVE"):
-            account_path = os.path.abspath(os.path.join(os.environ["ONEDRIVE"], 'Documents\\StarCraft II\\Accounts'))
+            account_path = os.path.abspath(os.path.join(os.environ["ONEDRIVE"], 'Documents', 'StarCraft II', 'Accounts'))
             if os.path.isdir(account_path):
                 return account_path
 
