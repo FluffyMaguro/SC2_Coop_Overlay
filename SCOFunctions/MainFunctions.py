@@ -152,9 +152,9 @@ def names_fallback(handles, replays):
         if len(shandles) == 0:
             break
         for p in {1, 2}:
-            if r['players'][p]['handle'] in shandles:
-                snames.add(r['players'][p]['name'])
-                shandles.remove(r['players'][p]['handle'])
+            if r.players[p]['handle'] in shandles:
+                snames.add(r.players[p]['name'])
+                shandles.remove(r.players[p]['handle'])
     return snames
 
 
