@@ -182,14 +182,15 @@ class UI_TabWidget(object):
         if not self.new_version:
             return
 
-        self.Tab_Main.LA_Version.setText('New version available!')
+        self.TAB_Main.LA_Version.setText('New version available!')
 
         # Create button
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
         self.BT_NewUpdate.setGeometry(QtCore.QRect(190, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
-        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4; color: black')
         self.BT_NewUpdate.clicked.connect(self.start_download)
+        self.BT_NewUpdate.show()
 
         # Check if it's already downloaded
         save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
@@ -549,7 +550,7 @@ class UI_TabWidget(object):
         if dialog.exec_():
             folder = os.path.normpath(dialog.selectedFiles()[0])
             logger.info(f'Changing screenshot_folder to {folder}')
-            self.Tab_Main.LA_ScreenshotLocation.setText(folder)
+            self.TAB_Main.LA_ScreenshotLocation.setText(folder)
             SM.settings['screenshot_folder'] = folder
             self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color=MColors.msg_success)
 
