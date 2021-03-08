@@ -33,7 +33,7 @@ def parse_replay(file):
         return s2_parse_replay(file, try_lastest=True, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
     except s2protocol.decoders.TruncatedError:
         return None
-    except:
+    except Exception:
         logger.error(traceback.format_exc())
         return None
 
@@ -621,7 +621,7 @@ class mass_replay_analysis:
                     logger.error(f"Cache not loaded. Old data type.")
 
                 self.parsed_replays = {r.hash for r in self.ReplayDataAll}
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     def add_replays(self, replays):
@@ -718,7 +718,7 @@ class mass_replay_analysis:
             try:
                 with open(file_name, 'r') as f:
                     data = json.load(f)
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
 
         # Go through current replays, get file hashes, see if they are added
@@ -842,13 +842,13 @@ class mass_replay_analysis:
                         try:
                             formated = self.format_data(full_data)
                             self.ReplayDataAll[i] = formated
-                        except:
+                        except Exception:
                             logger.error(traceback.format_exc())
                         progress_callback.emit(
                             f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
                         )
 
-                except:
+                except Exception:
                     logger.error(traceback.format_exc())
 
         if idx > 0:
@@ -871,7 +871,7 @@ class mass_replay_analysis:
             if replay.players[1]['handle'] in self.main_handles and replay.players[2]['handle'] in self.main_handles:
                 return True
             return False
-        except:
+        except Exception:
             logger.error(f"{replay}\n{traceback.format_exc()}")
 
     def calculate_player_winrate_data(self):

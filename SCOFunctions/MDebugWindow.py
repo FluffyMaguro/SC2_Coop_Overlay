@@ -39,6 +39,6 @@ class DebugWindow(QtWidgets.QWidget):
             print(f'Executing: {text}')
             exec(text)
             self.result.setText(f'Executed: {text}')
-        except:
+        except Exception:
             print(traceback.format_exc())
             self.result.setText(f'Failed to execute: {text}')

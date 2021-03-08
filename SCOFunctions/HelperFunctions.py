@@ -36,7 +36,7 @@ def get_hash(file):
             bytesread = f.read()
             readable_hash = hashlib.md5(bytesread).hexdigest()
         return readable_hash
-    except:
+    except Exception:
         logger.error(traceback.format_exc())
         return None
 
@@ -49,7 +49,7 @@ def write_permission_granted():
         with open(tfile, 'a') as f:
             f.write('.')
         os.remove(tfile)
-    except:
+    except Exception:
         permission_granted = False
         logger.info(f'Permission error:\n{traceback.format_exc()}')
 
@@ -65,7 +65,7 @@ def app_running_multiple_instances():
             process = psutil.Process(pid)
             if process.name() == 'SCO.exe':
                 running += 1
-        except:
+        except Exception:
             pass
 
     return running > 2
@@ -92,7 +92,7 @@ def add_to_startup(Add):
         elif reg_get_startup_field_value(key) != None:
             logger.info(f'Removing {path} from registry as {key}')
             reg_delete_startup_field(key)
-    except:
+    except Exception:
         logger.error(f'Failed to edit registry.\n{traceback.format_exc()}')
         return 'Error when adding the app to registry!'
 
@@ -109,7 +109,7 @@ def new_version(current_version):
             return data['download_link_1']
         else:
             return False
-    except:
+    except Exception:
         logger.error('Failed to check for the new version')
         return False
 

@@ -23,10 +23,10 @@ class logclass:
         msg = f'{time} - {self.name} ({ctype}): {message}'
         try:
             print(msg)
-        except:
+        except Exception:
             try:
                 print(msg.encode("utf-8"))
-            except:
+            except Exception:
                 print(traceback.format_exc())
 
         if self.LOGGING:

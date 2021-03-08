@@ -87,7 +87,7 @@ def s2_parse_replay(file,
     try:
         protocol = versions.build(base_build)
         used_build = base_build
-    except:
+    except Exception:
         if try_closest:
             used_build = find_closest_values(base_build, valid_protocols)[0]
             protocol = versions.build(used_build)
@@ -165,7 +165,7 @@ def s2_parse_replay(file,
     if parse_events:
         try:
             replay['mutators'] = identify_mutators(events, extension=replay['extension'], mm='[MM]' in file)
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
@@ -219,7 +219,7 @@ def s2_parse_replay(file,
     # Enemy race
     try:
         replay['enemy_race'] = replay['players'][3]['race']
-    except:
+    except Exception:
         replay['enemy_race'] = None
 
     # Difficulty

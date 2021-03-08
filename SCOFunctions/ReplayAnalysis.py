@@ -246,7 +246,7 @@ def analyse_replay(filepath, main_player_handles=None):
         try:
             replay = s2_parse_replay(filepath, return_events=True)
             break
-        except:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
+        except Exception:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
             logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
             time.sleep(0.3)
 
@@ -566,7 +566,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 if _killed_unit_type in aoe_units and _killing_player in [1, 2] and _losing_player in amon_players and unitid(event) is not None:
                     last_aoe_unit_killed[_losing_player] = [_killed_unit_type, event['_gameloop'] / 16]
 
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
 
         # More kill stats
@@ -781,7 +781,7 @@ def analyse_replay(filepath, main_player_handles=None):
                     else:
                         unit_type_dict_amon[_killed_unit_type] = [0, 1, 0, 0]
 
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
 
     # pprint(unit_type_dict_main)

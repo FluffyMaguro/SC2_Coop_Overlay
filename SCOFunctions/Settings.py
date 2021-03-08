@@ -119,7 +119,7 @@ class CSettings:
             else:
                 with open(self.filepath, 'w') as f:
                     json.dump(self.settings, f, indent=2)
-        except:
+        except Exception:
             logger.error(f'Error while loading settings:\n{traceback.format_exc()}')
             # Save corrupted file on the side
             if os.path.isfile(self.filepath):
@@ -135,7 +135,7 @@ class CSettings:
             with open(self.filepath, 'w') as f:
                 json.dump(self.settings, f, indent=2)
             logger.info('Settings saved')
-        except:
+        except Exception:
             logger.error(f'Error while saving settings\n{traceback.format_exc()}')
 
 

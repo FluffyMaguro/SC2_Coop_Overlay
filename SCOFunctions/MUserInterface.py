@@ -783,7 +783,7 @@ class FastestMap(QtWidgets.QWidget):
         try:
             self.bt_findfile.clicked.disconnect()
             self.bt_showoverlay.clicked.disconnect()
-        except:
+        except Exception:
             pass
 
         self.bt_findfile.clicked.connect(lambda: find_file(fdict['file']))
@@ -1316,7 +1316,7 @@ class Worker(QtCore.QRunnable):
         try:
             try:
                 result = self.fn(*self.args, **self.kwargs)
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
                 exctype, value = sys.exc_info()[:2]
                 self.signals.error.emit((exctype, value, traceback.format_exc()))
@@ -1326,7 +1326,7 @@ class Worker(QtCore.QRunnable):
                 self.signals.finished.emit()
         except RuntimeError:
             logger.debug('Error with pyqt thread. The app likely closed.')
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
 

@@ -253,7 +253,7 @@ class SystemInfo(QtWidgets.QWidget):
                     pass
                 except AttributeError:
                     pass
-                except:
+                except Exception:
                     logger.info(f'Error when finding process\n{traceback.format_exc()}')
 
         # We haven't found StarCraft process running
@@ -299,7 +299,7 @@ class SystemInfo(QtWidgets.QWidget):
                         self.la_sc2_cpu_value, self.la_sc2_memory_value
                 }:
                     item.setText('')
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
 
     @staticmethod

@@ -161,5 +161,5 @@ class GameTab(QtWidgets.QWidget):
                     if not replay_dict['parser']['players'][player].get('handle', '-') in self.p.CAnalysis.main_handles:
                         self.p.TAB_Players.put_player_first(name)
                         break
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())

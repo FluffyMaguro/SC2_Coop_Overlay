@@ -23,7 +23,7 @@ def reg_get_startup_field_value(name):
     open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
     try:
         response = reg.QueryValueEx(open, name)[0]
-    except:
+    except Exception:
         response = None
     finally:
         reg.CloseKey(open)

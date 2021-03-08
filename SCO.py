@@ -172,7 +172,7 @@ class UI_TabWidget(object):
                 return
 
             self.WD_patchnotes = MUI.PatchNotes(APPVERSION, patchnotes=patchnotes, icon=QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     def check_for_updates(self):
@@ -244,7 +244,7 @@ class UI_TabWidget(object):
         self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
         try:
             self.BT_NewUpdate.clicked.disconnect()
-        except:
+        except Exception:
             pass
         self.BT_NewUpdate.clicked.connect(self.install_update)
 
@@ -496,7 +496,7 @@ class UI_TabWidget(object):
                 if not SM.settings[key] in {None, ''}:
                     try:
                         self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(SM.settings[key], hotkey_func_dict[key])
-                    except:
+                    except Exception:
                         logger.error(traceback.format_exc())
                         self.sendInfoMessage(f'Failed to initialize hotkey ({key.replace("hotkey_","")})! Try a different one.',
                                              color=MColors.msg_failure)
@@ -510,7 +510,7 @@ class UI_TabWidget(object):
                     try:
                         self.hotkey_hotkey_dict[key] = keyboard.add_hotkey(SM.settings[key], hotkey_func_dict[key])
                         logger.info(f'Changed hotkey of {key} to {SM.settings[key]}')
-                    except:
+                    except Exception:
                         logger.error(f'Failed to change hotkey {key}\n{traceback.format_exc()}')
 
                 # Remove current hotkey no value
@@ -519,7 +519,7 @@ class UI_TabWidget(object):
                         keyboard.remove_hotkey(self.hotkey_hotkey_dict[key])
                         del self.hotkey_hotkey_dict[key]
                         logger.info(f'Removing hotkey of {key}')
-                    except:
+                    except Exception:
                         logger.error(f'Failed to remove hotkey {key}\n{traceback.format_exc()}')
 
     def resetSettings(self):
@@ -698,7 +698,7 @@ class UI_TabWidget(object):
         SM.settings['twitchbot']['bank_locations']['Current'] = bank_path
         try:
             self.TwitchBot.bank = bank_path
-        except:
+        except Exception:
             logger.error('Failed to set bank for twitch bot')
 
     def update_selected_bank_item(self, bank_path):
@@ -715,7 +715,7 @@ class UI_TabWidget(object):
                 self.TAB_TwitchBot.CB_twitch_banks.setCurrentIndex(i)
                 try:
                     self.TwitchBot.bank = bank_path
-                except:
+                except Exception:
                     logger.error('Failed to set bank for twitch bot')
                 break
 
@@ -764,7 +764,7 @@ class UI_TabWidget(object):
             # Move widget
             self.WebView.move(int(x), self.sg.top())
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
-        except:
+        except Exception:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
 
     def pc_waken_from_sleep(self, diff):
@@ -785,7 +785,7 @@ class UI_TabWidget(object):
             keyboard._listener.start_if_necessary()
             self.manage_keyboard_threads()
             logger.info(f'Reseting keyboard thread')
-        except:
+        except Exception:
             logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 
     def check_replays_finished(self, replay_dict):
@@ -934,7 +934,7 @@ class UI_TabWidget(object):
             else:
                 logger.info(f'Taking screenshot! {path}')
                 self.sendInfoMessage(f'Taking screenshot! {path}', color=MColors.msg_success)
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     def start_stop_bot(self):
@@ -1044,7 +1044,7 @@ class UI_TabWidget(object):
             SM.settings['twitchbot']['bank_locations']['Default'] = result
             logger.info(f"Setting default bank location to {result.strip()}")
             self.update_selected_bank_item(result)
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     def sendInfoMessage(self, message, color=None):
@@ -1071,7 +1071,7 @@ if __name__ == "__main__":
         ui.start_main_functionality()
     except MultipleInstancesRunning:
         sys.exit()
-    except:
+    except Exception:
         logger.error(traceback.format_exc())
         TabWidget.tray_icon.hide()
         MF.stop_threads()

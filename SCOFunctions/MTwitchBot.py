@@ -66,7 +66,7 @@ class TwitchBot:
                 logger.error('Twitch bot abort error. Trying again.')
                 time.sleep(2)
                 self.openSocket()
-            except:
+            except Exception:
                 logger.error(traceback.format_exc())
                 time.sleep(2)
                 self.openSocket()
@@ -87,7 +87,7 @@ class TwitchBot:
         try:
             user = separate[1].split("!", 1)[0]
             return user
-        except:
+        except Exception:
             return None
 
     @staticmethod
@@ -165,7 +165,7 @@ class TwitchBot:
             tree.write(self.bank)
             return ""
 
-        except:
+        except Exception:
             logger.error(f'Message failed to send\n{traceback.format_exc()}')
 
     def saveMessage(self, user, message):
@@ -181,7 +181,7 @@ class TwitchBot:
             self.joinRoom()
             self.RUNNING = True
             self.pingsAndMessages()
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
 
     def pingsAndMessages(self):
@@ -228,7 +228,7 @@ class TwitchBot:
                     recently_paused = False
                     temp = ""
 
-            except:
+            except Exception:
                 temp = ""
 
             for line in temp:
@@ -253,7 +253,7 @@ class TwitchBot:
                     self.widget.add_message(user, message)
                 try:
                     following_words = message.split(' ', 1)[1].rstrip()
-                except:
+                except Exception:
                     following_words = ''
                 logger.info(user + ": " + message.rstrip())
 
@@ -276,7 +276,7 @@ class TwitchBot:
                 if "!cooldown" == first_word and user == self.channel:
                     try:
                         CommandCooldown = int(following_words)
-                    except:
+                    except Exception:
                         CommandCooldown = 0
                     CommandCooldown = 0 if CommandCooldown < 0 else CommandCooldown
                     self.sendMessage('/color ' + chatColor)

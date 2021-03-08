@@ -199,7 +199,7 @@ def initialize_AllReplays(ACCOUNTDIR):
         # Get dictionary of all replays with their last modification time
         AllReplays = ((rep, os.path.getmtime(rep)) for rep in AllReplays)
         AllReplays = {k: {'created': v} for k, v in sorted(AllReplays, key=lambda x: x[1])}
-    except:
+    except Exception:
         logger.error(f'Error during replay initialization\n{traceback.format_exc()}')
     finally:
         return AllReplays
@@ -228,7 +228,7 @@ def initialize_replays_names_handles():
 def check_names_handles():
     try:
         update_names_and_handles(SM.settings['account_folder'], AllReplays)
-    except:
+    except Exception:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
 
@@ -285,7 +285,7 @@ def check_replays():
                             with lock:
                                 ReplayPosition = len(AllReplays) - 1
 
-                        except:
+                        except Exception:
                             logger.error(traceback.format_exc())
 
                         finally:
@@ -325,7 +325,7 @@ def upload_to_aom(file_path, replay_dict):
         if 'Success' in response.text or 'Error' in response.text:
             sendEvent({'uploadEvent': True, 'response': response.text})
 
-    except:
+    except Exception:
         sendEvent({'uploadEvent': True, 'response': 'Error'})
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
@@ -355,7 +355,7 @@ def show_overlay(file):
                 CAnalysis.add_parsed_replay(replay_dict)
         else:
             logger.error('No output from replay analysis')
-    except:
+    except Exception:
         logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
         return 'Error'
         
@@ -385,9 +385,9 @@ async def manager(websocket, path):
                 except websockets.exceptions.ConnectionClosed:
                     logger.info('Websocket connection closed.')
                     break
-                except:
+                except Exception:
                     logger.error(traceback.format_exc())
-        except:
+        except Exception:
             logger.error(traceback.format_exc())
         finally:
             await asyncio.sleep(0.1)
@@ -402,7 +402,7 @@ def server_thread(PORT=7305):
         logger.info('Starting websocket server')
         loop.run_until_complete(start_server)
         loop.run_forever()
-    except:
+    except Exception:
         logger.error(traceback.format_exc())
 
 
@@ -584,5 +584,5 @@ def check_for_new_game():
         except requests.exceptions.ReadTimeout:
             logger.info('SC2 request timeout')
 
-        except:
+        except Exception:
             logger.info(traceback.format_exc())
