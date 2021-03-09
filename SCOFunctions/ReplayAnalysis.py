@@ -63,7 +63,7 @@ commander_upgrades = {
     "ZagaraCommander": "Zagara",
     "StetmannCommander": "Stetmann"
 }
-commander_no_units = {'Nova': 'CoopCasterNova', "Han & Horner": 'HHMagneticMine', "Karax": "SoACasterKarax", "Artanis": "SoACasterArtanis"}
+commander_no_units = {'Nova': 'CoopCasterNova', "Han & Horner": 'HHMagneticMine', "Karax": "SoACasterKarax", "Artanis": "SoACasterArtanis","Mengsk":"ArtilleryMengsk"}
 units_killed_in_morph = {'HydraliskLurker', 'MutaliskBroodlord', 'RoachVile', 'Mutalisk', 'Devourer', 'GuardianMP', 'Viper', 'SwarmHost', 'Queen'}
 primal_combat_predecessors = {
     'DehakaRavasaur': 'DehakaZerglingLevel2',
