@@ -13,7 +13,9 @@ class Colors:
     chat_main = '#55f'
     chat_other = '#558F22'
     player_highlight = "#55f"
-
+    game_defeat = '#f44'
+    game_weekly = '#00971e'
+    
 
 MColors = Colors()
 
@@ -25,6 +27,7 @@ def set_dark_theme(main, app, tab, version):
     MColors.chat_main = '#6587FF'
     MColors.chat_other = '#20DE49'
     MColors.player_highlight = '#77f'
+    MColors.game_weekly = '#4bc53b'
 
     DARK0 = QtGui.QColor(33, 33, 33)
     DARK1 = QtGui.QColor(55, 55, 55)
