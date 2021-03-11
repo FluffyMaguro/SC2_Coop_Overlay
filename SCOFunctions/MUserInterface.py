@@ -304,10 +304,10 @@ class UnitStats(QtWidgets.QWidget):
         self.top_offset = 40
 
         self.heading = dict()
-        for idx, item in enumerate(['Unit', 'Created', 'Lost', 'Lost%', 'Kills', 'K/D', 'Kills%']):
+        for idx, item in enumerate(['Unit', 'Created', 'Freq', 'Lost', 'Lost%', 'Kills', 'K/D', 'Kills%']):
             self.heading[item] = QtWidgets.QLabel(self.WD_units)
             self.heading[item].setGeometry(
-                QtCore.QRect(self.left_offset + 20 if item == 'Unit' else self.left_offset + 120 + idx * 60, self.top_offset - 18, 60, 17))
+                QtCore.QRect(self.left_offset + 20 if item == 'Unit' else self.left_offset + 120 + idx * 55, self.top_offset - 18, 60, 17))
             self.heading[item].setText(f"<b>{item}</b>")
             if item != 'Unit':
                 self.heading[item].setAlignment(QtCore.Qt.AlignRight)
@@ -317,6 +317,8 @@ class UnitStats(QtWidgets.QWidget):
                 self.heading[item].setToolTip(f"Kill / death ratio")
             elif item == 'Lost%':
                 self.heading[item].setToolTip('Units lost / created')
+            elif item == 'Freq':
+                self.heading[item].setToolTip('In what percent of games the unit was made')
             self.heading[item].hide()
 
         self.note = QtWidgets.QLabel(self.WD_units)
@@ -326,14 +328,15 @@ class UnitStats(QtWidgets.QWidget):
         self.note.setEnabled(False)
 
         self.sortby_label = QtWidgets.QLabel(self)
-        self.sortby_label.setGeometry(QtCore.QRect(830, 28, 100, 21))
+        self.sortby_label.setGeometry(QtCore.QRect(850, 28, 80, 21))
         self.sortby_label.setText('<b>Sort by</b>')
         self.sortby_label.hide()
 
         self.sortby = QtWidgets.QComboBox(self)
-        self.sortby.setGeometry(QtCore.QRect(830, 48, 100, 21))
+        self.sortby.setGeometry(QtCore.QRect(850, 48, 80, 21))
         self.sortby.addItem('Name')
         self.sortby.addItem('Created')
+        self.sortby.addItem('Frequency')
         self.sortby.addItem('Lost')
         self.sortby.addItem('Lost%')
         self.sortby.addItem('Kills')
@@ -400,7 +403,8 @@ class UnitStats(QtWidgets.QWidget):
             'Lost%': 'lost_percent',
             'Kills': 'kills',
             'K/D': 'KD',
-            'Kills%': 'kill_percentage'
+            'Kills%': 'kill_percentage',
+            'Frequency': 'made'
         }[sortby]
 
         if sortby == 'Name':
@@ -434,7 +438,7 @@ class UnitStats(QtWidgets.QWidget):
             idx += 1
             if not idx % 2:
                 self.units[('bg', unit)] = QtWidgets.QFrame(self.WD_units)
-                self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset + 15, self.top_offset - 1 + idx * 17, 530, 17))
+                self.units[('bg', unit)].setGeometry(QtCore.QRect(self.left_offset + 15, self.top_offset - 1 + idx * 17, 550, 17))
                 self.units[('bg', unit)].setAutoFillBackground(True)
                 self.units[('bg', unit)].setBackgroundRole(QtGui.QPalette.AlternateBase)
 
@@ -444,15 +448,22 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('name', unit)].setText(str(name))
 
             self.units[('created', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('created', unit)].setGeometry(QtCore.QRect(self.left_offset + 180, self.top_offset + idx * 17, 60, 17))
+            self.units[('created', unit)].setGeometry(QtCore.QRect(self.left_offset + 175, self.top_offset + idx * 17, 60, 17))
             self.units[('created', unit)].setText(fi(self.unit_data[which][commander][unit]['created']))
 
+            self.units[('made', unit)] = QtWidgets.QLabel(self.WD_units)
+            self.units[('made', unit)].setGeometry(QtCore.QRect(self.left_offset + 230, self.top_offset + idx * 17, 60, 17))
+            if self.unit_data[which][commander][unit]['made']*100 > 0:
+                self.units[('made', unit)].setText(f"{self.unit_data[which][commander][unit]['made']*100:.0f}%")
+            else:
+                self.units[('made', unit)].setText("-")
+
             self.units[('lost', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('lost', unit)].setGeometry(QtCore.QRect(self.left_offset + 240, self.top_offset + idx * 17, 60, 17))
+            self.units[('lost', unit)].setGeometry(QtCore.QRect(self.left_offset + 285, self.top_offset + idx * 17, 60, 17))
             self.units[('lost', unit)].setText(fi(self.unit_data[which][commander][unit]['lost']))
 
             self.units[('lost_percent', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 300, self.top_offset + idx * 17, 60, 17))
+            self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 340, self.top_offset + idx * 17, 60, 17))
 
             if self.unit_data[which][commander][unit]['lost_percent'] != None:
                 lost_percent = f"{100*self.unit_data[which][commander][unit]['lost_percent']:.0f}%"
@@ -462,11 +473,11 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('lost_percent', unit)].setToolTip('Units lost / created')
 
             self.units[('kills', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('kills', unit)].setGeometry(QtCore.QRect(self.left_offset + 360, self.top_offset + idx * 17, 60, 17))
+            self.units[('kills', unit)].setGeometry(QtCore.QRect(self.left_offset + 395, self.top_offset + idx * 17, 60, 17))
             self.units[('kills', unit)].setText(fi(self.unit_data[which][commander][unit]['kills']))
 
             self.units[('KD', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset + 420, self.top_offset + idx * 17, 60, 17))
+            self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset + 450, self.top_offset + idx * 17, 60, 17))
             self.units[('KD', unit)].setToolTip(f"Kill / death ratio")
             kd = self.unit_data[which][commander][unit]['KD']
             if kd != None:
@@ -475,7 +486,7 @@ class UnitStats(QtWidgets.QWidget):
                 self.units[('KD', unit)].setText("-")
 
             self.units[('percent', unit)] = QtWidgets.QLabel(self.WD_units)
-            self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 480, self.top_offset + idx * 17, 60, 17))
+            self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 505, self.top_offset + idx * 17, 60, 17))
             percent = self.unit_data[which][commander][unit]['kill_percentage']
             percent = percent if percent != None else 0
             self.units[('percent', unit)].setText(f"{100*percent:.1f}%")

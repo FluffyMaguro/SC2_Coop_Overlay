@@ -340,7 +340,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
             continue
 
         if not unit in unit_data[commander]:
-            unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list()}
+            unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list(), 'made': list()}
 
         # Add unit [created, lost, kills]
         names = {0: 'created', 1: 'lost', 2: 'kills'}
@@ -349,6 +349,10 @@ def _add_units(unit_data: dict, r: dict, p: int):
                 unit_data[commander][unit][s] += r.players[p]['units'][unit][i]
             else:
                 unit_data[commander][unit][s] = r.players[p]['units'][unit][i]
+
+        # Save units made for frequency
+        if not isinstance(r.players[p]['units'][unit][0], str):
+            unit_data[commander][unit]['made'].append(unit_data[commander][unit]['created'])
 
         # Add bonus kills to mind-controlling unit
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
@@ -446,6 +450,9 @@ def _process_dict(unit_data: dict):
             else:
                 unit_data[commander][unit]['lost_percent'] = None
 
+            # Calculate unit frequency
+            unit_data[commander][unit]['made'] = len(unit_data[commander][unit]['made']) / unit_data[commander]['count']
+
             # Sum
             if unit in ('Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius',
                         'Dominion Laborer', 'Primal Hive', 'Primal Warden', 'Imperial Intercessor', 'Archangel'):
@@ -467,6 +474,8 @@ def _process_dict(unit_data: dict):
             total['lost_percent'] = total['lost'] / total['created']
         else:
             total['lost_percent'] = 0
+
+        total['made'] = 1
 
         unit_data[commander]['sum'] = total
 
@@ -571,7 +580,7 @@ class mass_replay_analysis:
                     new['mainIcons'] = r.players[main]['icons']
                     new['mainMasteries'] = r.players[main]['masteries']
                     if r.players[main]['prestige'] != 0:
-                        new['mainPrestige'] = prestige_names.get(r.players[main]['commander'],{}).get(r.players[main]['prestige'])
+                        new['mainPrestige'] = prestige_names.get(r.players[main]['commander'], {}).get(r.players[main]['prestige'])
                     else:
                         new['mainPrestige'] = ''
                     new['mainUnits'] = r.players[main]['units']
@@ -584,7 +593,7 @@ class mass_replay_analysis:
                     new['allyIcons'] = r.players[ally]['icons']
                     new['allyMasteries'] = r.players[ally]['masteries']
                     if r.players[ally]['prestige'] != 0:
-                        new['allyPrestige'] = prestige_names.get(r.players[ally]['commander'],{}).get(r.players[ally]['prestige'])
+                        new['allyPrestige'] = prestige_names.get(r.players[ally]['commander'], {}).get(r.players[ally]['prestige'])
                     else:
                         new['allyPrestige'] = ''
                     new['allyUnits'] = r.players[ally]['units']
@@ -682,7 +691,7 @@ class mass_replay_analysis:
                 self.parsed_replays.add(formatted_data.hash)
                 self.current_replays.add(formatted_data.file)
                 self.update_data()
-                
+
         return formatted_data
 
     def format_data(self, full_data):
@@ -884,7 +893,7 @@ class mass_replay_analysis:
                 player = replay.players[p]['name']
                 if not player in winrate_data:
                     # Wins, losses, apm, commander, commander frequency, kills
-                    winrate_data[player] = [0, 0, list(), list(), 0, list()] 
+                    winrate_data[player] = [0, 0, list(), list(), 0, list()]
 
                 if replay.result == 'Victory':
                     winrate_data[player][0] += 1
@@ -894,7 +903,7 @@ class mass_replay_analysis:
                 winrate_data[player][2].append(replay.players[p]['apm'])
                 winrate_data[player][3].append(replay.players[p]['commander'])
                 if replay.full_analysis and total_kills > 0:
-                    winrate_data[player][5].append(replay.players[p]['kills']/total_kills)
+                    winrate_data[player][5].append(replay.players[p]['kills'] / total_kills)
 
         for player in winrate_data:
             # Median APM
@@ -954,7 +963,7 @@ class mass_replay_analysis:
             return False
 
         for r in self.ReplayDataAll:
-            if r.map_name == name and r.accurate_length <= length :
+            if r.map_name == name and r.accurate_length <= length:
                 fastest = False
                 break
         return fastest
