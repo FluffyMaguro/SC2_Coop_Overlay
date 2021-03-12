@@ -340,7 +340,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
             continue
 
         if not unit in unit_data[commander]:
-            unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list(), 'made': list()}
+            unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list(), 'made': 0}
 
         # Add unit [created, lost, kills]
         names = {0: 'created', 1: 'lost', 2: 'kills'}
@@ -352,7 +352,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
         # Save units made for frequency
         if not isinstance(r.players[p]['units'][unit][0], str):
-            unit_data[commander][unit]['made'].append(unit_data[commander][unit]['created'])
+            unit_data[commander][unit]['made'] += 1
 
         # Add bonus kills to mind-controlling unit
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
@@ -451,7 +451,7 @@ def _process_dict(unit_data: dict):
                 unit_data[commander][unit]['lost_percent'] = None
 
             # Calculate unit frequency
-            unit_data[commander][unit]['made'] = len(unit_data[commander][unit]['made']) / unit_data[commander]['count']
+            unit_data[commander][unit]['made'] = unit_data[commander][unit]['made'] / unit_data[commander]['count']
 
             # Sum
             if unit in ('Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius',
