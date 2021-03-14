@@ -699,7 +699,7 @@ class UI_TabWidget(object):
         try:
             self.TwitchBot.bank = bank_path
         except Exception:
-            logger.error('Failed to set bank for twitch bot')
+            logger.info('Failed to set bank for twitch bot')
 
     def update_selected_bank_item(self, bank_path):
         """ Updates selected bank indirectly (when user didn't click it directly)"""
@@ -716,7 +716,7 @@ class UI_TabWidget(object):
                 try:
                     self.TwitchBot.bank = bank_path
                 except Exception:
-                    logger.error('Failed to set bank for twitch bot')
+                    logger.info('Failed to set bank for twitch bot')
                 break
 
         logger.info('Bank changed indirectly succesfully')
