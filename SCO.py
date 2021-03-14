@@ -590,7 +590,7 @@ class UI_TabWidget(object):
 
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting!\n{SM.settings}')
+        logger.info(f'\n>>> Starting ({APPVERSION/100:.2f})!\n{SM.settings}')
 
         # Get monitor dimensions
         self.desktop_widget = QtWidgets.QDesktopWidget()
