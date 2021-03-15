@@ -600,6 +600,7 @@ class mass_replay_analysis:
                     new['allykills'] = r.players[ally]['kills']
 
                     # Difficulty
+                    new['B+'] = r.brutal_plus
                     diff_1 = new['difficulty'][0]
                     diff_2 = new['difficulty'][1]
                     if diff_1 == diff_2:
