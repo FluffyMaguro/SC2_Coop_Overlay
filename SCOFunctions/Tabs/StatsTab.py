@@ -370,6 +370,7 @@ class StatsTab(QtWidgets.QWidget):
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_FullAnalysis), "Full analysis")
 
         self.TABW_StatResults.setCurrentIndex(0)
+        self.TABW_StatResults.currentChanged.connect(self.switched_tab)
 
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""
@@ -583,6 +584,12 @@ class StatsTab(QtWidgets.QWidget):
             self.WD_amon_unit_stats = MUI.AmonUnitStats(unit_data['amon'], parent=self.TAB_AmonUnitStats)
         else:
             self.WD_amon_unit_stats.update_data(unit_data['amon'])
+
+    def switched_tab(self, idx):
+        """ Updating bg depends whether a unit is visible, this break when switched to another tab.
+        This function updates background for Amon's units when you switch to the tab"""
+        if idx == 5:
+            self.WD_amon_unit_stats.update_backgrounds()
 
     def my_commander_sort_update(self):
         """ Creates and updates widgets for my commander stats """
