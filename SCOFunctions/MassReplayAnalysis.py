@@ -20,7 +20,7 @@ from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
-from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names
+from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names, map_names
 from SCOFunctions.MReplayData import replay_data
 
 logger = logclass('MASS', 'INFO')
@@ -74,8 +74,18 @@ def calculate_map_data(ReplayData):
 
             # Append a fraction of bonus completed
             if r.bonus is not None:
-                MapData[r.map_name]['bonus'].append(len(r.bonus) / bonus_objectives[r.map_name])
-
+                try:
+                    MapData[r.map_name]['bonus'].append(len(r.bonus) / bonus_objectives[r.map_name])
+                except KeyError: # Incorrect map name
+                    lower_name = r.map_name.lower()
+                    for m in map_names:
+                        if m.lower() in lower_name:
+                            eng_name = map_names[m]['EN']
+                            MapData[r.map_name]['bonus'].append(len(r.bonus) / bonus_objectives[eng_name])
+                            break
+                except Exception:
+                    logger.error(traceback.format_exc())
+                
         # Fastest clears
         if r.result == 'Victory' and r.accurate_length < MapData[r.map_name]['Fastest']['length']:
             MapData[r.map_name]['Fastest']['length'] = r.accurate_length
@@ -948,10 +958,12 @@ class mass_replay_analysis:
 
         unknown_handles = set(self.main_handles)
         known_handles = dict()
-        replays = self.ReplayDataAll if allreplays else self.get_last_replays(1)
+        replays = self.ReplayDataAll if allreplays else self.get_last_replays(100)
 
         for r in replays:
             if len(unknown_handles) == 0:
+                break
+            if not allreplays and len(known_handles) > 0:
                 break
 
             for p in (1, 2):

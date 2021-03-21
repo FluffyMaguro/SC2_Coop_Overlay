@@ -330,6 +330,10 @@ map_names = {
         'EN': 'Chain of Ascension',
         'ID': 'AC_SlaynPayload'
     },
+    'La chaîne de l’Ascension': {
+        'EN': 'Chain of Ascension',
+        'ID': 'AC_SlaynPayload'
+    },
     'Ciberguerra': {
         'EN': 'Malwarfare',
         'ID': 'AC_CybrosEscort'

@@ -138,5 +138,12 @@ class CSettings:
         except Exception:
             logger.error(f'Error while saving settings\n{traceback.format_exc()}')
 
+    def settings_for_logs(self):
+        """ Returns current settings that can be safely saved into logs"""
+        out = self.settings.copy()
+        del out['aom_secret_key']
+        del out['rng_choices']
+        return out
+
 
 Setting_manager = CSettings()
