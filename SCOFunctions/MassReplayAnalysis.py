@@ -34,7 +34,7 @@ def parse_replay(file):
     except s2protocol.decoders.TruncatedError:
         return None
     except Exception:
-        logger.error(traceback.format_exc())
+        logger.error(f"{file}\n{traceback.format_exc()}")
         return None
 
 
@@ -546,11 +546,21 @@ class mass_replay_analysis:
         for r in self.ReplayData:
             struct = str(r).lower()
             args_found = 0
+
             for arg in args:
+                arg_lower = arg.lower()
+                
+                # Special filter for mutations
+                if 'mutation' in arg_lower or 'weekly' in arg_lower:
+                    if r.extension > 0 and len(r.mutators) == 0:
+                        args_found += 1
+                        continue
+
                 # Special filter for races. Check enemy race directly.
                 if arg in races:
                     if arg == r.enemy_race.lower():
                         args_found += 1
+                        continue
 
                 elif arg in struct:
                     args_found += 1
