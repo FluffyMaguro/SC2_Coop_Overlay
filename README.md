@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.33/SC2CoopOverlay.2.33.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.34/SC2CoopOverlay.2.34.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -100,6 +100,15 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.34 version
+
+      - Fixed a crash when launching the app
+      - Unit frequency shown in unit stats
+      - Successful weekly mutation shown in green color
+      - Weekly mutation can be filtered in the game tab by using 'weekly' or 'mutation' keywords
+      - ESO is the default fallback for Mengsk when there is no killing unit
+      - Small fixes and tweaks
 
 * 2.33 version
 

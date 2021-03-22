@@ -215,11 +215,11 @@ class StatsTab(QtWidgets.QWidget):
                                        button=False)
 
         self.MapsComboBoxLabel = QtWidgets.QLabel(self.TAB_Maps)
-        self.MapsComboBoxLabel.setGeometry(QtCore.QRect(485, 2, 100, 21))
+        self.MapsComboBoxLabel.setGeometry(QtCore.QRect(485, 4, 100, 21))
         self.MapsComboBoxLabel.setText('<b>Sort by</b>')
 
         self.MapsComboBox = QtWidgets.QComboBox(self.TAB_Maps)
-        self.MapsComboBox.setGeometry(QtCore.QRect(485, 22, 100, 21))
+        self.MapsComboBox.setGeometry(QtCore.QRect(485, 24, 100, 21))
         self.MapsComboBox.addItem('Average time')
         self.MapsComboBox.addItem('Fastest time')
         self.MapsComboBox.addItem('Frequency')

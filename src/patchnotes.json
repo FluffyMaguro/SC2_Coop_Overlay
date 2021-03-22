@@ -1,7 +1,7 @@
 {
   "210": [
     "Frequency added to maps",
-	"Maps can be sorted",
+    "Maps can be sorted",
     "Last ally showed in the player tab on top and is colored",
     "Checkbox for showing/hiding session information",
     "Randomized commander & prestige can be shown on the overlay",
@@ -11,8 +11,8 @@
     "Player info doesn't show for versus games",
     "Option for full analysis added. Running it will take long time, but it will provide more accurate game lengths and more stats",
     "Added new stats related to player and unit kills, and bonus objective completion. These require full analysis",
-	"Default hotkeys changed to be less likely pressed by accident",
-	"Fancy changelog you see here"
+    "Default hotkeys changed to be less likely pressed by accident",
+    "Fancy changelog you see here"
   ],
   "220": [
     "Twitch bot works now with after filling up the channel name",
@@ -20,51 +20,51 @@
     "You can search through replays",
     "New performance monitoring available as overlay",
     "Salvaged units aren't counted as losses",
-	"Improved scaling for high DPI displays",
-	"App cannot be started multiple times",
+    "Improved scaling for high DPI displays",
+    "App cannot be started multiple times",
     "Small tweaks and fixes"
   ],
-    "222": [
-	"Mengsk P3 kills properly counted",
-	"Amon kills limited to player units",
+  "222": [
+    "Mengsk P3 kills properly counted",
+    "Amon kills limited to player units",
     "Player kills limited to Amons units",
     "SC2 process isn't checked when overlay is not visible",
     "Swann's Siege Tank and Thor and Kerrigan's Torrasque losses counted properly",
-	"Twitch bot won't fail when the channel name is capitalized",
-	"Better identification for bonus objective completion on Malwarfare"
+    "Twitch bot won't fail when the channel name is capitalized",
+    "Better identification for bonus objective completion on Malwarfare"
   ],
-    "223": [
+  "223": [
     "Mutators identified in custom mutators and MM maps",
     "custom.js and custom.css are not overriden after an update",
     "Weekly mutations and custom mutators shows difficulty",
     "Small fixes and tweaks"
   ],
-    "224": [
+  "224": [
     "Fix for mutator identification"
   ],
-    "225": [
+  "225": [
     "Counted the total number of mind-controlled units",
     "Fix for mutator identification",
     "Number of games shown in unit stats"
   ],
-    "226": [
+  "226": [
     "Bug fixes and tweaks"
   ],
-    "227": [
+  "227": [
     "Fixed duration setting not working properly",
     "Fixed monitor setting not working properly",
     "Updated s2protocol"
   ],
-    "228": [
+  "228": [
     "Overlay won't show in games where no commanders were found",
     "Fixed a bug with mutator identification",
     "Updated libraries"
   ],
-    "229": [
+  "229": [
     "Easier bank management for twitch integration",
     "Fixed stats for Primal Mutalisk"
   ],
-    "230": [
+  "230": [
     "Chat log shows when a player pings",
     "Added a new checkbox 'override folder selection' which forces showing stats for all replays regardless of a selected folder",
     "All data can be dumped to a json file",
@@ -76,25 +76,32 @@
     "Full analysis won't parse replays from the last session again",
     "Added an option to custom javascript modification (in custom.js) to show units without kills"
   ],
-    "231": [
+  "231": [
     "Reduced RAM usage",
     "Merged cache files into one",
     "The app will need to redo analysis due to changes above",
     "Minor fixes and tweaks"
   ],
-    "232": [
+  "232": [
     "Dark theme added",
     "Chat history shows when a player has left the game",
     "Overlay shows if you did the mission in your personal best time",
     "Added option to disable app going into tray",
     "Small fixes and tweaks"
   ],
-    "233": [
+  "233": [
     "Median kill percentage calculated for players",
     "Median kills and APM showed with player info",
     "Color tweaks",
     "Safer loading of settings",
     "Small tweaks and fixes"
+  ],
+  "234": [
+    "Fixed a crash when launching the app",
+    "Unit frequency shown in unit stats",
+    "Successful weekly mutation shown in green color",
+    "Weekly mutation can be filtered in the game tab by using 'weekly' or 'mutation' keywords",
+    "ESO is the default fallback for Mengsk when there is no killing unit",
+    "Small tweaks and fixes"
   ]
-
 }
