@@ -419,10 +419,7 @@ class UnitStats(QtWidgets.QWidget):
         idx = -1
         for unit in self.unit_data[which][commander]:
             # Don't workers and other unlikely units to get kills, their created/lost numbers would be very off
-            if unit in {
-                    'count', 'Mecha Infestor', 'Havoc', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius',
-                    'Dominion Laborer', 'Primal Hive', 'Primal Warden', 'Imperial Intercessor', 'Archangel'
-            }:
+            if unit in {'count', 'Primal Hive', 'Primal Warden', 'Archangel'}:
                 continue
 
             # Not sure what happened here, but Disruptors were created for Karax. Brood Queen is from gift mutator.
@@ -453,7 +450,7 @@ class UnitStats(QtWidgets.QWidget):
 
             self.units[('made', unit)] = QtWidgets.QLabel(self.WD_units)
             self.units[('made', unit)].setGeometry(QtCore.QRect(self.left_offset + 230, self.top_offset + idx * 17, 60, 17))
-            if self.unit_data[which][commander][unit]['made']*100 > 0:
+            if self.unit_data[which][commander][unit]['made'] * 100 > 0:
                 self.units[('made', unit)].setText(f"{self.unit_data[which][commander][unit]['made']*100:.0f}%")
             else:
                 self.units[('made', unit)].setText("-")

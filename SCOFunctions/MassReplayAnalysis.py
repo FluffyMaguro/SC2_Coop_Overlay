@@ -20,7 +20,7 @@ from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
-from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names, map_names
+from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names, map_names, units_to_stats
 from SCOFunctions.MReplayData import replay_data
 
 logger = logclass('MASS', 'INFO')
@@ -76,7 +76,7 @@ def calculate_map_data(ReplayData):
             if r.bonus is not None:
                 try:
                     MapData[r.map_name]['bonus'].append(len(r.bonus) / bonus_objectives[r.map_name])
-                except KeyError: # Incorrect map name
+                except KeyError:  # Incorrect map name
                     lower_name = r.map_name.lower()
                     for m in map_names:
                         if m.lower() in lower_name:
@@ -85,7 +85,7 @@ def calculate_map_data(ReplayData):
                             break
                 except Exception:
                     logger.error(traceback.format_exc())
-                
+
         # Fastest clears
         if r.result == 'Victory' and r.accurate_length < MapData[r.map_name]['Fastest']['length']:
             MapData[r.map_name]['Fastest']['length'] = r.accurate_length
@@ -437,9 +437,13 @@ def _process_dict(unit_data: dict):
         for unit in unit_data[commander]:
             if unit in ('sum', 'count'):
                 continue
-            
-            # Save units without kills
-            if unit_data[commander][unit]['kills'] == 0:
+
+            # Save units without kills (except exceptions)
+            if unit_data[commander][unit]['kills'] == 0 and not unit in units_to_stats:
+                units_to_delete.add(unit)
+                continue
+
+            if (unit == 'MULE' and commander != 'Raynor') or (unit == 'Spider Mine' and not commander in {'Raynor','Nova'}):
                 units_to_delete.add(unit)
                 continue
 
@@ -566,7 +570,7 @@ class mass_replay_analysis:
 
             for arg in args:
                 arg_lower = arg.lower()
-                
+
                 # Special filter for mutations
                 if 'mutation' in arg_lower or 'weekly' in arg_lower:
                     if r.extension > 0 and len(r.mutators) == 0:
