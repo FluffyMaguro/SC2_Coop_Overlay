@@ -15,7 +15,7 @@ from pprint import pprint
 import s2protocol
 
 from SCOFunctions.MFilePath import truePath
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import logclass, catch_exceptions
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.ReplayAnalysis import analyse_replay
 from SCOFunctions.HelperFunctions import get_hash
@@ -443,7 +443,7 @@ def _process_dict(unit_data: dict):
                 units_to_delete.add(unit)
                 continue
 
-            if (unit == 'MULE' and commander != 'Raynor') or (unit == 'Spider Mine' and not commander in {'Raynor','Nova'}):
+            if (unit == 'MULE' and commander != 'Raynor') or (unit == 'Spider Mine' and not commander in {'Raynor', 'Nova'}):
                 units_to_delete.add(unit)
                 continue
 
@@ -681,7 +681,8 @@ class mass_replay_analysis:
                     parsed['hash'] = rhash
                     self.remove_useless_keys(parsed)
                     parsed = replay_data(**parsed)
-                    out.append(parsed)
+                    if self.replay_entry_valid(parsed):
+                        out.append(parsed)
                 new_hashes.add(rhash)
                 new_files.add(r)
                 if self.closing:
@@ -702,6 +703,19 @@ class mass_replay_analysis:
             self.main_names = names_fallback(self.main_handles, self.ReplayDataAll)
             logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
 
+    def replay_entry_valid(self, r):
+        """ Checks if replay entry (tuple) is good"""
+        f = 'no file'
+        try:
+            f = r.file
+            if len(r) > 5 and r.players[1]['commander'] != '' and r.players[2]['commander'] != '':
+                return True
+        except Exception:
+            pass
+        logger.error(f"Not valid replay! {f}")
+        return False
+
+    @catch_exceptions(logger)
     def add_parsed_replay(self, input_data):
         """ Adds already parsed replay. Format has to be from my S2Parser"""
         parsed_data = input_data.get('parser')
@@ -711,6 +725,8 @@ class mass_replay_analysis:
                 and len(parsed_data['players']) > 2 and parsed_data['players'][1].get('commander') is not None):
 
             formatted_data = self.format_data(input_data)
+            if not self.replay_entry_valid(formatted_data):
+                return None
 
             # Remove replay if it was already there:
             for i, r in enumerate(self.ReplayDataAll):
@@ -726,6 +742,7 @@ class mass_replay_analysis:
 
         return formatted_data
 
+    @catch_exceptions(logger)
     def format_data(self, full_data):
         """ Formats data returned by replay analysis into a single datastructure used here"""
         parsed_data = full_data['parser']
@@ -791,10 +808,23 @@ class mass_replay_analysis:
         else:
             self.ReplayData = [r for r in self.ReplayDataAll if r.file in self.current_replays]
 
+    def check_if_replaydata_are_valid(self):
+        """ Goes over self.ReplayDataAll and removes invalid replays"""
+        to_remove = set()
+        # Get invalid replays
+        for i, r in enumerate(self.ReplayDataAll):
+            if not self.replay_entry_valid(r):
+                to_remove.add(i)
+        # Remove them for the list
+        for i in to_remove:
+            self.ReplayDataAll.pop(i)
+
+    @catch_exceptions(logger)
     def initialize(self):
         """ Executes full initialization """
         self.load_cache()
         self.add_replays(self.current_replays)
+        self.check_if_replaydata_are_valid()
         self.save_cache()
         self.update_name_handle_dict()
         return True
@@ -882,7 +912,8 @@ class mass_replay_analysis:
                     with lock:
                         try:
                             formated = self.format_data(full_data)
-                            self.ReplayDataAll[i] = formated
+                            if self.replay_entry_valid(formated):
+                                self.ReplayDataAll[i] = formated
                         except Exception:
                             logger.error(traceback.format_exc())
                         progress_callback.emit(

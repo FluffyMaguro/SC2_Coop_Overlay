@@ -1044,6 +1044,8 @@ class UI_TabWidget(object):
             SM.settings['twitchbot']['bank_locations']['Default'] = result
             logger.info(f"Setting default bank location to {result.strip()}")
             self.update_selected_bank_item(result)
+        except IndexError:
+            logger.error('Didnt find bank locations')
         except Exception:
             logger.error(traceback.format_exc())
 
