@@ -810,11 +810,15 @@ class mass_replay_analysis:
 
     def check_if_replaydata_are_valid(self):
         """ Goes over self.ReplayDataAll and removes invalid replays"""
-        to_remove = set()
+        to_remove = list()
         # Get invalid replays
         for i, r in enumerate(self.ReplayDataAll):
             if not self.replay_entry_valid(r):
-                to_remove.add(i)
+                to_remove.append(i)
+
+        # Reverse indexes, so when removing, we don't offset positions of other indexes
+        to_remove = sorted(to_remove, reverse=True)
+
         # Remove them for the list
         for i in to_remove:
             self.ReplayDataAll.pop(i)
