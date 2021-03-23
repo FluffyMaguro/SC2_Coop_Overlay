@@ -345,12 +345,12 @@ def _add_units(unit_data: dict, r: dict, p: int):
 
     # Go over units
     for unit in r.players[p]['units']:
-        # Don't count units without kills
-        if r.players[p]['units'][unit][2] <= 0:
-            continue
-
         if not unit in unit_data[commander]:
             unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list(), 'made': 0}
+
+        # Save units made for frequency
+        if not isinstance(r.players[p]['units'][unit][0], str):
+            unit_data[commander][unit]['made'] += 1
 
         # Add unit [created, lost, kills]
         names = {0: 'created', 1: 'lost', 2: 'kills'}
@@ -359,10 +359,6 @@ def _add_units(unit_data: dict, r: dict, p: int):
                 unit_data[commander][unit][s] += r.players[p]['units'][unit][i]
             else:
                 unit_data[commander][unit][s] = r.players[p]['units'][unit][i]
-
-        # Save units made for frequency
-        if not isinstance(r.players[p]['units'][unit][0], str):
-            unit_data[commander][unit]['made'] += 1
 
         # Add bonus kills to mind-controlling unit
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
@@ -436,9 +432,15 @@ def _process_dict(unit_data: dict):
     """ Calculates median kill percentages, K/D, lost_percent"""
     for commander in unit_data:
         total = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': 1}
+        units_to_delete = set()
 
         for unit in unit_data[commander]:
             if unit in ('sum', 'count'):
+                continue
+            
+            # Save units without kills
+            if unit_data[commander][unit]['kills'] == 0:
+                units_to_delete.add(unit)
                 continue
 
             # Calculate median of kills
@@ -472,6 +474,11 @@ def _process_dict(unit_data: dict):
             for item in ('created', 'lost', 'kills'):
                 if not isinstance(unit_data[commander][unit][item], str):
                     total[item] += unit_data[commander][unit][item]
+
+        # Delete units without kills
+        for unit in units_to_delete:
+            if unit in unit_data[commander]:
+                del unit_data[commander][unit]
 
         # Sum K/D
         if total['lost'] > 0:
