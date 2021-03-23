@@ -443,7 +443,8 @@ def _process_dict(unit_data: dict):
                 units_to_delete.add(unit)
                 continue
 
-            if (unit == 'MULE' and commander != 'Raynor') or (unit == 'Spider Mine' and not commander in {'Raynor', 'Nova'}):
+            if (unit == 'MULE' and commander != 'Raynor') or (unit == 'Spider Mine' and not commander in {'Raynor', 'Nova'}) \
+                or (unit == 'Omega Worm' and commander != 'Kerrigan') or (unit == 'Nydus Worm' and commander != 'Abathur'):
                 units_to_delete.add(unit)
                 continue
 

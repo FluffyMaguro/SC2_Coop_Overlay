@@ -293,7 +293,7 @@ units_to_stats = {
     'Medic', 'Havoc', 'Mecha Infestor', 'SCV', 'Probe', 'Drone', 'Mecha Drone', 'Primal Drone', 'Infested SCV', 'Probius', 'Dominion Laborer',
     'Imperial Intercessor', 'Overseer', 'Theia Raven', 'Stasis Ward', 'Mecha Overseer', 'Shield Battery', 'MULE', 'Imperial Witness',
     "Xel'Naga Void Array", "Raven Type-II", "War Prism", "Dark Pylon", "Swarm Queen", "Queen", "Hercules", "Science Vessel", 'Defensive Drone',
-    'Revitalizer', 'Mecha Overlord', 'Overlord', 'Medivac Platform'
+    'Revitalizer', 'Mecha Overlord', 'Overlord', 'Medivac Platform', 'Omega Worm', 'Nydus Worm'
 }
 
 # Different map names: local_name : {english_name, editor_name}
