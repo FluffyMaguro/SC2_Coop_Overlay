@@ -16,6 +16,7 @@ import websockets
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import analyse_replay
+from SCOFunctions.IdentifyMap import identify_map
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.Settings import Setting_manager as SM
 
@@ -529,7 +530,6 @@ def check_for_new_game():
             # Check if we have players in, and it's not a replay
             if len(players) > 2 and not resp.get('isReplay', True):
                 # If the last time is the same, then we are in menus. Otherwise in-game.
-
                 if last_game_time == None or resp['displayTime'] == 0:
                     last_game_time = resp['displayTime']
                     continue
@@ -547,6 +547,13 @@ def check_for_new_game():
 
                 # Mark this game so it won't be checked it again
                 last_replay_amount = len(AllReplays)
+
+                # Identify map
+                try:
+                    map_found = identify_map(players)
+                    logger.info(f"Identified map as: {map_found}")
+                except Exception:
+                    logger.error(traceback.format_exc())
 
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
                 if len(PLAYER_NAMES) > 0:

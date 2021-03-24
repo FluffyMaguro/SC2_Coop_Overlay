@@ -61,11 +61,10 @@ def catch_exceptions(logger):
     """ Catches exceptions for given function and writes a log"""
     # Outer function is here to provide argument for the decorator
     def inner_function(job_func):
-        @functools.wraps(job_func) # passes useful info to decorators
+        @functools.wraps(job_func)  # passes useful info to decorators
         def wrapper(*args, **kwargs):
             try:
-                out = job_func(*args, **kwargs)
-                return out # this is necessary when a function is returning something
+                return job_func(*args, **kwargs)
             except Exception:
                 logger.error(traceback.format_exc())
 
