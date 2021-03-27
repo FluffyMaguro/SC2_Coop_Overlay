@@ -482,7 +482,7 @@ def wait_for_wake():
             return diff - 10
 
 
-def check_for_new_game():
+def check_for_new_game(progress_callback):
     global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
     # Wait a bit for the replay initialization to complete
@@ -551,7 +551,8 @@ def check_for_new_game():
                 # Identify map
                 try:
                     map_found = identify_map(players)
-                    logger.info(f"Identified map as: {map_found}")
+                    # logger.info(f"Identified map as: {map_found}")
+                    progress_callback.emit(map_found)
                 except Exception:
                     logger.error(traceback.format_exc())
 

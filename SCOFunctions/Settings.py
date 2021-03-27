@@ -36,6 +36,7 @@ class CSettings:
             'show_session': True,
             'show_random_on_overlay': False,
             'dark_theme': False,
+            'fast_expand': False, 
             'minimize_to_tray': True,
             'account_folder': None,
             'screenshot_folder': None,

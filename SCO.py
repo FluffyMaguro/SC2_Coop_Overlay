@@ -32,6 +32,7 @@ from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
+from SCOFunctions.FastExpand import FastExpandSelector
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.MDebugWindow import DebugWindow
@@ -96,6 +97,8 @@ class UI_TabWidget(object):
         if not HF.isWindows():
             self.TAB_Main.CH_StartWithWindows.setChecked(False)
             self.TAB_Main.CH_StartWithWindows.setEnabled(False)
+
+        self.FastExpandSelector = None
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
@@ -296,6 +299,7 @@ class UI_TabWidget(object):
         self.TAB_Main.CH_ShowPlayerWinrates.setChecked(SM.settings['show_player_winrates'])
         self.TAB_Main.CH_ForceHideOverlay.setChecked(SM.settings['force_hide_overlay'])
         self.TAB_Main.CH_DarkTheme.setChecked(SM.settings['dark_theme'])
+        self.TAB_Main.CH_FastExpand.setChecked(SM.settings['fast_expand'])
         self.TAB_Main.CH_MinimizeToTray.setChecked(SM.settings['minimize_to_tray'])
         self.TAB_Main.CH_MinimizeToTray.stateChanged.connect(self.saveSettings)
         self.TAB_Main.SP_Duration.setProperty("value", SM.settings['duration'])
@@ -352,6 +356,7 @@ class UI_TabWidget(object):
         SM.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
         SM.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
         SM.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
+        SM.settings['fast_expand'] = self.TAB_Main.CH_FastExpand.isChecked()
         SM.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
         SM.settings['show_session'] = self.TAB_Main.CH_ShowSession.isChecked()
         SM.settings['duration'] = self.TAB_Main.SP_Duration.value()
@@ -843,8 +848,9 @@ class UI_TabWidget(object):
 
         # Show player winrates
         if SM.settings['show_player_winrates']:
-            self.thread_check_for_newgame = threading.Thread(target=MF.check_for_new_game, daemon=True)
-            self.thread_check_for_newgame.start()
+            thread_check_for_newgame = MUI.Worker(MF.check_for_new_game, progress_callback=True)
+            thread_check_for_newgame.signals.progress.connect(self.map_identified)
+            self.threadpool.start(thread_check_for_newgame)
 
         # Connect & run full analysis if set
         self.TAB_Stats.BT_FA_run.setEnabled(True)
@@ -865,6 +871,17 @@ class UI_TabWidget(object):
         # Dump & reinit
         self.TAB_Stats.BT_FA_dump.setEnabled(True)
         self.TAB_Stats.BT_FA_dump.clicked.connect(self.dump_all)
+
+    def map_identified(self, map: str):
+        """  Show fast expand selector when a new map is identified """
+        print(f'>>>>>>> MAP IDENTIFIED: {map}')
+
+        if not SM.settings['fast_expand']:
+            return
+
+        if self.FastExpandSelector is None:
+            self.FastExpandSelector = FastExpandSelector()
+        self.FastExpandSelector.show()
 
     def dump_all(self):
         """ Dumps all replay data from mass analysis into a file """
