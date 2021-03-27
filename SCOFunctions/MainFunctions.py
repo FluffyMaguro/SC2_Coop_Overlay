@@ -551,8 +551,10 @@ def check_for_new_game(progress_callback):
                 # Identify map
                 try:
                     map_found = identify_map(players)
-                    # logger.info(f"Identified map as: {map_found}")
-                    progress_callback.emit(map_found)
+                    if map_found:
+                        progress_callback.emit(map_found)
+                    else:
+                        logger.error(f"Map not identified: {players}")
                 except Exception:
                     logger.error(traceback.format_exc())
 
