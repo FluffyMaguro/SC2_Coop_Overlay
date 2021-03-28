@@ -562,8 +562,8 @@ def check_for_new_game(progress_callback):
                 for player in players:
                     if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
                         player_names.add(player['name'])
-                    elif player['id'] in {1, 2} and player['name'].lower() in test_names_against and player['type'] != 'computer':
-                        player_position = player['id']
+                        player_position = 2 if player['id'] == 1 else 1
+                        break
 
                 # If we have players to show
                 if len(player_names) > 0:

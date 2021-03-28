@@ -9,6 +9,7 @@ class FastExpandSelector(QtWidgets.QWidget):
     selectedRace = ""
     playerPosition = "1"
     hotkeys = []
+
     #Data will be received as [MapName, PlayerPosition]
     def __init__(self, data, parent=None):
         super().__init__()
@@ -30,7 +31,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.selectionText = QtWidgets.QLabel()
         self.selectionText.setStyleSheet("background-color:black;color:white;font-size:24px")
         layout.addWidget(self.selectionText)
-        
+
         #Set up the image box that will be used to display the image
         self.pic = QtWidgets.QLabel()
         layout.addWidget(self.pic)
@@ -40,7 +41,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             self.generateCommanderList()
         except Exception as e:
             print(e)
-                          
+
         #Set up the window
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setGeometry(0, 0, 425, 270)
@@ -50,16 +51,16 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.setLayout(layout)
 
     def generateCommanderList(self):
-        if(self.selectedMap in ["Chain of Ascension", "Malwarfare", "Part and Parcel"]):
+        if (self.selectedMap in ["Chain of Ascension", "Malwarfare", "Part and Parcel"]):
             commanderList = ["Alarak", "Karax", "Mengsk"]
         else:
-            commanderList =  ["Alarak", "Mengsk"]
+            commanderList = ["Alarak", "Mengsk"]
 
         #Get a list of valid commanders to fast expand on map and generate a label and hook a hotkey
         count = 0
         labelString = ""
         for commander in commanderList:
-            count +=1
+            count += 1
             labelString += "NUM" + str(count) + " - " + commander + "\r\n"
             self.hotkeys.append(keyboard.add_hotkey("NUM " + str(count), self.selectionMade, args=["commander", commander.lower()]))
 
@@ -71,10 +72,10 @@ class FastExpandSelector(QtWidgets.QWidget):
         return
 
     def generateRaceList(self):
-        if(self.selectedMap in ["Chain of Ascension", "Malwarfare", "The Vermillion Problem"]):
+        if (self.selectedMap in ["Chain of Ascension", "Malwarfare", "The Vermillion Problem"]):
             raceList = ["Protoss", "Terran", "Zerg"]
-        elif(self.selectedMap == "Part and Parcel"):
-            if(self.selectedCommander =="Alarak"):
+        elif (self.selectedMap == "Part and Parcel"):
+            if (self.selectedCommander == "Alarak"):
                 raceList = ["Protoss", "Terran"]
             else:
                 raceList = ["Protoss", "Terran", "Zerg"]
@@ -87,7 +88,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         count = 0
         labelString = ""
         for race in raceList:
-            count +=1
+            count += 1
             labelString += "NUM" + str(count) + " - " + race + "\r\n"
             self.hotkeys.append(keyboard.add_hotkey("NUM " + str(count), self.selectionMade, args=["race", race.lower()]))
 
@@ -115,29 +116,29 @@ class FastExpandSelector(QtWidgets.QWidget):
             filename += "tvp_" + self.selectedRace + ".jpg"
 
         #Get the image from the URL and display it
-        url = baseURL + filename   
-        req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-        data = urllib.request.urlopen( req ).read()
+        url = baseURL + filename
+        req = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
+        data = urllib.request.urlopen(req).read()
         pixmap = QtGui.QPixmap()
         pixmap.loadFromData(data)
         self.pic.setPixmap(pixmap)
         self.selectionText.hide()
-        
+
         self.title.setText("NUM0 - Close")
         self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
         self.title.setStyleSheet("background-color:black;color:white;font-size:12px")
 
-    def selectionMade(self,action, selection):
+    def selectionMade(self, action, selection):
         #Remove all hotkeys first
         self.clearHotkeys()
         #If a "close" action was sent, close the window
-        if (action=="cancel"):
+        if (action == "cancel"):
             self.close()
             return
-        elif (action=="commander"):
+        elif (action == "commander"):
             self.selectedCommander = selection
             self.generateRaceList()
-        elif (action=="race"):
+        elif (action == "race"):
             self.selectedRace = selection
             self.showExpand()
 
@@ -147,4 +148,3 @@ class FastExpandSelector(QtWidgets.QWidget):
 
         self.hotkeys = []
         return
-
