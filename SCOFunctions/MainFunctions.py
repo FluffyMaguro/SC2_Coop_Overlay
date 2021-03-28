@@ -548,16 +548,6 @@ def check_for_new_game(progress_callback):
                 # Mark this game so it won't be checked it again
                 last_replay_amount = len(AllReplays)
 
-                # Identify map
-                try:
-                    map_found = identify_map(players)
-                    if map_found:
-                        progress_callback.emit(map_found)
-                    else:
-                        logger.error(f"Map not identified: {players}")
-                except Exception:
-                    logger.error(traceback.format_exc())
-
                 # Add the first player name that's not the main player. This could be expanded to any number of players.
                 if len(PLAYER_NAMES) > 0:
                     test_names_against = [p.lower() for p in PLAYER_NAMES]
@@ -567,11 +557,13 @@ def check_for_new_game(progress_callback):
                     logger.error('No main names to test against')
                     continue
 
+                # Find ally player and get your current player position
                 player_names = set()
                 for player in players:
                     if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
                         player_names.add(player['name'])
-                        break
+                    elif player['id'] in {1, 2} and player['name'].lower() in test_names_against and player['type'] != 'computer':
+                        player_position = player['id']
 
                 # If we have players to show
                 if len(player_names) > 0:
@@ -585,6 +577,15 @@ def check_for_new_game(progress_callback):
                     most_recent_playerdata = data
                     sendEvent({'playerEvent': True, 'data': data})
 
+                # Identify map
+                try:
+                    map_found = identify_map(players)
+                    if map_found:
+                        progress_callback.emit([map_found, str(player_position)])
+                    else:
+                        logger.error(f"Map not identified: {players}")
+                except Exception:
+                    logger.error(traceback.format_exc())
         except requests.exceptions.ConnectionError:
             logger.debug(f'SC2 request failed. Game not running.')
 
