@@ -112,7 +112,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             filename += "me_.jpg"
         elif (self.selectedMap == "Part and Parcel"):
             filename += "pp_" + self.selectedRace + ".jpg"
-        elif (self.selectedMap == "Miner Evacuation"):
+        elif (self.selectedMap == "The Vermillion Problem"):
             filename += "tvp_" + self.selectedRace + ".jpg"
 
         #Get the image from the URL and display it
