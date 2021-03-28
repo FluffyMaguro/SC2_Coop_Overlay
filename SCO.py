@@ -872,15 +872,15 @@ class UI_TabWidget(object):
         self.TAB_Stats.BT_FA_dump.setEnabled(True)
         self.TAB_Stats.BT_FA_dump.clicked.connect(self.dump_all)
 
-    def map_identified(self, map: str):
+    def map_identified(self, data):
         """  Show fast expand selector when a new map is identified """
-        print(f'>>>>>>> MAP IDENTIFIED: {map}')
+        print(f'>>>>>>> MAP IDENTIFIED: {data}')
 
         if not SM.settings['fast_expand']:
             return
 
         if self.FastExpandSelector is None:
-            self.FastExpandSelector = FastExpandSelector()
+            self.FastExpandSelector = FastExpandSelector(data)
         self.FastExpandSelector.show()
 
     def dump_all(self):
