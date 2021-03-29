@@ -1,6 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+import traceback
 import keyboard
 import urllib.request
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MLogging import logclass, catch_exceptions
@@ -113,35 +114,40 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.selectionText.setText(labelString)
         self.title.setText("Choose enemy race:")
 
-    @catch_exceptions(logger)
     def showExpand(self):
-        baseURL = "https://starcraft2coop.com/images/assistant/"
-        filename = self.selectedCommander + "_"
-        # Set up the file name to be called from starcraft2coop.com
-        if self.selectedMap == "Chain of Ascension":
-            filename += "coa_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
-        elif self.selectedMap == "Malwarfare":
-            filename += "mw_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
-        elif self.selectedMap == "Miner Evacuation":
-            filename += "me_.jpg"
-        elif self.selectedMap == "Part and Parcel":
-            filename += "pp_" + self.selectedRace + ".jpg"
-        elif self.selectedMap == "The Vermillion Problem":
-            filename += "tvp_" + self.selectedRace + ".jpg"
+        try:
+            baseURL = "https://starcraft2coop.com/images/assistant/"
+            filename = self.selectedCommander + "_"
+            # Set up the file name to be called from starcraft2coop.com
+            if self.selectedMap == "Chain of Ascension":
+                filename += "coa_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
+            elif self.selectedMap == "Malwarfare":
+                filename += "mw_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
+            elif self.selectedMap == "Miner Evacuation":
+                filename += "me_.jpg"
+            elif self.selectedMap == "Part and Parcel":
+                filename += "pp_" + self.selectedRace + ".jpg"
+            elif self.selectedMap == "The Vermillion Problem":
+                filename += "tvp_" + self.selectedRace + ".jpg"
 
-        # Get the image from the URL and display it
-        url = baseURL + filename
-        req = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
-        data = urllib.request.urlopen(req).read()
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(data)
-        pixmap = pixmap.scaled(self.width() - self.padding * 2,
-                               self.height() - self.padding * 2, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
-        self.pic.setPixmap(pixmap)
-        self.selectionText.hide()
-        self.title.setText("NUM0 - Close")
-        self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
-        self.title.setStyleSheet("color:white; font-size: 18px")
+            # Get the image from the URL and display it
+            url = baseURL + filename
+            req = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
+            data = urllib.request.urlopen(req).read()
+            pixmap = QtGui.QPixmap()
+            pixmap.loadFromData(data)
+            pixmap = pixmap.scaled(self.width() - self.padding * 2,
+                                self.height() - self.padding * 2, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+            self.pic.setPixmap(pixmap)
+            self.selectionText.hide()
+            self.title.setText("NUM0 - Close")
+            self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
+            self.title.setStyleSheet("color:white; font-size: 18px")
+        except Exception:
+            logger.error(traceback.format_exc)
+            self.clearHotkeys()
+            self.hide()
+            self.reset()
 
     def selectionMade(self, action, selection):
         # Remove all hotkeys first
