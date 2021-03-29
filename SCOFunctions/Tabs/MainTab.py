@@ -85,7 +85,9 @@ class MainTab(QtWidgets.QWidget):
         self.CH_FastExpand = QtWidgets.QCheckBox(self)
         self.CH_FastExpand.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
         self.CH_FastExpand.setText("Fast expand hints")
-        self.CH_FastExpand.setToolTip(f"Show fast expand hint dialogue when a new game starts for:\n{', '.join(FastExpandSelector.valid_maps)}")
+        self.CH_FastExpand.setToolTip("Show fast expand hint dialogue when a new game starts.\n"
+                                      f"maps: {', '.join(FastExpandSelector.valid_maps)}\n"
+                                      f"commanders: {', '.join(FastExpandSelector.valid_commanders)}")
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self)

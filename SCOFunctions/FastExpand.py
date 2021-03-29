@@ -4,36 +4,39 @@ import urllib.request
 
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MLogging import logclass, catch_exceptions
+
 logger = logclass('FAST', 'INFO')
 
 
 class FastExpandSelector(QtWidgets.QWidget):
-    # valid_maps are used by outside functions
+    # valid_maps and valid_commanders are used by outside functions
     valid_maps = {"Chain of Ascension", "Malwarfare", "Miner Evacuation", "Part and Parcel", "The Vermillion Problem"}
-    selectedMap = ""
-    selectedCommander = ""
-    selectedRace = ""
-    playerPosition = 1
-    hotkeys = []
+    valid_commanders = ("Alarak", "Karax", "Mengsk")
+    padding = 6
 
     # Data will be received as [MapName, PlayerPosition]
     def __init__(self, parent=None):
         super().__init__()
+        self.selectedMap = ""
+        self.selectedCommander = ""
+        self.selectedRace = ""
+        self.playerPosition = 1
+        self.hotkeys = []
         self.initUI()
 
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
+        layout.setContentsMargins(self.padding, self.padding, self.padding, self.padding)
         spacer = 10
 
         # Set the title
         self.title = QtWidgets.QLabel()
-        self.title.setText("Make a selection")
-        self.title.setStyleSheet("background-color:black; color:white; font-size:24px")
+        self.title.setStyleSheet("color: yellow; font-size:24px")
         layout.addWidget(self.title)
 
         # Set up the display label
         self.selectionText = QtWidgets.QLabel()
-        self.selectionText.setStyleSheet("background-color:black; color:white; font-size:24px")
+        self.selectionText.setStyleSheet("color:white; font-size:24px")
         layout.addWidget(self.selectionText)
 
         # Set up the image box that will be used to display the image
@@ -44,9 +47,12 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.setWindowTitle(f"Fast Expand Hints")
         self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowDoesNotAcceptFocus)
-        self.setGeometry(0, 0, 425, 270)
+        
         self.setStyleSheet("background-color: black;")
         sg = QtWidgets.QDesktopWidget().screenGeometry(0)
+        width = int(sg.width()*425/1920)
+        height = int(width * 270/425)
+        self.setGeometry(0, 0, width, height)
         self.move(sg.width() - self.width(), sg.bottom() - self.height())
         self.setLayout(layout)
 
@@ -77,6 +83,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
 
         self.selectionText.setText(labelString)
+        self.title.setText("Choose your commander:")
 
     @catch_exceptions(logger)
     def generateRaceList(self):
@@ -104,6 +111,7 @@ class FastExpandSelector(QtWidgets.QWidget):
 
         # Add the label to the layout
         self.selectionText.setText(labelString)
+        self.title.setText("Choose enemy race:")
 
     @catch_exceptions(logger)
     def showExpand(self):
@@ -127,16 +135,18 @@ class FastExpandSelector(QtWidgets.QWidget):
         data = urllib.request.urlopen(req).read()
         pixmap = QtGui.QPixmap()
         pixmap.loadFromData(data)
+        pixmap = pixmap.scaled(self.width() - self.padding * 2,
+                               self.height() - self.padding * 2, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
         self.pic.setPixmap(pixmap)
         self.selectionText.hide()
         self.title.setText("NUM0 - Close")
         self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
-        self.title.setStyleSheet("background-color:black; color:white; font-size:12px")
+        self.title.setStyleSheet("color:white; font-size: 18px")
 
     def selectionMade(self, action, selection):
         # Remove all hotkeys first
         self.clearHotkeys()
-        # If a "close" action was sent, hide the window, then reset all components so they're ready for the next run
+        # If a "close" action was sent, hide the window, then reset all components so they're ready for the next run0
         if action == "cancel":
             self.hide()
             self.reset()
@@ -149,8 +159,7 @@ class FastExpandSelector(QtWidgets.QWidget):
 
     def reset(self):
         # Reset everything back to normal
-        self.title.setText("Make a selection")
-        self.title.setStyleSheet("background-color:black; color:white; font-size:24px")
+        self.title.setStyleSheet("color:yellow; font-size:24px")
         self.selectionText.show()
         pixmap = QtGui.QPixmap()
         self.pic.setPixmap(pixmap)
@@ -162,5 +171,4 @@ class FastExpandSelector(QtWidgets.QWidget):
     def clearHotkeys(self):
         for hotkey in self.hotkeys:
             keyboard.remove_hotkey(hotkey)
-
         self.hotkeys = []
