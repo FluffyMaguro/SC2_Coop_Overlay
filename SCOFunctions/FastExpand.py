@@ -28,7 +28,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.selectionText = QtWidgets.QLabel()
         self.selectionText.setStyleSheet("background-color:black;color:white;font-size:24px")
         layout.addWidget(self.selectionText)
-        
+
         #Set up the image box that will be used to display the image
         self.pic = QtWidgets.QLabel()
         layout.addWidget(self.pic)
