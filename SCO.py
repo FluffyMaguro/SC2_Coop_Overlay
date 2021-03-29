@@ -881,7 +881,8 @@ class UI_TabWidget(object):
 
         if(data[0] in ["Chain of Ascension", "Malwarfare", "Miner Evacuation", "Part and Parcel", "The Vermillion Problem"]):
             if self.FastExpandSelector is None:
-                self.FastExpandSelector = FastExpandSelector(data)
+                self.FastExpandSelector = FastExpandSelector()
+            self.FastExpandSelector.setData(data)
             self.FastExpandSelector.show()
 
     def dump_all(self):
