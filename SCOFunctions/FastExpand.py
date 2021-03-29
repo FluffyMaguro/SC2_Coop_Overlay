@@ -77,7 +77,6 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
 
         self.selectionText.setText(labelString)
-        return
 
     @catch_exceptions(logger)
     def generateRaceList(self):
@@ -105,7 +104,6 @@ class FastExpandSelector(QtWidgets.QWidget):
 
         # Add the label to the layout
         self.selectionText.setText(labelString)
-        return
 
     @catch_exceptions(logger)
     def showExpand(self):
@@ -166,4 +164,3 @@ class FastExpandSelector(QtWidgets.QWidget):
             keyboard.remove_hotkey(hotkey)
 
         self.hotkeys = []
-        return
