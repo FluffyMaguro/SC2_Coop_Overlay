@@ -873,17 +873,17 @@ class UI_TabWidget(object):
         self.TAB_Stats.BT_FA_dump.clicked.connect(self.dump_all)
 
     def map_identified(self, data):
-        """  Show fast expand selector when a new map is identified """
-        print(f'>>>>>>> MAP IDENTIFIED: {data}')
+        """Shows fast expand widget when a valid new map is identified"""
+        logger.info(f'Identified map: {data}')
 
-        if not SM.settings['fast_expand']:
+        # Don't proceed if the function disabled or not a valid map
+        if not SM.settings['fast_expand'] or not data[0] in FastExpandSelector.valid_maps:
             return
 
-        if(data[0] in ["Chain of Ascension", "Malwarfare", "Miner Evacuation", "Part and Parcel", "The Vermillion Problem"]):
-            if self.FastExpandSelector is None:
-                self.FastExpandSelector = FastExpandSelector()
-            self.FastExpandSelector.setData(data)
-            self.FastExpandSelector.show()
+        if self.FastExpandSelector is None:
+            self.FastExpandSelector = FastExpandSelector()
+        self.FastExpandSelector.setData(data)
+        self.FastExpandSelector.show()
 
     def dump_all(self):
         """ Dumps all replay data from mass analysis into a file """

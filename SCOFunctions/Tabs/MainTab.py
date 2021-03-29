@@ -7,6 +7,7 @@ import SCOFunctions.MUserInterface as MUI
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MTheming import MColors
 from SCOFunctions.Settings import Setting_manager as SM
+from SCOFunctions.FastExpand import FastExpandSelector
 
 
 class MainTab(QtWidgets.QWidget):
@@ -84,7 +85,7 @@ class MainTab(QtWidgets.QWidget):
         self.CH_FastExpand = QtWidgets.QCheckBox(self)
         self.CH_FastExpand.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
         self.CH_FastExpand.setText("Fast expand hints")
-        self.CH_FastExpand.setToolTip("Show fast expand hint dialogue when a new game starts")
+        self.CH_FastExpand.setToolTip(f"Show fast expand hint dialogue when a new game starts for:\n{', '.join(FastExpandSelector.valid_maps)}")
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self)
