@@ -9,12 +9,9 @@ class FastExpandSelector(QtWidgets.QWidget):
     selectedRace = ""
     playerPosition = "1"
     hotkeys = []
-
     #Data will be received as [MapName, PlayerPosition]
-    def __init__(self, data, parent=None):
+    def __init__(self, parent=None):
         super().__init__()
-        self.selectedMap = data[0]
-        self.playerPosition = data[1]
         self.initUI()
 
     def initUI(self):
@@ -36,12 +33,6 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.pic = QtWidgets.QLabel()
         layout.addWidget(self.pic)
 
-        #Set up commander list for selection
-        try:
-            self.generateCommanderList()
-        except Exception as e:
-            print(e)
-
         #Set up the window
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowDoesNotAcceptFocus)
         self.setGeometry(0, 0, 425, 270)
@@ -49,6 +40,15 @@ class FastExpandSelector(QtWidgets.QWidget):
         sg = QtWidgets.QDesktopWidget().screenGeometry(0)
         self.move(sg.width() - self.width(), sg.bottom() - self.height())
         self.setLayout(layout)
+
+    def setData(self, data):
+        #Get map and player position
+        self.selectedMap = data[0]
+        self.playerPosition = data[1]
+
+    def showEvent(self, event):
+        #Window is shown... start displaying selections
+        self.generateCommanderList()
 
     def generateCommanderList(self):
         if (self.selectedMap in ["Chain of Ascension", "Malwarfare", "Part and Parcel"]):
@@ -123,7 +123,6 @@ class FastExpandSelector(QtWidgets.QWidget):
         pixmap.loadFromData(data)
         self.pic.setPixmap(pixmap)
         self.selectionText.hide()
-
         self.title.setText("NUM0 - Close")
         self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
         self.title.setStyleSheet("background-color:black;color:white;font-size:12px")
@@ -131,9 +130,10 @@ class FastExpandSelector(QtWidgets.QWidget):
     def selectionMade(self, action, selection):
         #Remove all hotkeys first
         self.clearHotkeys()
-        #If a "close" action was sent, close the window
+        #If a "close" action was sent, hide the window, then reset all components so they're ready for the next run
         if (action == "cancel"):
-            self.close()
+            self.hide()
+            self.reset()
             return
         elif (action == "commander"):
             self.selectedCommander = selection
@@ -141,6 +141,18 @@ class FastExpandSelector(QtWidgets.QWidget):
         elif (action == "race"):
             self.selectedRace = selection
             self.showExpand()
+
+    def reset(self):
+        #Reset everything back to normal
+        self.title.setText("Make a selection")
+        self.title.setStyleSheet("background-color:black;color:white;font-size:24px")
+        self.selectionText.show()
+        pixmap = QtGui.QPixmap()
+        self.pic.setPixmap(pixmap)
+        self.selectedMap = ""
+        self.selectedCommander = ""
+        self.selectedRace = ""
+        self.playerPosition = "1"
 
     def clearHotkeys(self):
         for hotkey in self.hotkeys:

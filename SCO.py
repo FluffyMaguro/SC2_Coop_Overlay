@@ -879,9 +879,11 @@ class UI_TabWidget(object):
         if not SM.settings['fast_expand']:
             return
 
-        if self.FastExpandSelector is None:
-            self.FastExpandSelector = FastExpandSelector(data)
-        self.FastExpandSelector.show()
+        if(data[0] in ["Chain of Ascension", "Malwarfare", "Miner Evacuation", "Part and Parcel", "The Vermillion Problem"]):
+            if self.FastExpandSelector is None:
+                self.FastExpandSelector = FastExpandSelector()
+            self.FastExpandSelector.setData(data)
+            self.FastExpandSelector.show()
 
     def dump_all(self):
         """ Dumps all replay data from mass analysis into a file """
