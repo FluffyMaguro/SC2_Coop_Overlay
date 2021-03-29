@@ -33,6 +33,8 @@ def parse_replay(file):
         return s2_parse_replay(file, try_lastest=True, parse_events=False, onlyBlizzard=True, withoutRecoverEnabled=True)
     except s2protocol.decoders.TruncatedError:
         return None
+    except json.decoder.JSONDecodeError as e:
+        logger.error(e)
     except Exception:
         logger.error(f"{file}\n{traceback.format_exc()}")
         return None
