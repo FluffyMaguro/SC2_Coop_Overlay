@@ -10,6 +10,7 @@ cache_overall_stats
 cache_player_winrates.json
 *.ui
 *.qrc
+.vscode
 Settings.json
 Logs.txt
 ChatLog.txt
