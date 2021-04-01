@@ -235,7 +235,7 @@ map_checks = {
 }
 
 
-def identify_map(player_data: list):
+def identify_map(player_data: list) -> str:
     """ Identify a map based on the list of players """
     length = len(player_data)
     for m in map_checks:

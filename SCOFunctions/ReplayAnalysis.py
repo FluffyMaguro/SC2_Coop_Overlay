@@ -207,22 +207,23 @@ def unitid(event, killer=False, creator=False):
     `killer`=True for killer unique id, otherwise normal unit.
     Assuming index is less than 100000 (usually it's < 1000)
      """
-    if killer:
-        index = event['m_killerUnitTagIndex']
-        recycleindex = event['m_killerUnitTagRecycle']
-    elif creator:
-        index = event['m_creatorUnitTagIndex']
-        recycleindex = event['m_creatorUnitTagRecycle']
-    else:
-        index = event['m_unitTagIndex']
-        recycleindex = event['m_unitTagRecycle']
+    try:
+        if killer:
+            index = event['m_killerUnitTagIndex']
+            recycleindex = event['m_killerUnitTagRecycle']
+        elif creator:
+            index = event['m_creatorUnitTagIndex']
+            recycleindex = event['m_creatorUnitTagRecycle']
+        else:
+            index = event['m_unitTagIndex']
+            recycleindex = event['m_unitTagRecycle']
 
-    if index is None or recycleindex is None:
-        logger.debug(f'No unitid from {killer=}{event=}')
+        if index is None or recycleindex is None:
+            return None
+
+        return recycleindex * 100000 + index
+    except Exception:
         return None
-
-    return recycleindex * 100000 + index
-
 
 def analyse_replay(filepath, main_player_handles=None):
     """ Analyses the replay and returns the analysis"""

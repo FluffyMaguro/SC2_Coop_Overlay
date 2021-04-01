@@ -7,6 +7,7 @@ import SCOFunctions.MUserInterface as MUI
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MTheming import MColors
 from SCOFunctions.Settings import Setting_manager as SM
+from SCOFunctions.FastExpand import FastExpandSelector
 
 
 class MainTab(QtWidgets.QWidget):
@@ -64,21 +65,29 @@ class MainTab(QtWidgets.QWidget):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 55, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(250, 47, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 55, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(300, 47, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         # Dark theme
         self.CH_DarkTheme = QtWidgets.QCheckBox(self)
-        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
+        self.CH_DarkTheme.setGeometry(QtCore.QRect(250, 4 * ch_distance, 300, 17))
         self.CH_DarkTheme.setText("Dark theme")
         self.CH_DarkTheme.setToolTip("Enables dark theme. Requires restart!")
         self.CH_DarkTheme.stateChanged.connect(self.p.change_theme)
+
+        # Fast expand
+        self.CH_FastExpand = QtWidgets.QCheckBox(self)
+        self.CH_FastExpand.setGeometry(QtCore.QRect(250, 5 * ch_distance, 300, 17))
+        self.CH_FastExpand.setText("Fast expand hints")
+        self.CH_FastExpand.setToolTip("Show fast expand hint dialogue when a new game starts.\n"
+                                      f"maps: {', '.join(FastExpandSelector.valid_maps)}\n"
+                                      f"commanders: {', '.join(FastExpandSelector.valid_commanders)}")
 
         # Force hidden
         self.CH_ForceHideOverlay = QtWidgets.QCheckBox(self)
