@@ -47,12 +47,13 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Set up the window
         self.setWindowTitle(f"Fast Expand Hints")
         self.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowDoesNotAcceptFocus)
-        
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowDoesNotAcceptFocus
+                            | QtCore.Qt.WindowTransparentForInput)
+
         self.setStyleSheet("background-color: black;")
         sg = QtWidgets.QDesktopWidget().screenGeometry(0)
-        width = int(sg.width()*425/1920)
-        height = int(width * 270/425)
+        width = int(sg.width() * 425 / 1920)
+        height = int(width * 270 / 425)
         self.setGeometry(0, 0, width, height)
         self.move(sg.width() - self.width(), sg.bottom() - self.height())
         self.setLayout(layout)
@@ -120,15 +121,15 @@ class FastExpandSelector(QtWidgets.QWidget):
             filename = self.selectedCommander + "_"
             # Set up the file name to be called from starcraft2coop.com
             if self.selectedMap == "Chain of Ascension":
-                filename += "coa_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
+                filename += f"coa_{self.selectedRace}_{self.playerPosition}.jpg"
             elif self.selectedMap == "Malwarfare":
-                filename += "mw_" + self.selectedRace + "_" + self.playerPosition + ".jpg"
+                filename += f"mw_{self.selectedRace}_{self.playerPosition}.jpg"
             elif self.selectedMap == "Miner Evacuation":
                 filename += "me_.jpg"
             elif self.selectedMap == "Part and Parcel":
-                filename += "pp_" + self.selectedRace + ".jpg"
+                filename += f"pp_{self.selectedRace}.jpg"
             elif self.selectedMap == "The Vermillion Problem":
-                filename += "tvp_" + self.selectedRace + ".jpg"
+                filename += f"tvp_{self.selectedRace}.jpg"
 
             # Get the image from the URL and display it
             url = baseURL + filename
@@ -136,8 +137,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             data = urllib.request.urlopen(req).read()
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(data)
-            pixmap = pixmap.scaled(self.width() - self.padding * 2,
-                                self.height() - self.padding * 2, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+            pixmap = pixmap.scaled(self.width() - self.padding, self.height() - 41, QtCore.Qt.KeepAspectRatio)
             self.pic.setPixmap(pixmap)
             self.selectionText.hide()
             self.title.setText("NUM0 - Close")
