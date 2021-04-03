@@ -63,7 +63,7 @@ commander_upgrades = {
     "ZagaraCommander": "Zagara",
     "StetmannCommander": "Stetmann"
 }
-commander_no_units = {'Nova': 'CoopCasterNova', "Han & Horner": 'HHMagneticMine', "Karax": "SoACasterKarax", "Artanis": "SoACasterArtanis", "Mengsk":"ArtilleryMengsk"}
+commander_no_units = {'Nova': 'CoopCasterNova', "Han & Horner": 'HHMagneticMine', "Karax": "SoACasterKarax", "Artanis": "SoACasterArtanis", "Mengsk":"ArtilleryMengsk", "other1": "GhostMengsk"}
 units_killed_in_morph = {'HydraliskLurker', 'MutaliskBroodlord', 'RoachVile', 'Mutalisk', 'Devourer', 'GuardianMP', 'Viper', 'SwarmHost', 'Queen'}
 primal_combat_predecessors = {
     'DehakaRavasaur': 'DehakaZerglingLevel2',
@@ -590,6 +590,9 @@ def analyse_replay(filepath, main_player_handles=None):
                     Other not counted sources: Dusk Wings lifting off, CoD explosion, ...
                     """
                     _killing_unit_type = commander_no_units.get(_commander, 'NoUnit')
+                    # For Mengsk fallback on Emperor's shadows in case no ESO weren't contructed
+                    if _commander == 'Mengsk' and _killing_unit_type not in unit_type_dict_main and _killing_unit_type not in unit_type_dict_ally:
+                        _killing_unit_type = 'GhostMengsk'
 
                 # Killbot feed
                 if _killing_unit_type in ('MutatorKillBot', 'MutatorDeathBot', 'MutatorMurderBot') and _losing_player in [1, 2]:

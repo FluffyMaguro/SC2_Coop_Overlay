@@ -5,6 +5,7 @@ venv/*
 build
 dist
 _testing.py
+_testing.ipynb
 cache_replay_analysis.txt
 cache_overall_stats
 cache_player_winrates.json
