@@ -583,16 +583,24 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Get killing unit
                 if _killing_unit_id in unit_dict and unitid(event) is not None:  # We have a killing unit
                     _killing_unit_type = unit_dict[_killing_unit_id][0]
-                else:
+                elif _commander is not None:
                     """
                     For no-unit, check if we default to some commander no-unit like airstrike, or use 'NoUnit'
                     But lets use this only rarely. Units killed in transports count for this as well.
                     Other not counted sources: Dusk Wings lifting off, CoD explosion, ...
                     """
-                    _killing_unit_type = commander_no_units.get(_commander, 'NoUnit')
-                    # For Mengsk fallback on Emperor's shadows in case no ESO weren't contructed
-                    if _commander == 'Mengsk' and _killing_unit_type not in unit_type_dict_main and _killing_unit_type not in unit_type_dict_ally:
+                    _killing_unit_type =  'NoUnit'
+                    backup_unit = commander_no_units.get(_commander, 'NoUnit')
+                    d = unit_type_dict_main if _killing_player == main_player else unit_type_dict_ally
+
+                    if backup_unit in d:
+                        _killing_unit_type = backup_unit
+                     # For Mengsk fallback on Emperor's shadows in case no ESO weren't contructed
+                    elif _commander == 'Mengsk' and 'GhostMengsk' in d:
                         _killing_unit_type = 'GhostMengsk'
+                else:
+                     _killing_unit_type =  'NoUnit'
+                   
 
                 # Killbot feed
                 if _killing_unit_type in ('MutatorKillBot', 'MutatorDeathBot', 'MutatorMurderBot') and _losing_player in [1, 2]:
