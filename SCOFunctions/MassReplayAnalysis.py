@@ -291,6 +291,68 @@ def calculate_commander_data(ReplayData, main_handles):
     return CommanderData, AllyCommanderData
 
 
+def calculate_prestige_estimate(data: dict, commander: str, handle: str, region: str) -> int:
+    """ Calculate estimate prestige level for given commander, handle and region
+    data has to be pre-parsed"""
+    estimate_prestige = 0
+
+    # Sort games by date
+    gamedata = sorted(data[(commander, handle, region)])
+
+    # Check for level drops
+    for idx, game in enumerate(gamedata):
+        # Exclude first index
+        if not idx:
+            continue
+
+        # If level drops
+        if gamedata[idx - 1][1] > gamedata[idx][1]:
+            estimate_prestige += 1
+
+        # If new prestige is higher than estimate
+        if gamedata[idx][2] > estimate_prestige:
+            estimate_prestige = gamedata[idx][2]
+
+    return estimate_prestige
+
+
+def calculate_unlocked_prestiges(ReplayData: list, main_handles: set) -> dict:
+    """ calculates estimates for unlocked prestiges for given handles"""
+    data = dict()
+    # First save data for each game in format date-level-prestige for main players
+    for r in ReplayData:
+        date = int(r.date.replace(':', ''))
+        region = r.region
+
+        for p in r.players:
+            if p['pid'] in {1, 2} and p['handle'] in main_handles:
+                commander = p['commander']
+                handle = p['handle']
+
+                # Create data structure
+                if (commander, handle, region) not in data:
+                    data[(commander, handle, region)] = list()
+
+                # Append new data
+                data[(commander, handle, region)].append((date, p['commander_level'], p['prestige']))
+
+    # Caulculate estimate for each region-commander option
+    out = dict()
+    for (commander, handle, region) in data:
+        estimate_prestige = calculate_prestige_estimate(data, commander, handle, region)
+
+        # Create output structure
+        if region not in out:
+            out[region] = dict()
+        if commander not in out[region]:
+            out[region][commander] = estimate_prestige
+
+        if estimate_prestige > out[region][commander]:
+            out[region][commander] = estimate_prestige
+
+    return out
+
+
 def calculate_region_data(ReplayData, main_handles):
     """ Calculates region data - frequency, wins, losses, winrate, max ascension level, leveled commanders """
     dRegion = dict()
@@ -309,15 +371,12 @@ def calculate_region_data(ReplayData, main_handles):
                 if r.players[p]['commander_mastery_level'] > dRegion[r.region]['max_asc']:
                     dRegion[r.region]['max_asc'] = r.players[p]['commander_mastery_level']
 
-                if r.players[p]['prestige'] > 0:
-                    if not r.players[p]['commander'] in dRegion[r.region]['prestiges']:
-                        dRegion[r.region]['prestiges'][r.players[p]['commander']] = set()
-
-                    dRegion[r.region]['prestiges'][r.players[p]['commander']].add(r.players[p]['prestige'])
+    prestige_data = calculate_unlocked_prestiges(ReplayData, main_handles)
 
     for region in dRegion:
         dRegion[region]['winrate'] = dRegion[region]['Victory'] / (dRegion[region]['Victory'] + dRegion[region]['Defeat'])
         dRegion[region]['frequency'] = (dRegion[region]['Victory'] + dRegion[region]['Defeat']) / len(ReplayData)
+        dRegion[r.region]['prestiges'] = prestige_data.get(r.region)
 
     return dRegion
 

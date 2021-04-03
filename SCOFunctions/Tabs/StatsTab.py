@@ -254,7 +254,7 @@ class StatsTab(QtWidgets.QWidget):
             'max_asc': 'Ascension level',
             'max_com': 'Maxed commanders',
             'winrate': 'Winrate',
-            'prestiges': 'Prestiges tried'
+            'prestiges': 'Prestiges unlocked'
         },
                                                        0,
                                                        parent=self.TAB_DifficultyRegions,
