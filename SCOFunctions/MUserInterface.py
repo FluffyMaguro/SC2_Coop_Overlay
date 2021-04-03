@@ -558,7 +558,10 @@ class RegionStats(QtWidgets.QWidget):
             for idx, co in enumerate(fdict['prestiges']):
                 total += fdict['prestiges'][co]
                 prest = fdict['prestiges'][co]
-                text += f"{co}: {prest}\n"
+                if idx == len(fdict['prestiges']) - 1:
+                    text += f"{co}: {prest}"
+                else:
+                    text += f"{co}: {prest}\n"
 
             self.la_prestiges.setText(f"{total}/54")
             self.la_prestiges.setToolTip(text)

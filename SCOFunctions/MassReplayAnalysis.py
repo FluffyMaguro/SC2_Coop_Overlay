@@ -376,7 +376,7 @@ def calculate_region_data(ReplayData, main_handles):
     for region in dRegion:
         dRegion[region]['winrate'] = dRegion[region]['Victory'] / (dRegion[region]['Victory'] + dRegion[region]['Defeat'])
         dRegion[region]['frequency'] = (dRegion[region]['Victory'] + dRegion[region]['Defeat']) / len(ReplayData)
-        dRegion[r.region]['prestiges'] = prestige_data.get(r.region)
+        dRegion[region]['prestiges'] = prestige_data.get(region, dict())
 
     return dRegion
 
