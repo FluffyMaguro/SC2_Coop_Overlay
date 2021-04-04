@@ -13,6 +13,7 @@ from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.SC2Dictionaries import UnitNameDict, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
 
+do_not_count_kills = {'FuelCellPickupUnit', 'ForceField', 'Scarab'}
 duplicating_units = {'HotSRaptor', 'MutatorAmonArtanis', 'HellbatBlackOps', 'LurkerStetmannBurrowed'}
 skip_strings = ('placement', 'placeholder', 'dummy', 'cocoon', 'droppod', "colonist hut", "bio-dome", "amon's train", "warp conduit")
 revival_types = {
@@ -555,7 +556,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 _killing_player = event['m_killerPlayerId']
 
                 # Count kills for players
-                if _killing_player is not None and not _killed_unit_type in ('FuelCellPickupUnit', 'ForceField'):
+                if _killing_player is not None and not _killed_unit_type in do_not_count_kills:
                     if _killing_player in (1, 2) and not _losing_player in amon_players:
                         pass
                     elif _killing_player in amon_players and not _losing_player in (1, 2):
@@ -686,7 +687,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Update unit kill stats
                 if ((_killing_unit_id in unit_dict) or _killing_unit_type in commander_no_units.values()) and (
-                        _killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type != 'FuelCellPickupUnit':
+                        _killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type not in do_not_count_kills:
                     if main_player == _killing_player and _losing_player in amon_players:
                         if _killing_unit_type in unit_type_dict_main:
                             unit_type_dict_main[_killing_unit_type][2] += 1
