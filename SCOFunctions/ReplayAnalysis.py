@@ -272,7 +272,7 @@ def analyse_replay(filepath, main_player_handles=None):
 
     if main_player_handles is not None and len(main_player_handles) > 0:  # Check if you can find the main player
         for player in replay['players']:
-            if player['pid'] in {1, 2} and not main_player_found and player['handle'] in main_player_handles:
+            if player['pid'] in {1, 2} and not main_player_found and player.get('handle') in main_player_handles:
                 main_player = player['pid']
                 main_player_found = True
                 break
