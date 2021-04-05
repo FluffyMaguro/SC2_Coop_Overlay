@@ -20,7 +20,7 @@ class MainTab(QtWidgets.QWidget):
         self.CH_StartWithWindows = QtWidgets.QCheckBox(self)
         self.CH_StartWithWindows.setGeometry(QtCore.QRect(20, ch_distance, 230, 17))
         self.CH_StartWithWindows.setText("Start with Windows")
-        self.CH_StartWithWindows.setToolTip("The app will start automatically with the Windows")
+        self.CH_StartWithWindows.setToolTip("The app will start automatically with Windows")
 
         # Start minimized
         self.CH_StartMinimized = QtWidgets.QCheckBox(self)
@@ -38,7 +38,7 @@ class MainTab(QtWidgets.QWidget):
         self.CH_ShowSession = QtWidgets.QCheckBox(self)
         self.CH_ShowSession.setGeometry(QtCore.QRect(20, 5 * ch_distance, 300, 17))
         self.CH_ShowSession.setText("Show session stats")
-        self.CH_ShowSession.setToolTip("Shows how many games you played and won in the current session on the overaly")
+        self.CH_ShowSession.setToolTip("Shows how many games you played and won in the current session on the overlay")
 
         # Show player winrate and notes
         self.CH_ShowPlayerWinrates = QtWidgets.QCheckBox(self)
