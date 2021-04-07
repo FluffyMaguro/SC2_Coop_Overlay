@@ -64,7 +64,15 @@ commander_upgrades = {
     "ZagaraCommander": "Zagara",
     "StetmannCommander": "Stetmann"
 }
-commander_no_units = {'Nova': 'CoopCasterNova', "Han & Horner": 'HHMagneticMine', "Karax": "SoACasterKarax", "Artanis": "SoACasterArtanis", "Mengsk":"ArtilleryMengsk", "other1": "GhostMengsk"}
+commander_no_units = {
+    'Nova': ['CoopCasterNova'],
+    "Han & Horner": ['HHMagneticMine'],
+    "Karax": ["SoACasterKarax"],
+    "Artanis": ["SoACasterArtanis"],
+    "Mengsk": ["ArtilleryMengsk", "GhostMengsk"]
+}
+commander_no_units_values = {unit for commander in commander_no_units for unit in commander_no_units[commander]}
+
 units_killed_in_morph = {'HydraliskLurker', 'MutaliskBroodlord', 'RoachVile', 'Mutalisk', 'Devourer', 'GuardianMP', 'Viper', 'SwarmHost', 'Queen'}
 primal_combat_predecessors = {
     'DehakaRavasaur': 'DehakaZerglingLevel2',
@@ -226,6 +234,7 @@ def unitid(event, killer=False, creator=False):
     except Exception:
         return None
 
+
 def analyse_replay(filepath, main_player_handles=None):
     """ Analyses the replay and returns the analysis"""
     """
@@ -244,12 +253,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
     # Load the replay
     replay = None
-    for _ in range(3):
+    for attempt in range(3):
         try:
             replay = s2_parse_replay(filepath, return_events=True)
             break
         except Exception:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
-            logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
+            if attempt == 2:
+                logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
             time.sleep(0.3)
 
     if replay is None:
@@ -343,7 +353,7 @@ def analyse_replay(filepath, main_player_handles=None):
         # Save when user leaves
         if event['_event'] == 'NNet.Game.SGameUserLeaveEvent':
             user = event['_userid']['m_userId'] + 1
-            user_leave_times[user] = event['_gameloop']/16
+            user_leave_times[user] = event['_gameloop'] / 16
 
         # Skip events after the game ended
         if event['_gameloop'] / 16 > END_TIME:
@@ -590,18 +600,16 @@ def analyse_replay(filepath, main_player_handles=None):
                     But lets use this only rarely. Units killed in transports count for this as well.
                     Other not counted sources: Dusk Wings lifting off, CoD explosion, ...
                     """
-                    _killing_unit_type =  'NoUnit'
-                    backup_unit = commander_no_units.get(_commander, 'NoUnit')
+                    _killing_unit_type = 'NoUnit'
+                    backup_units = commander_no_units.get(_commander, [])
                     d = unit_type_dict_main if _killing_player == main_player else unit_type_dict_ally
 
-                    if backup_unit in d:
-                        _killing_unit_type = backup_unit
-                     # For Mengsk fallback on Emperor's shadows in case no ESO weren't contructed
-                    elif _commander == 'Mengsk' and 'GhostMengsk' in d:
-                        _killing_unit_type = 'GhostMengsk'
+                    for backup_unit in backup_units:
+                        if backup_unit in d:
+                            _killing_unit_type = backup_unit
+                            break
                 else:
-                     _killing_unit_type =  'NoUnit'
-                   
+                    _killing_unit_type = 'NoUnit'
 
                 # Killbot feed
                 if _killing_unit_type in ('MutatorKillBot', 'MutatorDeathBot', 'MutatorMurderBot') and _losing_player in [1, 2]:
@@ -686,7 +694,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             f'{last_aoe_unit_killed[_killing_player][0]}({_killing_player}) killed {_killed_unit_type} | {event["_gameloop"]/16}s')
 
                 # Update unit kill stats
-                if ((_killing_unit_id in unit_dict) or _killing_unit_type in commander_no_units.values()) and (
+                if ((_killing_unit_id in unit_dict) or _killing_unit_type in commander_no_units_values) and (
                         _killing_unit_id != unitid(event)) and _losing_player != _killing_player and _killed_unit_type not in do_not_count_kills:
                     if main_player == _killing_player and _losing_player in amon_players:
                         if _killing_unit_type in unit_type_dict_main:
@@ -813,9 +821,9 @@ def analyse_replay(filepath, main_player_handles=None):
     # Update messages with player leave times
     messages = list(replay_report_dict['parser']['messages'])
     for player in user_leave_times:
-        if player in {1,2}:
+        if player in {1, 2}:
             messages.append({'player': player, 'text': f"*has left the game*", 'time': user_leave_times[player]})
-    messages = sorted(messages, key=lambda x:x['time'])
+    messages = sorted(messages, key=lambda x: x['time'])
     replay_report_dict['parser']['messages'] = tuple(messages)
 
     # Main player
