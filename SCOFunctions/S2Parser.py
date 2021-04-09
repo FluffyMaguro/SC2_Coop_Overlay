@@ -105,6 +105,11 @@ def s2_parse_replay(file,
     if onlyBlizzard and not player_info['m_isBlizzardMap']:
         return None
 
+    # Check for older replays
+    if 'm_disableRecoverGame' not in player_info:
+        logger.error(f"Old replay: {file}")
+        return None
+
     # Exit if game can be recovered
     if withoutRecoverEnabled and not player_info['m_disableRecoverGame']:
         return None
