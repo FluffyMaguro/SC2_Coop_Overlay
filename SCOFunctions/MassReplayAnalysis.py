@@ -822,11 +822,14 @@ class mass_replay_analysis:
             parsed_data['players'][p]['units'] = full_data['mainUnits'] if p == main else full_data['allyUnits']
         return replay_data(**parsed_data)
 
+    @catch_exceptions(logger)
     def save_cache(self):
         """ Saves cache """
+        temp_file = f"{self.cachefile}_temp"
         with lock:
-            with open(self.cachefile, 'wb') as f:
+            with open(temp_file, 'wb') as f:
                 pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(temp_file, self.cachefile)
 
     def dump_all(self):
         """ Dumps all data to a json file """
@@ -943,7 +946,7 @@ class mass_replay_analysis:
         eta = '?'
         for i, r in enumerate(self.ReplayDataAll):
             # Save cache every now and then
-            if idx >= 20:
+            if idx >= 30:
                 idx = 0
                 self.save_cache()
 
