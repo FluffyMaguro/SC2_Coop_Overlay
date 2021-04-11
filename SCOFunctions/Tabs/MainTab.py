@@ -1,3 +1,4 @@
+import json
 import webbrowser
 from PyQt5 import QtWidgets, QtGui, QtCore
 
@@ -8,6 +9,9 @@ from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MTheming import MColors
 from SCOFunctions.Settings import Setting_manager as SM
 from SCOFunctions.FastExpand import FastExpandSelector
+from SCOFunctions.MLogging import logclass, catch_exceptions
+
+logger = logclass('TABM', 'INFO')
 
 
 class MainTab(QtWidgets.QWidget):
@@ -298,7 +302,14 @@ class MainTab(QtWidgets.QWidget):
         self.BT_AomTest.setText("Verify")
         self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
 
-        #Paypal
+        # Manual parse
+        self.BT_ManualParse = QtWidgets.QPushButton(self)
+        self.BT_ManualParse.setGeometry(QtCore.QRect(185, 400, 157, 40))
+        self.BT_ManualParse.setText("Parse replay")
+        self.BT_ManualParse.setToolTip("Parse selected replay, show it on the overlay, and save data to a json file.")
+        self.BT_ManualParse.clicked.connect(self.parse_replay)
+
+        # Paypal
         x = 835
         y = 520
         self.IMG_Front_Donate = QtWidgets.QLabel(self)
@@ -347,6 +358,24 @@ class MainTab(QtWidgets.QWidget):
                 self.p.sendInfoMessage(response, color=MColors.msg_failure)
         else:
             self.p.sendInfoMessage('Fill your account name and secret key first!')
+
+    @catch_exceptions(logger)
+    def parse_replay(self, something):
+        """ Lets the user choose the replay, parses it and shows it on overlay
+        Second argument passed by PyQt5, needs to be here for to pass the correct number of arguments"""
+        dialog = QtWidgets.QFileDialog()
+        dialog.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+        if dialog.exec_():
+            f = dialog.selectedFiles()[0]
+
+            if not f.endswith('.SC2Replay'):
+                self.p.sendInfoMessage("Not a valid replay file!", color=MColors.msg_failure)
+                return
+
+            output = MF.show_overlay(f, add_replay=False)
+            if isinstance(output, dict):
+                with open(f.replace('.SC2Replay', '.json'), 'w') as outfile:
+                    json.dump(output, outfile, indent=2)
 
     @staticmethod
     def paypal_clicked():

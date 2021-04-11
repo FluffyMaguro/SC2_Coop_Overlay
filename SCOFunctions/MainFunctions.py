@@ -331,7 +331,7 @@ def upload_to_aom(file_path, replay_dict):
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
 
-def show_overlay(file):
+def show_overlay(file, add_replay=True):
     """ Shows overlay. If it wasn't analysed before, analyse now."""
     global ReplayPosition
 
@@ -345,21 +345,22 @@ def show_overlay(file):
         data = CAnalysis.get_data_for_overlay(rhash)
         if data is not None:
             sendEvent(data)
-            return
+            return data
 
     # Didn't find the replay, analyse
     try:
         replay_dict = analyse_replay(file, PLAYER_HANDLES)
         if len(replay_dict) > 1:
             sendEvent(replay_dict)
-            if CAnalysis is not None:
+            if CAnalysis is not None and add_replay:
                 CAnalysis.add_parsed_replay(replay_dict)
+            return replay_dict
         else:
             logger.error('No output from replay analysis')
     except Exception:
         logger.error(f'Failed to analyse replay: {file}\n{traceback.format_exc()}')
         return 'Error'
-        
+
 
 async def manager(websocket, path):
     """ Manages websocket connection for each client """

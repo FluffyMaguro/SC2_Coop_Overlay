@@ -189,7 +189,7 @@ class UI_TabWidget(object):
 
         # Create button
         self.BT_NewUpdate = QtWidgets.QPushButton(self.TAB_Main)
-        self.BT_NewUpdate.setGeometry(QtCore.QRect(190, 400, 157, 40))
+        self.BT_NewUpdate.setGeometry(QtCore.QRect(351, 400, 157, 40))
         self.BT_NewUpdate.setText('Download update')
         self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4; color: black')
         self.BT_NewUpdate.clicked.connect(self.start_download)
