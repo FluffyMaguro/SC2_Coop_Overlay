@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.34/SC2CoopOverlay.2.34.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.35/SC2CoopOverlay.2.35.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -100,6 +100,14 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 
 
 # Changelog
+
+* 2.35 version
+
+      - Fast expand hints for certain maps and commanders
+      - Manual parsing of selected replay files
+      - Unlocked prestiges shown instead of tried prestiges
+      - Enemy scarabs not counting to player kills
+      - Minor tweaks and fixes
 
 * 2.34 version
 

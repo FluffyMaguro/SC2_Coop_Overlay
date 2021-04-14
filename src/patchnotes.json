@@ -103,5 +103,12 @@
     "Weekly mutation can be filtered in the game tab by using 'weekly' or 'mutation' keywords",
     "ESO is the default fallback for Mengsk when there is no killing unit",
     "Small tweaks and fixes"
+  ],
+  "235": [
+    "Fast expand hints for certain maps and commanders",
+    "Manual parsing of selected replay file",
+    "Unlocked prestiges shown instead of tried prestiges",
+    "Enemy scarabs not counting to player kills",
+    "Minor tweaks and fixes"
   ]
 }
