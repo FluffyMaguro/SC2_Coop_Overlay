@@ -313,7 +313,7 @@ def calculate_prestige_estimate(data: dict, commander: str, handle: str, region:
         if gamedata[idx][2] > estimate_prestige:
             estimate_prestige = gamedata[idx][2]
 
-    return estimate_prestige
+    return min(estimate_prestige, 3)
 
 
 def calculate_unlocked_prestiges(ReplayData: list, main_handles: set) -> dict:
