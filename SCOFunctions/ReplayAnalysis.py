@@ -754,6 +754,7 @@ def analyse_replay(filepath, main_player_handles=None):
                    ('Cradle of Death' in replay['map_name'] and 'LogisticsHeadquarters' == _killed_unit_type and _losing_player == 3) or \
                    ('Part and Parcel' in replay['map_name'] and _killed_unit_type in {'Caboose','TarsonisEngine'}
                         and not round(event['_gameloop']/16 - START_TIME,0) in bonus_timings
+                        and len(bonus_timings) < 2
                         and _losing_player == 8
                         and not (event['m_x'] == 169
                         and event['m_y'] == 99)
@@ -772,9 +773,9 @@ def analyse_replay(filepath, main_player_handles=None):
                     else:
                         bonus_timings.append(round(event['_gameloop'] / 16 - START_TIME, 0))
 
-                    logger.debug(
-                        f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
-                    )
+                    # logger.debug(
+                    #     f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
+                    # )
 
                 # Don't include salvage and spawns
                 if (_killed_unit_type in salvage_units and _losing_player
