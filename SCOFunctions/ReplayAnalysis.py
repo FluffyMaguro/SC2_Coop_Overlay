@@ -25,6 +25,7 @@ revival_types = {
     'ZeratulCoopReviveBeacon': 'ZeratulCoop'
 }
 icon_units = {'MULE', 'Omega Worm', 'Infested Bunker', 'Mecha Infestor', 'Unbound Fanatic'}
+dont_count_morphs = {'SCVMengsk', 'TrooperMengsk'} # Don't count as unit created for these when the unit switches type
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {
     "Stetmann's Top Bar", "Zeratul's Top Bar", "Vorazun's Top Bar", "Fenix's Top Bar", "Zagara's Top Bar", "Tychus' Top Bar", "Swann's Top Bar",
@@ -497,8 +498,10 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Don't add into created units if it's just a morph
                 # Don't count wreckages morhping back
                 # Don't count certain unit spawns (Murvar, Glevig, Broodlings from Broodlords)
+                # Don't count mengsk trooper and labourer as new unit created when they morph
                 if (UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo
-                        and not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings)):
+                        and not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings)
+                        and not _unit_type in dont_count_morphs):
 
                     # Increase unit type created for controlling player
                     if main_player == _control_pid:
