@@ -275,7 +275,9 @@ def check_replays():
                                     out.update(session_games)
                                 if SM.settings.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
                                     out.update(RNG_COMMANDER)
-                                if CAnalysis is not None:
+
+                                out['fastest'] = False
+                                if CAnalysis is not None and not '[MM]' in file and replay_dict['parser']['isBlizzard']:
                                     out['fastest'] = CAnalysis.check_for_record(replay_dict)
 
                                 sendEvent(out)
