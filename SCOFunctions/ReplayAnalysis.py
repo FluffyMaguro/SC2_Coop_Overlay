@@ -836,6 +836,8 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['mainMasteries'] = replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0))
     replay_report_dict['mainkills'] = killcounts[main_player]
     replay_report_dict['mainPrestige'] = PrestigeTalents[main_player]
+    if replay_report_dict['mainPrestige'] is None:
+        replay_report_dict['mainPrestige'] = replay['players'][main_player].get('prestige_name', '')
 
     # Ally player
     replay_report_dict['allyCommander'] = replay['players'][ally_player].get('commander', '')
@@ -843,6 +845,8 @@ def analyse_replay(filepath, main_player_handles=None):
     replay_report_dict['allyMasteries'] = replay['players'][ally_player].get('masteries', (0, 0, 0, 0, 0, 0))
     replay_report_dict['allykills'] = killcounts[ally_player]
     replay_report_dict['allyPrestige'] = PrestigeTalents[ally_player]
+    if replay_report_dict['allyPrestige'] is None:
+        replay_report_dict['allyPrestige'] = replay['players'][ally_player].get('prestige_name', '')
 
     # Fallback
     if replay_report_dict['mainCommander'] == '':

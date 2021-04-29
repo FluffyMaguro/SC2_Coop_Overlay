@@ -72,7 +72,7 @@ def s2_parse_replay(file,
 
     # Exit straight away if onlyBlizzard enforced
     if onlyBlizzard and '[MM]' in file:
-        return None
+        return
 
     # Open archive
     archive = mpyq.MPQArchive(file)
@@ -95,7 +95,7 @@ def s2_parse_replay(file,
             protocol = versions.latest()
             used_build = protocol_build().split('.')[-2]
         else:
-            return None
+            return
 
     # Get player info
     player_info = archive.read_file('replay.details')
@@ -103,16 +103,15 @@ def s2_parse_replay(file,
 
     # Exit if onlyBlizzard maps enforced
     if onlyBlizzard and not player_info['m_isBlizzardMap']:
-        return None
+        return
 
     # Check for older replays
     if 'm_disableRecoverGame' not in player_info:
-        logger.error(f"Old replay: {file}")
-        return None
+        return
 
     # Exit if game can be recovered
     if withoutRecoverEnabled and not player_info['m_disableRecoverGame']:
-        return None
+        return
 
     # Get detailed info
     detailed_info = archive.read_file('replay.initData')
@@ -208,7 +207,7 @@ def s2_parse_replay(file,
 
     # Exit if onlyBlizzard maps enforced
     if onlyBlizzard and not commander_found:
-        return None
+        return
 
     # Player names
     for idx, player in enumerate(detailed_info['m_syncLobbyState']['m_userInitialData']):

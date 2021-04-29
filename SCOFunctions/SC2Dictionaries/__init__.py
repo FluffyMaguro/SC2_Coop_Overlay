@@ -26,7 +26,7 @@ prestige_upgrades = {
     'Abathur': {
         'CommanderPrestigeAbathurBiomass': 'Essence Hoarder',
         'CommanderPrestigeAbathurDeepTunnel': 'Tunneling Horror',
-        'CommanderPrestigeAbathurUltimateEvo': 'The Limitless'
+        'CommanderPrestigeAbathurUltEvo': 'The Limitless'
     },
     'Alarak': {
         'CommanderPrestigeAlarakMech': 'Artificer of Souls',

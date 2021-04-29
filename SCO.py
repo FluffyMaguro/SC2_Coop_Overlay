@@ -29,7 +29,7 @@ import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MassReplayAnalysis as MR
 import SCOFunctions.Tabs as Tabs
 from SCOFunctions.MChatWidget import ChatWidget
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import logclass, catch_exceptions
 from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.FastExpand import FastExpandSelector
@@ -828,6 +828,7 @@ class UI_TabWidget(object):
         QtCore.QTimer.singleShot(time, loop.quit)
         loop.exec_()
 
+    @catch_exceptions(logger)
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
 
