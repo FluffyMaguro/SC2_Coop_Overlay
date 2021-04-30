@@ -80,7 +80,7 @@ class UI_TabWidget(object):
         self.TAB_Randomizer = Tabs.RngTab(self)
         self.TAB_TwitchBot = Tabs.TwitchTab(self)
         self.TAB_Resources = Tabs.ResourceTab(self)
-        self.TAB_Links = Tabs.LinkTab()
+        self.TAB_Links = Tabs.LinkTab(self)
 
         # Add tabs to the widget
         TabWidget.addTab(self.TAB_Main, "Settings")

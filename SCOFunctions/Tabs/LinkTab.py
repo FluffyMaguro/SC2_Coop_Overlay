@@ -3,8 +3,16 @@ from SCOFunctions.MFilePath import truePath, innerPath
 
 
 class LinkTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+        self.p = parent
+
+        # Reset keyboard threads
+        self.bt_reset_keyboard = QtWidgets.QPushButton(self)
+        self.bt_reset_keyboard.setGeometry(QtCore.QRect(830, 15, 125, 25))
+        self.bt_reset_keyboard.setText('Reset keyboard')
+        self.bt_reset_keyboard.setToolTip('Resets keyboard threads.\nThis might fix issues if hotkeys are not reacting.')
+        self.bt_reset_keyboard.clicked.connect(self.p.reset_keyboard_thread)
 
         # Links
         self.fr_links = QtWidgets.QFrame(self)

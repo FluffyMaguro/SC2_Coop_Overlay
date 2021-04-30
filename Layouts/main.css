@@ -19,16 +19,16 @@ body {
     right: 0px;
     opacity: 0;
     transition: opacity 2s;
-    -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.8), rgba(0,0,0,0.8), rgba(0,0,0,0.8))
+    -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8))
 }
 
 #ibgdiv {
-   position: absolute;
-   display: none;
-   width: 100%;
-   height: calc(100% - 4.5vh - 3vh);
-   background-color: black;
-   box-shadow: 3vh 3vh 3vh black;
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: calc(100% - 4.5vh - 3vh);
+    background-color: black;
+    box-shadow: 3vh 3vh 3vh black;
 }
 
 #stats {
@@ -51,14 +51,14 @@ body {
 #mutators img {
     margin-right: 0.2vh;
     height: 100%;
-    outline: 0.2vh solid rgba(0,0,0,.5);
+    outline: 0.2vh solid rgba(0, 0, 0, .5);
     outline-offset: -0.2vh
 }
 
 #resultsp {
-    font-size:2.5vh;
+    font-size: 2.5vh;
     position: relative;
-    top: 1vh;
+    top: 0.7vh;
     color: #B8B8B8;
 }
 
@@ -68,15 +68,14 @@ body {
 
 #nodata {
     color: red;
-    font-size:3vh;
+    font-size: 3vh;
     position: absolute;
     top: 20vh;
     right: 15vh;
     font-weight: bold
 }
 
-#name1,
-#CMname1 {
+#name1, #CMname1 {
     font-size: 2.5vh;
     text-shadow: 0.1vh 0.1vh 0.1vh black;
     font-weight: bold;
@@ -84,8 +83,7 @@ body {
     z-index: 100;
 }
 
-#name2,
-#CMname2 {
+#name2, #CMname2 {
     font-size: 2.5vh;
     text-shadow: 0.1vh 0.1vh 0.1vh black;
     font-weight: bold;
@@ -123,7 +121,7 @@ body {
 }
 
 #percent1 {
-   z-index: 1;
+    z-index: 1;
 }
 
 #killbar2 {
@@ -213,14 +211,13 @@ body {
     height: 0.3vh;
     opacity: .7;
     color: #FFE670;
-    font-size: 1.5vh
+    font-size: 1.3vh
 }
 
 .commstats {
     margin-top: 4.5vh;
     color: white;
-    width: 31.2vh
-    margin-right: 1.04vh;
+    width: 31.2vh margin-right: 1.04vh;
     right: 0px;
 }
 
@@ -253,41 +250,14 @@ body {
     opacity: 0.4;
 }
 
-.units {
-    font-size: 1.5vh;
-    text-shadow: 0.1vh 0.1vh 0.1vh black;
-    margin-top: -1.0vh;
-    padding: 0.94vh;
-    padding-left: 0px;
-}
-
-.unitkills {
-    position: absolute;
-    left: 22vh;
-    opacity: 0.9;
-}
-
-.unitcreated {
-    color: #2FFF00;
-    position: absolute;
-    right: 6vh;
-    opacity: 0.6
-}
-
 #CMunits3 {
     margin-top: -2vh
-}
-
-.unitdied {
-    position: absolute;
-    right: 0px;
-    color: #FF0000;
-    opacity: 0.9
 }
 
 .killpadding {
     margin-left: 0.9vh;
 }
+
 .nokillpadding {
     margin-left: -0.9vh;
 }
@@ -349,32 +319,32 @@ body {
     position: absolute;
     bottom: 7vh;
     right: 2vh;
-    width: 50vh;   
-    font-size: 1.5vh;  
-    text-align: center; 
+    width: 50vh;
+    font-size: 1.5vh;
+    text-align: center;
     color: white;
 }
 
 #rng {
-    font-size: 1.6vh;      
+    font-size: 1.6vh;
     height: 2vh;
     color: white;
     opacity: 0;
     transition: opacity 1s;
-}   
+}
 
 #session {
     height: 2vh;
     color: white;
     opacity: 0;
     transition: opacity 1s;
-}   
+}
 
 #loader {
     height: 2vh;
     opacity: 0;
     transition: opacity 1s;
-} 
+}
 
 #update {
     margin-top: 0.1vh;
@@ -427,7 +397,7 @@ body {
     right: -60vh;
     width: 100vh;
     height: 8vh;
-    text-align: right;    
+    text-align: right;
     transition: all 1.5s;
     color: white;
     font-size: 1.7vh;
@@ -440,11 +410,11 @@ body {
     color: #F4F489;
 }
 
-#killbar > div > img {
-    position: absolute;    
-    top: 0vh;  
+#killbar>div>img {
+    position: absolute;
+    top: 0vh;
     opacity: .5;
-    height: 100%;                            
+    height: 100%;
 }
 
 #killbar1img {
@@ -455,4 +425,53 @@ body {
     right: 0vh;
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
+}
+
+.unitkillbg {
+    height: 1.5vh;
+    position: absolute;
+    margin-top: 0.09vh;
+    margin-left: -0.13vh;
+    text-align: right;
+    opacity: 0.5;
+}
+
+.unitline {
+    position: relative;
+}
+
+.units {
+    font-size: 1.5vh;
+    text-shadow: 0.1vh 0.1vh 0.1vh black;
+    margin-top: -1.0vh;
+    padding: 0.94vh;
+    padding-left: 0px;
+}
+
+.unitkills {
+    position: absolute;
+    left: 22vh;
+    opacity: 0.9;
+}
+
+.unitcreated {
+    color: #2FFF00;
+    position: absolute;
+    right: 7vh;
+    opacity: 0.6
+}
+
+.unitcreated.header {
+    right: 8vh;
+}
+
+.unitdied {
+    color: #FF0000;
+    position: absolute;
+    right: -1vh;
+    opacity: 0.9
+}
+
+.unitdied.header {
+    right: -0.02vh;
 }
