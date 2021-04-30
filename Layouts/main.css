@@ -14,7 +14,7 @@ body {
     position: absolute;
     display: none;
     height: 100%;
-    width: 65vh;
+    width: 100vh;
     top: 0px;
     right: 0px;
     opacity: 0;
@@ -36,7 +36,7 @@ body {
     position: absolute;
     top: 4vh;
     right: -50vh;
-    width: 50vh;
+    width: 48vh;
     transition: right 1.5s, opacity 1s;
 }
 
@@ -433,7 +433,7 @@ body {
     margin-top: 0.09vh;
     margin-left: -0.13vh;
     text-align: right;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .unitline {
@@ -474,4 +474,13 @@ body {
 
 .unitdied.header {
     right: -0.02vh;
+}
+
+#charts {
+    position: absolute;
+    width: 38vh;
+    top: 4.2vh;
+    right: 50vh;
+    opacity: 0.0;
+    transition: opacity 2s;
 }

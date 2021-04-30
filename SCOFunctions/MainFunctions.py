@@ -51,7 +51,7 @@ def update_init_message():
     initMessage['duration'] = SM.settings['duration']
 
 
-def sendEvent(event):
+def sendEvent(event, raw=False):
     """ Send message to the overlay """
     global globalOverlayMessagesSent
 
@@ -64,6 +64,9 @@ def sendEvent(event):
     # Send message directly thorugh javascript for the primary overlay.
     if WEBPAGE == None:
         return
+    
+    elif raw:
+        WEBPAGE.runJavaScript(event)
 
     elif event.get('replaydata') is not None:
         data = json.dumps(event)

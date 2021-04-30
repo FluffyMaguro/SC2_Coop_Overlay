@@ -120,6 +120,11 @@ class UI_TabWidget(object):
             font.setPointSize(font.pointSize() * SM.settings['font_scale'])
         app.setFont(font)
 
+        # Charts
+        if SM.settings['show_charts']:
+            SM.settings['width'] = 0.99
+        self.show_charts(SM.settings['show_charts'])
+        
         # Dark theme
         if SM.settings['dark_theme']:
             set_dark_theme(self, app, TabWidget, APPVERSION)
@@ -298,6 +303,7 @@ class UI_TabWidget(object):
         self.TAB_Main.CH_EnableLogging.setChecked(SM.settings['enable_logging'])
         self.TAB_Main.CH_ShowPlayerWinrates.setChecked(SM.settings['show_player_winrates'])
         self.TAB_Main.CH_ForceHideOverlay.setChecked(SM.settings['force_hide_overlay'])
+        self.TAB_Main.CH_ShowCharts.setChecked(SM.settings['show_charts'])
         self.TAB_Main.CH_DarkTheme.setChecked(SM.settings['dark_theme'])
         self.TAB_Main.CH_FastExpand.setChecked(SM.settings['fast_expand'])
         self.TAB_Main.CH_MinimizeToTray.setChecked(SM.settings['minimize_to_tray'])
@@ -355,6 +361,7 @@ class UI_TabWidget(object):
         SM.settings['enable_logging'] = self.TAB_Main.CH_EnableLogging.isChecked()
         SM.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
         SM.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
+        SM.settings['show_charts'] = self.TAB_Main.CH_ShowCharts.isChecked()
         SM.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
         SM.settings['fast_expand'] = self.TAB_Main.CH_FastExpand.isChecked()
         SM.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
@@ -376,6 +383,9 @@ class UI_TabWidget(object):
 
         SM.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
         SM.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
+
+        if SM.settings['show_charts']:
+            SM.settings['width'] = 0.99
 
         SM.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
@@ -753,6 +763,13 @@ class UI_TabWidget(object):
             self.thread_twitch_bot = threading.Thread(target=self.TwitchBot.run_bot, daemon=True)
             self.thread_twitch_bot.start()
             self.TAB_TwitchBot.bt_twitch.setText('Stop the bot')
+
+    def show_charts(self, show):
+        """ Show/hide charts. Update BG width."""
+        if show:
+            MF.sendEvent('showhide_charts(true)', raw=True)
+        else:
+            MF.sendEvent('showhide_charts(false)', raw=True)
 
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """

@@ -33,6 +33,7 @@ var showingWinrateStats = false;
 var last_shown_file = '';
 var do_not_use_websocket = false;
 var minimum_kills = 1; // minimum number of kills for a unit to be shown
+var show_charts = true;
 
 //main functionality
 setColors(null, null, null, null);
@@ -57,6 +58,7 @@ function connect_to_socket() {
             return
         };
         let data = JSON.parse(event.data);
+        if (data == null) return;
         console.log('New event');
         if (data['replaydata'] != null) {
             postGameStatsTimed(data)
@@ -116,6 +118,7 @@ function playerWinrate(dat) {
     let element = document.getElementById('playerstats');
     let text = '';
     showingWinrateStats = true;
+    if (dat == null) return;
 
     for (let [key, value] of Object.entries(dat['data'])) {
         // no data ([None])
@@ -180,6 +183,9 @@ function setColors(P1color, P2color, P3color, MasteryColor) {
     if (MasteryColor != null) color = MasteryColor;
     document.getElementById('CMmastery1').style.color = color;
     document.getElementById('CMmastery2').style.color = color;
+
+    //Charts
+    update_charts_colors(gP1Color, gP2Color)
 }
 
 
@@ -247,8 +253,11 @@ function postGameStatsTimed(data) {
     }
 }
 
-function format_length(seconds) {
-    let gseconds = Math.round(seconds * 1.4);
+function format_length(seconds, multiply = true) {
+    let gseconds = 0;
+    if (multiply) gseconds = Math.round(seconds * 1.4);
+    else gseconds = Math.round(seconds);
+
     let sec = gseconds % 60;
     let min = ((gseconds - sec) / 60) % 60;
     let hr = (gseconds - sec - min * 60) / 3600;
@@ -281,6 +290,11 @@ function postGameStats(data, showing = false) {
     fill('CMtalent1', data['mainPrestige'])
     fill('CMtalent2', data['allyPrestige'])
     fill('comp', data['comp']);
+
+    // update charts
+    if (data['player_stats'] != null) {
+        plot_charts(data['player_stats'])
+    }
 
     // save file name
     last_shown_file = data['file'];
@@ -417,6 +431,20 @@ function showhide() {
 }
 
 
+function showhide_charts(show) {
+    // updates visibility and future showing
+    if (show) {
+        if (toBeShown) document.getElementById('charts').style.opacity = '1';
+        document.getElementById('bgdiv').style.width = '100vh';
+        show_charts = true
+    } else {
+        document.getElementById('charts').style.opacity = '0';
+        document.getElementById('bgdiv').style.width = '65vh';
+        show_charts = false
+    }
+}
+
+
 function hidestats() {
     toBeShown = false;
     document.getElementById('stats').style.right = '-50.5vh';
@@ -424,6 +452,7 @@ function hidestats() {
     document.getElementById('loader').style.opacity = '0';
     document.getElementById('session').style.opacity = '0';
     document.getElementById('rng').style.opacity = '0';
+    document.getElementById('charts').style.opacity = '0';
     setTimeout(function () {
         document.getElementById('session').innerHTML = '';
         document.getElementById('rng').innerHTML = '';
@@ -435,10 +464,10 @@ function hidestats() {
 
 function showstats() {
     toBeShown = true;
-    document.getElementById('stats').style.right = '2vh';
+    document.getElementById('stats').style.right = '1vh';
     document.getElementById('bgdiv').style.opacity = '1';
+    if (show_charts) document.getElementById('charts').style.opacity = '1';
     setTimeout(function () { document.getElementById('session').style.opacity = '0.6'; document.getElementById('rng').style.opacity = '1' }, 1000)
-
 }
 
 function fill(el, dat) {

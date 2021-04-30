@@ -69,14 +69,21 @@ class MainTab(QtWidgets.QWidget):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self)
-        self.SP_Monitor.setGeometry(QtCore.QRect(250, 47, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(370, 20, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self)
-        self.LA_Monitor.setGeometry(QtCore.QRect(300, 47, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(420, 20, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
+
+        # Charts
+        self.CH_ShowCharts = QtWidgets.QCheckBox(self)
+        self.CH_ShowCharts.setGeometry(QtCore.QRect(250, 3 * ch_distance, 300, 17))
+        self.CH_ShowCharts.setText("Show charts")
+        self.CH_ShowCharts.setToolTip("Show charts on overlay")
+        self.CH_ShowCharts.clicked.connect(self.p.show_charts)
 
         # Dark theme
         self.CH_DarkTheme = QtWidgets.QCheckBox(self)

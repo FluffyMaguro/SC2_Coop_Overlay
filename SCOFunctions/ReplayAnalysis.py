@@ -25,7 +25,7 @@ revival_types = {
     'ZeratulCoopReviveBeacon': 'ZeratulCoop'
 }
 icon_units = {'MULE', 'Omega Worm', 'Infested Bunker', 'Mecha Infestor', 'Unbound Fanatic'}
-dont_count_morphs = {'SCVMengsk', 'TrooperMengsk'} # Don't count as unit created for these when the unit switches type
+dont_count_morphs = {'SCVMengsk', 'TrooperMengsk'}  # Don't count as unit created for these when the unit switches type
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {
     "Stetmann's Top Bar", "Zeratul's Top Bar", "Vorazun's Top Bar", "Fenix's Top Bar", "Zagara's Top Bar", "Tychus' Top Bar", "Swann's Top Bar",
@@ -345,6 +345,7 @@ def analyse_replay(filepath, main_player_handles=None):
     glevig_spawns = set()
     broodlord_broodlings = set()
     user_leave_times = dict()
+    player_stats = {1: {'killed': [], 'army': [], 'mining': []}, 2: {'killed': [], 'army': [], 'mining': []}}
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
@@ -359,6 +360,18 @@ def analyse_replay(filepath, main_player_handles=None):
         # Skip events after the game ended
         if event['_gameloop'] / 16 > END_TIME:
             continue
+
+        # Save player stats for graphs
+        if event['_event'] == 'NNet.Replay.Tracker.SPlayerStatsEvent':
+            player = event['m_playerId']
+            player = 1 if player == main_player else 2
+            player_stats[player]['killed'].append(killcounts[player])
+
+            player_stats[player]['army'].append(
+                sum((event['m_stats']['m_scoreValueMineralsUsedActiveForces'], event['m_stats']['m_scoreValueVespeneUsedActiveForces'])))
+
+            player_stats[player]['mining'].append(
+                sum((event['m_stats']['m_scoreValueMineralsCollectionRate'], event['m_stats']['m_scoreValueVespeneCollectionRate'])))
 
         if event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1, 2]:
             _upg_name = event['m_upgradeTypeName'].decode()
@@ -815,6 +828,9 @@ def analyse_replay(filepath, main_player_handles=None):
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
+    player_stats[1]['name'] = replay_report_dict['main']
+    player_stats[2]['name'] = replay_report_dict['ally']
+    replay_report_dict['player_stats'] = player_stats
     replay_report_dict['bonus'] = tuple(time.strftime('%M:%S', time.gmtime(i)) for i in bonus_timings)
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length'] / 1.4

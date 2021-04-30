@@ -691,6 +691,9 @@ class mass_replay_analysis:
                     new['allyUnits'] = r.players[ally]['units']
                     new['allykills'] = r.players[ally]['kills']
 
+                    #Charts
+                    new['player_stats'] = r.player_stats
+
                     # Difficulty
                     new['B+'] = r.brutal_plus
                     diff_1 = new['difficulty'][0]
@@ -813,6 +816,7 @@ class mass_replay_analysis:
         parsed_data['full_analysis'] = True
         parsed_data['hash'] = parsed_data.get('hash', get_hash(full_data['file']))
         parsed_data['amon_units'] = full_data['amon_units']
+        parsed_data['player_stats'] = full_data['player_stats']
         self.remove_useless_keys(parsed_data)
         parsed_data['players'] = tuple(parsed_data['players'][:3])
         main = full_data['positions']['main']
@@ -1019,7 +1023,7 @@ class mass_replay_analysis:
         winrate_data = dict()
         for replay in self.ReplayData:
             if replay.full_analysis:
-                total_kills = replay.players[1]['kills'] + replay.players[2]['kills']
+                total_kills = replay.players[1].get('kills', 0) + replay.players[2].get('kills', 0)
             for p in (1, 2):
                 player = replay.players[p]['name']
                 if not player in winrate_data:

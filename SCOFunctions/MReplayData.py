@@ -22,6 +22,7 @@ class replay_data(NamedTuple):
     region: str
     result: str
     
+    player_stats: list = None
     amon_units: dict = None
     bonus: tuple = None
     comp: str = None

@@ -3,6 +3,7 @@
 
 <head>
     <title></title>
+    <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="stylesheet" type="text/css" href="custom.css">
 </head>
@@ -10,6 +11,11 @@
 <body>
     <div id="bgdiv">
         <div id="ibgdiv"></div>
+    </div>
+    <div id="charts">
+        <canvas id="armyChart"></canvas>
+        <canvas id="killedChart"></canvas>
+        <canvas id="miningChart"></canvas>
     </div>
     <div id="stats">
         <div id="topstats">
@@ -109,6 +115,8 @@
     <div id="playerstats"></div>
 
 </body>
+<script src="chart.min.js"></script>
+<script src="charts.js"></script>
 <script src="main.js"></script>
 <script src="custom.js"></script>
 
