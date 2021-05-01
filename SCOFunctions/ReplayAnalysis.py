@@ -363,9 +363,9 @@ def analyse_replay(filepath, main_player_handles=None):
 
         # Save player stats for graphs
         if event['_event'] == 'NNet.Replay.Tracker.SPlayerStatsEvent':
-            player = event['m_playerId']
-            player = 1 if player == main_player else 2
-            player_stats[player]['killed'].append(killcounts[player])
+            orig_player = event['m_playerId']
+            player = 1 if orig_player == main_player else 2
+            player_stats[player]['killed'].append(killcounts[orig_player])
 
             player_stats[player]['army'].append(
                 sum((event['m_stats']['m_scoreValueMineralsUsedActiveForces'], event['m_stats']['m_scoreValueVespeneUsedActiveForces'])))
