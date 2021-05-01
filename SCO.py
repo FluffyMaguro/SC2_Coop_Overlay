@@ -656,9 +656,6 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_init_message()
 
-        # Charts
-        self.show_charts(SM.settings['show_charts'])
-
         # Init randomization
         self.TAB_Randomizer.randomize_commander()
 

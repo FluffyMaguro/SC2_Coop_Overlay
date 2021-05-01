@@ -351,13 +351,17 @@ def analyse_replay(filepath, main_player_handles=None):
     mainStatsCounter = StatsCounter(masteries=replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0)),
                                     unit_dict=unit_type_dict_main,
                                     commander_level=replay['players'][main_player].get('commander_level', 0),
-                                    commnader=replay['players'][main_player].get('commander', None),
+                                    commander=replay['players'][main_player].get('commander', None),
                                     drone_counter=VespeneDroneIdentifier)
     allyStatsCounter = StatsCounter(masteries=replay['players'][ally_player].get('masteries', (0, 0, 0, 0, 0, 0)),
                                     unit_dict=unit_type_dict_ally,
                                     commander_level=replay['players'][ally_player].get('commander_level', 0),
-                                    commnader=replay['players'][ally_player].get('commander', ''),
+                                    commander=replay['players'][ally_player].get('commander', ''),
                                     drone_counter=VespeneDroneIdentifier)
+
+    if '[MM]' in filepath:
+        mainStatsCounter.enable_updates = True
+        allyStatsCounter.enable_updates = True
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
