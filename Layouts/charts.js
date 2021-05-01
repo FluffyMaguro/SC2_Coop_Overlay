@@ -1,7 +1,10 @@
 const support_color = "#aaa"; // color for axis labels and ticks
-var armyChart = null;
-var killedChart = null;
-var miningChart = null;
+
+var CC = { // All charts
+  'army': null,
+  'killed': null,
+  'mining': null
+}
 
 
 function generate_config(replay_data, x_data, type) {
@@ -96,6 +99,7 @@ function generate_config(replay_data, x_data, type) {
 }
 
 function update_chart(chart, replay_data, x_data, type) {
+  // Updates an existing chart with new data
   chart.data.datasets[0].data = replay_data[1][type];
   chart.data.datasets[1].data = replay_data[2][type];
   chart.data.datasets[0].label = replay_data[1]['name'];
@@ -106,22 +110,15 @@ function update_chart(chart, replay_data, x_data, type) {
 
 
 function plot_chart(replay_data, x_data, type) {
-  let config = generate_config(replay_data, x_data, type);
-  let chart_name = type + 'Chart';
-  let ctx = document.getElementById(chart_name).getContext('2d');
-
-  // Either create a new chart or update it with new config
-  if (type == 'army') {
-    if (armyChart == null) armyChart = new Chart(ctx, config);
-    else update_chart(armyChart, replay_data, x_data, type)
-  }
-  if (type == 'killed') {
-    if (miningChart == null) miningChart = new Chart(ctx, config);
-    else update_chart(miningChart, replay_data, x_data, type)
-  }
-  if (type == 'mining') {
-    if (killedChart == null) killedChart = new Chart(ctx, config);
-    else update_chart(killedChart, replay_data, x_data, type)
+  if (CC[type] == null) {
+    // Either create new 
+    let config = generate_config(replay_data, x_data, type);
+    let chart_name = type + 'Chart';
+    let ctx = document.getElementById(chart_name).getContext('2d');
+    CC[type] = new Chart(ctx, config);
+  } else {
+    // Or update existing
+    update_chart(CC[type], replay_data, x_data, type)
   }
 }
 
@@ -132,23 +129,19 @@ function plot_charts(replay_data) {
   for (let i = 0; i < replay_data[1]['army'].length; i++) {
     x_data.push(format_length(i * 10, multiply = false));
   }
-  // Plot
-  plot_chart(replay_data, x_data, 'army');
-  plot_chart(replay_data, x_data, 'killed');
-  plot_chart(replay_data, x_data, 'mining');
+  // Plot all charts (or update)
+  for (let key of Object.keys(CC)) {
+    plot_chart(replay_data, x_data, key);
+  }
 }
 
 
 function update_charts_colors(p1color, p2color) {
   // Updates charts with new colors for player 1 and 2
-  if (armyChart == null) return;
-  armyChart.data.datasets[0].borderColor = p1color;
-  armyChart.data.datasets[1].borderColor = p2color;
-  armyChart.update()
-  miningChart.data.datasets[0].borderColor = p1color;
-  miningChart.data.datasets[1].borderColor = p2color;
-  miningChart.update()
-  killedChart.data.datasets[0].borderColor = p1color;
-  killedChart.data.datasets[1].borderColor = p2color;
-  killedChart.update()
+  if (CC.army == null) return;
+  for (let key of Object.keys(CC)) {
+    CC[key].data.datasets[0].borderColor = p1color;
+    CC[key].data.datasets[1].borderColor = p2color;
+    CC[key].update()
+  }
 }

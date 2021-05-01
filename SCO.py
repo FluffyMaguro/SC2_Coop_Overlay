@@ -122,9 +122,8 @@ class UI_TabWidget(object):
 
         # Charts
         if SM.settings['show_charts']:
-            SM.settings['width'] = 0.99
-        self.show_charts(SM.settings['show_charts'])
-        
+            SM.settings['width'] = 0.7
+
         # Dark theme
         if SM.settings['dark_theme']:
             set_dark_theme(self, app, TabWidget, APPVERSION)
@@ -385,7 +384,7 @@ class UI_TabWidget(object):
         SM.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
 
         if SM.settings['show_charts']:
-            SM.settings['width'] = 0.99
+            SM.settings['width'] = 0.7
 
         SM.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):
@@ -657,6 +656,9 @@ class UI_TabWidget(object):
         # Pass current settings
         MF.update_init_message()
 
+        # Charts
+        self.show_charts(SM.settings['show_charts'])
+
         # Init randomization
         self.TAB_Randomizer.randomize_commander()
 
@@ -766,6 +768,7 @@ class UI_TabWidget(object):
 
     def show_charts(self, show):
         """ Show/hide charts. Update BG width."""
+        SM.settings['show_charts'] = show
         if show:
             MF.sendEvent('showhide_charts(true)', raw=True)
         else:
@@ -955,7 +958,10 @@ class UI_TabWidget(object):
         try:
             p = QtGui.QImage(self.WebView.grab())
             height = p.height() * 1060 / 1200
-            width = p.height() * 650 / 1200
+            width = p.height() * 600 / 1200
+            if SM.settings['show_charts']:
+                width = p.height() * 1070 / 1200
+
             p = p.copy(int(p.width() - width), int(p.height() * 20 / 1200), int(width), int(height))
             p = p.convertToFormat(QtGui.QImage.Format_RGB888)
 

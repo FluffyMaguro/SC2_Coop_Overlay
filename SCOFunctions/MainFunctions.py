@@ -24,7 +24,7 @@ OverlayMessages = []  # Storage for all messages
 globalOverlayMessagesSent = 0  # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
 lock = threading.Lock()
 logger = logclass('MAIN', 'INFO')
-initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60}
+initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60, 'show_charts': True}
 ReplayPosition = 0
 AllReplays = dict()
 player_winrate_data = dict()
@@ -49,6 +49,7 @@ def update_init_message():
     """ Through this function the main script passes all its settings here """
     initMessage['colors'] = [SM.settings['color_player1'], SM.settings['color_player2'], SM.settings['color_amon'], SM.settings['color_mastery']]
     initMessage['duration'] = SM.settings['duration']
+    initMessage['show_charts'] = SM.settings['show_charts']
 
 
 def sendEvent(event, raw=False):
@@ -64,7 +65,7 @@ def sendEvent(event, raw=False):
     # Send message directly thorugh javascript for the primary overlay.
     if WEBPAGE == None:
         return
-    
+
     elif raw:
         WEBPAGE.runJavaScript(event)
 

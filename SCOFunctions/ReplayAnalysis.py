@@ -11,6 +11,7 @@ from pprint import pprint
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.S2Parser import s2_parse_replay
+from SCOFunctions.StatsCounter import StatsCounter, DroneIdentifier
 from SCOFunctions.SC2Dictionaries import UnitNameDict, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
 
 do_not_count_kills = {'FuelCellPickupUnit', 'ForceField', 'Scarab'}
@@ -345,7 +346,18 @@ def analyse_replay(filepath, main_player_handles=None):
     glevig_spawns = set()
     broodlord_broodlings = set()
     user_leave_times = dict()
-    player_stats = {1: {'killed': [], 'army': [], 'mining': []}, 2: {'killed': [], 'army': [], 'mining': []}}
+    VespeneDroneIdentifier = DroneIdentifier(replay['players'][main_player].get('commander', None),
+                                             replay['players'][ally_player].get('commander', None))
+    mainStatsCounter = StatsCounter(masteries=replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0)),
+                                    unit_dict=unit_type_dict_main,
+                                    commander_level=replay['players'][main_player].get('commander_level', 0),
+                                    commnader=replay['players'][main_player].get('commander', None),
+                                    drone_counter=VespeneDroneIdentifier)
+    allyStatsCounter = StatsCounter(masteries=replay['players'][ally_player].get('masteries', (0, 0, 0, 0, 0, 0)),
+                                    unit_dict=unit_type_dict_ally,
+                                    commander_level=replay['players'][ally_player].get('commander_level', 0),
+                                    commnader=replay['players'][ally_player].get('commander', ''),
+                                    drone_counter=VespeneDroneIdentifier)
 
     last_aoe_unit_killed = [0] * 17
     for player in range(1, 16):
@@ -361,17 +373,22 @@ def analyse_replay(filepath, main_player_handles=None):
         if event['_gameloop'] / 16 > END_TIME:
             continue
 
+        # Counting vespene drones
+        VespeneDroneIdentifier.event(event)
+
         # Save player stats for graphs
         if event['_event'] == 'NNet.Replay.Tracker.SPlayerStatsEvent':
-            orig_player = event['m_playerId']
-            player = 1 if orig_player == main_player else 2
-            player_stats[player]['killed'].append(killcounts[orig_player])
+            player = event['m_playerId']
 
-            player_stats[player]['army'].append(
-                sum((event['m_stats']['m_scoreValueMineralsUsedActiveForces'], event['m_stats']['m_scoreValueVespeneUsedActiveForces'])))
+            if player == main_player:
+                mainStatsCounter.add_stats(kills=killcounts[player],
+                                           collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
+                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])))
 
-            player_stats[player]['mining'].append(
-                sum((event['m_stats']['m_scoreValueMineralsCollectionRate'], event['m_stats']['m_scoreValueVespeneCollectionRate'])))
+            elif player == ally_player:
+                allyStatsCounter.add_stats(kills=killcounts[player],
+                                           collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
+                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])))
 
         if event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1, 2]:
             _upg_name = event['m_upgradeTypeName'].decode()
@@ -380,6 +397,11 @@ def analyse_replay(filepath, main_player_handles=None):
             # Commander fallback (used for arcade maps)
             if _upg_name in commander_upgrades:
                 commander_fallback[_upg_pid] = commander_upgrades[_upg_name]
+                VespeneDroneIdentifier.update_commanders(_upg_pid, commander_upgrades[_upg_name])
+                if _upg_pid == main_player:
+                    mainStatsCounter.update_commander(commander_upgrades[_upg_name])
+                elif _upg_pid == ally_player:
+                    allyStatsCounter.update_commander(commander_upgrades[_upg_name])
 
             # Mastery upgrade fallback (used for arcade maps)
             mas_commander, mas_index = upgrade_is_in_mastery_upgrades(_upg_name)
@@ -387,10 +409,20 @@ def analyse_replay(filepath, main_player_handles=None):
                 logger.debug(f'Player {_upg_pid} (com: {mas_commander}) got upgrade {_upg_name} (idx: {mas_index}) (count: {event["m_count"]})')
                 mastery_fallback[_upg_pid][mas_index] = event['m_count']
 
+                if _upg_pid == main_player:
+                    mainStatsCounter.update_mastery(mas_index, event['m_count'])
+                elif _upg_pid == ally_player:
+                    allyStatsCounter.update_mastery(mas_index, event['m_count'])
+
             # Prestige talents
             _prestige = prestige_talent_name(_upg_name)
             if _prestige is not None:
                 PrestigeTalents[_upg_pid] = _prestige
+
+                if _upg_pid == main_player:
+                    mainStatsCounter.update_prestige(_prestige)
+                elif _upg_pid == ally_player:
+                    allyStatsCounter.update_prestige(_prestige)
 
         if event['_event'] in ('NNet.Replay.Tracker.SUnitBornEvent', 'NNet.Replay.Tracker.SUnitInitEvent'):
             _unit_type = event['m_unitTypeName'].decode()
@@ -828,9 +860,10 @@ def analyse_replay(filepath, main_player_handles=None):
     # logger.info(f'Kill counts: {killcounts}')
 
     # Save more data to final dictionary
-    player_stats[1]['name'] = replay_report_dict['main']
-    player_stats[2]['name'] = replay_report_dict['ally']
-    replay_report_dict['player_stats'] = player_stats
+    replay_report_dict['player_stats'] = {
+        1: mainStatsCounter.get_stats(replay_report_dict['main']),
+        2: allyStatsCounter.get_stats(replay_report_dict['ally'])
+    }
     replay_report_dict['bonus'] = tuple(time.strftime('%M:%S', time.gmtime(i)) for i in bonus_timings)
     replay_report_dict['comp'] = get_enemy_comp(identified_waves)
     replay_report_dict['length'] = replay['accurate_length'] / 1.4

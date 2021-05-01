@@ -69,12 +69,12 @@ class MainTab(QtWidgets.QWidget):
 
         # Monitor
         self.SP_Monitor = QtWidgets.QSpinBox(self)
-        self.SP_Monitor.setGeometry(QtCore.QRect(370, 20, 42, 22))
+        self.SP_Monitor.setGeometry(QtCore.QRect(360, 20, 42, 22))
         self.SP_Monitor.setMinimum(1)
         self.SP_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         self.LA_Monitor = QtWidgets.QLabel(self)
-        self.LA_Monitor.setGeometry(QtCore.QRect(420, 20, 47, 20))
+        self.LA_Monitor.setGeometry(QtCore.QRect(410, 20, 47, 20))
         self.LA_Monitor.setText("Monitor")
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 

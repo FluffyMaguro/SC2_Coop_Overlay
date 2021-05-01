@@ -154,6 +154,7 @@ function playerWinrate(dat) {
 function initColorsDuration(data) {
     setColors(data['colors'][0], data['colors'][1], data['colors'][2], data['colors'][3]);
     DURATION = data['duration'];
+    show_charts = data['show_charts']
 }
 
 
