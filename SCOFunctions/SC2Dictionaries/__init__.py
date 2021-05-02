@@ -1580,7 +1580,8 @@ unit_base_costs = {
         'PerditionTurret': (75, 0),
         'PerditionTurretUnderground': (75, 0),
         'ScienceVessel': (100, 200),
-        'SiegeTank': (100, 200),
+        'SiegeTank': (150, 125),
+        'SiegeTankWreckage': (0, 0, 150, 0),
         'Thor': (300, 200),
         'ThorWreckageSwann': (0, 0, 300, 0),
         'Wraith': (150, 50)

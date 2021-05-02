@@ -120,6 +120,14 @@ class StatsCounter:
         elif old_unit == 'ThorWreckageSwann' and unit == 'Thor':
             self.army_value_offset += 200
 
+        # Siege Tank → wreckage
+        elif old_unit == 'SiegeTank' and unit == 'SiegeTankWreckage':
+            self.army_value_offset -= 125
+
+        # Wreckage → Siege Tank
+        elif old_unit == 'SiegeTankWreckage' and unit == 'SiegeTank':
+            self.army_value_offset += 125
+
     def upgrade_event(self, upgrade):
         """ Tracks upgrade events"""
         # Add army value for Tychus when gear is purchased
