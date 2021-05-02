@@ -541,6 +541,11 @@ def analyse_replay(filepath, main_player_handles=None):
             # Update unit_dict
             unit_dict[unitid(event)][0] = _unit_type
 
+            if main_player == _control_pid:
+                mainStatsCounter.unit_change_event(_unit_type, _old_unit_type)
+            elif ally_player == _control_pid:
+                allyStatsCounter.unit_change_event(_unit_type, _old_unit_type)
+
             # Add to created units
             if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
 
@@ -832,6 +837,12 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Don't include salvage and spawns
                 if (_killed_unit_type in salvage_units and _losing_player
                         == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
+
+                    if _losing_player == main_player:
+                        mainStatsCounter.salvaged_units.append(_killed_unit_type)
+                    elif _losing_player == ally_player:
+                        allyStatsCounter.salvaged_units.append(_killed_unit_type)
+
                     continue
 
                 # Add losses
