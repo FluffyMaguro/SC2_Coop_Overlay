@@ -233,6 +233,7 @@ function mutatorInfo(data) {
     }
 }
 
+
 function postGameStatsTimed(data) {
     //This is a wrapper for postGameStats
     //The goal is to nicely update the data if it's already showing
@@ -248,11 +249,11 @@ function postGameStatsTimed(data) {
             }, 300);
             setTimeout(postGameStats, 300, data, showing = true);
         }
-
     } else {
         postGameStats(data);
     }
 }
+
 
 function format_length(seconds, multiply = true) {
     let gseconds = 0;
@@ -275,6 +276,7 @@ function format_length(seconds, multiply = true) {
     return hr + min + sec
 }
 
+
 function fillCommander(el, commander, commander_level) {
     let addition = '';
     if (commander == null) return;
@@ -282,6 +284,7 @@ function fillCommander(el, commander, commander_level) {
     if (el == 'com1') fill(el, commander + ' ' + addition);
     else fill(el, addition + ' ' + commander)
 }
+
 
 function postGameStats(data, showing = false) {
     //initial change
@@ -335,7 +338,6 @@ function postGameStats(data, showing = false) {
     }
 
     fill('name1', data['main']);
-
     fill('map', data['map_name'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
     fill('name2', data['ally']);
     fillCommander('com1', data['mainCommander'], data['mainCommanderLevel'])
@@ -403,12 +405,12 @@ function postGameStats(data, showing = false) {
     fill('CMname1', data['main']);
     fillicons('CMicons1', data['mainIcons']);
     fillmasteries('CMmastery1', data['mainMasteries'], data['mainCommander']);
-    fillunits('CMunits1', data['mainUnits'], data['mainCommander'], gP1Color);
+    fillunits('CMunits1', data['mainUnits'], data['mainCommander'], gP1Color, totalkills);
 
     fill('CMname2', data['ally']);
     fillicons('CMicons2', data['allyIcons']);
     fillmasteries('CMmastery2', data['allyMasteries'], data['allyCommander']);
-    fillunits('CMunits2', data['allyUnits'], data['allyCommander'], gP2Color);
+    fillunits('CMunits2', data['allyUnits'], data['allyCommander'], gP2Color, totalkills);
 
     fill('CMname3', 'Amon');
     fillunits('CMunits3', data['amon_units'], null, 'red');
@@ -484,15 +486,11 @@ function fillmasteries(el, dat, commander) {
     let any_mastery = false;
     for (i = 0; i < dat.length; i++) {
         let spacer = '<span>';
-
         if (dat[i] < 10) spacer = '<span class="">&nbsp;&nbsp;';
-
         if (dat[i] == 0) spacer = '<span class="nomastery">&nbsp;&nbsp;'
         else any_mastery = true;
-
         text += spacer + dat[i] + ' ' + masteryNames[commander][i] + '<br></span>';
     }
-
     if (any_mastery) document.getElementById(el).style.display = 'block';
     else document.getElementById(el).style.display = 'none';
 
@@ -522,7 +520,7 @@ function fillicons(el, data) {
 }
 
 
-function fillunits(el, dat, commander, color) {
+function fillunits(el, dat, commander, color, total_kills = null) {
     let text = '<span class="unitkills">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kills</span><span class="unitcreated header">created</span><span class="unitdied header">lost</span><br>';
     let percent = 0;
     let spacer = '';
@@ -543,7 +541,9 @@ function fillunits(el, dat, commander, color) {
         else if (percent == 100) spacer = 'nokillpadding';
         if (value[2] >= minimum_kills) {
             idx += 1;
-            bg_width = 35 * percent / 100;
+            if (total_kills != null && total_kills > 0) bg_width = 50 * value[2] / total_kills;
+            else bg_width = 35 * percent / 100;
+
             text += '<div class="unitkillbg" style="width: ' + bg_width + 'vh; background-color: ' + color + '"></div><div class="unitline">' + key + ' <span class="unitkills ' + spacer + '">' + percent + '% | ' + value[2] + '</span>  <span class="unitcreated">' + value[0] + '</span>  <span class="unitdied">' + value[1] + '</span><div>'
         };
     }

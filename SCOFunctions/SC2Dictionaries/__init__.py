@@ -1479,6 +1479,7 @@ unit_base_costs = {
         'SentryPurifier': (65, 130),
         'ShieldBattery': (100, 0),
         'Observer': (25, 75),
+        'Carrier': (455, 325),
         'CarrierAiur': (455, 325),
         'ZealotPurifier': (130, 0)
     },

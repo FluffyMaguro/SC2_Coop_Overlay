@@ -1,3 +1,21 @@
+"""
+Few classes used for collection stats later used in graphs.
+Army value is an estimation based on the current number of units, and calculating based on commanders, masteries, prestiges.
+
+Few exceptions:
+- Tychus' gear upgrades are counted towards army value so it more reflects the investement
+- Static defenses are generally counted towards army
+- Detectors are counted
+- Normal upgrades and research are not counted
+- Mind-controlled units are not counted
+- Calldowns and heroes don't have resource cost and aren't counted
+
+Inaccuracies:
+- Units killed while morphing will not reduce the army value cost (could be fixed, but very messy since how different
+implementations are used in SC2. Sometimes coccons are killed at the end of transformation, and sometimes not.)
+
+"""
+
 from SCOFunctions.MLogging import logclass, catch_exceptions
 from SCOFunctions.SC2Dictionaries import unit_base_costs, royal_guards, horners_units, tychus_base_upgrades, tychus_ultimate_upgrades, outlaws
 
@@ -152,7 +170,7 @@ class StatsCounter:
             # Add the cost of all alive units
             total += self.calculate_total_unit_value(unit, self.unit_costs[unit])
 
-        # print(f"Total for units {total}\n")
+        logger.debug(f"Total for units {total}\n")
         # Add offset
         total += self.army_value_offset
 
@@ -194,12 +212,14 @@ class StatsCounter:
 
         # Calculate current value
         if len(cost) == 2:
-            # print(f"{unit_alive:3}/{unit_dead:3} {unit:10} →  {(unit_alive - unit_dead) * sum(cost)}")
-            return (unit_alive - unit_dead) * sum(cost)
+            result = (unit_alive - unit_dead) * sum(cost)
+            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} → {result}")
+            return result
         # For morhps we have to substract full unit cost when it dies. And add only the additive cost when build.
         elif len(cost) == 4:
-            # print(f"{unit_alive:3}/{unit_dead:3} {unit:10} →  {unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])}")
-            return unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])
+            result = unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])
+            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} → {result}")
+            return result
         else:
             raise Exception('Invalid length of unit cost tuple')
 
@@ -358,6 +378,6 @@ class StatsCounter:
     def get_stats(self, player_name: str) -> dict:
         """ Returns collected stats as a dictionary"""
         # For debugging purposes
-        logger.error(f'\n{debug_units_without_costs=}\n')
-        logger.error(f'\n{debug_negative_members=}\n')
+        # logger.debug(f'\n{debug_units_without_costs=}\n')
+        # logger.debug(f'\n{debug_negative_members=}\n')
         return {'name': player_name, 'killed': self.kills, 'army': self.army_value, 'mining': self.rolling_average(self.collection_rate)}
