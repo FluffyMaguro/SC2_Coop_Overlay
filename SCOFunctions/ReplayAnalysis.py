@@ -26,7 +26,7 @@ revival_types = {
     'ZeratulCoopReviveBeacon': 'ZeratulCoop'
 }
 icon_units = {'MULE', 'Omega Worm', 'Infested Bunker', 'Mecha Infestor', 'Unbound Fanatic'}
-dont_count_morphs = {'SCVMengsk', 'TrooperMengsk'}  # Don't count as unit created for these when the unit switches type
+dont_count_morphs = {'SCVMengsk', 'TrooperMengsk', 'HellionTank', 'Hellion'}  # Don't count as unit created for these when the unit switches type
 self_killing_units = {'FenixCoop', 'FenixDragoon', 'FenixArbiter'}
 dont_show_created_lost = {
     "Stetmann's Top Bar", "Zeratul's Top Bar", "Vorazun's Top Bar", "Fenix's Top Bar", "Zagara's Top Bar", "Tychus' Top Bar", "Swann's Top Bar",
@@ -397,6 +397,12 @@ def analyse_replay(filepath, main_player_handles=None):
         if event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1, 2]:
             _upg_name = event['m_upgradeTypeName'].decode()
             _upg_pid = event['m_playerId']
+
+            # Tychus upgrades for army value
+            if _upg_pid == main_player:
+                mainStatsCounter.upgrade_event(_upg_name)
+            elif _upg_pid == ally_player:
+                allyStatsCounter.upgrade_event(_upg_name)
 
             # Commander fallback (used for arcade maps)
             if _upg_name in commander_upgrades:

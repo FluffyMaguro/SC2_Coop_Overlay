@@ -1,14 +1,9 @@
 from SCOFunctions.MLogging import logclass, catch_exceptions
-from SCOFunctions.SC2Dictionaries import unit_base_costs
+from SCOFunctions.SC2Dictionaries import unit_base_costs, royal_guards, horners_units, tychus_base_upgrades, tychus_ultimate_upgrades, outlaws
 
 logger = logclass('COUNT', 'INFO')
 debug_units_without_costs = set()
 debug_negative_members = set()
-horners_units = {'HHBattlecruiser', 'HHVikingAssault', 'HHVikingFighter', 'HHWraith', 'HHRaven', 'HHRavenSiegeMode'}
-royal_guards = {
-    'BattlecruiserMengsk', 'GhostMengsk', 'MarauderMengsk', 'SiegeTankMengsk', 'SiegeTankMengskSieged', 'ThorMengsk', 'ThorMengskSieged',
-    'VikingMengskFighter', 'VikingMengskAssault'
-}
 
 
 class DroneIdentifier:
@@ -68,6 +63,8 @@ class StatsCounter:
         self.unit_costs = dict()  # Caching calculate unit costs
         self.army_value_offset = 0  # Offset for army value (upgrades, mengsk infantry morphs)
         self.trooper_weapon_cost = (160, 0)
+        self.tychus_gear_cost = (750, 1600)  # Normal gear cost, ultimate gear cost
+        self.tychus_has_first_outlaw = False  # Track if we have an outlaw, if yes, give discount on the first one
 
         self.kills = []
         self.army_value = []
@@ -84,6 +81,9 @@ class StatsCounter:
 
             if prestige == 'Merchant of Death':
                 self.trooper_weapon_cost = (40, 20)
+
+            if self.prestige == 'Lone Wolf':
+                self.tychus_gear_cost = (self.tychus_gear_cost[0] * 1.25, 0)
 
     def update_commander(self, commander: str):
         if self.enable_updates and self.commander != commander:
@@ -112,6 +112,22 @@ class StatsCounter:
         elif old_unit in {'TrooperMengskAA', 'TrooperMengskFlamethrower', 'TrooperMengskImproved'} and unit == 'SCVMengsk':
             self.army_value_offset -= 40 + sum(self.trooper_weapon_cost)
 
+        # Thor → wreckage
+        elif old_unit == 'Thor' and unit == 'ThorWreckageSwann':
+            self.army_value_offset -= 200
+
+        # Wreckage → Thor
+        elif old_unit == 'ThorWreckageSwann' and unit == 'Thor':
+            self.army_value_offset += 200
+
+    def upgrade_event(self, upgrade):
+        """ Tracks upgrade events"""
+        # Add army value for Tychus when gear is purchased
+        if upgrade in tychus_base_upgrades:
+            self.army_value_offset += self.tychus_gear_cost[0]
+        elif upgrade in tychus_ultimate_upgrades:
+            self.army_value_offset += self.tychus_gear_cost[1]
+
     def add_stats(self, kills: int, collection_rate: int):
         """ Calculates and adds new stats"""
         self.kills.append(kills)
@@ -128,7 +144,15 @@ class StatsCounter:
             # Add the cost of all alive units
             total += self.calculate_total_unit_value(unit, self.unit_costs[unit])
 
+        # print(f"Total for units {total}\n")
+        # Add offset
         total += self.army_value_offset
+
+        # Check for the first Tychus outlaw discout
+        if self.commander == 'Tychus' and not self.tychus_has_first_outlaw and len(set(self.unit_dict.keys()).intersection(outlaws)) > 0:
+            self.tychus_has_first_outlaw = True
+        if self.tychus_has_first_outlaw:
+            total -= 600
 
         return total
 
@@ -146,6 +170,9 @@ class StatsCounter:
         The secondary cost is used for morhped unit so it can be substracted properly
         Total cost = mineral cost + vespene cost."""
 
+        if sum(cost) == 0:
+            return 0
+
         unit_alive = self.unit_dict[unit][0]
         unit_dead = self.unit_dict[unit][1]
 
@@ -159,9 +186,11 @@ class StatsCounter:
 
         # Calculate current value
         if len(cost) == 2:
+            # print(f"{unit_alive:3}/{unit_dead:3} {unit:10} →  {(unit_alive - unit_dead) * sum(cost)}")
             return (unit_alive - unit_dead) * sum(cost)
         # For morhps we have to substract full unit cost when it dies. And add only the additive cost when build.
         elif len(cost) == 4:
+            # print(f"{unit_alive:3}/{unit_dead:3} {unit:10} →  {unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])}")
             return unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])
         else:
             raise Exception('Invalid length of unit cost tuple')
@@ -205,48 +234,101 @@ class StatsCounter:
         if sum(cost) == 0:
             return (0, 0)
 
+        # Combat unit cost +30%
         if self.commander == 'Artanis' and self.prestige == 'Valorous Inspirator' and unit not in {'PhotonCannon', 'Observer'}:
             cost = self.update_cost(cost, 1.3, 1.3)
 
+        # Combat unit cost -50%
         elif self.commander == 'Fenix' and self.prestige == 'Network Administrator' and unit not in {'PhotonCannon', 'Observer'}:
             cost = self.update_cost(cost, 0.5, 0.5)
 
         # Horner | Hangar Bay is not counted for Horner as both units are the samy unit class
         elif self.commander == 'Horner':
+            # Horner's units cost 30% more
             if self.prestige == 'Chaotic Power Couple' and unit in horners_units:
                 cost = self.update_cost(cost, 1.3, 1.3)
 
+            # Horner's units cost -20% less gas
             elif self.prestige == 'Wing Commanders' and unit in horners_units:
                 cost = self.update_cost(cost, 1, 0.8)
 
+            # Bombing platform cost +100%
             elif self.prestige == 'Galactic Gunrunners' and unit == 'HHBomberPlatform':
                 cost = self.update_cost(cost, 2, 2)
 
+        # Combat unit cost -40%
         elif self.commander == 'Karax' and self.prestige == 'Templar Apparent' and unit not in {
                 'ShieldBattery', 'KhaydarinMonolith', 'PhotonCannon', 'Observer'
         }:
             cost = self.update_cost(cost, 0.6, 0.6)
 
+        # Unit gas cost up to -30%
         elif self.commander == 'Kerrigan' and self.masteries[2] > 0:
             cost = self.update_cost(cost, 1, 1 - self.masteries[2] / 100)
 
         elif self.commander == 'Mengsk':
+            # Royal guard cost up to -20%
             if self.masteries[3] > 0 and unit in royal_guards:
                 coef = 1 - 20 * self.masteries[3] / 3000
                 cost = self.update_cost(cost, coef, coef)
 
+            # Royal guard cost +100% minerals, -25% gas
             if self.prestige == 'Principal Proletariat' and unit in royal_guards:
                 cost = self.update_cost(cost, 2, 0.75)
 
+        elif self.commander == 'Raynor':
+            # Mechanical units no longer cost 20% less
+            if self.prestige == 'Rough Rider' and unit in {
+                    'Banshee', 'Battlecruiser', 'VikingAssault', 'VikingFighter', 'SiegeTank', 'SiegeTankSieged'
+            }:
+                cost = self.update_cost(cost, 1, 1.25)
 
+            # Air units cost -30% gas. All combat units cost +50% minerals
+            elif self.prestige == 'Rebel Raider':
+                if unit in {'Banshee', 'Battlecruiser', 'VikingAssault', 'VikingFighter'}:
+                    cost = self.update_cost(cost, 1.5, 0.7)
+                elif unit not in {'Bunker', 'MissileTurret', 'SpiderMine'}:
+                    cost = self.update_cost(cost, 1.5, 1)
 
+        # Combat units cost +40% minerals
+        elif self.commander == 'Stetmann' and self.prestige == 'Oil Baron' and unit not in {
+                'SpineCrawlerStetmann', 'SporeCrawlerStetmann', 'OverseerStetmann'
+        }:
+            cost = self.update_cost(cost, 1.4, 1)
 
+        # Mechanic combat units cost 30% less
+        elif self.commander == 'Stukov' and self.prestige == 'Frightful Fleshwelder' and unit in {
+                'SILiberator', 'StukovInfestedBanshee', 'StukovInfestedBansheeBurrowed', 'StukovInfestedDiamondBack', 'StukovInfestedSiegeTank',
+                'StukovInfestedSiegeTankUprooted'
+        }:
+            cost = self.update_cost(cost, 0.7, 0.7)
 
+        elif self.commander == 'Swann':
+            # Combat units cost +50% gas (inlcuding Science Vessels and Hercules)
+            if self.prestige == 'Grease Monkey' and unit not in {
+                    'KelMorianGrenadeTurret', 'KelMorianMissileTurret', 'PerditionTurret', 'PerditionTurretUnderground'
+            }:
+                cost = self.update_cost(cost, 1, 1.5)
 
+        elif self.commander == 'Tychus':
+            # Outlaw cost increased +50%
+            if self.prestige == 'Technical Recruiter' and unit != 'TychusSCVAutoTurret':
+                cost = self.update_cost(cost, 1.5, 1.5)
 
+        elif self.commander == 'Zagara':
+            # Abberation and Corruptors cost 25% less
+            if self.prestige == 'Mother of Constructs' and unit in {'ZagaraCorruptor', 'InfestedAbomination'}:
+                cost = self.update_cost(cost, 0.75, 0.75)
 
+            # Combat units cost 25% more
+            elif self.prestige == 'Apex Predator' and unit not in {'BileLauncherZagara', 'QueenCoop', 'Overseer', 'SpineCrawler', 'SporeCrawler'}:
+                cost = self.update_cost(cost, 1.25, 1.25)
 
-
+        # Combat units cost +25% more
+        elif self.commander == 'Zeratul' and self.prestige == 'Knowledge Seeker' and unit not in {
+                'ZeratulObserver', 'ZeratulPhotonCannon', 'ZeratulWarpPrism'
+        }:
+            cost = self.update_cost(cost, 1.25, 1.25)
 
         return cost
 
