@@ -386,11 +386,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
             if player == main_player:
                 mainStatsCounter.add_stats(kills=killcounts[player],
+                                           supply_used=event['m_stats']['m_scoreValueFoodUsed'] / 4096,
                                            collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
                                                                 event['m_stats']['m_scoreValueVespeneCollectionRate'])))
 
             elif player == ally_player:
                 allyStatsCounter.add_stats(kills=killcounts[player],
+                                           supply_used=event['m_stats']['m_scoreValueFoodUsed'] / 4096,
                                            collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
                                                                 event['m_stats']['m_scoreValueVespeneCollectionRate'])))
 

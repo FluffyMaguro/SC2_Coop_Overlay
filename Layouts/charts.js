@@ -2,6 +2,7 @@ const support_color = "#aaa"; // color for axis labels and ticks
 
 var CC = { // All charts
   'army': null,
+  'supply': null,
   'killed': null,
   'mining': null
 }
@@ -11,6 +12,7 @@ function generate_config(replay_data, x_data, type) {
   // generates config for a chart based on new data
   let c_title;
   if (type == 'army') c_title = 'Army value';
+  if (type == 'supply') c_title = 'Supply used';
   if (type == 'killed') c_title = 'Kill count';
   if (type == 'mining') c_title = 'Resource collection rate';
 

@@ -13,6 +13,8 @@ Few exceptions:
 Inaccuracies:
 - Units killed while morphing will not reduce the army value cost (could be fixed, but very messy since how different
 implementations are used in SC2. Sometimes coccons are killed at the end of transformation, and sometimes not.)
+- Dehaka army values can be a bit "spiky" because the parser is accounting for deaths of units in primal combat 
+a bit faster (leading to bonus army value). These spikes are removed with a function.
 
 """
 
@@ -86,6 +88,7 @@ class StatsCounter:
 
         self.kills = []
         self.army_value = []
+        self.supply = []
         self.collection_rate = []
 
     def update_mastery(self, idx: int, count: int):
@@ -154,10 +157,11 @@ class StatsCounter:
         elif upgrade in tychus_ultimate_upgrades:
             self.army_value_offset += self.tychus_gear_cost[1]
 
-    def add_stats(self, kills: int, collection_rate: int):
+    def add_stats(self, kills: int, supply_used: int, collection_rate: int):
         """ Calculates and adds new stats"""
         self.kills.append(kills)
         self.army_value.append(self.calculate_army_value())
+        self.supply.append(supply_used)
         self.collection_rate.append(self.calculate_collection_rate(collection_rate))
 
     def calculate_army_value(self) -> int:
@@ -375,9 +379,24 @@ class StatsCounter:
                 new.append(d)
         return new
 
+    @staticmethod
+    def remove_upward_spikes(data: list):
+        """ Removes upward spikes. This only alters data if there is an upward 
+        change that goes down the next tick. Note: changes the data in the argument!"""
+        for i, d in enumerate(data):
+            if i > 0 and d > data[i - 1] and i < len(data) - 1 and d > data[i + 1]:
+                data[i] = (data[i - 1] + data[i + 1]) / 2
+
     def get_stats(self, player_name: str) -> dict:
         """ Returns collected stats as a dictionary"""
-        # For debugging purposes
         # logger.debug(f'\n{debug_units_without_costs=}\n')
         # logger.debug(f'\n{debug_negative_members=}\n')
-        return {'name': player_name, 'killed': self.kills, 'army': self.army_value, 'mining': self.rolling_average(self.collection_rate)}
+        if self.commander == 'Dehaka':
+            self.remove_upward_spikes(self.army_value)
+        return {
+            'name': player_name,
+            'killed': self.kills,
+            'army': self.army_value,
+            'supply': self.supply,
+            'mining': self.rolling_average(self.collection_rate)
+        }
