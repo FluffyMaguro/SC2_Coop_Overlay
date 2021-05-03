@@ -1387,6 +1387,7 @@ unit_base_costs = {
         'Mutalisk': (100, 100),
         'Queen': (150, 50),
         'RavagerAbathur': (13, 38, 113, 38),
+        'RavagerAbathurCocoon': (0, 0, 100, 0),
         'Roach': (100, 0),
         'RoachVile': (100, 0),
         'SpineCrawler': (150, 0),
@@ -1557,7 +1558,10 @@ unit_base_costs = {
         'SporeCrawlerStetmann': (125, 0),
         'UltraliskStetmann': (300, 200),
         'OverseerStetmann': (50, 50),
-        'ZerglingStetmann': (25, 0)
+        'ZerglingStetmann': (25, 0),
+        'BroodLordStetmannCocoon': (0, 0, 150, 100),
+        'BanelingStetmannCocoon': (0, 0, 25, 0),
+        'LurkerStetmannCocoon': (0, 0, 100, 50)
     },
     'Stukov': {
         'SIInfestedBunker': (400, 0),
@@ -1609,7 +1613,8 @@ unit_base_costs = {
         'ZealotShakuras': (100, 0)
     },
     'Zagara': {
-        'Baneling': (25, 25, 50, 25),
+        'Baneling': (22, 14, 36.666, 14),
+        'BanelingCocoon': (0, 0, 14.666, 0),
         'BileLauncherZagara': (150, 100),
         'HotSSplitterlingBig': (22, 14, 36.666, 14),
         'HotSSplitterlingMedium': (0, 0),

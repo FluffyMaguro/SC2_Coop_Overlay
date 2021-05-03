@@ -479,12 +479,14 @@ def analyse_replay(filepath, main_player_handles=None):
             if not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings):
                 # Save stats for units created
                 if main_player == _control_pid:
+                    mainStatsCounter.unit_created_event(_unit_type, event)
                     if _unit_type in unit_type_dict_main:
                         unit_type_dict_main[_unit_type][0] += 1
                     else:
                         unit_type_dict_main[_unit_type] = [1, 0, 0, 0]
 
                 elif ally_player == _control_pid:
+                    allyStatsCounter.unit_created_event(_unit_type, event)
                     if _unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[_unit_type][0] += 1
                     else:

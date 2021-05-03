@@ -85,6 +85,7 @@ class StatsCounter:
         self.trooper_weapon_cost = (160, 0)
         self.tychus_gear_cost = (750, 1600)  # Normal gear cost, ultimate gear cost
         self.tychus_has_first_outlaw = False  # Track if we have an outlaw, if yes, give discount on the first one
+        self.zagara_free_banelings = 0  # Tracking the number of free Banelings spawned for Zagara
 
         self.kills = []
         self.army_value = []
@@ -157,6 +158,15 @@ class StatsCounter:
         elif upgrade in tychus_ultimate_upgrades:
             self.army_value_offset += self.tychus_gear_cost[1]
 
+    def unit_created_event(self, unit_type, event):
+        """ Tracking when a unit was created"""
+        # Save the number of free Banelings.
+        # Otherwise we would substract too much value when they are killed.
+        if self.commander == 'Zagara' \
+            and unit_type in {'Baneling', 'HotSSplitterlingBig'} \
+            and event['m_creatorAbilityName'].decode() == 'ZagaraVoidCoopBanelingSpawnerTrain':
+            self.zagara_free_banelings += 1
+
     def add_stats(self, kills: int, supply_used: int, collection_rate: int):
         """ Calculates and adds new stats"""
         self.kills.append(kills)
@@ -214,15 +224,27 @@ class StatsCounter:
         if unit_alive - unit_dead < 0:
             debug_negative_members.add(unit)
 
+        # Special case for Zagara's Banelings
+        if self.commander == 'Zagara' and unit in {'Baneling', 'HotSSplitterlingBig'}:
+            # Bonus value of those created normally (addition)
+            result = (unit_alive - self.zagara_free_banelings) * (cost[0] + cost[1])
+            # Value of free banes (full)
+            result += self.zagara_free_banelings * (cost[2] + cost[3])
+            # Value of dead banes (full)
+            result -= unit_dead * (cost[2] + cost[3])
+
+            logger.debug(f"{unit_alive:3}/{unit_dead:3}/{self.zagara_free_banelings} {unit:10} ({sum(cost):3}) → {result}")
+            return result
+
         # Calculate current value
-        if len(cost) == 2:
+        elif len(cost) == 2:
             result = (unit_alive - unit_dead) * sum(cost)
-            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} → {result}")
+            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} ({sum(cost):3}) → {result}")
             return result
         # For morhps we have to substract full unit cost when it dies. And add only the additive cost when build.
         elif len(cost) == 4:
             result = unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])
-            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} → {result}")
+            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} ({sum(cost):3}) → {result}")
             return result
         else:
             raise Exception('Invalid length of unit cost tuple')
