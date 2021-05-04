@@ -4,6 +4,6 @@ psutil==5.8.0
 PyQt5==5.15.2
 PyQtWebEngine==5.15.2
 requests==2.25.1
-s2protocol==5.0.6.83830.0
+s2protocol==5.0.7.84643.0
 urllib3==1.26.4
 websockets==8.1

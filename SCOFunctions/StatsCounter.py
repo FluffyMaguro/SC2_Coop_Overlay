@@ -22,7 +22,6 @@ from SCOFunctions.MLogging import logclass, catch_exceptions
 from SCOFunctions.SC2Dictionaries import unit_base_costs, royal_guards, horners_units, tychus_base_upgrades, tychus_ultimate_upgrades, outlaws
 
 logger = logclass('COUNT', 'INFO')
-debug_units_without_costs = set()
 debug_negative_members = set()
 
 
@@ -71,11 +70,11 @@ class DroneIdentifier:
 
 class StatsCounter:
     """ For counting player stats (army value, resource collection rate)"""
-    def __init__(self, masteries: tuple, unit_dict: dict, commander_level: int, commander: str, drone_counter: DroneIdentifier):
+    def __init__(self, masteries: tuple, filepath: str, unit_dict: dict, commander: str, drone_counter: DroneIdentifier):
         self.masteries = list(masteries)
         self.unit_dict = unit_dict
         self.commander = 'Horner' if commander == 'Han & Horner' else commander
-        self.commander_level = commander_level
+        self.filepath = filepath
         self.drone_counter = drone_counter
         self.prestige = None
         self.enable_updates = False  # For MM maps enable ingame updating of data
@@ -150,6 +149,18 @@ class StatsCounter:
         elif old_unit == 'SiegeTankWreckage' and unit == 'SiegeTank':
             self.army_value_offset += 125
 
+    def mindcontrolled_unit_dies(self, unit: str):
+        # Check we the unit overlaps with commander unit roster.
+        # Since it died, its value is substracted. That interferes with calculations.
+        cost = sum(self.get_base_cost(unit))
+        if cost > 0:
+            # Cache cost
+            if unit not in self.unit_costs:
+                self.unit_costs[unit] = self.calculate_unit_cost(unit)
+
+            # Since it died, its value is substracted. Here compensate for it.
+            self.army_value_offset += sum(self.unit_costs[unit])
+
     def upgrade_event(self, upgrade):
         """ Tracks upgrade events"""
         # Add army value for Tychus when gear is purchased
@@ -164,6 +175,7 @@ class StatsCounter:
         # Otherwise we would substract too much value when they are killed.
         if self.commander == 'Zagara' \
             and unit_type in {'Baneling', 'HotSSplitterlingBig'} \
+            and event['m_creatorAbilityName'] is not None \
             and event['m_creatorAbilityName'].decode() == 'ZagaraVoidCoopBanelingSpawnerTrain':
             self.zagara_free_banelings += 1
 
@@ -184,15 +196,20 @@ class StatsCounter:
             # Add the cost of all alive units
             total += self.calculate_total_unit_value(unit, self.unit_costs[unit])
 
-        logger.debug(f"Total for units {total}\n")
         # Add offset
         total += self.army_value_offset
 
         # Check for the first Tychus outlaw discout
         if self.commander == 'Tychus' and not self.tychus_has_first_outlaw and len(set(self.unit_dict.keys()).intersection(outlaws)) > 0:
             self.tychus_has_first_outlaw = True
-        if self.tychus_has_first_outlaw:
+        if self.tychus_has_first_outlaw and total > 600:
             total -= 600
+
+        if total < 0:
+            logger.error(f"{self.commander}: total army value {total} < 0 | {self.filepath}\n")
+            total = 0
+        else:
+            logger.debug(f"{self.commander}: total army value {total}\n")
 
         return total
 
@@ -214,18 +231,16 @@ class StatsCounter:
             return 0
 
         unit_alive = self.unit_dict[unit][0]
-        unit_dead = self.unit_dict[unit][1]
+        # Outlaw kills shouldn't count, it's highly inaccurate and revive doesn't trigger
+        unit_dead = self.unit_dict[unit][1] if unit not in outlaws else 0
 
         # Substract units that has been salvaged
         if unit in self.salvaged_units:
             unit_alive -= self.salvaged_units.count(unit)
 
-        # Save those that have negative alive
-        if unit_alive - unit_dead < 0:
-            debug_negative_members.add(unit)
-
         # Special case for Zagara's Banelings
         if self.commander == 'Zagara' and unit in {'Baneling', 'HotSSplitterlingBig'}:
+            logger.debug(f"Free {self.zagara_free_banelings} {unit}")
             # Bonus value of those created normally (addition)
             result = (unit_alive - self.zagara_free_banelings) * (cost[0] + cost[1])
             # Value of free banes (full)
@@ -233,25 +248,21 @@ class StatsCounter:
             # Value of dead banes (full)
             result -= unit_dead * (cost[2] + cost[3])
 
-            logger.debug(f"{unit_alive:3}/{unit_dead:3}/{self.zagara_free_banelings} {unit:10} ({sum(cost):3}) → {result}")
-            return result
-
         # Calculate current value
         elif len(cost) == 2:
             result = (unit_alive - unit_dead) * sum(cost)
-            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} ({sum(cost):3}) → {result}")
-            return result
         # For morhps we have to substract full unit cost when it dies. And add only the additive cost when build.
         elif len(cost) == 4:
             result = unit_alive * (cost[0] + cost[1]) - unit_dead * (cost[2] + cost[3])
-            logger.debug(f"{unit_alive:3}/{unit_dead:3} {unit:10} ({sum(cost):3}) → {result}")
-            return result
-        else:
-            raise Exception('Invalid length of unit cost tuple')
 
-    def calculate_unit_cost(self, unit: str) -> tuple:
-        """ Calculate army cost for units of given type.
-        This takes into account commander, mastery, prestige and upgrades. """
+        logger.debug(f"{unit_alive}/{unit_dead}\t{unit:10} ({sum(cost):3}) → {result}")
+        if result < 0:
+            debug_negative_members.add(unit)
+
+        return result
+
+    def get_base_cost(self, unit: str) -> tuple:
+        """ Get base costs for a unit"""
         if self.commander == '':
             return (0, 0)
 
@@ -270,9 +281,14 @@ class StatsCounter:
         elif unit.endswith('Fighter') and unit.replace('Fighter', 'Assault') in unit_base_costs[self.commander]:
             cost = unit_base_costs[self.commander][unit.replace('Fighter', 'Assault')]
         else:
-            debug_units_without_costs.add(unit)
             return (0, 0)
+        return cost
 
+    def calculate_unit_cost(self, unit: str) -> tuple:
+        """ Calculate army cost for units of given type.
+        This takes into account commander, mastery, prestige and upgrades. """
+
+        cost = self.get_base_cost(unit)
         # Add modification for commanders, prestiges, masteries, upgrades
         # Cocoons are completely ignored
         # The cost of burrowed units is substracted (if they die burrowed)
@@ -411,8 +427,7 @@ class StatsCounter:
 
     def get_stats(self, player_name: str) -> dict:
         """ Returns collected stats as a dictionary"""
-        # logger.debug(f'\n{debug_units_without_costs=}\n')
-        # logger.debug(f'\n{debug_negative_members=}\n')
+        # logger.info(f'\n{debug_negative_members=}\n')
         if self.commander == 'Dehaka':
             self.remove_upward_spikes(self.army_value)
         return {

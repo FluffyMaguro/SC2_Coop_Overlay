@@ -1461,7 +1461,8 @@ unit_base_costs = {
         'HHBomberPlatform': (100, 100),
         'HHHellion': (100, 0),
         'HHHellionTank': (100, 0),
-        'HHMercStarportUpgraded': (150, 0),
+        'HHMercStarportUpgraded': (0, 0, 150, 0), # Normal Galleon
+        'HHMercStarportNoArmy': (150, 0), # Galleon under construction
         'HHReaper': (50, 0),
         'HHReaperFlying': (0, 0),
         'HHVikingFighter': (400, 250),

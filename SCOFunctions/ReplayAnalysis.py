@@ -346,16 +346,17 @@ def analyse_replay(filepath, main_player_handles=None):
     glevig_spawns = set()
     broodlord_broodlings = set()
     user_leave_times = dict()
+    mind_controlled_units = set()
     VespeneDroneIdentifier = DroneIdentifier(replay['players'][main_player].get('commander', None),
                                              replay['players'][ally_player].get('commander', None))
     mainStatsCounter = StatsCounter(masteries=replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0)),
+                                    filepath=filepath,
                                     unit_dict=unit_type_dict_main,
-                                    commander_level=replay['players'][main_player].get('commander_level', 0),
                                     commander=replay['players'][main_player].get('commander', None),
                                     drone_counter=VespeneDroneIdentifier)
     allyStatsCounter = StatsCounter(masteries=replay['players'][ally_player].get('masteries', (0, 0, 0, 0, 0, 0)),
+                                    filepath=filepath,
                                     unit_dict=unit_type_dict_ally,
-                                    commander_level=replay['players'][ally_player].get('commander_level', 0),
                                     commander=replay['players'][ally_player].get('commander', ''),
                                     drone_counter=VespeneDroneIdentifier)
 
@@ -602,11 +603,13 @@ def analyse_replay(filepath, main_player_handles=None):
             _losing_player = unit_dict[unitid(event)][1]
 
             if event['m_controlPlayerId'] == main_player and _losing_player in amon_players:
+                mind_controlled_units.add(unitid(event))
                 if not 'mc' in replay_report_dict['mainIcons']:
                     replay_report_dict['mainIcons']['mc'] = 1
                 else:
                     replay_report_dict['mainIcons']['mc'] += 1
             elif event['m_controlPlayerId'] == ally_player and _losing_player in amon_players:
+                mind_controlled_units.add(unitid(event))
                 if not 'mc' in replay_report_dict['allyIcons']:
                     replay_report_dict['allyIcons']['mc'] = 1
                 else:
@@ -844,15 +847,16 @@ def analyse_replay(filepath, main_player_handles=None):
                     #     f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
                     # )
 
-                # Don't include salvage and spawns
-                if (_killed_unit_type in salvage_units and _losing_player
-                        == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
-
+                # Don't save salvaged units
+                if _killed_unit_type in salvage_units and _losing_player == _killing_player:
                     if _losing_player == main_player:
                         mainStatsCounter.salvaged_units.append(_killed_unit_type)
                     elif _losing_player == ally_player:
                         allyStatsCounter.salvaged_units.append(_killed_unit_type)
 
+                # Don't include salvage and spawns
+                if (_killed_unit_type in salvage_units and _losing_player
+                        == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
                     continue
 
                 # Add losses
@@ -863,11 +867,17 @@ def analyse_replay(filepath, main_player_handles=None):
                     else:
                         unit_type_dict_main[_killed_unit_type] = [0, 1, 0, 0]
 
+                    if unit_id in mind_controlled_units:
+                        mainStatsCounter.mindcontrolled_unit_dies(_killed_unit_type)
+
                 if ally_player == _losing_player and event['_gameloop'] / 16 > 0 and event['_gameloop'] / 16 > START_TIME + 1:
                     if _killed_unit_type in unit_type_dict_ally:
                         unit_type_dict_ally[_killed_unit_type][1] += 1
                     else:
                         unit_type_dict_ally[_killed_unit_type] = [0, 1, 0, 0]
+
+                    if unit_id in mind_controlled_units:
+                        allyStatsCounter.mindcontrolled_unit_dies(_killed_unit_type)
 
                 if _losing_player in amon_players and event['_gameloop'] / 16 > 0 and event['_gameloop'] / 16 > START_TIME + 1 and not unitid(
                         event) in MutatorDehakaDragUnitIDs:
