@@ -562,7 +562,7 @@ def analyse_replay(filepath, main_player_handles=None):
             if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
 
                 # When banelings finish morph for zagara, it creates new zergling and kills it  (WTF)
-                if _old_unit_type == 'BanelingCocoon' and _unit_type== 'HotSSwarmling':
+                if _old_unit_type == 'BanelingCocoon' and _unit_type == 'HotSSwarmling':
                     zagaras_dummy_zerglings.add(unitid(event))
                     continue
 
@@ -867,6 +867,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Don't add losses to dummy zerglings killed when banelings are finished
                 if unit_id in zagaras_dummy_zerglings and event['m_killerPlayerId'] is None:
+                    continue
+
+                # Don't count base Roaches morphing into Brutalisks (unlike RoachVile, these count as dead when morphing)
+                # RavagerAbathur are killed as well
+                if _killed_unit_type in {'Roach','RavagerAbathur'} \
+                    and commander_fallback.get(_losing_player) == 'Abathur' \
+                    and event['m_killerPlayerId'] is None:
                     continue
 
                 # Add losses
