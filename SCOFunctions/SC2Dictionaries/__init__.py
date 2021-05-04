@@ -1422,10 +1422,12 @@ unit_base_costs = {
         'ZealotAiur': (100, 0)
     },
     'Dehaka': {
-        'DehakaGuardian': (0, 100, 150, 150),
+        'DehakaGuardian': (0, 100, 150, 150),  # This one is lost
+        'DehakaGuardianFightMorph': (0, 100, 150, 150),  # This one is actually created
         'DehakaHydraliskLevel2': (100, 50),
-        'DehakaMutaliskLevel3FightMorph': (0, 25, 200, 125),
-        'DehakaMutaliskReviveEgg': (0,0,200,125),
+        'DehakaMutaliskLevel3': (0, 25, 200, 125), # This one is lost
+        'DehakaMutaliskLevel3FightMorph': (0, 25, 200, 125), # This one is actually created
+        'DehakaMutaliskReviveEgg': (0, 0, 200, 125), # Revive egg
         'DehakaNydusDestroyer': (300, 0),
         'DehakaRavasaur': (0, 0, 100, 0),
         'DehakaRoachLevel2': (75, 25),
@@ -1461,8 +1463,8 @@ unit_base_costs = {
         'HHBomberPlatform': (100, 100),
         'HHHellion': (100, 0),
         'HHHellionTank': (100, 0),
-        'HHMercStarportUpgraded': (0, 0, 150, 0), # Normal Galleon
-        'HHMercStarportNoArmy': (150, 0), # Galleon under construction
+        'HHMercStarportUpgraded': (0, 0, 150, 0),  # Normal Galleon
+        'HHMercStarportNoArmy': (150, 0),  # Galleon under construction
         'HHReaper': (50, 0),
         'HHReaperFlying': (0, 0),
         'HHVikingFighter': (400, 250),

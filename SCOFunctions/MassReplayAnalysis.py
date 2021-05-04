@@ -965,7 +965,7 @@ class mass_replay_analysis:
                     if not os.path.isfile(r.file):
                         continue
 
-                    full_data = analyse_replay(r.file)
+                    full_data = analyse_replay(r.file, self.main_handles)
 
                     full_data['full_analysis'] = True
                     if len(full_data) < 2:

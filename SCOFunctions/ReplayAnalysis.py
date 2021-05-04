@@ -347,6 +347,7 @@ def analyse_replay(filepath, main_player_handles=None):
     broodlord_broodlings = set()
     user_leave_times = dict()
     mind_controlled_units = set()
+    zagaras_dummy_zerglings = set()
     VespeneDroneIdentifier = DroneIdentifier(replay['players'][main_player].get('commander', None),
                                              replay['players'][ally_player].get('commander', None))
     mainStatsCounter = StatsCounter(masteries=replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0)),
@@ -559,6 +560,11 @@ def analyse_replay(filepath, main_player_handles=None):
 
             # Add to created units
             if _unit_type in UnitNameDict and _old_unit_type in UnitNameDict:
+
+                # When banelings finish morph for zagara, it creates new zergling and kills it  (WTF)
+                if _old_unit_type == 'BanelingCocoon' and _unit_type== 'HotSSwarmling':
+                    zagaras_dummy_zerglings.add(unitid(event))
+                    continue
 
                 # Don't add into created units if it's just a morph
                 # Don't count wreckages morhping back
@@ -857,6 +863,10 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Don't include salvage and spawns
                 if (_killed_unit_type in salvage_units and _losing_player
                         == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
+                    continue
+
+                # Don't add losses to dummy zerglings killed when banelings are finished
+                if unit_id in zagaras_dummy_zerglings and event['m_killerPlayerId'] is None:
                     continue
 
                 # Add losses

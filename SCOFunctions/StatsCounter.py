@@ -11,10 +11,10 @@ Few exceptions:
 - Calldowns and heroes don't have resource cost and aren't counted
 
 Inaccuracies:
-- Units killed while morphing will not reduce the army value cost (could be fixed, but very messy since how different
+- Some units killed while morphing will not reduce the army value cost (could be fixed, but very messy since how different
 implementations are used in SC2. Sometimes coccons are killed at the end of transformation, and sometimes not.)
 - Dehaka army values can be a bit "spiky" because the parser is accounting for deaths of units in primal combat 
-a bit faster (leading to bonus army value). These spikes are removed with a function.
+a bit faster (leading to bonus army value). These spikes are removed with a additional pass.
 
 """
 
@@ -175,8 +175,7 @@ class StatsCounter:
         # Otherwise we would substract too much value when they are killed.
         if self.commander == 'Zagara' \
             and unit_type in {'Baneling', 'HotSSplitterlingBig'} \
-            and event['m_creatorAbilityName'] is not None \
-            and event['m_creatorAbilityName'].decode() == 'ZagaraVoidCoopBanelingSpawnerTrain':
+            and (event['m_creatorAbilityName'] is None or event['m_creatorAbilityName'].decode() != 'MorphZerglingToSplitterling'):
             self.zagara_free_banelings += 1
 
     def add_stats(self, kills: int, supply_used: int, collection_rate: int):
@@ -345,6 +344,10 @@ class StatsCounter:
             # Royal guard cost +100% minerals, -25% gas
             if self.prestige == 'Principal Proletariat' and unit in royal_guards:
                 cost = self.update_cost(cost, 2, 0.75)
+
+            # Improved Troopers have different cost
+            if self.prestige == 'Merchant of Death' and unit in {'TrooperMengskAA', 'TrooperMengskFlamethrower', 'TrooperMengskImproved'}:
+                cost = (40, 20, 80, 20)
 
         elif self.commander == 'Raynor':
             # Mechanical units no longer cost 20% less
