@@ -122,6 +122,10 @@ class StatsCounter:
         if old_unit == 'TrooperMengsk' and unit in {'TrooperMengskAA', 'TrooperMengskFlamethrower', 'TrooperMengskImproved'}:
             self.army_value_offset += sum(self.trooper_weapon_cost)
 
+        # Gary → SuperGary
+        elif old_unit == 'GaryStetmann' and unit == 'SuperGaryStetmann':
+            self.army_value_offset += 750
+
         # Trooper → Labourer
         elif old_unit == 'TrooperMengsk' and unit == 'SCVMengsk':
             self.army_value_offset -= 40
@@ -195,8 +199,10 @@ class StatsCounter:
         # Save the number of free Banelings.
         # Otherwise we would substract too much value when they are killed.
         if self.commander == 'Zagara' \
-            and unit_type in {'Baneling', 'HotSSplitterlingBig'} \
-            and (event['m_creatorAbilityName'] is None or event['m_creatorAbilityName'].decode() != 'MorphZerglingToSplitterling'):
+             and unit_type in {'Baneling', 'HotSSplitterlingBig'} \
+             and ('m_creatorAbilityName' not in event \
+                or event['m_creatorAbilityName'] is None \
+                or event['m_creatorAbilityName'].decode() != 'MorphZerglingToSplitterling'):
             self.zagara_free_banelings += 1
 
     def add_stats(self, kills: int, supply_used: int, collection_rate: int):
@@ -221,6 +227,8 @@ class StatsCounter:
             self.tychus_has_first_outlaw = True
         if self.tychus_has_first_outlaw and total > 600:
             total -= 600
+
+        total = round(total)
 
         if total < 0:
             logger.error(f"{self.commander}: total army value {total} < 0 | {self.filepath}\n")

@@ -361,6 +361,9 @@ def analyse_replay(filepath, main_player_handles=None):
                                     commander=replay['players'][ally_player].get('commander', ''),
                                     drone_counter=VespeneDroneIdentifier)
 
+    def is_broodlord_broodling(unit_type, unit_id):
+        return unit_type in {'Broodling', 'BroodlingStetmann'} and unit_id in broodlord_broodlings
+
     if '[MM]' in filepath:
         mainStatsCounter.enable_updates = True
         allyStatsCounter.enable_updates = True
@@ -478,7 +481,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 if ally_player == _control_pid:
                     unit_type_dict_ally[primal_combat_predecessors[_unit_type]][1] -= 2
 
-            if not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings):
+            if not (unit_id in glevig_spawns or unit_id in murvar_spawns or is_broodlord_broodling(_unit_type, unit_id)):
                 # Save stats for units created
                 if main_player == _control_pid:
                     mainStatsCounter.unit_created_event(_unit_type, event)
@@ -571,7 +574,7 @@ def analyse_replay(filepath, main_player_handles=None):
                 # Don't count certain unit spawns (Murvar, Glevig, Broodlings from Broodlords)
                 # Don't count mengsk trooper and labourer as new unit created when they morph
                 if (UnitNameDict[_unit_type] != UnitNameDict[_old_unit_type] and not _old_unit_type in UnitAddLossesTo
-                        and not (unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings)
+                        and not (unit_id in glevig_spawns or unit_id in murvar_spawns or is_broodlord_broodling(_unit_type, unit_id))
                         and not _unit_type in dont_count_morphs):
 
                     # Increase unit type created for controlling player
@@ -706,7 +709,7 @@ def analyse_replay(filepath, main_player_handles=None):
                     _killing_unit_type = 'Murvar'
 
                 # Kerrigan's and Stetmann's Broodlings
-                elif _killing_unit_id in broodlord_broodlings:
+                elif is_broodlord_broodling(_killing_unit_type, _killing_unit_id):
                     if _killing_unit_type == 'Broodling':
                         _killing_unit_type = 'BroodLord'
                     elif _killing_unit_type == 'BroodlingStetmann':
@@ -861,8 +864,10 @@ def analyse_replay(filepath, main_player_handles=None):
                         allyStatsCounter.salvaged_units.append(_killed_unit_type)
 
                 # Don't include salvage and spawns
-                if (_killed_unit_type in salvage_units and _losing_player
-                        == _killing_player) or unit_id in glevig_spawns or unit_id in murvar_spawns or unit_id in broodlord_broodlings:
+                if (_killed_unit_type in salvage_units and _losing_player == _killing_player) \
+                    or unit_id in glevig_spawns \
+                    or unit_id in murvar_spawns \
+                    or is_broodlord_broodling(_killed_unit_type, unit_id):
                     continue
 
                 # Don't add losses to dummy zerglings killed when banelings are finished
