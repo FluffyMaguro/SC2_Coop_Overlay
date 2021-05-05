@@ -79,7 +79,7 @@ class StatsCounter:
         self.prestige = None
         self.enable_updates = False  # For MM maps enable ingame updating of data
         self.salvaged_units = []
-        self.unit_costs = dict()  # Caching calculate unit costs
+        self.unit_costs_cache = dict()  # Caching unit costs
         self.army_value_offset = 0  # Offset for army value (upgrades, mengsk infantry morphs)
         self.trooper_weapon_cost = (160, 0)
         self.tychus_gear_cost = (750, 1600)  # Normal gear cost, ultimate gear cost
@@ -136,55 +136,51 @@ class StatsCounter:
 
         # Thor → wreckage
         elif old_unit == 'Thor' and unit == 'ThorWreckageSwann':
-            self.army_value_offset -= 200
+            self.army_value_offset -= self.unit_cost('Thor')[1]
 
         # Wreckage → Thor
         elif old_unit == 'ThorWreckageSwann' and unit == 'Thor':
-            self.army_value_offset += 200
+            self.army_value_offset += self.unit_cost('Thor')[1]
 
         # Siege Tank → wreckage
         elif old_unit == 'SiegeTank' and unit == 'SiegeTankWreckage':
-            self.army_value_offset -= 125
+            self.army_value_offset -= self.unit_cost('SiegeTank')[1]
 
         # Wreckage → Siege Tank
         elif old_unit == 'SiegeTankWreckage' and unit == 'SiegeTank':
-            self.army_value_offset += 125
+            self.army_value_offset += self.unit_cost('SiegeTank')[1]
 
         # Guardian → Leviathan
         elif old_unit == 'GuardianMP' and unit == 'LeviathanCocoon':
-            self.army_value_offset -= 75
+            self.army_value_offset -= sum(self.unit_cost('GuardianMP')[2:]) - sum(self.unit_cost('Mutalisk'))
 
         # Devourer → Leviathan
         elif old_unit == 'Devourer' and unit == 'LeviathanCocoon':
-            self.army_value_offset -= 100
+            self.army_value_offset -= sum(self.unit_cost('Devourer')[2:]) - sum(self.unit_cost('Mutalisk'))
 
         # Viper → Leviathan
         elif old_unit == 'Viper' and unit == 'LeviathanCocoon':
-            self.army_value_offset -= 100
+            self.army_value_offset -= sum(self.unit_cost('Viper')) - sum(self.unit_cost('Mutalisk'))
 
         # Swarm Host → Brutalisk
         elif old_unit in {'SwarmHost', 'SwarmHostBurrowed'} and unit == 'BrutaliskCocoonSwarmhost':
-            self.army_value_offset -= 200
+            self.army_value_offset -= sum(self.unit_cost('SwarmHost')) - sum(self.unit_cost('RoachVile'))
 
         # Ravager → Brutalisk
         elif old_unit in {'RavagerAbathur', 'RavagerAbathurBurrowed'} and unit == 'BrutaliskCocoonRavager':
-            self.army_value_offset -= 51
+            self.army_value_offset -= sum(self.unit_cost('RavagerAbathur')[2:]) - sum(self.unit_cost('RoachVile'))
 
         # Queen → Brutalisk
         elif old_unit in {'Queen', 'QueenBurrowed'} and unit == 'BrutaliskCocoonQueen':
-            self.army_value_offset -= 100
+            self.army_value_offset -= sum(self.unit_cost('Queen')) - sum(self.unit_cost('RoachVile'))
 
     def mindcontrolled_unit_dies(self, unit: str):
         # Check we the unit overlaps with commander unit roster.
         # Since it died, its value is substracted. That interferes with calculations.
-        cost = sum(self.get_base_cost(unit))
+        cost = sum(self.unit_cost(unit))
         if cost > 0:
-            # Cache cost
-            if unit not in self.unit_costs:
-                self.unit_costs[unit] = self.calculate_unit_cost(unit)
-
             # Since it died, its value is substracted. Here compensate for it.
-            self.army_value_offset += sum(self.unit_costs[unit])
+            self.army_value_offset += cost
 
     def upgrade_event(self, upgrade):
         """ Tracks upgrade events"""
@@ -214,11 +210,8 @@ class StatsCounter:
         """ Sums army value for all units for the player"""
         total = 0
         for unit in self.unit_dict:
-            # Calculate unit cost
-            if unit not in self.unit_costs:
-                self.unit_costs[unit] = self.calculate_unit_cost(unit)
             # Add the cost of all alive units
-            total += self.calculate_total_unit_value(unit, self.unit_costs[unit])
+            total += self.calculate_total_unit_value(unit, self.unit_cost(unit))
 
         # Add offset
         total += self.army_value_offset
@@ -308,9 +301,12 @@ class StatsCounter:
             return (0, 0)
         return cost
 
-    def calculate_unit_cost(self, unit: str) -> tuple:
+    def unit_cost(self, unit: str) -> tuple:
         """ Calculate army cost for units of given type.
         This takes into account commander, mastery, prestige and upgrades. """
+
+        if unit in self.unit_costs_cache:
+            return self.unit_costs_cache[unit]
 
         cost = self.get_base_cost(unit)
         # Add modification for commanders, prestiges, masteries, upgrades
@@ -326,7 +322,8 @@ class StatsCounter:
 
         # Skip if the total cost is zero
         if sum(cost) == 0:
-            return (0, 0)
+            self.unit_costs_cache[unit] = (0, 0)
+            return self.unit_costs_cache[unit]
 
         # Combat unit cost +30%
         if self.commander == 'Artanis' and self.prestige == 'Valorous Inspirator' and unit not in {'PhotonCannon', 'Observer'}:
@@ -428,7 +425,9 @@ class StatsCounter:
         }:
             cost = self.update_cost(cost, 1.25, 1.25)
 
-        return cost
+        # Save to cache
+        self.unit_costs_cache[unit] = cost
+        return self.unit_costs_cache[unit]
 
     def calculate_collection_rate(self, collection_rate: int) -> float:
         return collection_rate + self.drone_counter.get_bonus_vespene()
