@@ -116,6 +116,7 @@ class StatsCounter:
         # Main analysis doesn't track morphs between Mengsk infantry.
         # Only troopers created and deaths for all types.
         # So let's adjust army_valie_offset based on their morhps.
+        logger.debug(f"Morph: {old_unit} → {unit}")
 
         # Trooper → Upgrade Trooper
         if old_unit == 'TrooperMengsk' and unit in {'TrooperMengskAA', 'TrooperMengskFlamethrower', 'TrooperMengskImproved'}:
@@ -148,6 +149,30 @@ class StatsCounter:
         # Wreckage → Siege Tank
         elif old_unit == 'SiegeTankWreckage' and unit == 'SiegeTank':
             self.army_value_offset += 125
+
+        # Guardian → Leviathan
+        elif old_unit == 'GuardianMP' and unit == 'LeviathanCocoon':
+            self.army_value_offset -= 75
+
+        # Devourer → Leviathan
+        elif old_unit == 'Devourer' and unit == 'LeviathanCocoon':
+            self.army_value_offset -= 100
+
+        # Viper → Leviathan
+        elif old_unit == 'Viper' and unit == 'LeviathanCocoon':
+            self.army_value_offset -= 100
+
+        # Swarm Host → Brutalisk
+        elif old_unit in {'SwarmHost', 'SwarmHostBurrowed'} and unit == 'BrutaliskCocoonSwarmhost':
+            self.army_value_offset -= 200
+
+        # Ravager → Brutalisk
+        elif old_unit in {'RavagerAbathur', 'RavagerAbathurBurrowed'} and unit == 'BrutaliskCocoonRavager':
+            self.army_value_offset -= 51
+
+        # Queen → Brutalisk
+        elif old_unit in {'Queen', 'QueenBurrowed'} and unit == 'BrutaliskCocoonQueen':
+            self.army_value_offset -= 100
 
     def mindcontrolled_unit_dies(self, unit: str):
         # Check we the unit overlaps with commander unit roster.
