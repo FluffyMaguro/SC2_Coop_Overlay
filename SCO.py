@@ -602,7 +602,7 @@ class UI_TabWidget(object):
 
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting ({APPVERSION/100:.2f})!\n{SM.settings_for_logs()}')
+        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})\n{SM.settings_for_logs()}')
 
         # Get monitor dimensions
         self.desktop_widget = QtWidgets.QDesktopWidget()
@@ -716,7 +716,7 @@ class UI_TabWidget(object):
     def update_selected_bank_item(self, bank_path):
         """ Updates selected bank indirectly (when user didn't click it directly)"""
         if bank_path in {'', None}:
-            logger.error('Not valid bank path, not changing')
+            logger.info('Not valid bank path, not changing')
             return
 
         logger.info(f'Changing bank indirectly to {bank_path.strip()}')
