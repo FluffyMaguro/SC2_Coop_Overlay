@@ -231,10 +231,10 @@ class StatsCounter:
         total = round(total)
 
         if total < 0:
-            logger.error(f"{self.commander}: total army value {total} < 0 | {self.filepath}\n")
+            logger.error(f"{self.commander}: total army value {total} < 0 (offset: {self.army_value_offset}) | {self.filepath}\n")
             total = 0
         else:
-            logger.debug(f"{self.commander}: total army value {total}\n")
+            logger.debug(f"{self.commander}: total army value {total} (offset: {self.army_value_offset})\n")
 
         return total
 
@@ -334,11 +334,11 @@ class StatsCounter:
             return self.unit_costs_cache[unit]
 
         # Combat unit cost +30%
-        if self.commander == 'Artanis' and self.prestige == 'Valorous Inspirator' and unit not in {'PhotonCannon', 'Observer'}:
+        if self.commander == 'Artanis' and self.prestige == 'Valorous Inspirator' and unit not in {'PhotonCannon', 'Observer', 'ObserverSiegeMode'}:
             cost = self.update_cost(cost, 1.3, 1.3)
 
         # Combat unit cost -50%
-        elif self.commander == 'Fenix' and self.prestige == 'Network Administrator' and unit not in {'PhotonCannon', 'Observer'}:
+        elif self.commander == 'Fenix' and self.prestige == 'Network Administrator' and unit not in {'PhotonCannon', 'Observer', 'ObserverSiegeMode'}:
             cost = self.update_cost(cost, 0.5, 0.5)
 
         # Horner | Hangar Bay is not counted for Horner as both units are the samy unit class
@@ -357,7 +357,7 @@ class StatsCounter:
 
         # Combat unit cost -40%
         elif self.commander == 'Karax' and self.prestige == 'Templar Apparent' and unit not in {
-                'ShieldBattery', 'KhaydarinMonolith', 'PhotonCannon', 'Observer'
+                'ShieldBattery', 'KhaydarinMonolith', 'PhotonCannon', 'Observer', 'ObserverSiegeMode'
         }:
             cost = self.update_cost(cost, 0.6, 0.6)
 
@@ -395,7 +395,8 @@ class StatsCounter:
 
         # Combat units cost +40% minerals
         elif self.commander == 'Stetmann' and self.prestige == 'Oil Baron' and unit not in {
-                'SpineCrawlerStetmann', 'SporeCrawlerStetmann', 'OverseerStetmann'
+                'SpineCrawlerStetmann', 'SpineCrawlerUprootedStetmann', 'SporeCrawlerStetmann', 'SporeCrawlerUprootedStetmann', 'OverseerStetmann',
+                'OverseerStetmannSiegeMode'
         }:
             cost = self.update_cost(cost, 1.4, 1)
 
@@ -424,12 +425,15 @@ class StatsCounter:
                 cost = self.update_cost(cost, 0.75, 0.75)
 
             # Combat units cost 25% more
-            elif self.prestige == 'Apex Predator' and unit not in {'BileLauncherZagara', 'QueenCoop', 'Overseer', 'SpineCrawler', 'SporeCrawler'}:
+            elif self.prestige == 'Apex Predator' and unit not in {
+                    'BileLauncherZagara', 'QueenCoop', 'QueenCoopBurrowed', 'Overseer', 'OverseerSiegeMode', 'SpineCrawler', 'SpineCrawlerUprooted',
+                    'SporeCrawler', 'SpineCrawlerUprooted'
+            }:
                 cost = self.update_cost(cost, 1.25, 1.25)
 
         # Combat units cost +25% more
         elif self.commander == 'Zeratul' and self.prestige == 'Knowledge Seeker' and unit not in {
-                'ZeratulObserver', 'ZeratulPhotonCannon', 'ZeratulWarpPrism'
+                'ZeratulObserver', 'ZeratulObserverSiegeMode', 'ZeratulPhotonCannon', 'ZeratulWarpPrism', 'ZeratulWarpPrismPhasing'
         }:
             cost = self.update_cost(cost, 1.25, 1.25)
 

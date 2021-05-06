@@ -876,9 +876,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
                 # Don't count base Roaches morphing into Brutalisks (unlike RoachVile, these count as dead when morphing)
                 # RavagerAbathur are killed as well
-                if _killed_unit_type in {'Roach','RavagerAbathur'} \
+                if _killed_unit_type in {'Roach','RavagerAbathur','RoachVileBurrowed','RoachBurrowed','SwarmHostBurrowed','QueenBurrowed'} \
                     and commander_fallback.get(_losing_player) == 'Abathur' \
                     and event['m_killerPlayerId'] is None:
+                    continue
+
+                # Don't count Drone losses without killing player
+                if _killed_unit_type == 'Drone' and event.get('m_killerPlayerId') is None:
                     continue
 
                 # Add losses
@@ -911,7 +915,7 @@ def analyse_replay(filepath, main_player_handles=None):
             except Exception:
                 logger.error(traceback.format_exc())
 
-    # pprint(unit_type_dict_main)
+    pprint(unit_type_dict_main)
     # pprint(unit_type_dict_ally)
     # pprint(unit_type_dict_amon)
     # logger.info(f'Kill counts: {killcounts}')
