@@ -1419,6 +1419,7 @@ unit_base_costs = {
         'Tempest': (300, 200),
         'Zealot': (100, 0),
         'Observer': (25, 75),
+        'Zealot': (100, 0),
         'ZealotAiur': (100, 0)
     },
     'Dehaka': {
@@ -1475,6 +1476,7 @@ unit_base_costs = {
     },
     'Karax': {
         'ColossusPurifier': (390, 260),
+        'Colossus': (390, 260),
         'ImmortalAiur': (325, 130),
         'Interceptor': (0, 0),
         'KhaydarinMonolith': (300, 100),
@@ -1612,7 +1614,9 @@ unit_base_costs = {
         'Oracle': (100, 75),
         'PhotonCannon': (150, 0),
         'StalkerShakuras': (125, 50),
+        'Stalker': (125, 50),
         'VoidRayShakuras': (250, 150),
+        'VoidRay': (250, 150),
         'ZealotShakuras': (100, 0)
     },
     'Zagara': {
