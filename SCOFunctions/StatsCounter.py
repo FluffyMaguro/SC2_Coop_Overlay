@@ -94,7 +94,7 @@ class StatsCounter:
     def update_mastery(self, idx: int, count: int):
         if self.enable_updates and self.masteries[idx] != count:
             self.masteries[idx] = count
-            logger.info(f"Updated mastery: {self.masteries}")
+            logger.debug(f"Updated mastery: {self.masteries}")
 
     def update_prestige(self, prestige: int):
         if self.prestige != prestige:
@@ -109,7 +109,7 @@ class StatsCounter:
     def update_commander(self, commander: str):
         if self.enable_updates and self.commander != commander:
             self.commander = 'Horner' if commander == 'Han & Horner' else commander
-            logger.info(f"Updated commander: {self.commander}")
+            logger.debug(f"Updated commander: {self.commander}")
 
     def unit_change_event(self, unit: str, old_unit: str):
         """ Tracks necessary unit changes"""
