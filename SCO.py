@@ -121,8 +121,7 @@ class UI_TabWidget(object):
         app.setFont(font)
 
         # Charts
-        if SM.settings['show_charts']:
-            SM.settings['width'] = 0.7
+        SM.width_for_graphs()
 
         # Dark theme
         if SM.settings['dark_theme']:
@@ -383,8 +382,7 @@ class UI_TabWidget(object):
         SM.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
         SM.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
 
-        if SM.settings['show_charts']:
-            SM.settings['width'] = 0.7
+        SM.width_for_graphs()
 
         SM.settings['show_chat'] = self.TAB_TwitchBot.ch_twitch_chat.isChecked()
         if hasattr(self, 'chat_widget'):

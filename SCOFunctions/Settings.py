@@ -147,5 +147,10 @@ class CSettings:
         del out['rng_choices']
         return out
 
+    def width_for_graphs(self):
+        """ Checks whether the width needs to be changed for graphs"""
+        if self.settings['show_charts'] and self.settings['width'] < 0.7:
+            self.settings['width'] = 0.7
+
 
 Setting_manager = CSettings()
