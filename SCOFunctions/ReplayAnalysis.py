@@ -915,7 +915,7 @@ def analyse_replay(filepath, main_player_handles=None):
             except Exception:
                 logger.error(traceback.format_exc())
 
-    pprint(unit_type_dict_main)
+    # pprint(unit_type_dict_main)
     # pprint(unit_type_dict_ally)
     # pprint(unit_type_dict_amon)
     # logger.info(f'Kill counts: {killcounts}')
