@@ -427,7 +427,7 @@ class StatsCounter:
             # Combat units cost 25% more
             elif self.prestige == 'Apex Predator' and unit not in {
                     'BileLauncherZagara', 'QueenCoop', 'QueenCoopBurrowed', 'Overseer', 'OverseerSiegeMode', 'SpineCrawler', 'SpineCrawlerUprooted',
-                    'SporeCrawler', 'SpineCrawlerUprooted'
+                    'SporeCrawler', 'SporeCrawlerUprooted'
             }:
                 cost = self.update_cost(cost, 1.25, 1.25)
 

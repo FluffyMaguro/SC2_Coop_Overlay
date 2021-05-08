@@ -110,5 +110,12 @@
     "Unlocked prestiges shown instead of tried prestiges",
     "Enemy scarabs not counting to player kills",
     "Minor tweaks and fixes"
+  ],
+  "236": [
+    "Added graphs for army value, used supply, kills, mining rate",
+    "Bars under units show relative number of kills. These can be compared between commanders.",
+    "Abathur P3 correctly identified",
+    "Many fixes for unit counting",
+    "Minor tweaks and fixes"
   ]
 }

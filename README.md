@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.35/SC2CoopOverlay.2.35.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.36/SC2CoopOverlay.2.36.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -99,7 +99,47 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 * Indirectly killed Interceptors are counted towards player kills which is not the case in kills showed in-game. Directly killed interceptors are counted in both cases.
 
 
+# Overlay customization
+
+For customization locate **custom.css** and **custom.js** in the overlay folder (in Layouts/).
+These files contain your customization and are not overridden when the the overlay updates.
+
+**>> Change the number of units shown <<**
+
+Add this to *custom.js* and change the value. Higher numbers might overlap with other elements or won't fit onscreen.
+```javascript
+maxUnits = 5;
+```
+**>> Hide bars under units <<**
+
+Add this to *custom.css*
+```css
+.unitkillbg {
+    opacity: 0;
+}
+```
+**>> Hide certain charts <<**
+
+Add this to *custom.js*, and remove those that you don't want.
+```javascript
+CC = {
+    'army': null,
+    'supply': null,
+    'killed': null,
+    'mining': null
+  }
+  ```
+
+
 # Changelog
+
+* 2.36 version
+
+      - Added graphs for army value, used supply, kills, mining rate
+      - Bars under units show relative number of kills. These can be compared between commanders.
+      - Abathur P3 correctly identified
+      - Many fixes for unit counting
+      - Minor tweaks and fixes
 
 * 2.35 version
 
