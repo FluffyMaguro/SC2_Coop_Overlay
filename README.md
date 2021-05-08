@@ -18,9 +18,9 @@ For bugs, feedback and suggestions check [my discord](https://discord.com/invite
 
 
 
-![Screenshot](./Screenshots/widescreen.jpg)
+![Screenshot](https://i.imgur.com/4fipWEZ.jpg)
 
-![Screenshot](./Screenshots/Info.png)
+![Screenshot](https://i.imgur.com/PTZ8Nwn.png)
 
 # How to use
 1. Extract the archive
