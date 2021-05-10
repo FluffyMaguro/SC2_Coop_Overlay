@@ -1006,18 +1006,34 @@ def analyse_replay(filepath, main_player_handles=None):
 
     def fill_unit_kills_and_icons(player, pdict, percent_cutoff=-1):
         """ Fills units into output dictionary, fill created/list units into icons """
+
+        unitkey = 'mainUnits' if player == main_player else 'allyUnits'
+        iconkey = 'mainIcons' if player == main_player else 'allyIcons'
+        replay_report_dict[unitkey] = dict()
+        player_kill_count = killcounts[player] if killcounts[player] != 0 else 1  # Prevent division by zero
+
+        # Go through raw dictionary with raw unit names
+        for unit in pdict:
+            if unit in {'AbathurLocust', 'Locust', 'LocustMP', 'DehakaCreeperFlying', 'DehakaLocust'}:
+                replay_report_dict[iconkey]['locust'] = replay_report_dict[iconkey].get('locust', 0) + pdict[unit][0]
+            elif unit in {
+                    'BroodlingEscortStetmann', 'BroodlingEscort', 'Broodling', 'KerriganInfestBroodling', 'StukovInfestBroodling', 'BroodlingStetmann'
+            }:
+                replay_report_dict[iconkey]['broodling'] = replay_report_dict[iconkey].get('broodling', 0) + pdict[unit][0]
+
+        # Delete broodling/locust if the number isn't significant
+        for unit in ('broodling', 'locust'):
+            if 0 < replay_report_dict[iconkey].get(unit, 0) < 200:
+                del replay_report_dict[iconkey][unit]
+
+        # Switch names, sort, etc.
         new_dict = switch_names(pdict)
         sorted_dict = {k: v
                        for k, v in sorted(new_dict.items(), reverse=True, key=lambda item: item[1][0])
                        }  # Sorts by number of create (0), lost (1), kills (2), K/D (3)
         sorted_dict = {k: v for k, v in sorted(sorted_dict.items(), reverse=True, key=lambda item: item[1][2])}
 
-        # Save data
-        unitkey = 'mainUnits' if player == main_player else 'allyUnits'
-        iconkey = 'mainIcons' if player == main_player else 'allyIcons'
-        replay_report_dict[unitkey] = dict()
-        player_kill_count = killcounts[player] if killcounts[player] != 0 else 1  # Prevent division by zero
-
+        # Go through new dictionary
         for unit in sorted_dict:
             if (sorted_dict[unit][2] / player_kill_count > percent_cutoff):
                 replay_report_dict[unitkey][unit] = sorted_dict[unit]
