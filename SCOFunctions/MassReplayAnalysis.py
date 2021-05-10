@@ -442,8 +442,11 @@ def _add_units_amon(unit_data: dict, r: dict):
 
         names = {0: 'created', 1: 'lost', 2: 'kills'}
         for i in range(3):
-            if isinstance(r.amon_units[unit][i], int) or isinstance(r.amon_units[unit][i], float):
-                unit_data[unit][names[i]] += r.amon_units[unit][i]
+            try:
+                if isinstance(r.amon_units[unit][i], int) or isinstance(r.amon_units[unit][i], float):
+                    unit_data[unit][names[i]] += r.amon_units[unit][i]
+            except Exception:
+                logger.error(f"{r.amon_units[unit]=}\n{traceback.format_exc()}")
 
 
 def _process_dict_amon(unit_data: dict):

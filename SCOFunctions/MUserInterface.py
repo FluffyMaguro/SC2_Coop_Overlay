@@ -1002,7 +1002,7 @@ class DifficultyEntry(QtWidgets.QWidget):
 
         if bg:
             self.bg = QtWidgets.QFrame(self)
-            self.bg.setGeometry(QtCore.QRect(0, 13, 180, 16))
+            self.bg.setGeometry(QtCore.QRect(0, 13, 225, 16))
             self.bg.setAutoFillBackground(True)
             self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
