@@ -188,6 +188,7 @@ class UI_TabWidget(object):
         if not self.new_version:
             return
 
+        TabWidget.show_update_message()
         self.TAB_Main.LA_Version.setText('New version available!')
 
         # Create button
@@ -640,7 +641,8 @@ class UI_TabWidget(object):
 
             self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
-            self.WebPage = self.WebView.page()
+            self.WebPage = MUI.WebEnginePage(self.WebView)
+            self.WebView.setPage(self.WebPage)
             self.WebPage.setBackgroundColor(QtCore.Qt.transparent)
             self.set_WebView_size_location(SM.settings['monitor'])
 

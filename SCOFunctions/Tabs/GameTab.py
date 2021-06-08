@@ -91,7 +91,7 @@ class GameTab(QtWidgets.QWidget):
         self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
         self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))
         self.bt_games_search.setStyleSheet("font-weight: normal")
-        self.bt_games_search.setText("GO")
+        self.bt_games_search.setIcon(self.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_FileDialogContentsView')))
         self.bt_games_search.clicked.connect(self.search_games)
         self.bt_games_search.setShortcut("Return")
 

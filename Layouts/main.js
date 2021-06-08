@@ -413,9 +413,10 @@ function postGameStats(data, showing = false) {
     fillunits('CMunits2', data['allyUnits'], data['allyCommander'], gP2Color, totalkills);
 
     fill('CMname3', 'Amon');
-    fillunits('CMunits3', data['amon_units'], null, 'red');
+    fillunits('CMunits3', data['amon_units'], null, 'red', totalkills);
 
-    showstats();
+    // add a tiny delay before updating. This can smooth out things on some systems.
+    setTimeout(showstats, 10);
 
     //victory data is for automatic showing. In that case automatically hide. Otherwise hide loader.
     if (data['Victory'] == null) {
@@ -429,6 +430,7 @@ function postGameStats(data, showing = false) {
 
 
 function showhide() {
+    console.log('showhide()');
     if (!toBeShown) showstats();
     else hidestats()
 }

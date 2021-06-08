@@ -16,6 +16,7 @@ from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('UI', 'INFO')
+loggerJS = logclass('JS', 'INFO')
 
 
 def get_shadow():
@@ -1438,8 +1439,12 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                 text += f"\n{SM.settings[key]} → {setting_dict[key]}"
         return text
 
-    def show_minimize_message(self, message=''):
+    def show_minimize_message(self):
         self.tray_icon.showMessage("StarCraft Co-op Overlay", f"App was minimized into the tray{self.format_close_message()}",
+                                   QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
+
+    def show_update_message(self):
+        self.tray_icon.showMessage("StarCraft Co-op Overlay", f"New version available!",
                                    QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
 
     def tray_activated(self, reason):
@@ -1469,6 +1474,15 @@ class CustomWebView(QtWebEngineWidgets.QWebEngineView):
         if ok:
             self.page().runJavaScript(f"do_not_use_websocket = true;")
             MF.resend_init_message()
+
+
+class WebEnginePage(QtWebEngineWidgets.QWebEnginePage):
+    """ Custom webengine page for logging javascript messages"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def javaScriptConsoleMessage(self, level, msg, line, sourceID):
+        loggerJS.info(f"{msg} | line: {line} ({sourceID})")
 
 
 class PatchNotes(QtWidgets.QWidget):
