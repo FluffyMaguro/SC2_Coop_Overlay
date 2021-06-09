@@ -14,6 +14,7 @@ from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
 from SCOFunctions.MTheming import set_dark_theme, MColors
 from SCOFunctions.Settings import Setting_manager as SM
+from SCOFunctions.HelperFunctions import isWindows
 
 logger = logclass('UI', 'INFO')
 loggerJS = logclass('JS', 'INFO')
@@ -30,7 +31,10 @@ def get_shadow():
 def find_file(file):
     new_path = os.path.abspath(file)
     logger.info(f'Finding file {new_path}')
-    subprocess.Popen(f'explorer /select,"{new_path}"')
+    if isWindows():
+        subprocess.Popen(f'explorer /select,"{new_path}"')
+    else:
+        subprocess.Popen(["open", new_path])
 
 
 def fi(number):
@@ -1444,8 +1448,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
                                    QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
 
     def show_update_message(self):
-        self.tray_icon.showMessage("StarCraft Co-op Overlay", f"New version available!",
-                                   QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
+        self.tray_icon.showMessage("StarCraft Co-op Overlay", f"New version available!", QtGui.QIcon(innerPath('src/OverlayIcon.ico')), 2000)
 
     def tray_activated(self, reason):
         """ Hides/shows main window when the tray icon is double clicked """
