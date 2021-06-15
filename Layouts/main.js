@@ -34,6 +34,7 @@ var last_shown_file = '';
 var do_not_use_websocket = false;
 var minimum_kills = 1; // minimum number of kills for a unit to be shown
 var show_charts = true;
+var show_player_total_kills = false;
 
 //main functionality
 setColors(null, null, null, null);
@@ -390,8 +391,14 @@ function postGameStats(data, showing = false) {
             document.getElementById('killbar1').style.width = percent1;
             document.getElementById('killbar2').style.width = percent2
         };
-        fill('percent1', percent1);
-        fill('percent2', percent2);
+        if (show_player_total_kills) {
+            fill('percent1', `${percent1} (${data['mainkills']})`);
+            fill('percent2', `${percent2} (${data['allykills']})`);
+        } else {
+            fill('percent1', percent1);
+            fill('percent2', percent2);
+        }
+
     } else {
         document.getElementById('killbar1').style.width = '50%';
         document.getElementById('killbar2').style.width = '50%';

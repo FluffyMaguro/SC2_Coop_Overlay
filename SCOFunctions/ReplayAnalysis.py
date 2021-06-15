@@ -348,6 +348,7 @@ def analyse_replay(filepath, main_player_handles=None):
     user_leave_times = dict()
     mind_controlled_units = set()
     zagaras_dummy_zerglings = set()
+    ally_kills_counted_toward_main = 0  # Number of kills counted from ally toward main because the ally left
     VespeneDroneIdentifier = DroneIdentifier(replay['players'][main_player].get('commander', None),
                                              replay['players'][ally_player].get('commander', None))
     mainStatsCounter = StatsCounter(masteries=replay['players'][main_player].get('masteries', (0, 0, 0, 0, 0, 0)),
@@ -650,6 +651,9 @@ def analyse_replay(filepath, main_player_handles=None):
                         pass
                     elif _killing_player in amon_players and not _losing_player in (1, 2):
                         pass
+                    elif _killing_player == ally_player and ally_player in user_leave_times:
+                        killcounts[main_player] += 1
+                        ally_kills_counted_toward_main += 1
                     else:
                         killcounts[_killing_player] += 1
 
@@ -1037,7 +1041,16 @@ def analyse_replay(filepath, main_player_handles=None):
         for unit in sorted_dict:
             if (sorted_dict[unit][2] / player_kill_count > percent_cutoff):
                 replay_report_dict[unitkey][unit] = sorted_dict[unit]
-                replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2] / player_kill_count, 2)
+
+                # Calculating kill fractions. In case of ally leaving, we want to adjust player_kill_count with kills counted towards the main.
+                if ally_kills_counted_toward_main > 0 and unitkey == 'allyUnits':
+                    replay_report_dict[unitkey][unit][3] = round(
+                        replay_report_dict[unitkey][unit][2] / (player_kill_count + ally_kills_counted_toward_main), 2)
+                elif ally_kills_counted_toward_main > 0 and unitkey == 'mainUnits':
+                    replay_report_dict[unitkey][unit][3] = round(
+                        replay_report_dict[unitkey][unit][2] / (player_kill_count - ally_kills_counted_toward_main), 2)
+                else:
+                    replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2] / player_kill_count, 2)
 
                 # Copy created & lost stats from Dehaka
                 if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
