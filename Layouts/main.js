@@ -35,6 +35,7 @@ var do_not_use_websocket = false;
 var minimum_kills = 1; // minimum number of kills for a unit to be shown
 var show_charts = true;
 var show_player_total_kills = false;
+var func_on_new_data = null;
 
 //main functionality
 setColors(null, null, null, null);
@@ -297,9 +298,10 @@ function postGameStats(data, showing = false) {
     fill('comp', data['comp']);
 
     // update charts
-    if (data['player_stats'] != null) {
-        plot_charts(data['player_stats'])
-    }
+    if (data['player_stats'] != null) plot_charts(data['player_stats']);
+
+    // if there is an custom function declared 
+    if (func_on_new_data != null) func_on_new_data(data);
 
     // save file name
     last_shown_file = data['file'];
