@@ -1008,13 +1008,12 @@ def analyse_replay(filepath, main_player_handles=None):
     if replay_report_dict['mainCommander'] == '':
         logger.error('Not a Co-op replay')
 
-    def fill_unit_kills_and_icons(player, pdict, percent_cutoff=-1):
+    def fill_unit_kills_and_icons(player, pdict):
         """ Fills units into output dictionary, fill created/list units into icons """
 
         unitkey = 'mainUnits' if player == main_player else 'allyUnits'
         iconkey = 'mainIcons' if player == main_player else 'allyIcons'
         replay_report_dict[unitkey] = dict()
-        player_kill_count = killcounts[player] if killcounts[player] != 0 else 1  # Prevent division by zero
 
         # Go through raw dictionary with raw unit names
         for unit in pdict:
@@ -1039,27 +1038,28 @@ def analyse_replay(filepath, main_player_handles=None):
 
         # Go through new dictionary
         for unit in sorted_dict:
-            if (sorted_dict[unit][2] / player_kill_count > percent_cutoff):
-                replay_report_dict[unitkey][unit] = sorted_dict[unit]
+            replay_report_dict[unitkey][unit] = sorted_dict[unit]
 
-                # Calculating kill fractions. In case of ally leaving, we want to adjust player_kill_count with kills counted towards the main.
-                if ally_kills_counted_toward_main > 0 and unitkey == 'allyUnits':
-                    replay_report_dict[unitkey][unit][3] = round(
-                        replay_report_dict[unitkey][unit][2] / (player_kill_count + ally_kills_counted_toward_main), 2)
-                elif ally_kills_counted_toward_main > 0 and unitkey == 'mainUnits':
-                    replay_report_dict[unitkey][unit][3] = round(
-                        replay_report_dict[unitkey][unit][2] / (player_kill_count - ally_kills_counted_toward_main), 2)
-                else:
-                    replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2] / player_kill_count, 2)
+            # Calculating kill fractions. In case of ally leaving, we want to adjust killcounts[player] with kills counted towards the main.
+            if ally_kills_counted_toward_main > 0 and unitkey == 'allyUnits' and (killcounts[player] + ally_kills_counted_toward_main) > 0:
+                replay_report_dict[unitkey][unit][3] = round(
+                    replay_report_dict[unitkey][unit][2] / (killcounts[player] + ally_kills_counted_toward_main), 2)
+            elif ally_kills_counted_toward_main > 0 and unitkey == 'mainUnits' and (killcounts[player] - ally_kills_counted_toward_main) > 0:
+                replay_report_dict[unitkey][unit][3] = round(
+                    replay_report_dict[unitkey][unit][2] / (killcounts[player] - ally_kills_counted_toward_main), 2)
+            elif killcounts[player] > 0:
+                replay_report_dict[unitkey][unit][3] = round(replay_report_dict[unitkey][unit][2] / killcounts[player], 2)
+            else:
+                replay_report_dict[unitkey][unit][3] = 0
 
-                # Copy created & lost stats from Dehaka
-                if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
-                    replay_report_dict[unitkey][unit][0] = sorted_dict['Dehaka'][0]
-                    replay_report_dict[unitkey][unit][1] = sorted_dict['Dehaka'][1]
+            # Copy created & lost stats from Dehaka
+            if unit == 'Zweihaka' and 'Dehaka' in sorted_dict:
+                replay_report_dict[unitkey][unit][0] = sorted_dict['Dehaka'][0]
+                replay_report_dict[unitkey][unit][1] = sorted_dict['Dehaka'][1]
 
-                if unit in dont_show_created_lost:
-                    replay_report_dict[unitkey][unit][0] = '-'
-                    replay_report_dict[unitkey][unit][1] = '-'
+            if unit in dont_show_created_lost:
+                replay_report_dict[unitkey][unit][0] = '-'
+                replay_report_dict[unitkey][unit][1] = '-'
 
             # Icons: Created units
             if unit in icon_units:
