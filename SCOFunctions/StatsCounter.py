@@ -116,7 +116,7 @@ class StatsCounter:
         # Main analysis doesn't track morphs between Mengsk infantry.
         # Only troopers created and deaths for all types.
         # So let's adjust army_valie_offset based on their morhps.
-        logger.debug(f"Morph: {old_unit} → {unit}")
+        before = self.army_value_offset
 
         # Trooper → Upgrade Trooper
         if old_unit == 'TrooperMengsk' and unit in {'TrooperMengskAA', 'TrooperMengskFlamethrower', 'TrooperMengskImproved'}:
@@ -158,25 +158,52 @@ class StatsCounter:
         elif old_unit == 'GuardianMP' and unit == 'LeviathanCocoon':
             self.army_value_offset -= sum(self.unit_cost('GuardianMP')[2:]) - sum(self.unit_cost('Mutalisk'))
 
+        # Leviathan → Guardian
+        elif unit == 'GuardianMP' and old_unit == 'LeviathanCocoon':
+            self.army_value_offset += sum(self.unit_cost('GuardianMP')[2:]) - sum(self.unit_cost('Mutalisk'))
+
         # Devourer → Leviathan
         elif old_unit == 'Devourer' and unit == 'LeviathanCocoon':
             self.army_value_offset -= sum(self.unit_cost('Devourer')[2:]) - sum(self.unit_cost('Mutalisk'))
+
+        # Leviathan → Devourer
+        elif unit == 'Devourer' and old_unit == 'LeviathanCocoon':
+            self.army_value_offset += sum(self.unit_cost('Devourer')[2:]) - sum(self.unit_cost('Mutalisk'))
 
         # Viper → Leviathan
         elif old_unit == 'Viper' and unit == 'LeviathanCocoon':
             self.army_value_offset -= sum(self.unit_cost('Viper')) - sum(self.unit_cost('Mutalisk'))
 
+        # Leviathan → Viper
+        elif unit == 'Viper' and old_unit == 'LeviathanCocoon':
+            self.army_value_offset += sum(self.unit_cost('Viper')) - sum(self.unit_cost('Mutalisk'))
+
         # Swarm Host → Brutalisk
         elif old_unit in {'SwarmHost', 'SwarmHostBurrowed'} and unit == 'BrutaliskCocoonSwarmhost':
             self.army_value_offset -= sum(self.unit_cost('SwarmHost')) - sum(self.unit_cost('RoachVile'))
+
+        # Brutalisk → Swarm Host
+        elif unit in {'SwarmHost', 'SwarmHostBurrowed'} and old_unit == 'BrutaliskCocoonSwarmhost':
+            self.army_value_offset += sum(self.unit_cost('SwarmHost')) - sum(self.unit_cost('RoachVile'))
 
         # Ravager → Brutalisk
         elif old_unit in {'RavagerAbathur', 'RavagerAbathurBurrowed'} and unit == 'BrutaliskCocoonRavager':
             self.army_value_offset -= sum(self.unit_cost('RavagerAbathur')[2:]) - sum(self.unit_cost('RoachVile'))
 
+        # Brutalisk → Ravager
+        elif unit in {'RavagerAbathur', 'RavagerAbathurBurrowed'} and old_unit == 'BrutaliskCocoonRavager':
+            self.army_value_offset += sum(self.unit_cost('RavagerAbathur')[2:]) - sum(self.unit_cost('RoachVile'))
+
         # Queen → Brutalisk
         elif old_unit in {'Queen', 'QueenBurrowed'} and unit == 'BrutaliskCocoonQueen':
             self.army_value_offset -= sum(self.unit_cost('Queen')) - sum(self.unit_cost('RoachVile'))
+
+        # Brutalisk → Queen
+        elif unit in {'Queen', 'QueenBurrowed'} and old_unit == 'BrutaliskCocoonQueen':
+            self.army_value_offset += sum(self.unit_cost('Queen')) - sum(self.unit_cost('RoachVile'))
+
+
+        logger.debug(f"Morph: {old_unit} → {unit} | offset difference: {self.army_value_offset-before}")
 
     def mindcontrolled_unit_dies(self, unit: str):
         # Check we the unit overlaps with commander unit roster.
