@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.36/SC2CoopOverlay.2.36.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.37/SC2CoopOverlay.2.37.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -104,13 +104,13 @@ On Windows 7 enable aero theme and set “Enable Transparency” in “Window Co
 For customization locate **custom.css** and **custom.js** in the overlay folder (in Layouts/).
 These files contain your customization and are not overridden when the the overlay updates.
 
-**>> Change the number of units shown <<**
+**1. Change the number of units shown**
 
 Add this to *custom.js* and change the value. Higher numbers might overlap with other elements or won't fit onscreen.
 ```javascript
 maxUnits = 5;
 ```
-**>> Hide bars under units <<**
+**2. Hide bars under units**
 
 Add this to *custom.css*
 ```css
@@ -118,7 +118,7 @@ Add this to *custom.css*
     opacity: 0;
 }
 ```
-**>> Hide certain charts <<**
+**3. Hide certain charts**
 
 Add this to *custom.js*, and remove those that you don't want.
 ```javascript
@@ -130,8 +130,30 @@ CC = {
   }
   ```
 
+**4. Custom function that runs when new replay data is filled**
+
+Add something like this to custom.js. The function will run when new data is added.
+
+```javascript
+func_on_new_data = function some_function_name(data) {
+    // This shows you what's the structure of replay data (can be removed)
+    for(var key in data) {
+        console.log(key + ":\t\t" + data[key] + "\t\t")
+    }
+}
+```
+
 
 # Changelog
+
+* 2.37 version
+
+      - The number of locust and broodlings created is shown in icons
+      - Amon unit bar scaled to be comparable with player kills
+      - Counting kills towards the main player when the ally leaves
+      - Users can define custom javascript function that runs when new data is added (defined in custom.js)
+      - Various tweaks and fixes
+
 
 * 2.36 version
 
