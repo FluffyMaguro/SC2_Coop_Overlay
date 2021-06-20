@@ -3,11 +3,18 @@ Main module for StarCraft II Co-op Overlay.
 
 Causal chain:
 Setup -> Load Settings -> UI
-                       -> Server manager (thread)
-                       -> Twitch bot (thread)
+                       -> Server manager for websockets (thread)
                        -> Check replays (loop of threads)
-                       -> Mass replay analysis -> Player winrates (thread)
+                       -> Twitch bot (thread)
+                       -> Mass replay analysis -> checking for new games (thread)
                                                -> Generate stats (function)
+                       -> keyboard threads (keyboard module)
+                       -> thread for checking wake status
+
+This is my first big project, so there is a mix of very old code and new one.
+Overall it's messy with a lot of coupling, not enough separation between UI and 
+core functinality, and similar issues. It's a great learning experience nevertheless.
+
 """
 import os
 import sys

@@ -118,4 +118,12 @@
     "Many fixes for unit counting",
     "Minor tweaks and fixes"
   ]
+  ,
+  "237": [
+    "The number of locust and broodlings created shown in icons",
+    "Amon unit bar scaled to be comparable with player kills",
+    "Counting kills towards the main player when the ally leaves",
+    "Players can define custom JS function that runs when new data is added (defined in custom.js)",
+    "Various tweaks and fixes"
+  ]
 }

@@ -6,4 +6,4 @@ PyQtWebEngine==5.15.2
 requests==2.25.1
 s2protocol==5.0.7.84643.0
 urllib3==1.26.5
-websockets==8.1
+websockets==9.1
