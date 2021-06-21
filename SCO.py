@@ -48,7 +48,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 237
+APPVERSION = 238
 
 
 class Signal_Manager(QtCore.QObject):

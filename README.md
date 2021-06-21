@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.37/SC2CoopOverlay.2.37.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.38/SC2CoopOverlay.2.38.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -145,6 +145,10 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.38 version
+
+      - Fix for websockets
 
 * 2.37 version
 
