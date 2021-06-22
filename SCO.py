@@ -255,7 +255,7 @@ class UI_TabWidget(object):
         """ Changes button text and connect it to another function"""
         self.BT_NewUpdate.setText('Restart and update')
         self.BT_NewUpdate.setEnabled(True)
-        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4')
+        self.BT_NewUpdate.setStyleSheet('font-weight: bold; background-color: #5BD3C4; color: black')
         try:
             self.BT_NewUpdate.clicked.disconnect()
         except Exception:
@@ -1132,4 +1132,5 @@ if __name__ == "__main__":
     ui.stop_full_analysis()
     MF.stop_threads()
     ui.saveSettings()
+    logger.info('Exit')
     sys.exit(exit_event)

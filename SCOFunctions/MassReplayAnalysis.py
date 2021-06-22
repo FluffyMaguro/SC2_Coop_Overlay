@@ -39,6 +39,7 @@ def parse_replay(file):
         logger.error(f"{file}\n{traceback.format_exc()}")
 
 
+@catch_exceptions(logger)
 def calculate_difficulty_data(ReplayData):
     """ Calculates the number of wins and losses for each difficulty"""
     DifficultyData = dict()
@@ -60,6 +61,7 @@ def calculate_difficulty_data(ReplayData):
     return DifficultyData
 
 
+@catch_exceptions(logger)
 def calculate_map_data(ReplayData):
     """ Calculates the number of wins and losses for each map """
     MapData = dict()
@@ -124,6 +126,7 @@ def get_masterises(replay, player):
     return masteries
 
 
+@catch_exceptions(logger)
 def calculate_commander_data(ReplayData, main_handles):
     """ Calculates the number of wins and losses for each commander
     Returns separate objects for players with handles in MainHandles (capitalization not important) and those that are not"""
@@ -353,6 +356,7 @@ def calculate_unlocked_prestiges(ReplayData: list, main_handles: set) -> dict:
     return out
 
 
+@catch_exceptions(logger)
 def calculate_region_data(ReplayData, main_handles):
     """ Calculates region data - frequency, wins, losses, winrate, max ascension level, leveled commanders """
     dRegion = dict()
@@ -424,7 +428,10 @@ def _add_units(unit_data: dict, r: dict, p: int):
         if mc_unit_bonus_kills > 0 and unit == mc_units[commander]:
             unit_data[commander][unit]['kills'] += mc_unit_bonus_kills
             kills_ingame = r.players[p]['units'][unit][2] + mc_unit_bonus_kills
-            unit_data[commander][unit]['kill_percentage'].append(kills_ingame / r.players[p]['kills'])
+            if r.players[p]['kills'] > 0:
+                unit_data[commander][unit]['kill_percentage'].append(kills_ingame / r.players[p]['kills'])
+            else:
+                unit_data[commander][unit]['kill_percentage'].append(1)
             mc_unit_bonus_kills = 0
 
         # Calculate kill fraction for the rest
@@ -565,6 +572,7 @@ def _process_dict(unit_data: dict):
         unit_data[commander]['sum'] = total
 
 
+@catch_exceptions(logger)
 def calculate_unit_stats(ReplayData, main_handles):
     """ Calculates stats for each unit type for player, allies and Amon.
     This includes number of kills, created and lost for all unit types and sum"""
