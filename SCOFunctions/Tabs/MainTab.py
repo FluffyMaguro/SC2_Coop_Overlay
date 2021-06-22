@@ -383,6 +383,8 @@ class MainTab(QtWidgets.QWidget):
             if isinstance(output, dict):
                 with open(f.replace('.SC2Replay', '.json'), 'w') as outfile:
                     json.dump(output, outfile, indent=2)
+            elif output == 'Error':
+                self.p.sendInfoMessage("Failed to parse the replay file!", color=MColors.msg_failure)
 
     @staticmethod
     def paypal_clicked():
