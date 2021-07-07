@@ -429,13 +429,6 @@ class UI_TabWidget(object):
         if len(hotkeys) > len(set(hotkeys)):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color=MColors.msg_failure)
 
-        # Registry
-        out = HF.add_to_startup(SM.settings['start_with_windows'])
-        if out is not None:
-            self.sendInfoMessage(f'Warning: {out}', color=MColors.msg_failure)
-            SM.settings['start_with_windows'] = False
-            self.TAB_Main.CH_StartWithWindows.setChecked(SM.settings['start_with_windows'])
-
         # Logging
         logclass.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
 
@@ -451,6 +444,14 @@ class UI_TabWidget(object):
                 else:
                     logger.info(f'Changed: {key}: {previous_settings[key]} → {SM.settings[key]}')
                 changed_keys.add(key)
+
+        # Registry
+        if 'start_with_windows' in changed_keys:
+            out = HF.add_to_startup(SM.settings['start_with_windows'])
+            if out is not None:
+                self.sendInfoMessage(f'Warning: {out}', color=MColors.msg_failure)
+                SM.settings['start_with_windows'] = False
+                self.TAB_Main.CH_StartWithWindows.setChecked(SM.settings['start_with_windows'])
 
         # Resend init message if duration has changed. Colors are handle in color picker.
         if 'duration' in changed_keys:

@@ -403,7 +403,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
     if commander in mc_units and mc_units[commander] in r.players[p]['units']:
         for unit in r.players[p]['units']:
             # If unit wasn't created, but still got kills
-            if r.players[p]['units'][unit][0] == 0 or (commander == 'Karax' and unit == 'Disruptor') or (commander != 'Tychus'
+            if r.players[p]['units'][unit][0] == 0 or (commander != 'Fenix' and unit == 'Disruptor') or (commander != 'Tychus'
                                                                                                          and unit == 'Auto-Turret'):
                 mc_unit_bonus_kills += r.players[p]['units'][unit][2]
 

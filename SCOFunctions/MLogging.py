@@ -10,7 +10,7 @@ class logclass:
     """ Custom class for logging purposes """
     LOGGING = False
     LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
-    FILE = "Logging.txt"
+    FILE = "Logs.txt"
 
     def __init__(self, name, level, showtype=True, showdate=True):
         self.name = name

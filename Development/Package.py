@@ -15,7 +15,7 @@ for root, directories, files in os.walk(os.getcwd()):
     for directory in directories:
         if directory == '__pycache__':
             dir_path = os.path.join(root,directory)
-            if 's2protocol' in root:
+            if 's2protocol' in root or 'websockets' in root:
                 print(f'Removing: {dir_path}')
                 shutil.rmtree(dir_path)
 

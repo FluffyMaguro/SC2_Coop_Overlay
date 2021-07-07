@@ -190,8 +190,6 @@ def find_replays(directory):
         for file in files:
             if file.endswith('.SC2Replay'):
                 file_path = os.path.join(root, file)
-                if len(file_path) > 255:
-                    file_path = '\\\?\\' + file_path
                 file_path = os.path.normpath(file_path)
                 replays.add(file_path)
     return replays
@@ -250,8 +248,6 @@ def check_replays():
         for root, directories, files in os.walk(SM.settings['account_folder']):
             for file in files:
                 file_path = os.path.join(root, file)
-                if len(file_path) > 255:
-                    file_path = '\\\?\\' + file_path
                 file_path = os.path.normpath(file_path)
                 if file.endswith('.SC2Replay') and not (file_path in AllReplays):
                     with lock:

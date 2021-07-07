@@ -343,7 +343,7 @@ class StatsTab(QtWidgets.QWidget):
         self.BT_FA_stop = QtWidgets.QPushButton(self.TAB_FullAnalysis)
         self.BT_FA_stop.setGeometry(QtCore.QRect(105, 85, 80, 25))
         self.BT_FA_stop.clicked.connect(self.p.stop_full_analysis)
-        self.BT_FA_stop.setText('Stop')
+        self.BT_FA_stop.setText('Pause')
         self.BT_FA_stop.setEnabled(False)
 
         self.CH_FA_atstart = QtWidgets.QCheckBox(self.TAB_FullAnalysis)
