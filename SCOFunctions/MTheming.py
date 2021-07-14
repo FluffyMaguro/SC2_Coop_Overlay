@@ -24,7 +24,7 @@ def set_dark_theme(main, app, tab, version):
     MColors.msg = "#ccc"
     MColors.msg_success = '#4f4'
     MColors.msg_failure = '#f44'
-    MColors.chat_main = '#6587FF'
+    MColors.chat_main = '#4791ff'
     MColors.chat_other = '#20DE49'
     MColors.player_highlight = '#77f'
     MColors.game_weekly = '#4bc53b'
