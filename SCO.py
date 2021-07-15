@@ -613,9 +613,6 @@ class UI_TabWidget(object):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})\n{SM.settings_for_logs()}')
 
-        # Get monitor dimensions
-        self.desktop_widget = QtWidgets.QDesktopWidget()
-        self.sg = self.desktop_widget.screenGeometry(int(SM.settings['monitor'] - 1))
 
         # Debug files in MEI directory
         if SM.settings['debug']:
@@ -782,12 +779,13 @@ class UI_TabWidget(object):
     def set_WebView_size_location(self, monitor):
         """ Set correct size and width for the widget. Setting it to full shows black screen on my machine, works fine on notebook (thus -1 offset) """
         try:
-            self.WebView.setFixedSize(int(self.sg.width() * SM.settings['width']),
-                                      int(self.sg.height() * SM.settings['height']) - SM.settings['subtract_height'])
+            sg = QtWidgets.QDesktopWidget().screenGeometry(int(SM.settings['monitor'] - 1))
+            self.WebView.setFixedSize(int(sg.width() * SM.settings['width']),
+                                      int(sg.height() * SM.settings['height']) - SM.settings['subtract_height'])
 
             offset = QtCore.QPoint(-self.WebView.width() + 1 + int(SM.settings['right_offset']), int(SM.settings['top_offset']))
-            self.WebView.move(self.sg.topRight() + offset)
-            logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
+            self.WebView.move(sg.topRight() + offset)
+            logger.info(f'Using monitor {int(monitor)} ({sg.width()}x{sg.height()})')
         except Exception:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
 
@@ -1107,7 +1105,6 @@ class UI_TabWidget(object):
 if __name__ == "__main__":
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
-
     TabWidget = MUI.CustomQTabWidget()
     try:
         ui = UI_TabWidget()
