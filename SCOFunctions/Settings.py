@@ -56,6 +56,7 @@ class CSettings:
             'main_names': list(),
             'list_games': 100,
             'right_offset': 0,
+            'top_offset': 0,
             'width': 0.7,
             'show_charts': True,
             'replay_check_interval': 3,

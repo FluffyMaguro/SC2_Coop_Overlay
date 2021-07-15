@@ -48,7 +48,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 238
+APPVERSION = 239
 
 
 class Signal_Manager(QtCore.QObject):
@@ -792,7 +792,7 @@ class UI_TabWidget(object):
             # Substract widget  width and offset
             x = x_start - self.sg.width() * SM.settings['width'] + SM.settings['right_offset']
             # Move widget
-            self.WebView.move(int(x), self.sg.top())
+            self.WebView.move(int(x), self.sg.top() + int(SM.settings['top_offset']))
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
         except Exception:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
