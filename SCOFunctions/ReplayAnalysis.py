@@ -736,7 +736,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['propagators'] = {1: 0, 2: 0}
                         custom_kill_count['propagators'][_killing_player] += 1
 
-                    elif _killed_unit_type in ('MutatorSpiderMine', 'MutatorSpiderMineBurrowed', 'WidowMineBurrowed', 'WidowMine'):
+                    elif _killed_unit_type in {'MutatorSpiderMine', 'MutatorSpiderMineBurrowed', 'WidowMineBurrowed', 'WidowMine'}:
                         if not 'minesweeper' in custom_kill_count:
                             custom_kill_count['minesweeper'] = {1: 0, 2: 0}
                         custom_kill_count['minesweeper'][_killing_player] += 1
@@ -746,7 +746,7 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['voidrifts'] = {1: 0, 2: 0}
                         custom_kill_count['voidrifts'][_killing_player] += 1
 
-                    elif _killed_unit_type in ('MutatorTurkey', 'MutatorTurking', 'MutatorInfestedTurkey'):
+                    elif _killed_unit_type in {'MutatorTurkey', 'MutatorTurking', 'MutatorInfestedTurkey'}:
                         if not 'turkey' in custom_kill_count:
                             custom_kill_count['turkey'] = {1: 0, 2: 0}
                         custom_kill_count['turkey'][_killing_player] += 1
@@ -756,10 +756,18 @@ def analyse_replay(filepath, main_player_handles=None):
                             custom_kill_count['voidreanimators'] = {1: 0, 2: 0}
                         custom_kill_count['voidreanimators'][_killing_player] += 1
 
-                    elif _killed_unit_type in ('InfestableBiodome', 'JarbanInfestibleColonistHut', 'InfestedMercHaven', 'InfestableHut'):
+                    elif _killed_unit_type in {'InfestableBiodome', 'JarbanInfestibleColonistHut', 'InfestedMercHaven', 'InfestableHut'}:
                         if not 'deadofnight' in custom_kill_count:
                             custom_kill_count['deadofnight'] = {1: 0, 2: 0}
                         custom_kill_count['deadofnight'][_killing_player] += 1
+
+                    elif _killed_unit_type in {
+                            'MutatorMissileSplitterChild', 'MutatorMissileNuke', 'MutatorMissileSplitter', 'MutatorMissileStandard',
+                            'MutatorMissilePointDefense'
+                    }:
+                        if not 'missilecommand' in custom_kill_count:
+                            custom_kill_count['missilecommand'] = {1: 0, 2: 0}
+                        custom_kill_count['missilecommand'][_killing_player] += 1
 
                 # If an enemy mutator spider mine kills something, counts a kill for the first player who lost a unit to it
                 if _losing_player in [1, 2] and _killing_player in amon_players:
@@ -991,7 +999,7 @@ def analyse_replay(filepath, main_player_handles=None):
         custom_kill_count['tus'][2] += custom_kill_count['hfts'][2]
         del custom_kill_count['hfts']
 
-    for item in ('hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper'):
+    for item in {'hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper', 'missilecommand'}:
         if item in custom_kill_count:
             # Skip if it's not a Dead of Night map
             if item == 'deadofnight' and 'Dead of Night' not in replay['map_name']:

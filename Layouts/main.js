@@ -517,7 +517,7 @@ function fillicons(el, data) {
                 text = text + '<img src="Icons/' + data['outlaws'][i] + '.png">';
             }
 
-        } else if ((['hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper'].includes(key)) && (value > 0)) {
+        } else if ((['hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper', 'missilecommand'].includes(key)) && (value > 0)) {
             text = text + '<img src="Icons/' + key + '.png"> <span class="icontext">' + value + '</span>';
 
         } else if ((key == 'killbots') && (value > 0)) {
