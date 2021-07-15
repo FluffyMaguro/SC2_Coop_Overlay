@@ -785,14 +785,8 @@ class UI_TabWidget(object):
             self.WebView.setFixedSize(int(self.sg.width() * SM.settings['width']),
                                       int(self.sg.height() * SM.settings['height']) - SM.settings['subtract_height'])
 
-            # Calculate correct X offset when considering multiple monitors. Sum all widths including the current monitor.
-            x_start = 0
-            for i in range(0, SM.settings['monitor']):
-                x_start += self.desktop_widget.screenGeometry(i).width()
-            # Substract widget  width and offset
-            x = x_start - self.sg.width() * SM.settings['width'] + SM.settings['right_offset']
-            # Move widget
-            self.WebView.move(int(x), self.sg.top() + int(SM.settings['top_offset']))
+            offset = QtCore.QPoint(-self.WebView.width() + 1 + int(SM.settings['right_offset']), int(SM.settings['top_offset']))
+            self.WebView.move(self.sg.topRight() + offset)
             logger.info(f'Using monitor {int(monitor)} ({self.sg.width()}x{self.sg.height()})')
         except Exception:
             logger.error(f"Failed to set to monitor {monitor}\n{traceback.format_exc()}")
@@ -1113,6 +1107,7 @@ class UI_TabWidget(object):
 if __name__ == "__main__":
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
+
     TabWidget = MUI.CustomQTabWidget()
     try:
         ui = UI_TabWidget()
