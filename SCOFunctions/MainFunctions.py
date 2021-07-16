@@ -7,6 +7,7 @@ Checking for new replays and games. Uploading replays to AOM. And more.
 import os
 import json
 import time
+import datetime
 import threading
 import traceback
 
@@ -161,6 +162,31 @@ def names_fallback(handles, replays):
                 snames.add(r.players[p]['name'])
                 shandles.remove(r.players[p]['handle'])
     return snames
+
+
+def update_last_game_time_difference(data):
+    """ Replaces last game time with time delta"""
+    if data is None:
+        return None
+
+    now = datetime.datetime.now()
+    player = list(data.keys())[0]
+    ndata = {player: data[player].copy()}
+    game_time = datetime.datetime.strptime(data[player][6], '%Y:%m:%d:%H:%M:%S')
+    delta = (now - game_time).total_seconds()
+
+    days, delta = divmod(delta, 86400)
+    hours, delta = divmod(delta, 3600)
+    minutes, _ = divmod(delta, 60)
+
+    s = ""
+    if days > 0:
+        s += f"{days:.0f} days "
+    if hours > 0:
+        s += f"{hours:.0f} hours "
+    s += f"{minutes:.0f} minutes ago"
+    ndata[player][6] = s
+    return ndata
 
 
 def update_names_and_handles(ACCOUNTDIR, AllReplays):
@@ -459,7 +485,7 @@ def keyboard_SHOW():
 def keyboard_PLAYERWINRATES():
     """Show/hide winrate & notes """
     if most_recent_playerdata:
-        sendEvent({'playerEvent': True, 'data': most_recent_playerdata})
+        sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(most_recent_playerdata)})
     else:
         logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
@@ -578,7 +604,7 @@ def check_for_new_game(progress_callback):
                             data[player].append(SM.settings['player_notes'][player])
 
                     most_recent_playerdata = data
-                    sendEvent({'playerEvent': True, 'data': data})
+                    sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(data)})
 
                 # Identify map
                 try:

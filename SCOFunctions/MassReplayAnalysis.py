@@ -1038,13 +1038,16 @@ class mass_replay_analysis:
             for p in (1, 2):
                 player = replay.players[p]['name']
                 if not player in winrate_data:
-                    # Wins, losses, apm, commander, commander frequency, kills
-                    winrate_data[player] = [0, 0, list(), list(), 0, list()]
+                    # Wins, losses, apm, commander, commander frequency, kills, date
+                    winrate_data[player] = [0, 0, list(), list(), 0, list(), ""]
 
                 if replay.result == 'Victory':
                     winrate_data[player][0] += 1
                 else:
                     winrate_data[player][1] += 1
+
+                if replay.date > winrate_data[player][6]:
+                    winrate_data[player][6] = replay.date
 
                 winrate_data[player][2].append(replay.players[p]['apm'])
                 winrate_data[player][3].append(replay.players[p]['commander'])
@@ -1155,10 +1158,10 @@ class mass_replay_analysis:
             data = [r for r in data if int(r.date.replace(':', '')) < maxdate]
 
         if minlength is not None:
-            data = [r for r in data if r.accurate_length  >= minlength * 60]
+            data = [r for r in data if r.accurate_length >= minlength * 60]
 
         if maxLength is not None:
-            data = [r for r in data if r.accurate_length  <= maxLength * 60]
+            data = [r for r in data if r.accurate_length <= maxLength * 60]
 
         if difficulty_filter is not None and len(difficulty_filter) > 0:
             logger.info(f'{difficulty_filter=}')
