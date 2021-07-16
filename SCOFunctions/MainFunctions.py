@@ -169,12 +169,18 @@ def update_last_game_time_difference(data):
     if data is None:
         return None
 
-    now = datetime.datetime.now()
     player = list(data.keys())[0]
-    ndata = {player: data[player].copy()}
-    game_time = datetime.datetime.strptime(data[player][6], '%Y:%m:%d:%H:%M:%S')
-    delta = (now - game_time).total_seconds()
+    if data[player] is None:
+        return data
 
+    ndata = {player: data[player].copy()}
+    now = datetime.datetime.now()
+    try:
+        game_time = datetime.datetime.strptime(data[player][6], '%Y:%m:%d:%H:%M:%S')
+    except Exception:
+        logger.error(f"Failed to parse player date!\n{data}")
+        return data
+    delta = (now - game_time).total_seconds()
     days, delta = divmod(delta, 86400)
     hours, delta = divmod(delta, 3600)
     minutes, _ = divmod(delta, 60)
