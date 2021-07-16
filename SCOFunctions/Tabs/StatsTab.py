@@ -187,6 +187,15 @@ class StatsTab(QtWidgets.QWidget):
         self.SP_MinGamelength.setProperty("value", 0)
         self.SP_MinGamelength.valueChanged.connect(self.generate_stats)
 
+        # Player name
+        self.ED_PlayerName = QtWidgets.QLineEdit(self.FR_DateTime)
+        self.ED_PlayerName.setGeometry(QtCore.QRect(330, 52, 150, 20))
+        self.ED_PlayerName.setAlignment(QtCore.Qt.AlignLeft)
+        self.ED_PlayerName.setStyleSheet("font-weight: normal")
+        self.ED_PlayerName.setToolTip("Filter by ally player name")
+        self.ED_PlayerName.setPlaceholderText("Filter by ally player name")
+        self.ED_PlayerName.textChanged.connect(self.generate_stats)
+
         # Data dump
         self.BT_FA_dump = QtWidgets.QPushButton(self.FR_Stats)
         self.BT_FA_dump.setGeometry(QtCore.QRect(850, 10, 100, 25))
@@ -419,6 +428,8 @@ class StatsTab(QtWidgets.QWidget):
         minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
+        player = None if self.ED_PlayerName.text() == '' else self.ED_PlayerName.text()
+
         include_both_main = True if self.CH_DualMain.isChecked() else False
         sub_15 = True if self.CH_Sub15.isChecked() else False
         over_15 = True if self.CH_Over15.isChecked() else False
@@ -434,7 +445,8 @@ class StatsTab(QtWidgets.QWidget):
                                                     maxLength=maxLength,
                                                     sub_15=sub_15,
                                                     over_15=over_15,
-                                                    include_both_main=include_both_main)
+                                                    include_both_main=include_both_main,
+                                                    player=player)
 
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 

@@ -1129,6 +1129,7 @@ class mass_replay_analysis:
         sub_15=True,
         over_15=True,
         include_both_main=True,
+        player=None,
     ):
         """ Filters and analyses replays replay data
         `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS 
@@ -1154,10 +1155,10 @@ class mass_replay_analysis:
             data = [r for r in data if int(r.date.replace(':', '')) < maxdate]
 
         if minlength is not None:
-            data = [r for r in data if r.length >= minlength * 60]
+            data = [r for r in data if r.accurate_length  >= minlength * 60]
 
         if maxLength is not None:
-            data = [r for r in data if r.length <= maxLength * 60]
+            data = [r for r in data if r.accurate_length  <= maxLength * 60]
 
         if difficulty_filter is not None and len(difficulty_filter) > 0:
             logger.info(f'{difficulty_filter=}')
@@ -1180,6 +1181,9 @@ class mass_replay_analysis:
 
         if not include_both_main:
             data = [r for r in data if not self.both_main_players(r)]
+
+        if player is not None:
+            data = [r for r in data if player.lower() in {p["name"].lower() for p in r.players if "name" in p}]
 
         logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)}')
 
