@@ -1096,11 +1096,13 @@ class GameEntry:
         self.la_p1.setGeometry(QtCore.QRect(160, line_spacing, 200, 21))
         self.la_p1.setAlignment(QtCore.Qt.AlignCenter)
         self.la_p1.setText(f'{self.p1_name} ({self.p1_commander})')
+        self.la_p1.setToolTip(f"Unique handle: {self.p1_handle}")
 
         self.la_p2 = QtWidgets.QLabel(self.widget)
         self.la_p2.setGeometry(QtCore.QRect(295, line_spacing, 200, 21))
         self.la_p2.setAlignment(QtCore.Qt.AlignCenter)
         self.la_p2.setText(f'{self.p2_name} ({self.p2_commander})')
+        self.la_p2.setToolTip(f"Unique handle: {self.p2_handle}")
 
         self.la_enemy = QtWidgets.QLabel(self.widget)
         self.la_enemy.setGeometry(QtCore.QRect(475, line_spacing, 41, 20))
@@ -1163,9 +1165,9 @@ class GameEntry:
         }:
             item.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             if self.result == 'Defeat':
-                item.setStyleSheet(f'color: {MColors.game_defeat}')
+                item.setStyleSheet(f'QLabel {{color: {MColors.game_defeat}}}')
             elif replay_dict.extension > 0 and not len(replay_dict.mutators):
-                item.setStyleSheet(f'color: {MColors.game_weekly}')
+                item.setStyleSheet(f'QLabel {{color: {MColors.game_weekly}}}')
 
     def show_chat(self):
         """ Shows/hides chat """
