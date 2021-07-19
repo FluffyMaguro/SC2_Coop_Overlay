@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.38/SC2CoopOverlay.2.38.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.39/SC2CoopOverlay.2.39.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -145,6 +145,15 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.39 version
+
+      - Overlay shows how long it was since the last game with your ally
+      - You can filter games with a specific ally in the statistics tab
+      - The number of missiles killed during Missile Command mutator is shown as icon
+      - Fixes for multi-monitor setups
+      - Unique player handles are shown in tooltips for players in the games tab
+      - Various tweaks and fixes
 
 * 2.38 version
 

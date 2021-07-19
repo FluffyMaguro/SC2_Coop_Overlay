@@ -127,5 +127,13 @@
   ],
   "238": [
     "Fix for websockets"
+  ],
+  "239": [
+    "Overlay shows how long it was since the last game with your ally",
+    "You can filter games with a specific ally in the statistics tab",
+    "The number of missiles killed during Missile Command mutator is shown as icon",
+    "Fixes for multi-monitor setups",
+    "Unique player handles are shown in tooltips for players in the games tab",
+    "Various tweaks and fixes"
   ]
 }

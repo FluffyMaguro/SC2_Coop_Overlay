@@ -20,7 +20,6 @@ import os
 import sys
 import json
 import shutil
-import platform
 import threading
 import traceback
 import urllib.request
