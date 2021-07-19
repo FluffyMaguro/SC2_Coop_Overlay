@@ -192,7 +192,7 @@ class StatsTab(QtWidgets.QWidget):
         self.ED_PlayerName.setGeometry(QtCore.QRect(330, 52, 150, 20))
         self.ED_PlayerName.setAlignment(QtCore.Qt.AlignLeft)
         self.ED_PlayerName.setStyleSheet("font-weight: normal")
-        self.ED_PlayerName.setToolTip("Filter by ally player name")
+        self.ED_PlayerName.setToolTip("Filter by ally player name.\nYou can use ? and * as wildcards.")
         self.ED_PlayerName.setPlaceholderText("Filter by ally player name")
         self.ED_PlayerName.textChanged.connect(self.generate_stats)
 
@@ -428,7 +428,7 @@ class StatsTab(QtWidgets.QWidget):
         minlength = None if self.SP_MinGamelength.value() == 0 else self.SP_MinGamelength.value()
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
-        player = None if self.ED_PlayerName.text() == '' else self.ED_PlayerName.text()
+        player = None if self.ED_PlayerName.text() == '' else self.ED_PlayerName.text().lower()
 
         include_both_main = True if self.CH_DualMain.isChecked() else False
         sub_15 = True if self.CH_Sub15.isChecked() else False

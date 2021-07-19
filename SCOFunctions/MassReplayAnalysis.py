@@ -6,6 +6,7 @@ import os
 import time
 import json
 import pickle
+import fnmatch
 import pathlib
 import traceback
 import statistics
@@ -1186,7 +1187,7 @@ class mass_replay_analysis:
             data = [r for r in data if not self.both_main_players(r)]
 
         if player is not None:
-            data = [r for r in data if player.lower() in {p["name"].lower() for p in r.players if "name" in p}]
+            data = [r for r in data if fnmatch.filter({p["name"].lower() for p in r.players if "name" in p}, player)]
 
         logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)}')
 
