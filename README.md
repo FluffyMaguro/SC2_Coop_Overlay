@@ -31,7 +31,7 @@ For bugs, feedback and suggestions check [my discord](https://discord.com/invite
 
 To exit the app right click the icon in the system tray and click "Quit".
 
-![Screenshot](./Screenshots/Display.jpg)
+![Screenshot](https://i.imgur.com/zq8DBy8.jpg)
 
 
 # OBS setup
@@ -45,47 +45,47 @@ If you are using game capture, you have to add overlay to OBS manually.
 # Screenshots
 **Settings:**
 
-![Screenshot](./Screenshots/1_Settings.png)
+![Screenshot](https://i.imgur.com/FU6vL5y.png)
 
 **Settings (Dark theme):**
 
-![Screenshot](./Screenshots/1_Settings_B.png)
+![Screenshot](https://i.imgur.com/m2RKl5U.png)
 
 **List of games you recently played:**
 
-![Screenshot](./Screenshots/2_Games.png)
+![Screenshot](https://i.imgur.com/THvYdpf.png)
 
 **List of players you played with:**
 
-![Screenshot](./Screenshots/3_Players.png)
+![Screenshot](https://i.imgur.com/ndrOQ4A.png)
 
 **Map statistics:**
 
-![Screenshot](./Screenshots/4_Stats_Maps.png)
+![Screenshot](https://i.imgur.com/eY2quJ6.png)
 
 **Statistics for your and allied commanders:**
 
-![Screenshot](./Screenshots/5_Stats_AlliedCommanders.png)
+![Screenshot](https://i.imgur.com/YTts8u6.png)
 
 **Unit statistics:**
 
-![Screenshot](./Screenshots/6_Stats_Units.png)
+![Screenshot](https://i.imgur.com/knFR51v.png)
 
 **Commander randomizer:**
 
-![Screenshot](./Screenshots/8_Randomizer.png)
+![Screenshot](https://i.imgur.com/4P4ga0L.png)
 
 **At the start of the game, your record with your ally calculated based on your replays and matching his name is shown:**
 
-![Screenshot](./Screenshots/winrate.png)
+![Screenshot](https://i.imgur.com/1hrMteQ.png)
 
 **Twitch chat overlay:**
 
-![Screenshot](./Screenshots/twitch_overlay.jpg)
+![Screenshot](https://i.imgur.com/JLH9AJA.jpg)
 
 **Performance overlay:**
 
-![Screenshot](./Screenshots/perf_overlay.jpg)
+![Screenshot](https://i.imgur.com/Z9Ekvdx.jpg)
 **And more...**
 
 
