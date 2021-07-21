@@ -170,7 +170,7 @@ def update_last_game_time_difference(data):
         return None
 
     player = list(data.keys())[0]
-    if data[player] is None:
+    if data[player] == [None]:
         return data
 
     ndata = {player: data[player].copy()}
