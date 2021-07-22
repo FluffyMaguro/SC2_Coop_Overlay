@@ -144,8 +144,13 @@ class CSettings:
     def settings_for_logs(self):
         """ Returns current settings that can be safely saved into logs"""
         out = self.settings.copy()
-        del out['aom_secret_key']
+        out['aom_secret_key'] = "set" if out['aom_secret_key'] else None
         del out['rng_choices']
+        del out['player_notes']
+        out['twitchbot'] = out['twitchbot'].copy()
+        out['twitchbot']['bot_oauth'] = "set" if out['twitchbot']['bot_oauth'] else None
+        del out['twitchbot']['greetings']
+        del out['twitchbot']['responses']
         return out
 
     def width_for_graphs(self):
