@@ -236,6 +236,7 @@ class StatsTab(QtWidgets.QWidget):
         self.MapsComboBox.addItem('Losses')
         self.MapsComboBox.addItem('Winrate')
         self.MapsComboBox.addItem('Bonus')
+        self.MapsComboBox.addItem('Name')
         self.MapsComboBox.activated[str].connect(self.generate_stats)
 
         self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
@@ -296,6 +297,7 @@ class StatsTab(QtWidgets.QWidget):
         self.MyCommanderComboBox.addItem('Winrate')
         self.MyCommanderComboBox.addItem('APM')
         self.MyCommanderComboBox.addItem('Kills')
+        self.MyCommanderComboBox.addItem('Name')
         self.MyCommanderComboBox.activated[str].connect(self.my_commander_sort_update)
 
         ### TAB Allied Commanders
@@ -332,6 +334,7 @@ class StatsTab(QtWidgets.QWidget):
         self.AllyCommanderComboBox.addItem('Winrate')
         self.AllyCommanderComboBox.addItem('APM')
         self.AllyCommanderComboBox.addItem('Kills')
+        self.AllyCommanderComboBox.addItem('Name')
         self.AllyCommanderComboBox.activated[str].connect(self.ally_commander_sort_update)
 
         # Full analysis
@@ -469,7 +472,9 @@ class StatsTab(QtWidgets.QWidget):
         }
         trans_dict_reverse = {'Frequency': True, 'Wins': True, 'Losses': True, 'Winrate': True, 'Average time': False, 'Bonus': True}
 
-        if sort_by == 'Fastest time':
+        if sort_by == 'Name':
+            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items())}
+        elif sort_by == 'Fastest time':
             analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1]['Fastest']['length'])}
         else:
             analysis['MapData'] = {
@@ -614,10 +619,14 @@ class StatsTab(QtWidgets.QWidget):
             'Frequency': 'Frequency',
             'Kills': 'KillFraction'
         }
-        self.my_commander_analysis = {
-            k: v
-            for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_my_commanders_by]], reverse=True)
-        }
+        
+        if sort_my_commanders_by == 'Name':
+            self.my_commander_analysis = {k: v for k, v in sorted(self.my_commander_analysis.items())}
+        else:
+            self.my_commander_analysis = {
+                k: v
+                for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_my_commanders_by]], reverse=True)
+            }
 
         for item in set(self.stats_mycommander_UI_dict.keys()):
             self.stats_mycommander_UI_dict[item].deleteLater()
@@ -685,10 +694,14 @@ class StatsTab(QtWidgets.QWidget):
             'Frequency': 'Frequency',
             'Kills': 'KillFraction'
         }
-        self.ally_commander_analysis = {
-            k: v
-            for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_commanders_by]], reverse=True)
-        }
+        
+        if sort_commanders_by == 'Name':
+            self.ally_commander_analysis = {k: v for k, v in sorted(self.ally_commander_analysis.items())}
+        else:
+            self.ally_commander_analysis = {
+                k: v
+                for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_commanders_by]], reverse=True)
+            }
 
         for item in set(self.stats_allycommander_UI_dict.keys()):
             self.stats_allycommander_UI_dict[item].deleteLater()
