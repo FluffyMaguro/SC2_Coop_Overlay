@@ -17,10 +17,13 @@ For bugs, feedback and suggestions check [my discord](https://discord.com/invite
 
 
 
-
+Info shown after a game:
 ![Screenshot](https://i.imgur.com/4fipWEZ.jpg)
 
 ![Screenshot](https://i.imgur.com/PTZ8Nwn.png)
+
+Info shown at the start of a game:
+<img width="100%" alt="Overlay info at the start" src="https://i.imgur.com/1hrMteQ.png">
 
 # How to use
 1. Extract the archive
@@ -75,9 +78,6 @@ If you are using game capture, you have to add overlay to OBS manually.
 
 ![Screenshot](https://i.imgur.com/4P4ga0L.png)
 
-**At the start of the game, your record with your ally calculated based on your replays and matching his name is shown:**
-
-![Screenshot](https://i.imgur.com/1hrMteQ.png)
 
 **Twitch chat overlay:**
 
