@@ -651,7 +651,8 @@ def analyse_replay(filepath, main_player_handles=None):
                         pass
                     elif _killing_player in amon_players and not _losing_player in (1, 2):
                         pass
-                    elif _killing_player == ally_player and ally_player in user_leave_times:
+                    # Count ally kills to the main player if ally quits early
+                    elif _killing_player == ally_player and user_leave_times.get(ally_player, END_TIME) < END_TIME * 0.5:
                         killcounts[main_player] += 1
                         ally_kills_counted_toward_main += 1
                     else:
