@@ -342,7 +342,7 @@ class StatsTab(QtWidgets.QWidget):
         self.TABW_StatResults.setCurrentIndex(0)
         self.TABW_StatResults.currentChanged.connect(self.switched_tab)
 
-    def generate_stats(self, caller=None):
+    def generate_stats(self):
         """ Generate stats and passes data to be shown"""
 
         if not hasattr(self.p, 'CAnalysis'):
