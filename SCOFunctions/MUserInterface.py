@@ -591,8 +591,8 @@ class CommanderStats(QtWidgets.QWidget):
     """ Widget for detailed stats for allied commander (mastery, prestige)"""
     def __init__(self, commander, fanalysis, parent=None):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(485, 50, 500, 410))
 
+        self.setGeometry(QtCore.QRect(485, 4, 500, 410))
         # Background
         self.fr_bg = QtWidgets.QLabel(self)
         self.fr_bg.setGeometry(QtCore.QRect(0, 0, 473, 87))
@@ -677,7 +677,7 @@ class FastestMap(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.setGeometry(QtCore.QRect(485, 48, 485, 380))
+        self.setGeometry(QtCore.QRect(485, 4, 485, 424))
 
         # Map frame
         self.fr_map = QtWidgets.QFrame(self)
@@ -724,17 +724,17 @@ class FastestMap(QtWidgets.QWidget):
 
         # Find file button
         self.bt_findfile = QtWidgets.QPushButton(self)
-        self.bt_findfile.setGeometry(QtCore.QRect(10, 325, 75, 23))
+        self.bt_findfile.setGeometry(QtCore.QRect(10, 369, 75, 23))
         self.bt_findfile.setText("Find file")
 
         # Show overlay button
         self.bt_showoverlay = QtWidgets.QPushButton(self)
-        self.bt_showoverlay.setGeometry(QtCore.QRect(95, 325, 81, 23))
+        self.bt_showoverlay.setGeometry(QtCore.QRect(95, 369, 81, 23))
         self.bt_showoverlay.setText("Show overlay")
 
         # Date & difficulty
         self.la_date_difficulty = QtWidgets.QLabel(self)
-        self.la_date_difficulty.setGeometry(QtCore.QRect(265, 385, 200, 20))
+        self.la_date_difficulty.setGeometry(QtCore.QRect(265, 379, 200, 20))
         self.la_date_difficulty.setAlignment(QtCore.Qt.AlignRight)
         self.la_date_difficulty.setEnabled(False)
 
