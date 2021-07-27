@@ -222,7 +222,7 @@ class StatsTab(QtWidgets.QWidget):
                                        'Bonus',
                                        bold=True,
                                        button=False,
-                                       sort=self.generate_stats)
+                                       sort=self.map_sort_update)
 
         self.QB_FastestMap = MUI.FastestMap(self.TAB_Maps)
 
@@ -411,68 +411,10 @@ class StatsTab(QtWidgets.QWidget):
 
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
+
         ### Map stats
-
-        # Delete buttons if not required
-        for item in set(self.stats_maps_UI_dict.keys()):
-            self.stats_maps_UI_dict[item].deleteLater()
-            del self.stats_maps_UI_dict[item]
-
-        # Sort maps
-        trans_dict = {
-            'Freq': 'frequency',
-            'Wins': 'Victory',
-            'Losses': 'Defeat',
-            'Win%': 'winrate',
-            'Avg': 'average_victory_time',
-            'Bonus': 'bonus'
-        }
-
-        if type(caller) is MUI.SortingQLabel:
-            caller.activate()
-
-        sort_by = MUI.SortingQLabel.active[self.GB_MapsOverview].value
-        reverse = MUI.SortingQLabel.active[self.GB_MapsOverview].reverse
-            
-        if sort_by == 'Map name':
-            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), reverse=reverse)}
-        elif sort_by == 'Fastest':
-            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1]['Fastest']['length'], reverse=reverse)}
-        else:
-            analysis['MapData'] = {k: v for k, v in sorted(analysis['MapData'].items(), key=lambda x: x[1][trans_dict[sort_by]], reverse=reverse)}
-        
-
-        # Add map buttons & update the fastest map
-        idx = 0
-        for m in analysis['MapData']:
-            idx += 1
-            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview,
-                                                      idx * 25,
-                                                      m,
-                                                      analysis['MapData'][m]['Fastest']['length'],
-                                                      analysis['MapData'][m]['average_victory_time'],
-                                                      analysis['MapData'][m]['Victory'],
-                                                      analysis['MapData'][m]['Defeat'],
-                                                      analysis['MapData'][m]['frequency'],
-                                                      analysis['MapData'][m]['bonus'],
-                                                      bg=idx % 2 == 0)
-
-            self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=analysis['MapData'][m]['Fastest']))
-
-        # Try to show the last visible fastest map if it's there
-        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in analysis['MapData'].keys():
-            self.map_link_update(self.last_fastest_map, analysis['MapData'][self.last_fastest_map]['Fastest'])
-
-        elif len(analysis['MapData']) > 0:
-            for m in analysis['MapData']:
-                self.map_link_update(m, analysis['MapData'][m]['Fastest'])
-                break
-
-        # Show/hide the fastest map accordingly
-        if len(analysis['MapData']) == 0:
-            self.QB_FastestMap.hide()
-        else:
-            self.QB_FastestMap.show()
+        self.map_analysis = analysis['MapData']
+        self.map_sort_update()
 
         ### Difficulty stats & region stats
         if hasattr(self, 'stats_difficulty_UI_dict'):
@@ -567,6 +509,69 @@ class StatsTab(QtWidgets.QWidget):
         This function updates background for Amon's units when you switch to the tab"""
         if idx == 5:
             self.WD_amon_unit_stats.update_backgrounds()
+
+    def map_sort_update(self, caller=None):
+        # Delete buttons if not required
+        for item in set(self.stats_maps_UI_dict.keys()):
+            self.stats_maps_UI_dict[item].deleteLater()
+            del self.stats_maps_UI_dict[item]
+
+        # Sort maps
+        trans_dict = {
+            'Freq': 'frequency',
+            'Wins': 'Victory',
+            'Losses': 'Defeat',
+            'Win%': 'winrate',
+            'Avg': 'average_victory_time',
+            'Bonus': 'bonus'
+        }
+
+        if type(caller) is MUI.SortingQLabel:
+            caller.activate()
+
+        sort_by = MUI.SortingQLabel.active[self.GB_MapsOverview].value
+        reverse = MUI.SortingQLabel.active[self.GB_MapsOverview].reverse
+            
+        if sort_by == 'Map name':
+            self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), reverse=reverse)}
+        elif sort_by == 'Fastest':
+            self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), key=lambda x: x[1]['Fastest']['length'], reverse=reverse)}
+        else:
+            self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), key=lambda x: x[1][trans_dict[sort_by]], reverse=reverse)}
+        
+
+        # Add map buttons & update the fastest map
+        idx = 0
+        for m in self.map_analysis:
+            idx += 1
+            self.stats_maps_UI_dict[m] = MUI.MapEntry(self.GB_MapsOverview,
+                                                      idx * 25,
+                                                      m,
+                                                      self.map_analysis[m]['Fastest']['length'],
+                                                      self.map_analysis[m]['average_victory_time'],
+                                                      self.map_analysis[m]['Victory'],
+                                                      self.map_analysis[m]['Defeat'],
+                                                      self.map_analysis[m]['frequency'],
+                                                      self.map_analysis[m]['bonus'],
+                                                      bg=idx % 2 == 0)
+
+            self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=self.map_analysis[m]['Fastest']))
+
+        # Try to show the last visible fastest map if it's there
+        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in self.map_analysis.keys():
+            self.map_link_update(self.last_fastest_map, self.map_analysis[self.last_fastest_map]['Fastest'])
+
+        elif len(self.map_analysis) > 0:
+            for m in self.map_analysis:
+                self.map_link_update(m, self.map_analysis[m]['Fastest'])
+                break
+
+        # Show/hide the fastest map accordingly
+        if len(self.map_analysis) == 0:
+            self.QB_FastestMap.hide()
+        else:
+            self.QB_FastestMap.show()
+
 
     def my_commander_sort_update(self, caller=None):
         """ Creates and updates widgets for my commander stats """
