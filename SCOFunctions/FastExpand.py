@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MLogging import logclass, catch_exceptions
+from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('FAST', 'INFO')
 
@@ -51,11 +52,11 @@ class FastExpandSelector(QtWidgets.QWidget):
                             | QtCore.Qt.WindowTransparentForInput)
 
         self.setStyleSheet("background-color: black;")
-        sg = QtWidgets.QDesktopWidget().screenGeometry(0)
+        sg = QtWidgets.QDesktopWidget().screenGeometry(int(SM.settings['monitor'] - 1))
         width = int(sg.width() * 425 / 1920)
         height = int(width * 270 / 425)
         self.setGeometry(0, 0, width, height)
-        self.move(sg.width() - self.width(), sg.bottom() - self.height())
+        self.move(sg.bottomRight().x() - self.width(), sg.bottomRight().y() - self.height())
         self.setLayout(layout)
 
     def setData(self, data):
