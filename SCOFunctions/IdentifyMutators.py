@@ -1,4 +1,6 @@
-from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids
+import binascii
+
+from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids, cached_mutators, cached_weeklies
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
 mutators_list = list(Mutators.keys())[:-19]
@@ -17,10 +19,13 @@ def get_mutator(button, panel):
         return None
 
 
-def identify_mutators(events, extension=True, mm=False):
-    """ Identify mutators based on dirty STriggerDialogControl events
-    This work only in custom mutations, and random mutator isn't decided."""
+def identify_mutators(events, extension=True, mm=False, detailed_info=None):
+    """ Identify mutators based on dirty STriggerDialogControl events.
+    Custom mutations works but random mutator isn't decided.
+    Weekly mutations uses dictionary, so some values are missing.
+    Brutal+ not working at all."""
     mutators = list()
+    result = dict()
 
     # MM maps
     if mm:
@@ -31,6 +36,17 @@ def identify_mutators(events, extension=True, mm=False):
                     mutator_id = upgrade_name[12:]
                     if mutator_id in mutator_ids:
                         mutators.append(mutator_ids[mutator_id])
+
+    # Weekly mutation
+    if extension:
+        for handle in detailed_info['m_syncLobbyState']['m_gameDescription']['m_cacheHandles']:
+            cached = binascii.b2a_hex(handle).decode()[16:]
+    
+            if cached in cached_mutators.keys():
+                mutators.append(cached_mutators[cached])
+    
+            elif cached in cached_weeklies.keys():
+                result['weekly'] = cached_weeklies[cached]
 
     # Custom mutation
     if extension:
@@ -74,4 +90,5 @@ def identify_mutators(events, extension=True, mm=False):
                 del mutators[(action - 88) // 2]
 
     # Fix HftS old
-    return tuple(m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators)
+    result['mutators'] = tuple(m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators)
+    return result 
