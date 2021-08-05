@@ -237,8 +237,21 @@ def unitid(event, killer=False, creator=False):
         return None
 
 
-def analyse_replay(filepath, main_player_handles=None):
-    """ Analyses the replay and returns the analysis"""
+def parse_replay_file(filepath):
+    replay = None
+    for attempt in range(3):
+        try:
+            replay = s2_parse_replay(filepath, return_events=True)
+            break
+        except Exception as e:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
+            if attempt == 2:
+                raise Exception(f'Parsing error! ({filepath})')
+            time.sleep(0.3)
+
+    return replay
+
+
+def analyse_parsed_replay(filepath, replay, main_player_handles=None):
     """
     This whole function is a bit messy. It originated in a very different form.
     I should be broken into more functions. Players shouldn't be hardcoded to
@@ -247,25 +260,13 @@ def analyse_replay(filepath, main_player_handles=None):
 
     """
 
+    if replay is None:
+        return {}
+
     # Data structure is {unitType : [#created, #died, #kills, #killfraction]}
     unit_type_dict_main = {}
     unit_type_dict_ally = {}
     unit_type_dict_amon = {}
-    logger.info(f'Analysing: {filepath}')
-
-    # Load the replay
-    replay = None
-    for attempt in range(3):
-        try:
-            replay = s2_parse_replay(filepath, return_events=True)
-            break
-        except Exception:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
-            if attempt == 2:
-                logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
-            time.sleep(0.3)
-
-    if replay is None:
-        return {}
 
     # Find Amon players
     amon_players = set()
@@ -1126,3 +1127,16 @@ def analyse_replay(filepath, main_player_handles=None):
         replay_report_dict['amon_units'][unit] = tuple(replay_report_dict['amon_units'][unit])
 
     return replay_report_dict
+
+
+def parse_and_analyse_replay(filepath, main_player_handles=None):
+    """ Analyses the replay and returns the analysis"""
+    logger.info(f'Analysing: {filepath}')
+
+    # Load the replay
+    try:
+        replay = parse_replay_file(filepath)
+    except Exception:
+        logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
+
+    return analyse_parsed_replay(filepath, replay, main_player_handles)
