@@ -3,6 +3,7 @@ import binascii
 from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids, cached_mutators, cached_weeklies
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
+mutators_list_all = list(Mutators.keys())[:-19] 
 mutators_list = list(Mutators.keys())[:-19]
 for item in ('Nap Time', 'Stone Zealots', 'Chaos Studios', 'Undying Evil', 'Afraid of the Dark', 'Trick or Treat', 'Turkey Shoot',
              'Sharing Is Caring', 'Gift Exchange', 'Naughty List', 'Extreme Caution', 'Insubordination', 'Fireworks', 'Lucky Envelopes',
@@ -23,7 +24,7 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
     """ Identify mutators based on dirty STriggerDialogControl events.
     Custom mutations works but random mutator isn't decided.
     Weekly mutations uses dictionary, so some values are missing.
-    Brutal+ not working at all."""
+    Brutal+ works only for repeated games."""
     mutators = list()
     result = dict()
 
@@ -47,6 +48,12 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
     
             elif cached in cached_weeklies.keys():
                 result['weekly'] = cached_weeklies[cached]
+          
+    # Brutal+ mutators
+    if not extension and detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0].get('m_brutalPlusDifficulty', 0) > 0:
+        for key in detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0]['m_retryMutationIndexes']:
+            if key > 0:
+                mutators.append(mutators_list_all[key -1])        
 
     # Custom mutation
     if extension:
