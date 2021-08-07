@@ -45,6 +45,8 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
     
             if cached in cached_mutators.keys():
                 mutators.append(cached_mutators[cached])
+                if 'weekly' not in result:
+                    result['weekly'] = 'Unknown'
     
             elif cached in cached_weeklies.keys():
                 result['weekly'] = cached_weeklies[cached]
