@@ -243,7 +243,7 @@ def parse_replay_file(filepath):
         try:
             replay = s2_parse_replay(filepath, return_events=True)
             break
-        except Exception as e:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
+        except Exception:  # You can get an error here if SC2 didn't finish writing into the file. Very rare.
             if attempt == 2:
                 raise Exception(f'Parsing error! ({filepath})')
             time.sleep(0.3)
