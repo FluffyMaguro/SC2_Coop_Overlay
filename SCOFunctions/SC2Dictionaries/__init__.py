@@ -1628,6 +1628,7 @@ cached_weeklies = {
     "8df5dd70565f00f086b025510420038c9a889c6f8076fbea23c1ddb597379fe5": "Explosive Results",
     "8e6de4d1c91a459fb112b9c14e66c2779d4438c8df2cdf55e00ac7a5a0bc5403": "Distant Threat",
     "8f191cbedb0f2aec5c680fd27e3c1df721642721135a5141141f85f737af041e": "Spear of Your Doom",
+    "8f29de3cee8583372398df2c95def6758f2e6e06bb6e37fe178a6ed9a16b8755": "What Goes Around",
     "8ffa39019f0bebad88469345c79ac6387bf5a6c8da985b42bada9def1fc46948": "Radiation Zone",
     "90cb6ba28f2c49305a9fda5ce9c5a7bac9edcde72c4fd105283a557d5db63fbe": "Boom Town",
     "921de9f028f28e247dfde1f7d7cf0834fc473309a9db573d07515f2653bdc717": "Boom Town",
@@ -1727,7 +1728,6 @@ cached_weeklies = {
     "fac86fe1c3d74b3510f7663f96cd1b96908456c1b5dfb0c54798754992204dbb": "Fowl Play",
     "fdfd285ddfa9c3d7e14829e1ae9e043ec41661f4943731897bd3752223b93d3a": "What We Do in the Shadows",
     "ffee1806f45f59c9cc2ee66a1f51a695bbc642bf3929070c73ea83ce48745e6e": "Hell Train"
-    #only What Goes Around should be missing
 }
 
 # Base unit costs for commanders
