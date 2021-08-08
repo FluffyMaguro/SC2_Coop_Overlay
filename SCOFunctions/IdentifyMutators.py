@@ -45,7 +45,8 @@ def identify_mutators(events, extension=True, mm=False):
                 offset = 129 - event['m_controlId']
 
             elif event['_gameloop'] > 0 and event['_gameloop'] != last_game_loop and event[
-                    '_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0:
+                    '_event'] == 'NNet.Game.STriggerDialogControlEvent' and event['_userid']['m_userId'] == 0 and event.get('m_eventData', {}).get(
+                        'None', 1) is not None:
                 actions.append(event['m_controlId'] + offset)
                 last_game_loop = event['_gameloop']
 
