@@ -101,6 +101,12 @@ class StatsTab(QtWidgets.QWidget):
         self.CH_DualMain.setToolTip("Include games where both players belong to your accounts")
         self.CH_DualMain.stateChanged.connect(self.generate_stats)
 
+        self.CH_TypeWins = QtWidgets.QCheckBox(self.FR_Stats)
+        self.CH_TypeWins.setGeometry(QtCore.QRect(180, 80, 110, 17))
+        self.CH_TypeWins.setChecked(False)
+        self.CH_TypeWins.setText("Wins only")
+        self.CH_TypeWins.stateChanged.connect(self.generate_stats)
+
         # Sub15 and both mains
         self.CH_Sub15 = QtWidgets.QCheckBox(self.FR_Stats)
         self.CH_Sub15.setGeometry(QtCore.QRect(290, 60, 150, 17))
@@ -432,6 +438,8 @@ class StatsTab(QtWidgets.QWidget):
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
         player = None if self.ED_PlayerName.text() == '' else self.ED_PlayerName.text().lower()
+        
+        winsonly = self.CH_TypeWins.isChecked()
 
         include_both_main = True if self.CH_DualMain.isChecked() else False
         sub_15 = True if self.CH_Sub15.isChecked() else False
@@ -449,7 +457,8 @@ class StatsTab(QtWidgets.QWidget):
                                                     sub_15=sub_15,
                                                     over_15=over_15,
                                                     include_both_main=include_both_main,
-                                                    player=player)
+                                                    player=player,
+                                                    winsonly=winsonly)
 
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
