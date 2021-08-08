@@ -77,8 +77,8 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Get a list of valid commanders to fast expand on map and generate a label and hook a hotkey
         labelString = ""
         for idx, commander in enumerate(commanderList):
-            labelString += "NUM" + str(idx + 1) + " - " + commander + "\r\n"
-            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(idx + 1), self.selectionMade, args=["commander", commander.lower()]))
+            labelString += "NUM" + str(9 - idx) + " - " + commander + "\r\n"
+            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["commander", commander.lower()]))
 
         # Add the Cancel option at the bottom and hook a hotkey
         labelString += "NUM0 - None"
@@ -104,8 +104,8 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Get a list of valid commanders to fast expand on map and generate a label and hook a hotkey
         labelString = ""
         for idx, race in enumerate(raceList):
-            labelString += "NUM" + str(idx + 1) + " - " + race + "\r\n"
-            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(idx + 1), self.selectionMade, args=["race", race.lower()]))
+            labelString += "NUM" + str(9 - idx) + " - " + race + "\r\n"
+            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["race", race.lower()]))
 
         # Add the Cancel option at the bottom and hook a hotkey
         labelString += "NUM0 - None"
