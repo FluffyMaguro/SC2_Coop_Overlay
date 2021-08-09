@@ -271,7 +271,6 @@ class StatsTab(QtWidgets.QWidget):
                                                      parent=self.TAB_MyCommanders,
                                                      sort=self.my_commander_sort_update)
 
-
         ### TAB Allied Commanders
         self.TAB_AlliedCommanders = QtWidgets.QWidget()
         self.LA_AlliedCommanders = QtWidgets.QLabel(self.TAB_AlliedCommanders)
@@ -280,20 +279,18 @@ class StatsTab(QtWidgets.QWidget):
         self.LA_AlliedCommanders.setAlignment(QtCore.Qt.AlignRight)
         self.LA_AlliedCommanders.setEnabled(False)
 
-        self.AlliedCommanderHeading = MUI.CommanderEntry(
-            'Allied commander',
-            'Freq',
-            'Wins',
-            'Losses',
-            'Win%',
-            'APM',
-            'Kills',
-            2,
-            bold=True,
-            button=False,
-            parent=self.TAB_AlliedCommanders,
-            sort=self.ally_commander_sort_update
-        )
+        self.AlliedCommanderHeading = MUI.CommanderEntry('Allied commander',
+                                                         'Freq',
+                                                         'Wins',
+                                                         'Losses',
+                                                         'Win%',
+                                                         'APM',
+                                                         'Kills',
+                                                         2,
+                                                         bold=True,
+                                                         button=False,
+                                                         parent=self.TAB_AlliedCommanders,
+                                                         sort=self.ally_commander_sort_update)
 
         # Full analysis
         self.TAB_FullAnalysis = QtWidgets.QWidget()
@@ -411,7 +408,6 @@ class StatsTab(QtWidgets.QWidget):
 
         self.LA_GamesFound.setText(f"Games found: {analysis['games']}")
 
-
         ### Map stats
         self.map_analysis = analysis['MapData']
         self.map_sort_update()
@@ -512,33 +508,25 @@ class StatsTab(QtWidgets.QWidget):
 
     def map_sort_update(self, caller=None):
         # Delete buttons if not required
-        for item in set(self.stats_maps_UI_dict.keys()):
+        for item in set(self.stats_maps_UI_dict):
             self.stats_maps_UI_dict[item].deleteLater()
             del self.stats_maps_UI_dict[item]
 
         # Sort maps
-        trans_dict = {
-            'Freq': 'frequency',
-            'Wins': 'Victory',
-            'Losses': 'Defeat',
-            'Win%': 'winrate',
-            'Avg': 'average_victory_time',
-            'Bonus': 'bonus'
-        }
+        trans_dict = {'Freq': 'frequency', 'Wins': 'Victory', 'Losses': 'Defeat', 'Win%': 'winrate', 'Avg': 'average_victory_time', 'Bonus': 'bonus'}
 
         if type(caller) is MUI.SortingQLabel:
             caller.activate()
 
         sort_by = MUI.SortingQLabel.active[self.GB_MapsOverview].value
         reverse = MUI.SortingQLabel.active[self.GB_MapsOverview].reverse
-            
+
         if sort_by == 'Map name':
             self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), reverse=reverse)}
         elif sort_by == 'Fastest':
             self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), key=lambda x: x[1]['Fastest']['length'], reverse=reverse)}
         else:
             self.map_analysis = {k: v for k, v in sorted(self.map_analysis.items(), key=lambda x: x[1][trans_dict[sort_by]], reverse=reverse)}
-        
 
         # Add map buttons & update the fastest map
         idx = 0
@@ -558,7 +546,7 @@ class StatsTab(QtWidgets.QWidget):
             self.stats_maps_UI_dict[m].bt_button.clicked.connect(partial(self.map_link_update, mapname=m, fdict=self.map_analysis[m]['Fastest']))
 
         # Try to show the last visible fastest map if it's there
-        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in self.map_analysis.keys():
+        if hasattr(self, 'last_fastest_map') and self.last_fastest_map in self.map_analysis:
             self.map_link_update(self.last_fastest_map, self.map_analysis[self.last_fastest_map]['Fastest'])
 
         elif len(self.map_analysis) > 0:
@@ -572,18 +560,10 @@ class StatsTab(QtWidgets.QWidget):
         else:
             self.QB_FastestMap.show()
 
-
     def my_commander_sort_update(self, caller=None):
         """ Creates and updates widgets for my commander stats """
-        translate = {
-            'APM': 'MedianAPM',
-            'Win%': 'Winrate',
-            'Losses': 'Defeat',
-            'Wins': 'Victory',
-            'Freq': 'Frequency',
-            'Kills': 'KillFraction'
-        }
-        
+        translate = {'APM': 'MedianAPM', 'Win%': 'Winrate', 'Losses': 'Defeat', 'Wins': 'Victory', 'Freq': 'Frequency', 'Kills': 'KillFraction'}
+
         if type(caller) is MUI.SortingQLabel:
             caller.activate()
 
@@ -593,7 +573,10 @@ class StatsTab(QtWidgets.QWidget):
         if sort_by == 'Commander':
             self.my_commander_analysis = {k: v for k, v in sorted(self.my_commander_analysis.items(), reverse=reverse)}
         else:
-            self.my_commander_analysis = {k: v for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_by]], reverse=reverse)}
+            self.my_commander_analysis = {
+                k: v
+                for k, v in sorted(self.my_commander_analysis.items(), key=lambda x: x[1][translate[sort_by]], reverse=reverse)
+            }
 
         for item in set(self.stats_mycommander_UI_dict.keys()):
             self.stats_mycommander_UI_dict[item].deleteLater()
@@ -652,25 +635,21 @@ class StatsTab(QtWidgets.QWidget):
 
     def ally_commander_sort_update(self, caller=None):
         """ Creates and updates widgets for allu commander stats """
-        translate = {
-            'APM': 'MedianAPM',
-            'Win%': 'Winrate',
-            'Losses': 'Defeat',
-            'Wins': 'Victory',
-            'Freq': 'Frequency',
-            'Kills': 'KillFraction'
-        }
-        
+        translate = {'APM': 'MedianAPM', 'Win%': 'Winrate', 'Losses': 'Defeat', 'Wins': 'Victory', 'Freq': 'Frequency', 'Kills': 'KillFraction'}
+
         if type(caller) is MUI.SortingQLabel:
             caller.activate()
 
         sort_by = MUI.SortingQLabel.active[self.TAB_AlliedCommanders].value
         reverse = MUI.SortingQLabel.active[self.TAB_AlliedCommanders].reverse
-        
+
         if sort_by == 'Allied commander':
             self.ally_commander_analysis = {k: v for k, v in sorted(self.ally_commander_analysis.items(), reverse=reverse)}
         else:
-            self.ally_commander_analysis = {k: v for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_by]], reverse=reverse)}
+            self.ally_commander_analysis = {
+                k: v
+                for k, v in sorted(self.ally_commander_analysis.items(), key=lambda x: x[1][translate[sort_by]], reverse=reverse)
+            }
 
         for item in set(self.stats_allycommander_UI_dict.keys()):
             self.stats_allycommander_UI_dict[item].deleteLater()

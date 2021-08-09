@@ -74,7 +74,14 @@ class AmonUnitStats(QtWidgets.QWidget):
         self.scroll_area_contents_layout.setSpacing(0)
 
         # Add heading
-        self.heading = AmonUnitStatsUnit('Name', {'created': 'Created', 'lost': 'Lost', 'kills': 'Kills', 'KD': 'K/D'}, parent=self, sort=self.sort_units)
+        self.heading = AmonUnitStatsUnit('Name', {
+            'created': 'Created',
+            'lost': 'Lost',
+            'kills': 'Kills',
+            'KD': 'K/D'
+        },
+                                         parent=self,
+                                         sort=self.sort_units)
         self.heading.setGeometry(QtCore.QRect(10, 0, self.width(), 21))
 
         # Search
@@ -157,10 +164,10 @@ class AmonUnitStats(QtWidgets.QWidget):
 
         if type(caller) is SortingQLabel:
             caller.activate()
-        
+
         sort_by = SortingQLabel.active[self].value
         reverse = SortingQLabel.active[self].reverse
-        
+
         # Remove widgets from the layout
         for unit in self.units:
             self.scroll_area_contents_layout.removeWidget(self.units[unit])
@@ -216,7 +223,7 @@ class AmonUnitStatsUnit(QtWidgets.QWidget):
         if unit in {'Name', 'sum'}:
             self.setStyleSheet("font-weight:bold")
 
-        self.name = QtWidgets.QLabel(self) if unit !='Name' else SortingQLabel(self)
+        self.name = QtWidgets.QLabel(self) if unit != 'Name' else SortingQLabel(self)
         self.name.setGeometry(QtCore.QRect(40, 0, 160, height))
         self.name.setText(str(unit if unit != 'sum' else 'Total'))
         if unit == 'Name':
@@ -331,7 +338,7 @@ class UnitStats(QtWidgets.QWidget):
         self.note.setEnabled(False)
 
         self.show()
-        
+
         self.heading['Unit'].activate()
 
         for idx, item in enumerate(['Unit', 'Created', 'Freq', 'Lost', 'Lost%', 'Kills', 'K/D', 'Kills%']):
@@ -392,13 +399,13 @@ class UnitStats(QtWidgets.QWidget):
             'Kills%': 'kill_percentage',
             'Freq': 'made'
         }
-        
+
         if type(caller) is SortingQLabel:
             caller.activate()
-        
+
         sort_by = SortingQLabel.active[self].value
         reverse = SortingQLabel.active[self].reverse
-        
+
         if sort_by == 'Unit':
             self.unit_data[which][commander] = {k: v for k, v in sorted(self.unit_data[which][commander].items(), reverse=reverse)}
         else:
@@ -826,7 +833,7 @@ class CommanderEntry(QtWidgets.QWidget):
         self.la_frequency.setText(str(frequency))
 
         # Wins
-        self.la_wins = QtWidgets.QLabel(self) if button else SortingQLabel(self, True) 
+        self.la_wins = QtWidgets.QLabel(self) if button else SortingQLabel(self, True)
         self.la_wins.setGeometry(QtCore.QRect(200, 0, 50, 20))
         self.la_wins.setAlignment(QtCore.Qt.AlignCenter)
         self.la_wins.setText(str(wins))
@@ -881,10 +888,11 @@ class CommanderEntry(QtWidgets.QWidget):
             self.la_wins.clicked.connect(partial(sort, self.la_wins))
             self.la_losses.clicked.connect(partial(sort, self.la_losses))
             self.la_winrate.clicked.connect(partial(sort, self.la_winrate))
-            self.la_apm.clicked.connect(partial(sort, self.la_apm))  
+            self.la_apm.clicked.connect(partial(sort, self.la_apm))
             self.la_killpercent.clicked.connect(partial(sort, self.la_killpercent))
 
         self.show()
+
 
 class MapEntry(QtWidgets.QWidget):
     """Custom widget for map entry in stats"""
@@ -973,7 +981,7 @@ class MapEntry(QtWidgets.QWidget):
 
         # Bonus
         self.la_bonus = QtWidgets.QLabel(self) if not bold else SortingQLabel(self, True)
-        self.la_bonus.setGeometry(QtCore.QRect(415, 0, 50, 24))
+        self.la_bonus.setGeometry(QtCore.QRect(412, 0, 50, 24))
         self.la_bonus.setAlignment(QtCore.Qt.AlignCenter)
         if bonus == 0:
             self.la_bonus.setText('–')
@@ -997,7 +1005,7 @@ class MapEntry(QtWidgets.QWidget):
             self.la_losses.clicked.connect(partial(sort, self.la_losses))
             self.la_winrate.clicked.connect(partial(sort, self.la_winrate))
             self.la_bonus.clicked.connect(partial(sort, self.la_bonus))
-                        
+
         self.show()
 
         if bg:
@@ -1538,20 +1546,25 @@ class PatchNotes(QtWidgets.QWidget):
         event.ignore()
         self.hide()
 
+
 class SortingQLabel(QtWidgets.QLabel):
-    def __init__ (self, parent, reverse=False):
+    def __init__(self, parent, reverse=False):
         super(SortingQLabel, self).__init__(parent)
         self.p = parent
         self.defaultreverse = not reverse
-        self.reverse = self.defaultreverse 
-    active=dict()
+        self.reverse = self.defaultreverse
+
+    active = dict()
     clicked = QtCore.pyqtSignal()
+
     def mouseReleaseEvent(self, QMouseEvent):
         if QMouseEvent.button() == QtCore.Qt.LeftButton:
             self.clicked.emit()
+
     def setText(self, text):
-        self.value=text
+        self.value = text
         super().setText(text)
+
     def activate(self):
         self.reverse = not self.reverse
         if super().alignment() == QtCore.Qt.AlignRight:
@@ -1559,11 +1572,12 @@ class SortingQLabel(QtWidgets.QLabel):
         elif super().alignment() == QtCore.Qt.AlignLeft:
             super().setText(self.value + ('▼' if self.reverse else '▲'))
         else:
-            super().setText('   ' + self.value + ('▼' if self.reverse else '▲'))                    
-        if self.p.p in SortingQLabel.active.keys():
+            super().setText('   ' + self.value + ('▼' if self.reverse else '▲'))
+        if self.p.p in SortingQLabel.active:
             if not SortingQLabel.active[self.p.p] == self:
-                SortingQLabel.active[self.p.p].deactivate()                 
+                SortingQLabel.active[self.p.p].deactivate()
         SortingQLabel.active[self.p.p] = self
+
     def deactivate(self):
         super().setText(self.value)
-        self.reverse=self.defaultreverse
+        self.reverse = self.defaultreverse
