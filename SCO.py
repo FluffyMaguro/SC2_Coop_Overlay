@@ -16,38 +16,39 @@ Overall it's messy with a lot of coupling, not enough separation between UI and
 core functinality, and similar issues. It's a great learning experience nevertheless.
 
 """
-import os
-import sys
 import json
+import os
 import shutil
+import sys
 import threading
 import traceback
 import urllib.request
-from functools import partial
 from datetime import datetime
+from functools import partial
+from multiprocessing import freeze_support
 
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import SCOFunctions.MUserInterface as MUI
-import SCOFunctions.MainFunctions as MF
 import SCOFunctions.HelperFunctions as HF
+import SCOFunctions.MainFunctions as MF
 import SCOFunctions.MassReplayAnalysis as MR
+import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.Tabs as Tabs
-from SCOFunctions.MChatWidget import ChatWidget
-from SCOFunctions.MLogging import logclass, catch_exceptions
-from SCOFunctions.MFilePath import truePath, innerPath
-from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.FastExpand import FastExpandSelector
-from SCOFunctions.MSystemInfo import SystemInfo
-from SCOFunctions.MTheming import set_dark_theme, MColors
+from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MDebugWindow import DebugWindow
+from SCOFunctions.MFilePath import innerPath, truePath
+from SCOFunctions.MLogging import catch_exceptions, logclass
+from SCOFunctions.MSystemInfo import SystemInfo
+from SCOFunctions.MTheming import MColors, set_dark_theme
+from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('SCO', 'INFO')
 logclass.FILE = truePath("Logs.txt")
 
-APPVERSION = 239
+APPVERSION = 240
 
 
 class Signal_Manager(QtCore.QObject):
@@ -1102,6 +1103,7 @@ class UI_TabWidget(object):
 
 
 if __name__ == "__main__":
+    freeze_support()
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
     TabWidget = MUI.CustomQTabWidget()

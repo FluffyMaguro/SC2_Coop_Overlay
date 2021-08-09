@@ -973,15 +973,16 @@ class mass_replay_analysis:
         eta = '?'
         for i, r in enumerate(self.ReplayDataAll):
             if not os.path.isfile(r.file):
-                    continue
-            
-            # Analyze those that are not fully parsed yet
+                continue
+
+            # Submit parsing jobs for replays that weren't fully analyzed yet
             if not r.full_analysis:
                 filepath = r.file
                 results.append((i, filepath, pool.submit(mass_replay_analysis._guarded_parse_replay_file, filepath)))
+
         for (i, filepath, future) in results:
             # Save cache every now and then
-            if idx >= 30:
+            if idx >= 50:
                 idx = 0
                 self.save_cache()
 
@@ -993,23 +994,27 @@ class mass_replay_analysis:
                 self.save_cache()
                 return False
 
+            # Wait for the result
             replay = future.result()
+
+            # Propagate exceptions
             if isinstance(replay, Exception):
                 e = replay
                 logger.error(f'Parsing error ({filepath})\n{traceback.format_exception(type(e), e, e.__traceback__)}')
                 continue
             try:
+                # Finish analyzing replays
                 full_data = analyse_parsed_replay(filepath, replay, self.main_handles)
                 full_data['full_analysis'] = True
                 if len(full_data) < 2:
                     continue
 
-                # Update data
+                # Update counters
                 idx += 1
                 fully_parsed += 1
 
-                # Calculate eta
-                if (fully_parsed - fully_parsed_at_start) > 10 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
+                # Calculate ETA
+                if (fully_parsed - fully_parsed_at_start) > 10 and (fully_parsed - fully_parsed_at_start) % 10 == 0:
                     eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
                     eta = time.strftime("%H:%M:%S", time.gmtime(eta))
 

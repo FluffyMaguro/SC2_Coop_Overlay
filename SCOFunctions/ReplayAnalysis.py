@@ -238,6 +238,7 @@ def unitid(event, killer=False, creator=False):
 
 
 def parse_replay_file(filepath):
+    """ Parses a replay with S2parser"""
     replay = None
     for attempt in range(3):
         try:
