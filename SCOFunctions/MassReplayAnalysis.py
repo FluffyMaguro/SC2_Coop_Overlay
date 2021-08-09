@@ -41,6 +41,14 @@ def parse_replay(file):
         logger.error(f"{file}\n{traceback.format_exc()}")
 
 
+def guarded_parse_replay_file(*args, **kwargs):
+    """Parse and return a replay, or return an exception if one occurred."""
+    try:
+        return s2_parse_replay(*args, **kwargs)
+    except Exception as e:
+        return e
+
+
 @catch_exceptions(logger)
 def calculate_difficulty_data(ReplayData):
     """ Calculates the number of wins and losses for each difficulty"""
@@ -749,22 +757,48 @@ class mass_replay_analysis:
         out = list()
         new_hashes = set()
         new_files = set()
+        pool = ProcessPoolExecutor()
+        results = []
 
+        # Submit parsing jobs for replays
         for r in replays:
             rhash = get_hash(r)
             if not rhash in self.parsed_replays:
-                parsed = parse_replay(r)
-                if parsed is not None:
-                    parsed['hash'] = rhash
-                    self.remove_useless_keys(parsed)
-                    parsed = replay_data(**parsed)
-                    if self.replay_entry_valid(parsed):
-                        out.append(parsed)
-                new_hashes.add(rhash)
-                new_files.add(r)
-                if self.closing:
-                    break
+                results.append((rhash, r,
+                                pool.submit(guarded_parse_replay_file,
+                                            r,
+                                            parse_events=False,
+                                            onlyBlizzard=True,
+                                            withoutRecoverEnabled=True)))
 
+        # Go over results
+        for rhash, r, future in results:
+            # Interrupt the analysis if the app is closing
+            if self.closing:
+                for (_, _, f) in results:
+                    f.cancel()
+                pool.shutdown(True)
+                break
+
+            # Wait for the result
+            replay = future.result()
+
+            # Manage exceptions
+            if isinstance(replay, Exception):
+                e = replay
+                logger.error(f'Parsing error ({r})\n{traceback.format_exception(type(e), e, e.__traceback__)}')
+                continue
+
+            if replay is not None:
+                replay['hash'] = rhash
+                self.remove_useless_keys(replay)
+                replay = replay_data(**replay)
+                if self.replay_entry_valid(replay):
+                    out.append(replay)
+            new_hashes.add(rhash)
+            new_files.add(r)
+
+        pool.shutdown(True)
         out += self.ReplayDataAll
         out = [r for r in out if r is not None]
 
@@ -938,14 +972,6 @@ class mass_replay_analysis:
             if k in pdict:
                 del pdict[k]
 
-    @staticmethod
-    def _guarded_parse_replay_file(*args, **kwargs):
-        """Parse and return a replay, or return an exception if one occurred."""
-        try:
-            return parse_replay_file(*args, **kwargs)
-        except Exception as e:
-            return e
-
     def run_full_analysis(self, progress_callback):
         """ Run full analysis on all replays """
         self.closing = False
@@ -978,7 +1004,7 @@ class mass_replay_analysis:
             # Submit parsing jobs for replays that weren't fully analyzed yet
             if not r.full_analysis:
                 filepath = r.file
-                results.append((i, filepath, pool.submit(mass_replay_analysis._guarded_parse_replay_file, filepath)))
+                results.append((i, filepath, pool.submit(guarded_parse_replay_file, filepath, return_events=True)))
 
         for (i, filepath, future) in results:
             # Save cache every now and then
@@ -1147,22 +1173,20 @@ class mass_replay_analysis:
                 break
         return fastest
 
-    def analyse_replays(
-        self,
-        include_mutations=True,
-        include_normal_games=True,
-        mindate=None,
-        maxdate=None,
-        minlength=None,
-        maxLength=None,
-        difficulty_filter=None,
-        region_filter=None,
-        sub_15=True,
-        over_15=True,
-        include_both_main=True,
-        player=None,
-        winsonly=False
-    ):
+    def analyse_replays(self,
+                        include_mutations=True,
+                        include_normal_games=True,
+                        mindate=None,
+                        maxdate=None,
+                        minlength=None,
+                        maxLength=None,
+                        difficulty_filter=None,
+                        region_filter=None,
+                        sub_15=True,
+                        over_15=True,
+                        include_both_main=True,
+                        player=None,
+                        winsonly=False):
         """ Filters and analyses replays replay data
         `mindate` and `maxdate` has to be in a format of a long integer YYYYMMDDHHMMSS 
         `minLength` and `maxLength` in minutes 
@@ -1221,7 +1245,7 @@ class mass_replay_analysis:
             data = [r for r in data if r.result == 'Victory']
 
         logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)}')
-        
+
         # Analyse
         DifficultyData = calculate_difficulty_data(data)
         MapData = calculate_map_data(data)
