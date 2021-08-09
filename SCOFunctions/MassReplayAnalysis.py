@@ -647,7 +647,7 @@ class mass_replay_analysis:
 
                 # Special filter for mutations
                 if 'mutation' in arg_lower or 'weekly' in arg_lower:
-                    if r.weekly is not None:
+                    if r.weekly:
                         args_found += 1
                     continue
 
