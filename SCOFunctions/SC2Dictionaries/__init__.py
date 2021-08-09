@@ -1375,7 +1375,7 @@ mutator_ids = {
     'VoidRifts': 'Void Rifts',
     'WalkingInfested': 'Walking Infested'
 }
- 
+
 cached_mutators = {
     "01a686a72bc7913e88372836fa4927fc030065a2a5975f9890e8639f8ac3d675": "Just Die!",
     "04b1c156186ea45b806a1240f7b0afff5fb28ed7a84544eef2df69b04624e498": "Purifier Beam",
@@ -1406,7 +1406,7 @@ cached_mutators = {
     "353280ab221016bea49cadd5a493e614843eb8117a8142431c8cc49e1de83838": "Naughty List",
     "35418762f6f1a9cec710a2b481e4a47065dafadacf6fe62b6fe0c49ea3782be7": "Minesweeper",
     "361997222a115f9ee1ed7c27370c159beca493418bdb384671d43ff4ac4dbcf4": "Temporal Field",
-    "3665c3000883575d1ab334c926335a43ef893c313dd296ce687d055755e57e64": "Boom Bots",                
+    "3665c3000883575d1ab334c926335a43ef893c313dd296ce687d055755e57e64": "Boom Bots",
     "380cffaed4a624f82aecd3f92321c9547ccb952b91c73c947547ba462d2993fd": "Moment of Silence",
     "39e5523cacdc7fd597b729a34af41722d826ec1d728fd094ba16e0a0550d9f5d": "Blizzard",
     "39ed258e07ca1aab0f28415393dc3a9f5cfa229722bdc4e4d4f7ea2bac97bcfa": "Inspiration",
@@ -1429,9 +1429,9 @@ cached_mutators = {
     "5f453a5e06b72d2be29730c6b7ed37221bfccc2b840af50cfe485f02159a1c99": "Fatal Attraction",
     "5fe8c5f010244aadabb9eb4f749d3fb3fb9b3fcc6821325e5c5e29431229fc8c": "Heroes from the Storm",
     "627cb556b957d5e3f9dff1a3ff2236b0ee1392b9f392941d8b0421775afd6ea7": "Mag-nificent",
-    "63e5915486c1cdbc63a28646d277820cc2728533e4524d5bf10270e816ff3981": "Turkey Shoot",    
+    "63e5915486c1cdbc63a28646d277820cc2728533e4524d5bf10270e816ff3981": "Turkey Shoot",
     "672ed864d3a40045d09a33ff44ef2619302bef85ec6bfde815a8978a818fcd1e": "Sharing Is Caring",
-    "676917264327fc3aa738f5538d68709900f42eb45c4437f3e264336696355a32": "Alien Incubation",                                                                       
+    "676917264327fc3aa738f5538d68709900f42eb45c4437f3e264336696355a32": "Alien Incubation",
     "6bd271a193e8a2948f0ffbe1c3c4ac1299ed3b6d5d93e47b0a356f0cb92dadb0": "Mutually Assured Destruction",
     "6f74552abecb937eb191943d61b5df5165d0b2a4ab90a692f9a879b78d23d3f9": "Polarity",
     "7100a707c844ad47b403313c4d857206695c61ed34894cac8fd13d18a1b3ee9b": "Fear",
@@ -1446,7 +1446,7 @@ cached_mutators = {
     "85f23fb5419b07e5c9f738a4781ae0427adfd3adedf7e7a19b2e01277776ee1a": "Self Destruction",
     "87b2415ef829362ea8e287c58511bd043f50cbd84309c45be44c159afb04a78f": "Concussive Attacks",
     "89b1506ea744a569e820ab56e5517a9f8d0c7c9ccace3c76d270e9986e42b339": "Power Overwhelming",
-    "89bb9a5dff0ef30c5279c593d20304c17b1c59ae444dc7f17cd4526ef1c7563c": "Twister",    
+    "89bb9a5dff0ef30c5279c593d20304c17b1c59ae444dc7f17cd4526ef1c7563c": "Twister",
     "89df2f030e8d1684d5b3ff85634d65789a5eb96ee1a61c5996139fdcee7bdf7f": "Fear",
     "8acd1a202e3ce9f542bd2c699d85c937e7a11608d9bd992964ccfbe304d77679": "Black Death",
     "8b7f59a24415e44296a59985f435dd5e65cf2a14f79f927f631570887d5bbe1e": "Diffusion",
@@ -1454,8 +1454,8 @@ cached_mutators = {
     "91a2a2260fd5238977c16bf436354e6b1f9e2c9af0f9386bdfbc7e1c892a200b": "Avenger",
     "939d9467f8f2e8163d0772a548c6f6d071357e93544c551b14a0e1ea7bbc3ba2": "We Move Unseen",
     "9416f0b431e55a7add319a146c7f684440ffbaf6e3bd2ecbcd1189b9035e5f7f": "Lucky Envelopes",
-    "943da7cbc62db37b2a721139b06f9c3d2b80ab01686a6fec06945854bd2dfa0b": "Boom Bots",                
-    "94c6d4c733da8ab37f04ff8d1d34c329ed18d7afe434570b375f6f2537e5b8f3": "Boom Bots",                
+    "943da7cbc62db37b2a721139b06f9c3d2b80ab01686a6fec06945854bd2dfa0b": "Boom Bots",
+    "94c6d4c733da8ab37f04ff8d1d34c329ed18d7afe434570b375f6f2537e5b8f3": "Boom Bots",
     "94d9ee1f9a695d3e8f79e1f69f12da8ebac4e28e06e2ae989e76c30465bd4201": "Void Rifts",
     "972dd6be6c8c5cdf6909c79dce0017fb06ff1ca82348a7632813b47a691a1a76": "Kill Bots",
     "9c1933c65cfefef1d351c13bdf7bd8a2d9da90a94a9c1f4e87a16c5f5917f715": "Slim Pickings",
@@ -1508,7 +1508,7 @@ cached_mutators = {
     "fec1e2ac7b4b0a478dd02fb2350bcaaa60a5023c9e970ee4634b928ab32214d1": "Time Warp"
 }
 
-cached_weeklies = {    
+cached_weeklies = {
     "009593e16916d741a0959324c8e2403142e38aa6fe05d9472bef2f755d435d67": "Thunder Dome",
     "01c2ee7ce995bb243134f4b8d6118395ed720704c3fe75d6709400caf1e64db9": "World on Fire",
     "01cca5a8f4bcc06cc4aca3af8c2f821894d3b15fe7ebc20721c514fb7613484f": "Life Leech",
@@ -1697,7 +1697,7 @@ cached_weeklies = {
     "d750f08758fdf162b48338f42681accd0cac1d49268c9ea0e88bc4bb8a96d465": "Overclocked",
     "d750f08758fdf162b48338f42681accd0cac1d49268c9ea0e88bc4bb8a96d465": "Overclocked",
     "d78f763f744eb38fd0360aa9bc5a3473afa785b0978aaa4cd993bb23abaec046": "Growing Threat",
-    "d895c959d196a9f0bce95442831f3d0d8ab77bb8d091ab9f94ee30af39e27b43": "Undermined",    
+    "d895c959d196a9f0bce95442831f3d0d8ab77bb8d091ab9f94ee30af39e27b43": "Undermined",
     "d91eeb56ca494fb098901e691a481be106433b449279fad6b663f2f07ec7f181": "Attrition Warfare",
     "da9df232a13ba52d21eddc424306e3b7edddecee4f268848609cd6a15d1c0e71": "Moving Fees",
     "db6e65a176537463f9d10101fca41f92cea864c98655461d52d7895a0300d593": "Power Trip",
@@ -1715,7 +1715,7 @@ cached_weeklies = {
     "e68ecf23a20f466798f4c8ae23965eb5367eecc4066369af5b1b9dc0b927e0be": "Diplomatic Immunity",
     "e6a22153d0654e3e2f8ce0205a0aeb586fe9d9227b6e67de8f4a56319191df22": "Shields Up!",
     "e715a6e98e12b6847b27c97bccd26adecf8deb234a7a33ea13898be3a0f4f36b": "Memorable Boss",
-    "e730fb51b8aad0c017f09884a574f9d564a55129944afc8449c09edfebb2a131": "Portal Power",    
+    "e730fb51b8aad0c017f09884a574f9d564a55129944afc8449c09edfebb2a131": "Portal Power",
     "ead914679be4312883c7dbe4d9c32d68dbb1062ba6483e60c611fc103c833e09": "White Out",
     "eb0a188cec959d2e4146a9399788211c67186c12c698b47920faeda2b11c72da": "Death is Fleeting",
     "eb22864ee55a101093ad666234d83ecaee477d3a6fc9af49b38c63012b40122b": "Season of Giving",
@@ -1780,9 +1780,9 @@ unit_base_costs = {
         'DehakaGuardian': (0, 100, 150, 150),  # This one is lost
         'DehakaGuardianFightMorph': (0, 100, 150, 150),  # This one is actually created
         'DehakaHydraliskLevel2': (100, 50),
-        'DehakaMutaliskLevel3': (0, 25, 200, 125), # This one is lost
-        'DehakaMutaliskLevel3FightMorph': (0, 25, 200, 125), # This one is actually created
-        'DehakaMutaliskReviveEgg': (0, 0, 200, 125), # Revive egg
+        'DehakaMutaliskLevel3': (0, 25, 200, 125),  # This one is lost
+        'DehakaMutaliskLevel3FightMorph': (0, 25, 200, 125),  # This one is actually created
+        'DehakaMutaliskReviveEgg': (0, 0, 200, 125),  # Revive egg
         'DehakaNydusDestroyer': (300, 0),
         'DehakaRavasaur': (0, 0, 100, 0),
         'DehakaRoachLevel2': (75, 25),

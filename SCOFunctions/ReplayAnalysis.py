@@ -943,6 +943,7 @@ def analyse_replay(filepath, main_player_handles=None):
     del replay['events']
     replay_report_dict['parser'] = replay
     replay_report_dict['mutators'] = replay['mutators']
+    replay_report_dict['weekly'] = replay['weekly']
 
     # Update messages with player leave times
     messages = list(replay_report_dict['parser']['messages'])

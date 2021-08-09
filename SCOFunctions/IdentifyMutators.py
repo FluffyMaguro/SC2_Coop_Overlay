@@ -3,8 +3,8 @@ import binascii
 from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids, cached_mutators, cached_weeklies
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
-mutators_list_all = list(Mutators.keys())[:-19] 
-mutators_list = list(Mutators.keys())[:-19]
+mutators_list_all = list(Mutators.keys())[:-19]
+mutators_list = mutators_list_all.copy()
 for item in ('Nap Time', 'Stone Zealots', 'Chaos Studios', 'Undying Evil', 'Afraid of the Dark', 'Trick or Treat', 'Turkey Shoot',
              'Sharing Is Caring', 'Gift Exchange', 'Naughty List', 'Extreme Caution', 'Insubordination', 'Fireworks', 'Lucky Envelopes',
              'Sluggishness'):
@@ -42,20 +42,20 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
     if extension:
         for handle in detailed_info['m_syncLobbyState']['m_gameDescription']['m_cacheHandles']:
             cached = binascii.b2a_hex(handle).decode()[16:]
-    
-            if cached in cached_mutators.keys():
+
+            if cached in cached_mutators:
                 mutators.append(cached_mutators[cached])
                 if 'weekly' not in result:
-                    result['weekly'] = 'Unknown'
-    
-            elif cached in cached_weeklies.keys():
+                    result['weekly'] = 'Unidentified weekly mutation'
+
+            elif cached in cached_weeklies:
                 result['weekly'] = cached_weeklies[cached]
-          
+
     # Brutal+ mutators
     if not extension and detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0].get('m_brutalPlusDifficulty', 0) > 0:
         for key in detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0]['m_retryMutationIndexes']:
             if key > 0:
-                mutators.append(mutators_list_all[key -1])        
+                mutators.append(mutators_list_all[key - 1])
 
     # Custom mutation
     if extension:
@@ -99,5 +99,6 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
                 del mutators[(action - 88) // 2]
 
     # Fix HftS old
-    result['mutators'] = tuple(m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators)
-    return result 
+    result['mutators'] = tuple(
+        m.replace('Heroes from the Storm (old)', 'Heroes from the Storm').replace('Extreme Caution', 'Afraid of the Dark') for m in mutators)
+    return result

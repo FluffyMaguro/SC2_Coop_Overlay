@@ -367,7 +367,7 @@ function postGameStats(data, showing = false) {
     };
 
     if ((data['weekly'] != null) && (data['mutators'] != null)) {
-        fill('brutal', 'Weekly (' + data['difficulty'] + ') - ' + data['weekly'])
+        fill('brutal', data['weekly'] + ' (' + data['difficulty'] + ')')
     } else if ((data['extension'] > 0) && (data['mutators'] != null)) {
         fill('brutal', 'Custom (' + data['difficulty'] + ')')
     } else if (data['B+'] > 0) {
