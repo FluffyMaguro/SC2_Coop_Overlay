@@ -202,7 +202,6 @@ class StatsCounter:
         elif unit in {'Queen', 'QueenBurrowed'} and old_unit == 'BrutaliskCocoonQueen':
             self.army_value_offset += sum(self.unit_cost('Queen')) - sum(self.unit_cost('RoachVile'))
 
-
         logger.debug(f"Morph: {old_unit} → {unit} | offset difference: {self.army_value_offset-before}")
 
     def mindcontrolled_unit_dies(self, unit: str):

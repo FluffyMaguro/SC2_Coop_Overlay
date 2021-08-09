@@ -305,7 +305,7 @@ class StatsTab(QtWidgets.QWidget):
         self.CH_FA_description.setGeometry(QtCore.QRect(10, 0, 500, 80))
         self.CH_FA_description.setText('Run full analysis to get more accurate game lengths and APM, and see additional statistics \
                                         related to player and unit kills, bonus objectives and other.<br><br><b>Warning! This might \
-                                        take few hours and the application will be less responsive.</b>')
+                                        take a long time and the PC will be less responsive.</b>')
         self.CH_FA_description.setWordWrap(True)
 
         self.BT_FA_run = QtWidgets.QPushButton(self.TAB_FullAnalysis)

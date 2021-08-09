@@ -1,16 +1,15 @@
-import os
-import mpyq
+import datetime
 import json
+import os
 import time
 import traceback
 
+import mpyq
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
-from SCOFunctions.SC2Dictionaries import map_names, prestige_names
-from SCOFunctions.IdentifyMutators import identify_mutators
-from SCOFunctions.MLogging import logclass
 
-logger = logclass('PARS', 'INFO')
+from SCOFunctions.IdentifyMutators import identify_mutators
+from SCOFunctions.SC2Dictionaries import map_names, prestige_names
 
 diff_dict = {1: 'Casual', 2: 'Normal', 3: 'Hard', 4: 'Brutal'}
 region_dict = {1: 'NA', 2: 'EU', 3: 'KR', 5: 'CN', 98: 'PTR'}
@@ -170,10 +169,10 @@ def s2_parse_replay(file,
         try:
             result = identify_mutators(events, extension=replay['extension'], detailed_info=detailed_info, mm='[MM]' in file)
             replay['mutators'] = result['mutators']
-            if 'weekly' in result:
-                replay['weekly'] = result['weekly']
+            replay['weekly'] = result.get('weekly')
         except Exception:
-            logger.error(traceback.format_exc())
+            now = datetime.datetime.now().strftime("%d/%m %H:%M:%S")
+            print(f"{now} - PARS (error): {traceback.format_exc()} ")
 
     replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
     replay['form_alength'] = replay['form_alength'] if not replay['form_alength'].startswith('00:') else replay['form_alength'][3:]
@@ -265,6 +264,7 @@ def s2_parse_replay(file,
         replay['raw'] = {'metadata': metadata, 'player_info': player_info, 'detailed_info': detailed_info}
 
     if replay_build != used_build and not replay_build in valid_protocols:
-        logger.info(f'Successfully replaced build {replay_build} with build {used_build}!')
+        now = datetime.datetime.now().strftime("%d/%m %H:%M:%S")
+        print(f'{now} - PARS (info): Successfully replaced build {replay_build} with build {used_build}!')
 
     return replay
