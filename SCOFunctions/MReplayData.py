@@ -28,4 +28,4 @@ class replay_data(NamedTuple):
     full_analysis: bool = False
     hash: str = None
     player_stats: list = None
-    weekly: str = None
+    weekly: bool = False
