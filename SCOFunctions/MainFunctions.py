@@ -16,7 +16,7 @@ import asyncio
 import websockets
 
 from SCOFunctions.MLogging import logclass
-from SCOFunctions.ReplayAnalysis import analyse_replay
+from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
 from SCOFunctions.IdentifyMap import identify_map
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.Settings import Setting_manager as SM
@@ -289,7 +289,7 @@ def check_replays():
                         logger.info(f'New replay: {file_path}')
                         replay_dict = dict()
                         try:
-                            replay_dict = analyse_replay(file_path, PLAYER_HANDLES)
+                            replay_dict = parse_and_analyse_replay(file_path, PLAYER_HANDLES)
 
                             # First check if any commander found
                             if not replay_dict.get('mainCommander') and not replay_dict.get('allyCommander'):
@@ -383,7 +383,7 @@ def show_overlay(file, add_replay=True):
 
     # Didn't find the replay, analyse
     try:
-        replay_dict = analyse_replay(file, PLAYER_HANDLES)
+        replay_dict = parse_and_analyse_replay(file, PLAYER_HANDLES)
         if len(replay_dict) > 1:
             sendEvent(replay_dict)
             if CAnalysis is not None and add_replay:

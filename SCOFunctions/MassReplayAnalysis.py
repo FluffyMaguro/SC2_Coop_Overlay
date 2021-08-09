@@ -12,13 +12,14 @@ import traceback
 import statistics
 import threading
 from pprint import pprint
+from concurrent.futures import ProcessPoolExecutor
 
 import s2protocol
 
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass, catch_exceptions
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.ReplayAnalysis import analyse_replay
+from SCOFunctions.ReplayAnalysis import analyse_parsed_replay, parse_replay_file
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
 from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names, map_names, units_to_stats
@@ -937,6 +938,14 @@ class mass_replay_analysis:
             if k in pdict:
                 del pdict[k]
 
+    @staticmethod
+    def _guarded_parse_replay_file(*args, **kwargs):
+        """Parse and return a replay, or return an exception if one occurred."""
+        try:
+            return parse_replay_file(*args, **kwargs)
+        except Exception as e:
+            return e
+
     def run_full_analysis(self, progress_callback):
         """ Run full analysis on all replays """
         self.closing = False
@@ -957,58 +966,76 @@ class mass_replay_analysis:
 
         # Start
         logger.info('Starting full analysis!')
+        pool = ProcessPoolExecutor()
+        results = []
         start = time.time()
         idx = 0
         eta = '?'
         for i, r in enumerate(self.ReplayDataAll):
+            if not os.path.isfile(r.file):
+                continue
+
+            # Submit parsing jobs for replays that weren't fully analyzed yet
+            if not r.full_analysis:
+                filepath = r.file
+                results.append((i, filepath, pool.submit(mass_replay_analysis._guarded_parse_replay_file, filepath)))
+
+        for (i, filepath, future) in results:
             # Save cache every now and then
-            if idx >= 30:
+            if idx >= 50:
                 idx = 0
                 self.save_cache()
 
             # Interrupt the analysis if the app is closing
             if self.closing:
+                for (_, _, f) in results:
+                    f.cancel()
+                pool.shutdown(True)
                 self.save_cache()
                 return False
 
-            # Analyze those that are not fully parsed yet
-            if not r.full_analysis:
-                try:
-                    if not os.path.isfile(r.file):
-                        continue
+            # Wait for the result
+            replay = future.result()
 
-                    full_data = analyse_replay(r.file, self.main_handles)
+            # Propagate exceptions
+            if isinstance(replay, Exception):
+                e = replay
+                logger.error(f'Parsing error ({filepath})\n{traceback.format_exception(type(e), e, e.__traceback__)}')
+                continue
+            try:
+                # Finish analyzing replays
+                full_data = analyse_parsed_replay(filepath, replay, self.main_handles)
+                full_data['full_analysis'] = True
+                if len(full_data) < 2:
+                    continue
 
-                    full_data['full_analysis'] = True
-                    if len(full_data) < 2:
-                        continue
+                # Update counters
+                idx += 1
+                fully_parsed += 1
 
-                    # Update data
-                    idx += 1
-                    fully_parsed += 1
+                # Calculate ETA
+                if (fully_parsed - fully_parsed_at_start) > 10 and (fully_parsed - fully_parsed_at_start) % 10 == 0:
+                    eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
+                    eta = time.strftime("%H:%M:%S", time.gmtime(eta))
 
-                    # Calculate eta
-                    if (fully_parsed - fully_parsed_at_start) > 10 and (fully_parsed - fully_parsed_at_start) % 3 == 0:
-                        eta = (len(self.ReplayDataAll) - fully_parsed) / ((fully_parsed - fully_parsed_at_start) / (time.time() - start))
-                        eta = time.strftime("%H:%M:%S", time.gmtime(eta))
+                # Update widget
+                with lock:
+                    try:
+                        formated = self.format_data(full_data)
+                        if self.replay_entry_valid(formated):
+                            self.ReplayDataAll[i] = formated
+                    except Exception:
+                        logger.error(traceback.format_exc())
+                    progress_callback.emit(
+                        f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
+                    )
 
-                    # Update widget
-                    with lock:
-                        try:
-                            formated = self.format_data(full_data)
-                            if self.replay_entry_valid(formated):
-                                self.ReplayDataAll[i] = formated
-                        except Exception:
-                            logger.error(traceback.format_exc())
-                        progress_callback.emit(
-                            f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
-                        )
-
-                except Exception:
-                    logger.error(traceback.format_exc())
+            except Exception:
+                logger.error(traceback.format_exc())
 
         if idx > 0:
             self.save_cache()
+        pool.shutdown(True)
         progress_callback.emit(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')
         self.full_analysis_finished = True
