@@ -165,14 +165,13 @@ def s2_parse_replay(file,
         replay['end_time'] = replay['length']
 
     replay['mutators'] = tuple()
-    if parse_events:
-        try:
-            result = identify_mutators(events, extension=replay['extension'], detailed_info=detailed_info, mm='[MM]' in file)
-            replay['mutators'] = result['mutators']
-            replay['weekly'] = result.get('weekly')
-        except Exception:
-            now = datetime.datetime.now().strftime("%d/%m %H:%M:%S")
-            print(f"{now} - PARS (error): {traceback.format_exc()} ")
+    try:
+        result = identify_mutators(events, extension=replay['extension'], detailed_info=detailed_info, mm='[MM]' in file)
+        replay['mutators'] = result['mutators']
+        replay['weekly'] = result.get('weekly', False)
+    except Exception:
+        now = datetime.datetime.now().strftime("%d/%m %H:%M:%S")
+        print(f"{now} - PARS (error): {traceback.format_exc()} ")
 
     replay['form_alength'] = time.strftime('%H:%M:%S', time.gmtime(replay['accurate_length']))
     replay['form_alength'] = replay['form_alength'] if not replay['form_alength'].startswith('00:') else replay['form_alength'][3:]
