@@ -646,9 +646,9 @@ class mass_replay_analysis:
 
                 # Special filter for mutations
                 if 'mutation' in arg_lower or 'weekly' in arg_lower:
-                    if r.extension > 0 and len(r.mutators) == 0:
+                    if r.weekly is not None:
                         args_found += 1
-                        continue
+                    continue
 
                 # Special filter for races. Check enemy race directly.
                 if arg in races:

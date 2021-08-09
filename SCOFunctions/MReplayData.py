@@ -5,7 +5,7 @@ class replay_data(NamedTuple):
     """ Data structure for storing information for replays in a more memory efficient way. 
     Although this data isn't the memory hog for this app."""
     accurate_length: float
-    brutal_plus: int 
+    brutal_plus: int
     build: dict
     date: str
     difficulty: tuple
@@ -21,10 +21,11 @@ class replay_data(NamedTuple):
     players: tuple
     region: str
     result: str
-    
+
     amon_units: dict = None
     bonus: tuple = None
     comp: str = None
     full_analysis: bool = False
     hash: str = None
     player_stats: list = None
+    weekly: str = None

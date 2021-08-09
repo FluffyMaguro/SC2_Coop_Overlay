@@ -168,7 +168,10 @@ def s2_parse_replay(file,
     replay['mutators'] = tuple()
     if parse_events:
         try:
-            replay['mutators'] = identify_mutators(events, extension=replay['extension'], mm='[MM]' in file)
+            result = identify_mutators(events, extension=replay['extension'], detailed_info=detailed_info, mm='[MM]' in file)
+            replay['mutators'] = result['mutators']
+            if 'weekly' in result:
+                replay['weekly'] = result['weekly']
         except Exception:
             logger.error(traceback.format_exc())
 
