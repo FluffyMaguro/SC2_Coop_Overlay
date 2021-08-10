@@ -733,7 +733,7 @@ class UI_TabWidget(object):
         # Fallback to my bot if the user doesn't have its own bot
         if SM.settings['twitchbot']['channel_name'] != '' and SM.settings['twitchbot']['bot_name'] == '' and SM.settings['twitchbot'][
                 'bot_oauth'] == '':
-            file = innerPath('src/secure.json')
+            file = innerPath('src/bot')
             if os.path.isfile(file):
                 with open(file, 'r') as f:
                     fallback = json.load(f)

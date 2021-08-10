@@ -10,7 +10,7 @@ from pathlib import Path
 import psutil
 import requests
 
-from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MFilePath import truePath, innerPath
 from SCOFunctions.MLogging import logclass
 
 logger = logclass('HELP', 'INFO')
@@ -27,9 +27,7 @@ def isWindows():
 if isWindows():
     import ctypes.wintypes
 
-    from SCOFunctions.MRegistry import (reg_add_to_startup,
-                                        reg_delete_startup_field,
-                                        reg_get_startup_field_value)
+    from SCOFunctions.MRegistry import (reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value)
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
 
@@ -78,7 +76,28 @@ def app_running_multiple_instances():
         except Exception:
             pass
 
-    return running > 2
+    return running > 1
+
+
+def create_shortcut():
+    """ Creates a shortcut to desktop"""
+
+    if not isFrozen() or not isWindows():
+        return
+
+    shortcut_location = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop', 'SCO.url'))
+    icon_location = os.path.abspath(innerPath('src/OverlayIcon.ico'))
+    exe_location = truePath('SCO.exe')
+    script  = [
+    f'''echo [InternetShortcut] >> "{shortcut_location}"''',
+    f'''echo URL="{exe_location}" >> "{shortcut_location}"''',
+    f'''echo IconFile="{icon_location}" >> "{shortcut_location}"''',
+    f'''echo IconIndex=0 >> "{shortcut_location}"'''] # yapf: disable
+
+    script_to_show = '\n'.join(script)
+    logger.info(f"Runnig script to create a desktop shortcut: \n{script_to_show}")
+    for i in script:
+        os.popen(i).read()  # Compared to os.system this doesn't open a console window when the app is packaged
 
 
 def add_to_startup(Add):

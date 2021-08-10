@@ -158,6 +158,17 @@ class MainTab(QtWidgets.QWidget):
         self.BT_Screenshot.setToolTip('Take screenshot of the overlay and save it on your desktop or chosen location')
         self.BT_Screenshot.clicked.connect(self.p.save_screenshot)
 
+        # Create desktop shortcut
+
+        self.BT_Desktop_shortcut = QtWidgets.QPushButton(self)
+        self.BT_Desktop_shortcut.setGeometry(QtCore.QRect(351, 400, 157, 40))
+        self.BT_Desktop_shortcut.setText('Create desktop shortcut')
+        self.BT_Desktop_shortcut.clicked.connect(HF.create_shortcut)
+
+        if not HF.isWindows() or not HF.isFrozen():
+            self.BT_Desktop_shortcut.setDisabled(True)
+            self.BT_Desktop_shortcut.setToolTip("Only available when the app is packaged and on Windows")
+
         ### Hotkey frame
         self.FR_HotkeyFrame = QtWidgets.QFrame(self)
         self.FR_HotkeyFrame.setGeometry(QtCore.QRect(20, 170, 411, 211))
