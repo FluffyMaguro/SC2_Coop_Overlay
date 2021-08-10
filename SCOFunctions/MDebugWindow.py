@@ -31,10 +31,6 @@ class DebugWindow(QtWidgets.QWidget):
     def run_script(self):
         """ Debug function """
         text = self.debug_code.text()
-        if text == 'keyboard':
-            self.p.reset_keyboard_thread()
-            return
-
         try:
             print(f'Executing: {text}')
             exec(text)

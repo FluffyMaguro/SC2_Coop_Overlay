@@ -37,7 +37,6 @@ import SCOFunctions.MUserInterface as MUI
 import SCOFunctions.Tabs as Tabs
 from SCOFunctions.FastExpand import FastExpandSelector
 from SCOFunctions.MChatWidget import ChatWidget
-from SCOFunctions.MDebugWindow import DebugWindow
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import catch_exceptions, logclass
 from SCOFunctions.MSystemInfo import SystemInfo
@@ -291,11 +290,14 @@ class UI_TabWidget(object):
             f.write('\n'.join(('@echo off',
                                 'echo Installation will start shortly...',
                                 'timeout /t 7 /nobreak > NUL',
+                                # Copy files
                                 f'robocopy "{where_to_extract}" "{os.path.abspath(app_folder)}" /E',
                                 'timeout /t 7 /nobreak > NUL',
+                                # Remove old directory
                                 f'rmdir /s /q "{truePath("Updates")}"',
                                 'echo Installation completed...',
-                                f'"{truePath("SCO.exe")}"'
+                                # Start application
+                                f'"{truePath("App/SCO.exe")}"'
                                 ))) # yapf: disable
 
         self.saveSettings()
@@ -349,9 +351,6 @@ class UI_TabWidget(object):
         self.TAB_Resources.KEY_Performance.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['performance_hotkey']))
 
         self.TAB_Stats.CH_FA_atstart.setChecked(SM.settings['full_analysis_atstart'])
-
-        if SM.settings['debug_button']:
-            self.DebugWindow = DebugWindow(self)
 
         # RNG choices
         self.TAB_Randomizer.load_choices(SM.settings['rng_choices'])
@@ -553,8 +552,6 @@ class UI_TabWidget(object):
         SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
         SM.settings['player_notes'] = previous_settings['player_notes']
         SM.settings['twitchbot'] = previous_settings['twitchbot']
-        SM.settings['debug_button'] = previous_settings['debug_button']
-        SM.settings['debug'] = previous_settings['debug']
         self.updateUI()
         self.saveSettings()
         self.sendInfoMessage('All settings have been reset!')
@@ -612,17 +609,6 @@ class UI_TabWidget(object):
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})\n{SM.settings_for_logs()}')
-
-
-        # Debug files in MEI directory
-        if SM.settings['debug']:
-            folder = os.path.abspath(innerPath(''))
-            if os.path.isdir(folder):
-                for root, _, files in os.walk(folder):
-                    for file in files:
-                        logger.info(f'>>File: {os.path.abspath(os.path.join(root, file))}')
-            else:
-                logger.error(f"No dir: {folder}")
 
         # Custom CSS/JS
         if not os.path.isfile(truePath('Layouts/custom.css')):

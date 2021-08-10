@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-from SCOFunctions.MFilePath import truePath, innerPath
+from SCOFunctions.MFilePath import innerPath
+from SCOFunctions.MDebugWindow import DebugWindow
 
 
 class LinkTab(QtWidgets.QWidget):
@@ -13,6 +14,12 @@ class LinkTab(QtWidgets.QWidget):
         self.bt_reset_keyboard.setText('Reset keyboard')
         self.bt_reset_keyboard.setToolTip('Resets keyboard threads.\nThis might fix issues if hotkeys are not reacting.')
         self.bt_reset_keyboard.clicked.connect(self.p.reset_keyboard_thread)
+
+        # Debug
+        self.bt_debug_window = QtWidgets.QPushButton(self)
+        self.bt_debug_window.setGeometry(QtCore.QRect(830, 50, 125, 25))
+        self.bt_debug_window.setText('Debug window')
+        self.bt_debug_window.clicked.connect(self.debug_window_clicked)
 
         # Links
         self.fr_links = QtWidgets.QFrame(self)
@@ -105,3 +112,13 @@ class LinkTab(QtWidgets.QWidget):
         for item in {self.blog, self.reddit, self.twitter, self.github, self.discord, self.battlenet, self.paypal, self.coop_discord}:
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
+
+    def debug_window_clicked(self):
+        """ Creates, shows or hides debug window"""
+        if hasattr(self.p, "DebugWindow"):
+            if self.p.DebugWindow.isVisible():
+                self.p.DebugWindow.hide()
+            else:
+                self.p.DebugWindow.show()
+        else:
+            self.p.DebugWindow = DebugWindow(self.p)

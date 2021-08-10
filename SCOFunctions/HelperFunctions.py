@@ -1,13 +1,15 @@
-import os
-import sys
-import json
-import string
 import hashlib
-import requests
-import zipfile
+import json
+import os
+import string
+import sys
 import traceback
+import zipfile
 from pathlib import Path
+
 import psutil
+import requests
+
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import logclass
 
@@ -24,9 +26,17 @@ def isWindows():
 # Use ctypes.wintypes and regirsty stuff only on windows platform
 if isWindows():
     import ctypes.wintypes
-    from SCOFunctions.MRegistry import reg_add_to_startup, reg_get_startup_field_value, reg_delete_startup_field
+
+    from SCOFunctions.MRegistry import (reg_add_to_startup,
+                                        reg_delete_startup_field,
+                                        reg_get_startup_field_value)
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
+
+
+def isFrozen():
+    """ Checks whether the app is frozen by Pyinstaller"""
+    return getattr(sys, 'frozen', False)
 
 
 def get_hash(file):
@@ -77,7 +87,7 @@ def add_to_startup(Add):
     if not isWindows() and Add:
         return 'Not a Windows-type OS. Not adding to the startup!'
 
-    if not getattr(sys, 'frozen', False) and Add:
+    if not isFrozen() and Add:
         return 'App is not packaged. Not adding to the startup!'
 
     if not isWindows():
