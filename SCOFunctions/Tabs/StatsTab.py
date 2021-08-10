@@ -326,6 +326,12 @@ class StatsTab(QtWidgets.QWidget):
         self.CH_FA_status = QtWidgets.QLabel(self.TAB_FullAnalysis)
         self.CH_FA_status.setGeometry(QtCore.QRect(10, 140, 400, 40))
 
+        self.BT_FA_redo = QtWidgets.QPushButton(self.TAB_FullAnalysis)
+        self.BT_FA_redo.setGeometry(QtCore.QRect(835, 10, 120, 25))
+        self.BT_FA_redo.clicked.connect(self.p.redo_full_analysis)
+        self.BT_FA_redo.setText('Delete parsed data')
+        self.BT_FA_redo.setToolTip('WARNING!\nThis will delete all parsed data and start the analysis anew.\nThis might be useful after an update to the parser.')
+
         # Putting it together
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
         self.TABW_StatResults.setTabText(self.TABW_StatResults.indexOf(self.TAB_Maps), "Maps")

@@ -916,6 +916,7 @@ class UI_TabWidget(object):
 
     def full_analysis_finished(self, finished_completely):
         self.TAB_Stats.generate_stats()
+        self.full_analysis_running = False
         if finished_completely:
             self.TAB_Stats.CH_FA_atstart.setChecked(True)
 
@@ -1086,6 +1087,14 @@ class UI_TabWidget(object):
             set_dark_theme(self, app, TabWidget, APPVERSION)
         else:
             self.sendInfoMessage('Restart to change back to the light theme!', color=MColors.msg_failure)
+
+    def redo_full_analysis(self):
+        if self.full_analysis_running:
+            logger.error('Full analysis is already running')
+            return
+        logger.info("Redoing full analysis!")
+        self.CAnalysis.redo_analysis()
+        self.run_f_analysis()
 
 
 if __name__ == "__main__":

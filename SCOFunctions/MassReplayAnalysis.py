@@ -764,12 +764,8 @@ class mass_replay_analysis:
         for r in replays:
             rhash = get_hash(r)
             if not rhash in self.parsed_replays:
-                results.append((rhash, r,
-                                pool.submit(guarded_parse_replay_file,
-                                            r,
-                                            parse_events=False,
-                                            onlyBlizzard=True,
-                                            withoutRecoverEnabled=True)))
+                results.append((rhash, r, pool.submit(guarded_parse_replay_file, r, parse_events=False, onlyBlizzard=True,
+                                                      withoutRecoverEnabled=True)))
 
         # Go over results
         for rhash, r, future in results:
@@ -813,6 +809,18 @@ class mass_replay_analysis:
         if len(self.main_names) == 0 and len(self.main_handles) > 0:
             self.main_names = names_fallback(self.main_handles, self.ReplayDataAll)
             logger.info(f'No names from links. Falling back. New names:  {self.main_names}')
+
+    def redo_analysis(self):
+        """ Deletes all parsed data and starts basic analysis anew"""
+        self.parsed_replays = set()
+        self.ReplayData = list()
+        self.ReplayDataAll = list()
+        self.winrate_data = dict()
+        self.full_analysis_finished = False
+        self.add_replays(self.current_replays)
+        self.check_if_replaydata_are_valid()
+        self.update_name_handle_dict()
+        self.calculate_player_winrate_data()
 
     def replay_entry_valid(self, r):
         """ Checks if replay entry (tuple) is good"""
