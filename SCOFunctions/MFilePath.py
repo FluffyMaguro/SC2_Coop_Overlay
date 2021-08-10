@@ -21,6 +21,7 @@ def innerPath(file):
     """
 
     if getattr(sys, 'frozen', False):
-        return os.path.normpath(os.path.join(sys._MEIPASS, file))
+        path = os.path.join(pathlib.Path(sys.executable).parent.absolute(), file)
+        return os.path.normpath(path)
 
     return file

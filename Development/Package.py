@@ -6,42 +6,39 @@ Run the pyinstaller, cleans up, zips files.
 
 import os
 import shutil
-from zipfile import ZipFile 
-
+from zipfile import ZipFile, ZIP_BZIP2
 
 # Clear __pycache__ from s2protocol folders
 cache_folders = set()
 for root, directories, files in os.walk(os.getcwd()):
     for directory in directories:
         if directory == '__pycache__':
-            dir_path = os.path.join(root,directory)
+            dir_path = os.path.join(root, directory)
             if 's2protocol' in root or 'websockets' in root:
                 print(f'Removing: {dir_path}')
                 shutil.rmtree(dir_path)
 
-
 # Run pyinstaller
-os.system('cmd /c "pyinstaller.exe --onefile --noconsole -i=src/OverlayIcon.ico --add-data venv\Lib\site-packages\s2protocol;s2protocol --add-data venv\Lib\site-packages\websockets;websockets --add-data src;src --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries SCO.py"')
-
-# Move SCO.exe
-os.replace('dist/SCO.exe','SCO.exe')
+os.system(
+    'cmd /c "pyinstaller.exe --noconsole -i=src/OverlayIcon.ico --add-data venv\Lib\site-packages\s2protocol;s2protocol --add-data venv\Lib\site-packages\websockets;websockets --add-data src;src --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries SCO.py"'
+)
 
 # Zip
 file_name = f"SC2CoopOverlay (x.x).zip"
+shutil.copytree('Layouts', 'dist/SCO/Layouts')
+shutil.copy('Read me (Github).url', 'dist/SCO/Read me (Github).url')
+shutil.move('dist/SCO', 'SCO')
 
-to_zip = ['SCO.exe','Read me (Github).url']
-to_zip.extend([f'Layouts/{f}' for f in os.listdir('Layouts') if not f in ('custom.css','custom.js')])
-to_zip.extend([f'Layouts/Icons/{f}' for f in os.listdir('Layouts/Icons')])
-to_zip.extend([f'Layouts/Commanders/{f}' for f in os.listdir('Layouts/Commanders')])
-to_zip.extend([f'Layouts/Mutator Icons/{f}' for f in os.listdir('Layouts/Mutator Icons')])
+to_zip = []
+for root, directories, files in os.walk('SCO'):
+    for file in files:
+        to_zip.append(os.path.join(root, file))
 
-with ZipFile(file_name,'w') as zip: 
-        for file in to_zip: 
-            zip.write(file) 
+with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
+    for file in to_zip:
+        zip.write(file, file[4:]) # The second argument makes it not appear in SCO/ directory in the zip file
 
 # Cleanup
 os.remove('SCO.spec')
-os.remove('SCO.exe')
-for item in {'build','dist','__pycache__'}:
+for item in {'build', 'dist', '__pycache__', 'SCO'}:
     shutil.rmtree(item)
-
