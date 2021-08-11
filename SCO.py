@@ -666,8 +666,15 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_replays)
 
         # Start mass replay analysis
-        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, SM.settings['account_folder'])
+        thread_mass_analysis = MUI.Worker(MR.mass_replay_analysis_thread, SM.settings['account_folder'], progress_callback=True)
+        thread_mass_analysis.signals.progress.connect(self.mass_analysis_progress_update)
         thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
+
+        if hasattr(TabWidget, 'taskbar_progress'):
+            TabWidget.taskbar_progress.setValue(0)
+            TabWidget.taskbar_progress.resume()
+            TabWidget.taskbar_progress.show()
+
         self.threadpool.start(thread_mass_analysis)
         logger.info('Starting mass replay analysis')
 
@@ -693,6 +700,11 @@ class UI_TabWidget(object):
         # Find MM Integration banks
         self.TAB_TwitchBot.find_and_update_banks()
         self.update_selected_bank_item(SM.settings['twitchbot']['bank_locations'].get('Current'))
+
+    def mass_analysis_progress_update(self, progress):
+        """ Update progress bar in taskbar when doing basic mass analysis"""
+        if hasattr(TabWidget, 'taskbar_progress'):
+            TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def change_bank(self):
         """ Update currently used bank in the twitch bot.
@@ -834,6 +846,9 @@ class UI_TabWidget(object):
     @catch_exceptions(logger)
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
+        if hasattr(TabWidget, 'taskbar_progress'):
+            TabWidget.taskbar_progress.setValue(100)
+            TabWidget.taskbar_progress.hide()
 
         # Update game tab
         self.TAB_Games.initialize_data(self.CAnalysis)
@@ -902,8 +917,11 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
 
-        TabWidget.taskbar_progress.resume()
-        TabWidget.taskbar_progress.show()
+        if hasattr(TabWidget, 'taskbar_progress'):
+            TabWidget.taskbar_progress.setValue(0)
+            TabWidget.taskbar_progress.resume()
+            TabWidget.taskbar_progress.show()
+
         self.TAB_Stats.BT_FA_run.setEnabled(False)
         self.TAB_Stats.BT_FA_stop.setEnabled(True)
         self.full_analysis_running = True
@@ -915,19 +933,22 @@ class UI_TabWidget(object):
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
         self.TAB_Stats.CH_FA_status.setText(progress[2])
-        TabWidget.taskbar_progress.setValue(int(100*progress[0] / progress[1]))
+        if hasattr(TabWidget, 'taskbar_progress'):
+            TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def full_analysis_finished(self, finished_completely):
         self.TAB_Stats.generate_stats()
         self.full_analysis_running = False
         if finished_completely:
             self.TAB_Stats.CH_FA_atstart.setChecked(True)
-            TabWidget.taskbar_progress.setValue(100)
-            TabWidget.taskbar_progress.hide()
+            if hasattr(TabWidget, 'taskbar_progress'):
+                TabWidget.taskbar_progress.setValue(100)
+                TabWidget.taskbar_progress.hide()
 
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
-            TabWidget.taskbar_progress.pause()
+            if hasattr(TabWidget, 'taskbar_progress'):
+                TabWidget.taskbar_progress.pause()
             self.CAnalysis.closing = True
             self.full_analysis_running = False
             self.TAB_Stats.BT_FA_run.setEnabled(True)

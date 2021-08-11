@@ -750,7 +750,7 @@ class mass_replay_analysis:
         except Exception:
             logger.error(traceback.format_exc())
 
-    def add_replays(self, replays):
+    def add_replays(self, replays, progress_callback=None):
         """ Parses and adds new replays. Doesn't parse already parsed replays. """
 
         ts = time.time()
@@ -768,7 +768,7 @@ class mass_replay_analysis:
                                                       withoutRecoverEnabled=True)))
 
         # Go over results
-        for rhash, r, future in results:
+        for idx, (rhash, r, future) in enumerate(results):
             # Interrupt the analysis if the app is closing
             if self.closing:
                 for (_, _, f) in results:
@@ -778,6 +778,8 @@ class mass_replay_analysis:
 
             # Wait for the result
             replay = future.result()
+            if progress_callback is not None:
+                progress_callback.emit((idx, len(results)))
 
             # Manage exceptions
             if isinstance(replay, Exception):
@@ -947,10 +949,10 @@ class mass_replay_analysis:
             self.ReplayDataAll.pop(i)
 
     @catch_exceptions(logger)
-    def initialize(self):
+    def initialize(self, progress_callback=None):
         """ Executes full initialization """
         self.load_cache()
-        self.add_replays(self.current_replays)
+        self.add_replays(self.current_replays, progress_callback)
         self.check_if_replaydata_are_valid()
         self.save_cache()
         self.update_name_handle_dict()
@@ -1276,9 +1278,9 @@ class mass_replay_analysis:
         }
 
 
-def mass_replay_analysis_thread(ACCOUNTDIR):
+def mass_replay_analysis_thread(ACCOUNTDIR, progress_callback=None):
     """ Main thread for mass replay analysis. Handles all initialization. """
 
     CAnalysis = mass_replay_analysis(ACCOUNTDIR)
-    CAnalysis.initialize()
+    CAnalysis.initialize(progress_callback)
     return CAnalysis
