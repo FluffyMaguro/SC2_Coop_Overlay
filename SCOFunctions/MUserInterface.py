@@ -1442,9 +1442,11 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.title_bar = TitleBar(self)
         self.title_bar.hide()
 
+        self.taskbar_progress = None
+
     def showEvent(self, evt):
         """ Create a progress bar on the taskbar for Windows"""
-        if isWindows() and not hasattr(self, 'taskbar_button'):
+        if isWindows() and not self.taskbar_progress is not None:
             self.taskbar_button = QWinTaskbarButton()
             self.taskbar_progress = self.taskbar_button.progress()
             self.taskbar_progress.setRange(0, 100)

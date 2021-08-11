@@ -330,7 +330,8 @@ class StatsTab(QtWidgets.QWidget):
         self.BT_FA_redo.setGeometry(QtCore.QRect(835, 10, 120, 25))
         self.BT_FA_redo.clicked.connect(self.p.redo_full_analysis)
         self.BT_FA_redo.setText('Delete parsed data')
-        self.BT_FA_redo.setToolTip('WARNING!\nThis will delete all parsed data and start the analysis anew.\nThis might be useful after an update to the parser.')
+        self.BT_FA_redo.setToolTip(
+            'WARNING!\nThis will delete all parsed data and start the analysis anew.\nThis might be useful after an update to the parser.')
 
         # Putting it together
         self.TABW_StatResults.addTab(self.TAB_Maps, "")
@@ -354,7 +355,7 @@ class StatsTab(QtWidgets.QWidget):
     def generate_stats(self):
         """ Generate stats and passes data to be shown"""
 
-        if not hasattr(self.p, 'CAnalysis'):
+        if self.p.CAnalysis is None:
             logger.error('Mass analysis hasn\'t finished yet')
             return
 
@@ -399,7 +400,7 @@ class StatsTab(QtWidgets.QWidget):
         maxLength = None if self.SP_MaxGamelength.value() == 0 else self.SP_MaxGamelength.value()
 
         player = None if self.ED_PlayerName.text() == '' else self.ED_PlayerName.text().lower()
-        
+
         winsonly = self.CH_TypeWins.isChecked()
 
         include_both_main = True if self.CH_DualMain.isChecked() else False

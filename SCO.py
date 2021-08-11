@@ -105,6 +105,7 @@ class UI_TabWidget(object):
             self.TAB_Main.CH_StartWithWindows.setEnabled(False)
 
         self.FastExpandSelector = None
+        self.CAnalysis = None
 
     def loadSettings(self):
         """ Loads settings from the config file if there is any, updates UI elements accordingly"""
@@ -587,7 +588,7 @@ class UI_TabWidget(object):
                 self.TAB_Main.LA_CurrentReplayFolder.setText(folder)
                 self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color=MColors.msg_success)
                 MF.update_names_and_handles(folder, MF.AllReplays)
-                if hasattr(self, 'CAnalysis'):
+                if self.CAnalysis is not None:
                     self.updating_maps = QtWidgets.QWidget()
                     self.updating_maps.setWindowTitle('Adding replays')
                     self.updating_maps.setGeometry(700, 500, 300, 100)
@@ -670,7 +671,7 @@ class UI_TabWidget(object):
         thread_mass_analysis.signals.progress.connect(self.mass_analysis_progress_update)
         thread_mass_analysis.signals.result.connect(self.mass_analysis_finished)
 
-        if hasattr(TabWidget, 'taskbar_progress'):
+        if TabWidget.taskbar_progress is not None:
             TabWidget.taskbar_progress.setValue(0)
             TabWidget.taskbar_progress.resume()
             TabWidget.taskbar_progress.show()
@@ -703,7 +704,7 @@ class UI_TabWidget(object):
 
     def mass_analysis_progress_update(self, progress):
         """ Update progress bar in taskbar when doing basic mass analysis"""
-        if hasattr(TabWidget, 'taskbar_progress'):
+        if TabWidget.taskbar_progress is not None:
             TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def change_bank(self):
@@ -846,7 +847,7 @@ class UI_TabWidget(object):
     @catch_exceptions(logger)
     def mass_analysis_finished(self, result):
         self.CAnalysis = result
-        if hasattr(TabWidget, 'taskbar_progress'):
+        if TabWidget.taskbar_progress is not None:
             TabWidget.taskbar_progress.setValue(100)
             TabWidget.taskbar_progress.hide()
 
@@ -917,7 +918,7 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
 
-        if hasattr(TabWidget, 'taskbar_progress'):
+        if TabWidget.taskbar_progress is not None:
             TabWidget.taskbar_progress.setValue(0)
             TabWidget.taskbar_progress.resume()
             TabWidget.taskbar_progress.show()
@@ -933,7 +934,7 @@ class UI_TabWidget(object):
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
         self.TAB_Stats.CH_FA_status.setText(progress[2])
-        if hasattr(TabWidget, 'taskbar_progress'):
+        if TabWidget.taskbar_progress is not None:
             TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def full_analysis_finished(self, finished_completely):
@@ -941,13 +942,13 @@ class UI_TabWidget(object):
         self.full_analysis_running = False
         if finished_completely:
             self.TAB_Stats.CH_FA_atstart.setChecked(True)
-            if hasattr(TabWidget, 'taskbar_progress'):
+            if TabWidget.taskbar_progress is not None:
                 TabWidget.taskbar_progress.setValue(100)
                 TabWidget.taskbar_progress.hide()
 
     def stop_full_analysis(self):
-        if hasattr(self, 'CAnalysis'):
-            if hasattr(TabWidget, 'taskbar_progress'):
+        if self.CAnalysis is not None:
+            if TabWidget.taskbar_progress is not None:
                 TabWidget.taskbar_progress.pause()
             self.CAnalysis.closing = True
             self.full_analysis_running = False
@@ -957,7 +958,7 @@ class UI_TabWidget(object):
 
     def update_winrate_data(self):
         """ Update player tab & set winrate data in MF """
-        if hasattr(self, 'CAnalysis'):
+        if self.CAnalysis is not None:
             self.winrate_data = self.CAnalysis.calculate_player_winrate_data()
             self.TAB_Players.update(self.winrate_data)
             MF.set_player_winrate_data(self.winrate_data)

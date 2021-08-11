@@ -107,7 +107,7 @@ class GameTab(QtWidgets.QWidget):
     def search_games(self):
         """ Searches for games with given strings in them and updates games tab"""
 
-        if not hasattr(self.p, 'CAnalysis'):
+        if self.p.CAnalysis is None:
             return
 
         search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
@@ -138,7 +138,7 @@ class GameTab(QtWidgets.QWidget):
 
         self.p.TAB_Randomizer.RNG_Overlay_changed()
 
-        if hasattr(self.p, 'CAnalysis') and replay_dict is not None:
+        if self.p.CAnalysis is not None and replay_dict is not None:
             # Add game to game tab
             try:
                 # Update mass replay analysis
