@@ -1,20 +1,23 @@
 import os
+import subprocess
 import sys
 import time
 import traceback
-import subprocess
 from functools import partial
 
-from PyQt5 import QtWidgets, QtGui, QtCore, QtWebEngineWidgets
+from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 
 import SCOFunctions.MainFunctions as MF
+from SCOFunctions.HelperFunctions import isWindows
+from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
-from SCOFunctions.MainFunctions import show_overlay
-from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
-from SCOFunctions.MTheming import set_dark_theme, MColors
+from SCOFunctions.MTheming import MColors, set_dark_theme
+from SCOFunctions.SC2Dictionaries import CommanderMastery, prestige_names
 from SCOFunctions.Settings import Setting_manager as SM
-from SCOFunctions.HelperFunctions import isWindows
+
+if isWindows():
+    from PyQt5.QtWinExtras import QWinTaskbarButton
 
 logger = logclass('UI', 'INFO')
 loggerJS = logclass('JS', 'INFO')
@@ -1438,6 +1441,16 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
         self.dark_mode_active = False
         self.title_bar = TitleBar(self)
         self.title_bar.hide()
+
+    def showEvent(self, evt):
+        """ Create a progress bar on the taskbar for Windows"""
+        if isWindows() and not hasattr(self, 'taskbar_button'):
+            self.taskbar_button = QWinTaskbarButton()
+            self.taskbar_progress = self.taskbar_button.progress()
+            self.taskbar_progress.setRange(0, 100)
+            self.taskbar_progress.setValue(0)
+            self.taskbar_button.setWindow(self.windowHandle())
+            self.taskbar_progress.hide()
 
     @QtCore.pyqtSlot(bool)
     def closeEvent(self, event):

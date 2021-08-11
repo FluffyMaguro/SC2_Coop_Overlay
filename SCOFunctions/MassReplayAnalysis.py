@@ -992,10 +992,12 @@ class mass_replay_analysis:
 
         if fully_parsed == len(self.ReplayDataAll):
             self.full_analysis_finished = True
-            progress_callback.emit(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
+            progress_callback.emit((len(self.ReplayDataAll), len(self.ReplayDataAll),
+                                    f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%'))
             return True
 
-        progress_callback.emit(f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)')
+        progress_callback.emit((fully_parsed, len(self.ReplayDataAll),
+                                f'Running... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'))
         fully_parsed_at_start = fully_parsed
 
         # Start
@@ -1060,9 +1062,10 @@ class mass_replay_analysis:
                             self.ReplayDataAll[i] = formated
                     except Exception:
                         logger.error(traceback.format_exc())
-                    progress_callback.emit(
-                        f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
-                    )
+                    progress_callback.emit((fully_parsed, len(
+                        self.ReplayDataAll
+                    ), f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'
+                                            ))
 
             except Exception:
                 logger.error(traceback.format_exc())
@@ -1070,7 +1073,8 @@ class mass_replay_analysis:
         if idx > 0:
             self.save_cache()
         pool.shutdown(True)
-        progress_callback.emit(f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%')
+        progress_callback.emit((len(self.ReplayDataAll), len(self.ReplayDataAll),
+                                f'Full analysis completed! {len(self.ReplayDataAll)}/{len(self.ReplayDataAll)} | 100%'))
         logger.info(f'Full analysis completed in {time.time()-start:.0f} seconds!')
         self.full_analysis_finished = True
         return True

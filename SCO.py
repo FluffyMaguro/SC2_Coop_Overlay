@@ -902,6 +902,8 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
 
+        TabWidget.taskbar_progress.resume()
+        TabWidget.taskbar_progress.show()
         self.TAB_Stats.BT_FA_run.setEnabled(False)
         self.TAB_Stats.BT_FA_stop.setEnabled(True)
         self.full_analysis_running = True
@@ -912,16 +914,20 @@ class UI_TabWidget(object):
 
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
-        self.TAB_Stats.CH_FA_status.setText(progress)
+        self.TAB_Stats.CH_FA_status.setText(progress[2])
+        TabWidget.taskbar_progress.setValue(int(100*progress[0] / progress[1]))
 
     def full_analysis_finished(self, finished_completely):
         self.TAB_Stats.generate_stats()
         self.full_analysis_running = False
         if finished_completely:
             self.TAB_Stats.CH_FA_atstart.setChecked(True)
+            TabWidget.taskbar_progress.setValue(100)
+            TabWidget.taskbar_progress.hide()
 
     def stop_full_analysis(self):
         if hasattr(self, 'CAnalysis'):
+            TabWidget.taskbar_progress.pause()
             self.CAnalysis.closing = True
             self.full_analysis_running = False
             self.TAB_Stats.BT_FA_run.setEnabled(True)
@@ -1093,6 +1099,8 @@ class UI_TabWidget(object):
             logger.error('Full analysis is already running')
             return
         logger.info("Redoing full analysis!")
+        self.TAB_Stats.BT_FA_redo.setDisabled(True)
+        self.wait_ms(5)
         self.CAnalysis.redo_analysis()
         self.run_f_analysis()
 

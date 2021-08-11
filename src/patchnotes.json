@@ -147,6 +147,6 @@
     "Various tweaks and fixes",
     "",
     "Thanks to Paa and Spavid for implementing several of these features",
-    "I recommend redoing replay analysis by removing cache_overall_stats file when the app is closed"
+    "I recommend redoing replay analysis (button in stats/full analysis)"
   ]
 }
