@@ -58,6 +58,7 @@ class CSettings:
             'right_offset': 0,
             'top_offset': 0,
             'width': 0.7,
+            'force_width': False,
             'show_charts': True,
             'replay_check_interval': 3,
             'height': 1,
@@ -153,7 +154,7 @@ class CSettings:
 
     def width_for_graphs(self):
         """ Checks whether the width needs to be changed for graphs"""
-        if self.settings['show_charts'] and self.settings['width'] < 0.7:
+        if self.settings['show_charts'] and self.settings['width'] < 0.7 and not self.settings['force_width']:
             self.settings['width'] = 0.7
 
 

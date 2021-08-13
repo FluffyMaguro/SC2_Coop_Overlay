@@ -18,6 +18,7 @@ core functinality, and similar issues. It's a great learning experience neverthe
 """
 import json
 import os
+import platform
 import shutil
 import sys
 import threading
@@ -609,7 +610,7 @@ class UI_TabWidget(object):
 
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})\n{SM.settings_for_logs()}')
+        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f}) [{platform.system()} {platform.release()}]\n{SM.settings_for_logs()}')
 
         # Custom CSS/JS
         if not os.path.isfile(truePath('Layouts/custom.css')):
