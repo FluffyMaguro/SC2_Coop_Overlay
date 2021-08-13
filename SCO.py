@@ -704,7 +704,7 @@ class UI_TabWidget(object):
 
     def mass_analysis_progress_update(self, progress):
         """ Update progress bar in taskbar when doing basic mass analysis"""
-        if TabWidget.taskbar_progress is not None:
+        if TabWidget.taskbar_progress is not None and progress[1] != 0:
             TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def change_bank(self):
@@ -934,7 +934,7 @@ class UI_TabWidget(object):
     def full_analysis_progress(self, progress):
         """ Updates progress from full analysis"""
         self.TAB_Stats.CH_FA_status.setText(progress[2])
-        if TabWidget.taskbar_progress is not None:
+        if TabWidget.taskbar_progress is not None and progress[1] != 0:
             TabWidget.taskbar_progress.setValue(int(100 * progress[0] / progress[1]))
 
     def full_analysis_finished(self, finished_completely):

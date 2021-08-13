@@ -139,11 +139,12 @@
   ,
   "240": [
     "App is no longer compressed into one big executable. This will make app start faster",
-    "Initial and full replay analysis run on all available CPU cores",
+    "Initial and full replay analyses run on all available CPU cores",
     "Mutators are parsed for weekly mutations and retries in Brutal+",
     "Maps & commanders in stats can be sorted by name and other stats by clicking on headers",
     "Added a button that creates a desktop shortcut",
     "Fast expand hints are shown on the correct monitor",
+    "Taskbar progression indicator for mass replay analyses",
     "Various tweaks and fixes",
     "",
     "Thanks to Paa and Spavid for implementing several of these features",

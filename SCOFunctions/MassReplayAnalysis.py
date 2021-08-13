@@ -1064,6 +1064,10 @@ class mass_replay_analysis:
                             self.ReplayDataAll[i] = formated
                     except Exception:
                         logger.error(traceback.format_exc())
+
+                    if len(self.ReplayDataAll) == 0:
+                        continue
+
                     progress_callback.emit((fully_parsed, len(
                         self.ReplayDataAll
                     ), f'Estimated remaining time: {eta}\nRunning... {fully_parsed}/{len(self.ReplayDataAll)} ({100*fully_parsed/len(self.ReplayDataAll):.0f}%)'

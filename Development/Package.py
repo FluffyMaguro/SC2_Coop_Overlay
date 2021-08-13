@@ -34,6 +34,7 @@ for root, directories, files in os.walk('SCO'):
     for file in files:
         to_zip.append(os.path.join(root, file))
 
+print('Compressing files...')
 with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
     for file in to_zip:
         zip.write(file, file[4:]) # The second argument makes it not appear in SCO/ directory in the zip file

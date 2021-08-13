@@ -1,6 +1,6 @@
 # StarCraft II Coop Overlay (SCO)
 
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.39/SC2CoopOverlay.2.39.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.40/SC2CoopOverlay.2.40.zip)
 * Or run the script with Python 3.8+:
 
 ```
@@ -145,6 +145,17 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.40 version
+
+      - App is no longer compressed into one big executable. This will make app start faster
+      - Initial and full replay analyses run on all available CPU cores
+      - Mutators are parsed for weekly mutations and retries in Brutal+
+      - Maps & commanders in stats can be sorted by name and other stats by clicking on headers
+      - Added a button that creates a desktop shortcut
+      - Fast expand hints are shown on the correct monitor
+      - Taskbar progression indicator for mass replay analyses
+      - Various tweaks and fixes
 
 * 2.39 version
 
