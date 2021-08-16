@@ -27,3 +27,5 @@ replay_data_dump.json
 _vsc.bat
 debug.py
 SCO/*
+SCO.build/*
+SCO.dist/*

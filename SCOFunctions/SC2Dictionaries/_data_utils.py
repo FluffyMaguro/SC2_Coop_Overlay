@@ -1,8 +1,9 @@
 """Utility functions to read text files to Python data structures."""
 
-import os
-import sys
 import csv
+import os
+
+from SCOFunctions.MFilePath import innerPath
 
 
 def csv_to_dictitems(filename, *, header=1):
@@ -52,7 +53,4 @@ def get_file_path(file, subfolder=''):
     if subfolder != '':
         file = os.path.join(subfolder, file)
 
-    if getattr(sys, 'frozen', False):
-        return os.path.join(sys._MEIPASS, file)
-
-    return file
+    return innerPath(file)

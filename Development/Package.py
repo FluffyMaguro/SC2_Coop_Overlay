@@ -19,9 +19,15 @@ for root, directories, files in os.walk(os.getcwd()):
                 shutil.rmtree(dir_path)
 
 # Run pyinstaller
-os.system(
-    'cmd /c "pyinstaller.exe --noconsole -i=src/OverlayIcon.ico --add-data venv\Lib\site-packages\s2protocol;s2protocol --add-data venv\Lib\site-packages\websockets;websockets --add-data src;src --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries SCO.py"'
-)
+os.system('cmd /c "pyinstaller.exe'
+          ' --noconsole'
+          ' -i=src/OverlayIcon.ico'
+          ' --add-data venv\Lib\site-packages\s2protocol;s2protocol'
+          ' --add-data venv\Lib\site-packages\websockets;websockets'
+          ' --add-data src;src'
+          ' --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries'
+          ' --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries'
+          ' SCO.py"')
 
 # Zip
 file_name = f"SC2CoopOverlay (x.x).zip"
@@ -37,9 +43,9 @@ for root, directories, files in os.walk('SCO'):
 print('Compressing files...')
 with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
     for file in to_zip:
-        zip.write(file, file[4:]) # The second argument makes it not appear in SCO/ directory in the zip file
+        zip.write(file, file[4:])  # The second argument makes it not appear in SCO/ directory in the zip file
 
 # Cleanup
 os.remove('SCO.spec')
-for item in {'build', 'dist', '__pycache__', 'SCO'}:
+for item in ('build', 'dist', '__pycache__', 'SCO'):
     shutil.rmtree(item)
