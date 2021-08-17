@@ -163,7 +163,7 @@ body {
 
 #map {
     position: absolute;
-    top: 7.85vh;
+    top: 7.80vh;
     width: 100%;
     text-align: center;
     font-size: 1.7vh;
@@ -182,7 +182,7 @@ body {
 
 #brutal {
     position: absolute;
-    top: 9.9vh;
+    top: 9.8vh;
     width: 100%;
     font-size: 1.7vh;
     text-align: center;
@@ -195,13 +195,13 @@ body {
 
 #apm1 {
     position: absolute;
-    top: 9.9vh;
+    top: 9.8vh;
     left: 0px;
 }
 
 #apm2 {
     position: absolute;
-    top: 9.9vh;
+    top: 9.8vh;
     right: 0px;
 }
 
