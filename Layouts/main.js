@@ -19,6 +19,24 @@ var masteryNames = {
     'Mengsk': ['Laborer and Trooper Imperial Support', 'Royal Guard Support', 'Terrible Damage', 'Royal Guard Cost  ', 'Starting Imperial Mandate', 'Royal Guard Experience Gain Rate']
 };
 
+bonus_numbers = {
+    'Chain of Ascension': 2,
+    'Cradle of Death': 2,
+    'Dead of Night': 1,
+    'Lock & Load': 1,
+    'Malwarfare': 2,
+    'Miner Evacuation': 2,
+    'Mist Opportunities': 2,
+    'Oblivion Express': 2,
+    'Part and Parcel': 2,
+    'Rifts to Korhal': 2,
+    'Scythe of Amon': 3,
+    'Temple of the Past': 3,
+    'The Vermillion Problem': 1,
+    'Void Launch': 3,
+    'Void Thrashing': 1
+};
+
 var showmutators = true;
 var function_is_running = false;
 var PORT = 7305;
@@ -306,15 +324,6 @@ function postGameStats(data, showing = false) {
     // save file name
     last_shown_file = data['file'];
 
-    //Bonus objectives
-    let bonus_text = '';
-    for (i = 0; i < data['bonus'].length; i++) {
-        if (i == 0) bonus_text = data['bonus'][i];
-        else bonus_text = bonus_text + ' | ' + data['bonus'][i];
-    }
-
-    fill('bonus', bonus_text);
-
     // Mutators
     let mutator_text = '';
     if ((data['mutators'] != null) && (data['mutators'].length > 0)) {
@@ -340,8 +349,16 @@ function postGameStats(data, showing = false) {
         document.getElementById('killbar2img').src = ''
     }
 
+    // Bonus objectives
+    let bonus_text = '';
+    if (data['map_name'] in bonus_numbers)
+        bonus_text = `(${data['bonus'].length}/${bonus_numbers[data['map_name']]})`
+    else
+        bonus_text = `(${data['bonus'].length}/?)`
+    bonus_text = ` <span style="color: #FFE670">${bonus_text}</span>`;
+
     fill('name1', data['main']);
-    fill('map', data['map_name'] + '&nbsp;&nbsp;(' + format_length(data['length']) + ')');
+    fill('map', `${data['map_name']}&nbsp;&nbsp;(${format_length(data['length'])}) ${bonus_text}`);
     fill('name2', data['ally']);
     fillCommander('com1', data['mainCommander'], data['mainCommanderLevel'])
     fillCommander('com2', data['allyCommander'], data['allyCommanderLevel'])
@@ -366,6 +383,7 @@ function postGameStats(data, showing = false) {
         fill('rng', '');
     };
 
+    // difficulty
     if ((data['weekly'] == true)) {
         fill('brutal', 'Weekly (' + data['difficulty'] + ')')
     } else if ((data['extension'] > 0) && (data['mutators'] != null)) {

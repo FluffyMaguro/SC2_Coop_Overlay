@@ -205,18 +205,8 @@ body {
     right: 0px;
 }
 
-#bonus {
-    text-align: center;
-    position: relative;
-    top: 2.3vh;
-    height: 0.3vh;
-    opacity: .6;
-    color: #FFE670;
-    font-size: 1.3vh
-}
-
 .commstats {
-    margin-top: 4.5vh;
+    margin-top: 4vh;
     color: white;
     right: 0px;
 }
