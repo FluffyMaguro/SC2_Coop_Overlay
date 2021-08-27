@@ -37,12 +37,16 @@ def isFrozen():
     return getattr(sys, 'frozen', False)
 
 
-def get_hash(file):
-    """ Returns MD5 file hash for a file """
+def get_hash(file, sha=False):
+    """ Returns MD5/SHA256 file hash for a file """
     try:
         with open(file, "rb") as f:
             bytesread = f.read()
-            readable_hash = hashlib.md5(bytesread).hexdigest()
+            if sha:
+                readable_hash = hashlib.sha3_256(bytesread).hexdigest()
+            else:
+                readable_hash = hashlib.md5(bytesread).hexdigest()
+
         return readable_hash
     except Exception:
         logger.error(traceback.format_exc())
@@ -135,7 +139,7 @@ def new_version(current_version):
         data = json.loads(requests.get(version_link).text)
         logger.info(f'This version: {str(current_version)[0]}.{str(current_version)[1:]}. Most current live version: {data["version"]}. ')
         if data['version'] > current_version:
-            return data['download_link_1']
+            return {"link": data['download_link_1'], "hash": data['hash']}
         else:
             return False
     except Exception:

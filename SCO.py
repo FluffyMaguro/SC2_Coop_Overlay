@@ -208,7 +208,7 @@ class UI_TabWidget(object):
         self.BT_NewUpdate.show()
 
         # Check if it's already downloaded
-        save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+        save_path = truePath(f'Updates\\{self.new_version["link"].split("/")[-1]}')
 
         if not HF.isWindows():
             self.sendInfoMessage('Update available', color=MColors.msg_success)
@@ -236,8 +236,8 @@ class UI_TabWidget(object):
         if not os.path.isdir(truePath('Updates')):
             os.mkdir(truePath('Updates'))
 
-        save_path = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
-        urllib.request.urlretrieve(self.new_version, save_path, self.download_progress_bar_updater)
+        save_path = truePath(f'Updates\\{self.new_version["link"].split("/")[-1]}')
+        urllib.request.urlretrieve(self.new_version["link"], save_path, self.download_progress_bar_updater)
 
     def download_progress_bar_updater(self, blocknum, blocksize, totalsize):
         """ Updates the progress bar accordingly"""
@@ -265,15 +265,16 @@ class UI_TabWidget(object):
 
     def install_update(self):
         """ Starts the installation """
-        archive = truePath(f'Updates\\{self.new_version.split("/")[-1]}')
+        archive = truePath(f'Updates\\{self.new_version["link"].split("/")[-1]}')
         where_to_extract = truePath('Updates\\New')
         app_folder = truePath('')
 
-        # Check if it's corrupt
-        if HF.archive_is_corrupt(archive):
+        # Check hash
+        file_hash = HF.get_hash(archive, sha=True)
+        if self.new_version["hash"] != file_hash:
             os.remove(archive)
-            self.sendInfoMessage('Archive corrupt. Removing file.', color=MColors.msg_failure)
-
+            logger.error(f'Incorrect hash: {self.new_version["hash"]} != {file_hash}')
+            self.sendInfoMessage("Error! Incorrect hash for the downloaded archive.", color=MColors.msg_failure)
             self.BT_NewUpdate.clicked.disconnect()
             self.BT_NewUpdate.clicked.connect(self.start_download)
             self.BT_NewUpdate.setText('Download update')

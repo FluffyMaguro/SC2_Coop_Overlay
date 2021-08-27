@@ -4,9 +4,12 @@ Run the pyinstaller, cleans up, zips files.
 
 """
 
+import json
 import os
 import shutil
-from zipfile import ZipFile, ZIP_BZIP2
+from zipfile import ZIP_BZIP2, ZipFile
+
+from hashing import get_hash
 
 # Clear __pycache__ from s2protocol folders
 cache_folders = set()
@@ -49,3 +52,12 @@ with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
 os.remove('SCO.spec')
 for item in ('build', 'dist', '__pycache__', 'SCO'):
     shutil.rmtree(item)
+
+# Hash
+with open('version.txt', 'r') as f:
+    version_data = json.load(f)
+
+version_data['hash'] = get_hash(file_name, sha=True)
+
+with open('version.txt', 'w') as f:
+    json.dump(version_data, f, indent=2)
