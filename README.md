@@ -7,7 +7,7 @@
 pip install -r requirements.txt
 python SCO.py
 ```
-* Or try [Nuitka-compiled version](https://mega.nz/file/htcw1JhD#o3pIFkjV71ruqtejxRo90wiNjzIqHZCqSfIRN0KoM68) (currently doesn't work with secondary overlays in OBS)
+* Or try [Nuitka-compiled version](https://mega.nz/file/810WVZbC#NzE3AATIedpn7OLxGVBdTDIW6M1zMVXpXW4rEmSJ3Lw)
 
 
 The app shows an overlay with replay analysis of StarCraft II Co-op games. It also provides match history, various statistics based on your replays, commander randomizer, info about players shown at the start of the game, custom twitch bot with game integration into MM maps, and more.
