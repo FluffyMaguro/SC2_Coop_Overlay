@@ -9,7 +9,9 @@ import os
 import shutil
 from zipfile import ZIP_BZIP2, ZipFile
 
-from hashing import get_hash
+from useful_functions import get_hash, get_version
+
+app_version = get_version()
 
 # Clear __pycache__ from s2protocol folders
 cache_folders = set()
@@ -26,14 +28,13 @@ os.system('cmd /c "pyinstaller.exe'
           ' --noconsole'
           ' -i=src/OverlayIcon.ico'
           ' --add-data venv\Lib\site-packages\s2protocol;s2protocol'
-          ' --add-data venv\Lib\site-packages\websockets;websockets'
           ' --add-data src;src'
           ' --add-data SCOFunctions\SC2Dictionaries\*.csv;SCOFunctions\SC2Dictionaries'
           ' --add-data SCOFunctions\SC2Dictionaries\*.txt;SCOFunctions\SC2Dictionaries'
           ' SCO.py"')
 
 # Zip
-file_name = f"SC2CoopOverlay (x.x).zip"
+file_name = f"SC2CoopOverlay ({app_version // 100}.{app_version % 100}).zip"
 shutil.copytree('Layouts', 'dist/SCO/Layouts')
 shutil.copy('Read me (Github).url', 'dist/SCO/Read me (Github).url')
 shutil.move('dist/SCO', 'SCO')
@@ -58,6 +59,7 @@ with open('version.txt', 'r') as f:
     version_data = json.load(f)
 
 version_data['hash'] = get_hash(file_name, sha=True)
+version_data['version'] = app_version
 
 with open('version.txt', 'w') as f:
     json.dump(version_data, f, indent=2)

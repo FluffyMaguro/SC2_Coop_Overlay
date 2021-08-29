@@ -14,6 +14,7 @@ import traceback
 import requests
 import asyncio
 import websockets
+from websockets.legacy.server import serve as websockets_serve # This direct import is required for Pyinstaller and Nuitka to find it correctly
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
@@ -434,7 +435,7 @@ def server_thread(PORT=7305):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        start_server = websockets.serve(manager, 'localhost', PORT)
+        start_server = websockets_serve(manager, 'localhost', PORT)
         logger.info('Starting websocket server')
         loop.run_until_complete(start_server)
         loop.run_forever()

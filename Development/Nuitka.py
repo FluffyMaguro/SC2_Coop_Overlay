@@ -1,13 +1,10 @@
 import os
 import shutil
 from zipfile import ZipFile, ZIP_BZIP2
-"""
-Nuitka compilation doesn't work well with new websockets package dynamically importing legacy modules.
-So websockets don't work with it currently.
 
-s2protocol works fine though I need to copy its files.
+from useful_functions import get_version
 
-"""
+app_version = get_version()
 
 # Clear __pycache__ from s2protocol folders
 cache_folders = set()
@@ -33,7 +30,7 @@ os.system('cmd /c "python -m nuitka'
           ' SCO.py')
 
 # Zip
-file_name = f"SC2CoopOverlay_nuitka (x.x).zip"
+file_name = f"SC2CoopOverlay_nuitka ({app_version // 100}.{app_version % 100}).zip"
 shutil.copy('Read me (Github).url', 'SCO.dist/Read me (Github).url')
 
 to_zip = []
