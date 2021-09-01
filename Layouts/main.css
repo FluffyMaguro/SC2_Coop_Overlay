@@ -238,6 +238,11 @@ body {
 
 .nomastery {
     opacity: 0.4;
+    margin-left: 0.9vh
+}
+
+.singlemastery {
+    margin-left: 0.9vh
 }
 
 #CMunits3 {

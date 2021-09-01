@@ -1214,6 +1214,7 @@ class mass_replay_analysis:
         `over_15` = False if you want to exclude games where the main player is 15+
         `include_both_main` = False to exclude games where both players are main players
         """
+        start = time.time()
         data = self.ReplayData
 
         if not include_mutations:
@@ -1262,14 +1263,14 @@ class mass_replay_analysis:
         if winsonly == True:
             data = [r for r in data if r.result == 'Victory']
 
-        logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)}')
-
         # Analyse
         DifficultyData = calculate_difficulty_data(data)
         MapData = calculate_map_data(data)
         CommanderData, AllyCommanderData = calculate_commander_data(data, self.main_handles)
         RegionData = calculate_region_data(data, self.main_handles)
         UnitData = None if not self.full_analysis_finished else calculate_unit_stats(data, self.main_handles)
+
+        logger.info(f'Filtering {len(self.ReplayData)} -> {len(data)} ({time.time() - start:.5f} seconds)')
 
         return {
             'UnitData': UnitData,

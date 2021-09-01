@@ -515,8 +515,8 @@ function fillmasteries(el, dat, commander) {
     let any_mastery = false;
     for (i = 0; i < dat.length; i++) {
         let spacer = '<span>';
-        if (dat[i] < 10) spacer = '<span class="">&nbsp;&nbsp;';
-        if (dat[i] == 0) spacer = '<span class="nomastery">&nbsp;&nbsp;'
+        if (dat[i] < 10) spacer = '<span class="singlemastery">';
+        if (dat[i] == 0) spacer = '<span class="nomastery">';
         else any_mastery = true;
         text += spacer + dat[i] + ' ' + masteryNames[commander][i] + '<br></span>';
     }
