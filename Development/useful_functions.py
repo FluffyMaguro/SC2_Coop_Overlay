@@ -1,5 +1,6 @@
 import hashlib
 import os
+import shutil
 
 
 def get_hash(file, sha=False):
@@ -25,3 +26,13 @@ def get_version() -> int:
             return int(line.split(' = ')[-1])
 
     raise Exception('App version not found')
+
+
+def clear_pycache():
+    """ Clears pycache from included folders"""
+    for root, directories, files in os.walk(os.getcwd()):
+        for directory in directories:
+            if directory == '__pycache__' and 's2protocol' in root:
+                dir_path = os.path.join(root, directory)
+                print(f'Removing: {dir_path}')
+                shutil.rmtree(dir_path)

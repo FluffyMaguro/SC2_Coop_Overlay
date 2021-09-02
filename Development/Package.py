@@ -9,19 +9,10 @@ import os
 import shutil
 from zipfile import ZIP_BZIP2, ZipFile
 
-from useful_functions import get_hash, get_version
+from useful_functions import get_hash, get_version, clear_pycache
 
 app_version = get_version()
-
-# Clear __pycache__ from s2protocol folders
-cache_folders = set()
-for root, directories, files in os.walk(os.getcwd()):
-    for directory in directories:
-        if directory == '__pycache__':
-            dir_path = os.path.join(root, directory)
-            if 's2protocol' in root or 'websockets' in root:
-                print(f'Removing: {dir_path}')
-                shutil.rmtree(dir_path)
+clear_pycache()
 
 # Run pyinstaller
 os.system('cmd /c "pyinstaller.exe'

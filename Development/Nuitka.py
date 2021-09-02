@@ -2,20 +2,12 @@ import os
 import shutil
 from zipfile import ZipFile, ZIP_BZIP2
 
-from useful_functions import get_version
+from useful_functions import get_version, clear_pycache
 
 app_version = get_version()
+clear_pycache()
 
-# Clear __pycache__ from s2protocol folders
-cache_folders = set()
-for root, directories, files in os.walk(os.getcwd()):
-    for directory in directories:
-        if directory == '__pycache__':
-            dir_path = os.path.join(root, directory)
-            if 's2protocol' in root or 'websockets' in root:
-                print(f'Removing: {dir_path}')
-                shutil.rmtree(dir_path)
-
+# Run nuitka
 os.system('cmd /c "python -m nuitka'
           ' --plugin-enable=pyqt5'
           ' --plugin-enable=multiprocessing'
