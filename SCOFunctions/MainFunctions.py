@@ -14,7 +14,7 @@ import traceback
 import requests
 import asyncio
 import websockets
-from websockets.legacy.server import serve as websockets_serve # This direct import is required for Pyinstaller and Nuitka to find it correctly
+from websockets.legacy.server import serve as websockets_serve  # This direct import is required for Pyinstaller and Nuitka to find it correctly
 
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
@@ -282,53 +282,58 @@ def check_replays():
             for file in files:
                 file_path = os.path.join(root, file)
                 file_path = os.path.normpath(file_path)
-                if file.endswith('.SC2Replay') and not (file_path in AllReplays):
+
+                if not file.endswith('.SC2Replay') or file_path in AllReplays:
+                    continue
+
+                with lock:
+                    AllReplays[file_path] = {'created': os.path.getmtime(file_path)}
+
+                if current_time - os.path.getmtime(file_path) >= 60:
+                    continue
+
+                logger.info(f'New replay: {file_path}')
+                replay_dict = dict()
+                try:
+                    replay_dict = parse_and_analyse_replay(file_path, PLAYER_HANDLES)
+
+                    # First check if any commander found
+                    if not replay_dict.get('mainCommander') and not replay_dict.get('allyCommander'):
+                        logger.info('No commanders found, wont show replay')
+                    # Then check if we have good
+                    elif len(replay_dict) > 1:
+                        logger.debug('Replay analysis result looks good, appending...')
+                        with lock:
+                            session_games[replay_dict['result']] += 1
+
+                        # What to send
+                        out = replay_dict.copy()
+                        out['newReplay'] = True
+                        if SM.settings.get('show_session', False):
+                            out.update(session_games)
+                        if SM.settings.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
+                            out.update(RNG_COMMANDER)
+
+                        out['fastest'] = False
+                        if CAnalysis is not None and not '[MM]' in file and replay_dict['parser']['isBlizzard']:
+                            out['fastest'] = CAnalysis.check_for_record(replay_dict)
+
+                        sendEvent(out)
+
+                    # No output
+                    else:
+                        logger.error(f'ERROR: No output from replay analysis ({file})')
                     with lock:
-                        AllReplays[file_path] = {'created': os.path.getmtime(file_path)}
+                        ReplayPosition = len(AllReplays) - 1
 
-                    if current_time - os.path.getmtime(file_path) < 60:
-                        logger.info(f'New replay: {file_path}')
-                        replay_dict = dict()
-                        try:
-                            replay_dict = parse_and_analyse_replay(file_path, PLAYER_HANDLES)
+                except Exception:
+                    logger.error(traceback.format_exc())
 
-                            # First check if any commander found
-                            if not replay_dict.get('mainCommander') and not replay_dict.get('allyCommander'):
-                                logger.info('No commanders found, wont show replay')
-                            # Then check if we have good
-                            elif len(replay_dict) > 1:
-                                logger.debug('Replay analysis result looks good, appending...')
-                                with lock:
-                                    session_games[replay_dict['result']] += 1
-
-                                # What to send
-                                out = replay_dict.copy()
-                                out['newReplay'] = True
-                                if SM.settings.get('show_session', False):
-                                    out.update(session_games)
-                                if SM.settings.get('show_random_on_overlay', False) and len(RNG_COMMANDER) > 0:
-                                    out.update(RNG_COMMANDER)
-
-                                out['fastest'] = False
-                                if CAnalysis is not None and not '[MM]' in file and replay_dict['parser']['isBlizzard']:
-                                    out['fastest'] = CAnalysis.check_for_record(replay_dict)
-
-                                sendEvent(out)
-
-                            # No output
-                            else:
-                                logger.error(f'ERROR: No output from replay analysis ({file})')
-                            with lock:
-                                ReplayPosition = len(AllReplays) - 1
-
-                        except Exception:
-                            logger.error(traceback.format_exc())
-
-                        finally:
-                            if len(replay_dict) > 1:
-                                upload_to_aom(file_path, replay_dict)
-                                # return just parser
-                                return replay_dict
+                finally:
+                    if len(replay_dict) > 1:
+                        upload_to_aom(file_path, replay_dict)
+                        # return just parser
+                        return replay_dict
 
         # Wait while checking if the thread should end early
         for i in range(int(SM.settings['replay_check_interval'])):
@@ -564,64 +569,67 @@ def check_for_new_game(progress_callback):
                 continue
 
             # Check if we have players in, and it's not a replay
-            if len(players) > 2 and not resp.get('isReplay', True):
-                # If the last time is the same, then we are in menus. Otherwise in-game.
-                if last_game_time == None or resp['displayTime'] == 0:
-                    last_game_time = resp['displayTime']
-                    continue
+            if len(players) <= 2 or resp.get('isReplay', True):
+                continue
 
-                if last_game_time == resp['displayTime']:
-                    logger.debug(f"The same time (curent: {resp['displayTime']}) (last: {last_game_time}) skipping...")
-                    continue
-
+            # If the last time is the same, then we are in menus. Otherwise in-game.
+            if last_game_time == None or resp['displayTime'] == 0:
                 last_game_time = resp['displayTime']
+                continue
 
-                # Don't show too soon after a replay has been parsed, false positive.
-                if time.time() - last_replay_time < 15:
-                    logger.debug('Replay added recently, wont show player winrates right now')
-                    continue
+            if last_game_time == resp['displayTime']:
+                logger.debug(f"The same time (curent: {resp['displayTime']}) (last: {last_game_time}) skipping...")
+                continue
 
-                # Mark this game so it won't be checked it again
-                last_replay_amount = len(AllReplays)
+            last_game_time = resp['displayTime']
 
-                # Add the first player name that's not the main player. This could be expanded to any number of players.
-                if len(PLAYER_NAMES) > 0:
-                    test_names_against = [p.lower() for p in PLAYER_NAMES]
-                elif len(SM.settings['main_names']) > 0:
-                    test_names_against = [p.lower() for p in SM.settings['main_names']]
+            # Don't show too soon after a replay has been parsed, false positive.
+            if time.time() - last_replay_time < 15:
+                logger.debug('Replay added recently, wont show player winrates right now')
+                continue
+
+            # Mark this game so it won't be checked it again
+            last_replay_amount = len(AllReplays)
+
+            # Add the first player name that's not the main player. This could be expanded to any number of players.
+            if len(PLAYER_NAMES) > 0:
+                test_names_against = [p.lower() for p in PLAYER_NAMES]
+            elif len(SM.settings['main_names']) > 0:
+                test_names_against = [p.lower() for p in SM.settings['main_names']]
+            else:
+                logger.error('No main names to test against')
+                continue
+
+            # Find ally player and get your current player position
+            player_names = set()
+            for player in players:
+                if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
+                    player_names.add(player['name'])
+                    player_position = 2 if player['id'] == 1 else 1
+                    break
+
+            # If we have players to show
+            if len(player_names) > 0:
+                # Get player winrate data
+                data = {p: player_winrate_data.get(p, [None]) for p in player_names}
+                # Get player notes
+                for player in data:
+                    if player in SM.settings['player_notes']:
+                        data[player].append(SM.settings['player_notes'][player])
+
+                most_recent_playerdata = data
+                sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(data)})
+
+            # Identify map
+            try:
+                map_found = identify_map(players)
+                if map_found:
+                    progress_callback.emit([map_found, str(player_position)])
                 else:
-                    logger.error('No main names to test against')
-                    continue
+                    logger.error(f"Map not identified: {players}")
+            except Exception:
+                logger.error(traceback.format_exc())
 
-                # Find ally player and get your current player position
-                player_names = set()
-                for player in players:
-                    if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
-                        player_names.add(player['name'])
-                        player_position = 2 if player['id'] == 1 else 1
-                        break
-
-                # If we have players to show
-                if len(player_names) > 0:
-                    # Get player winrate data
-                    data = {p: player_winrate_data.get(p, [None]) for p in player_names}
-                    # Get player notes
-                    for player in data:
-                        if player in SM.settings['player_notes']:
-                            data[player].append(SM.settings['player_notes'][player])
-
-                    most_recent_playerdata = data
-                    sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(data)})
-
-                # Identify map
-                try:
-                    map_found = identify_map(players)
-                    if map_found:
-                        progress_callback.emit([map_found, str(player_position)])
-                    else:
-                        logger.error(f"Map not identified: {players}")
-                except Exception:
-                    logger.error(traceback.format_exc())
         except requests.exceptions.ConnectionError:
             logger.debug(f'SC2 request failed. Game not running.')
 
