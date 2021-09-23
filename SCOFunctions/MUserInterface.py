@@ -1457,8 +1457,10 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
     @QtCore.pyqtSlot(bool)
     def closeEvent(self, event):
         """ Overriding close event and minimizing instead """
-        event.ignore()
-        self.minimize_to_tray()
+        # This is only necessary for white theme. Chaning this might improve the apps behavior when auto-closing
+        if not SM.settings['dark_theme']:
+            event.ignore()
+            self.minimize_to_tray()
 
     def minimize_to_tray(self):
         if SM.settings['minimize_to_tray']:
