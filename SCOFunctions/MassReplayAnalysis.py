@@ -2,28 +2,29 @@
 This module is used for generating overall stats from a list of replays (and player handles distinquishing between the main player and ally players)
 
 """
-import os
-import time
-import json
-import pickle
 import fnmatch
+import itertools
+import json
+import os
 import pathlib
-import traceback
+import pickle
 import statistics
 import threading
-from pprint import pprint
+import time
+import traceback
 from concurrent.futures import ProcessPoolExecutor
+from pprint import pprint
 
 import s2protocol
 
-from SCOFunctions.MFilePath import truePath
-from SCOFunctions.MLogging import logclass, catch_exceptions
-from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.ReplayAnalysis import analyse_parsed_replay, parse_replay_file
 from SCOFunctions.HelperFunctions import get_hash
-from SCOFunctions.MainFunctions import find_names_and_handles, find_replays, names_fallback
-from SCOFunctions.SC2Dictionaries import bonus_objectives, mc_units, prestige_names, map_names, units_to_stats
+from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
+from SCOFunctions.MFilePath import truePath
+from SCOFunctions.MLogging import catch_exceptions, logclass
 from SCOFunctions.MReplayData import replay_data
+from SCOFunctions.ReplayAnalysis import (analyse_parsed_replay, parse_replay_file)
+from SCOFunctions.S2Parser import s2_parse_replay
+from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats)
 
 logger = logclass('MASS', 'INFO')
 lock = threading.Lock()
@@ -1109,46 +1110,82 @@ class mass_replay_analysis:
                 total_kills = replay.players[1].get('kills', 0) + replay.players[2].get('kills', 0)
             for p in (1, 2):
                 player = replay.players[p]['name']
+                handle = replay.players[p]['handle']
+
                 if not player in winrate_data:
+                    winrate_data[player] = dict()
+                if handle not in winrate_data[player]:
                     # Wins, losses, apm, commander, commander frequency, kills, date
-                    winrate_data[player] = [0, 0, list(), list(), 0, list(), ""]
+                    winrate_data[player][handle] = [0, 0, list(), list(), 0, list(), ""]
 
                 if replay.result == 'Victory':
-                    winrate_data[player][0] += 1
+                    winrate_data[player][handle][0] += 1
                 else:
-                    winrate_data[player][1] += 1
+                    winrate_data[player][handle][1] += 1
 
-                if replay.date > winrate_data[player][6]:
-                    winrate_data[player][6] = replay.date
+                if replay.date > winrate_data[player][handle][6]:
+                    winrate_data[player][handle][6] = replay.date
 
-                winrate_data[player][2].append(replay.players[p]['apm'])
-                winrate_data[player][3].append(replay.players[p]['commander'])
+                winrate_data[player][handle][2].append(replay.players[p]['apm'])
+                winrate_data[player][handle][3].append(replay.players[p]['commander'])
                 if replay.full_analysis and total_kills > 0:
-                    winrate_data[player][5].append(replay.players[p]['kills'] / total_kills)
+                    winrate_data[player][handle][5].append(replay.players[p]['kills'] / total_kills)
 
         for player in winrate_data:
-            # Median APM
-            if len(winrate_data[player][2]) > 0:
-                winrate_data[player][2] = statistics.median(winrate_data[player][2])
-            else:
-                winrate_data[player][2] = 0
+            # Overall stat
+            apm = list(itertools.chain(*(winrate_data[player][handle][2] for handle in winrate_data[player])))
+            kills = list(itertools.chain(*(winrate_data[player][handle][5] for handle in winrate_data[player])))
+            commanders = list(itertools.chain(*(winrate_data[player][handle][3] for handle in winrate_data[player])))
+            wins = sum(winrate_data[player][handle][0] for handle in winrate_data[player])
+            losses = sum(winrate_data[player][handle][1] for handle in winrate_data[player])
+            date = max(winrate_data[player][handle][6] for handle in winrate_data[player])
 
-            # Median kills
-            if len(winrate_data[player][5]) > 0:
-                winrate_data[player][5] = statistics.median(winrate_data[player][5])
-            else:
-                winrate_data[player][5] = 0
+            winrate_data[player]['total'] = [wins, losses, 0, 0, 0, 0, date]
 
-            # Commander mode and frequency
-            if len(winrate_data[player][3]) > 0:
-                mode = statistics.mode(winrate_data[player][3])
-                winrate_data[player][4] = winrate_data[player][3].count(mode) / len(winrate_data[player][3])
-                winrate_data[player][3] = mode
+            if len(apm) > 0:
+                winrate_data[player]['total'][2] = statistics.median(apm)
             else:
-                winrate_data[player][3] = ''
+                winrate_data[player]['total'][2] = 0
+
+            if len(kills) > 0:
+                winrate_data[player]['total'][5] = statistics.median(kills)
+            else:
+                winrate_data[player]['total'][5] = 0
+
+            if len(commanders) > 0:
+                mode = statistics.mode(commanders)
+                winrate_data[player]['total'][4] = commanders.count(mode) / len(commanders)
+                winrate_data[player]['total'][3] = mode
+            else:
+                winrate_data[player]['total'][3] = ''
+
+            # Stats for individual handles
+            for handle in winrate_data[player]:
+                if handle == 'total':
+                    continue
+
+                # Median APM
+                if len(winrate_data[player][handle][2]) > 0:
+                    winrate_data[player][handle][2] = statistics.median(winrate_data[player][handle][2])
+                else:
+                    winrate_data[player][handle][2] = 0
+
+                # Median kills
+                if len(winrate_data[player][handle][5]) > 0:
+                    winrate_data[player][handle][5] = statistics.median(winrate_data[player][handle][5])
+                else:
+                    winrate_data[player][handle][5] = 0
+
+                # Commander mode and frequency
+                if len(winrate_data[player][handle][3]) > 0:
+                    mode = statistics.mode(winrate_data[player][handle][3])
+                    winrate_data[player][handle][4] = winrate_data[player][handle][3].count(mode) / len(winrate_data[player][handle][3])
+                    winrate_data[player][handle][3] = mode
+                else:
+                    winrate_data[player][handle][3] = ''
 
         # Sort by wins
-        winrate_data = {k: v for k, v in sorted(winrate_data.items(), key=lambda x: x[1][0], reverse=True)}
+        winrate_data = {k: v for k, v in sorted(winrate_data.items(), key=lambda x: x[1]['total'][0], reverse=True)}
         self.winrate_data = winrate_data
         return winrate_data
 

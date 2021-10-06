@@ -6,7 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Colors:
     """ Dataclass for colors used in the app.
     It's separate from a palette used by PyQt5 """
-    
+
     msg = "#555"
     msg_success = "green"
     msg_failure = 'red'
@@ -15,7 +15,7 @@ class Colors:
     player_highlight = "#55f"
     game_defeat = '#f44'
     game_weekly = '#00971e'
-    
+
 
 MColors = Colors()
 
@@ -75,18 +75,16 @@ def set_dark_theme(main, app, tab, version):
     main.TAB_Games.ed_games_search.setStyleSheet('QLineEdit {background-color: #333; font-weight: normal}'
                                                  'QToolTip {color:black; background-color: #ffffe1; font-weight: normal}')
 
-    main.TAB_Players.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545; font-weight: bold}")
-    main.TAB_Players.FR_Winrate_Controls.setStyleSheet('QFrame {background-color: #454545; border: 0px solid #454545}')
+    main.TAB_Players.WD_WinratesHeading.setStyleSheet("QWidget {background-color: #454545} QLabel {font-weight: bold}")
     main.TAB_Players.PlayerTabLine.setStyleSheet('background-color: #777')
-    main.TAB_Players.ED_Winrate_Search.setStyleSheet('background-color: #333')
+    main.TAB_Players.ED_Player_seach.setStyleSheet('QLineEdit {background-color: #333}'
+                                                   'QToolTip {color:black; background-color: #ffffe1; font-weight: normal}')
 
     main.TAB_Randomizer.BT_RNG_Description.setEnabled(True)
     main.TAB_Stats.LA_GamesFound.setEnabled(True)
     main.TAB_Stats.LA_IdentifiedPlayers.setEnabled(True)
 
-    tab.setStyleSheet(
-        "QScrollArea > QWidget > QWidget {background: #454545}"
-        "QPushButton {background: #454545}"
-        "QScrollArea QLineEdit {background: #333}"
-        "QToolTip {color: black; background-color: #ffffe1; font-weight: normal}"
-        ) 
+    tab.setStyleSheet("QScrollArea > QWidget > QWidget {background: #454545}"
+                      "QPushButton {background: #454545}"
+                      "QScrollArea QLineEdit {background: #333}"
+                      "QToolTip {color: black; background-color: #ffffe1; font-weight: normal}")

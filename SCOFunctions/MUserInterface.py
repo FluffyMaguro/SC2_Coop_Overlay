@@ -7,6 +7,7 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 
+import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MainFunctions as MF
 from SCOFunctions.HelperFunctions import isWindows
 from SCOFunctions.MainFunctions import show_overlay
@@ -1212,14 +1213,15 @@ class PlayerEntry:
     def __init__(self, player, winrate_data, note, parent):
         self.name = player
         self.note = note
+        self.winrate_data = winrate_data
 
-        height = 35
+        self.height = 35
         line_spacing = 7
 
         self.widget = QtWidgets.QWidget(parent)
-        self.widget.setGeometry(QtCore.QRect(0, 0, 931, height))
-        self.widget.setMinimumHeight(height)
-        self.widget.setMaximumHeight(height)
+        self.widget.setGeometry(QtCore.QRect(0, 0, 931, self.height))
+        self.widget.setMinimumHeight(self.height)
+        self.widget.setMaximumHeight(self.height)
 
         self.line = Cline(self.widget)
         self.line.setGeometry(QtCore.QRect(10, 33, 921, 1))
@@ -1266,8 +1268,12 @@ class PlayerEntry:
         if not self.note in {None, ''}:
             self.ed_note.setText(self.note)
 
+        self.handles_UI = dict()
+        self.expanded = False
+
         # This is necessary only sometimes (when the user is looking at the tab while its updating )
         for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note, self.la_kills, self.la_apm}:
+            item.mouseReleaseEvent = self.expand
             item.show()
 
         for item in {self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.la_kills, self.la_apm}:
@@ -1285,17 +1291,136 @@ class PlayerEntry:
         self.widget.hide()
 
     def highlight(self, b: bool):
-        if b:
-            self.widget.setStyleSheet(f'QLabel {{color: {MColors.player_highlight}; font-weight: bold}}')
+        for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note, self.la_kills, self.la_apm}:
+            if b:
+                item.setStyleSheet(f'QLabel {{color: {MColors.player_highlight}; font-weight: bold}}')
+            else:
+                item.setStyleSheet('QLabel {}')
+
+        # Highlight the last handle
+        max_date = max(self.winrate_data[handle][6] for handle in self.winrate_data if handle != "total")
+        max_handle = [handle for handle in self.winrate_data if (handle != "total" and self.winrate_data[handle][6] == max_date)]
+        for handle in self.handles_UI:
+            for widget in self.handles_UI[handle]:                    
+                if handle == max_handle and b:
+                    self.handles_UI[handle][widget].setStyleSheet(f'QLabel {{color: {MColors.player_highlight}; font-weight: bold}}')
+                else:
+                    self.handles_UI[handle][widget].setStyleSheet('QLabel {}')
+
+    def expand(self, *args):
+        """ Expand/deexpand handle information"""
+        if not self.expanded:
+            self.expanded = True
+            # Update size
+            handles = tuple(handle for handle in self.winrate_data if handle != 'total')
+            new_height = self.height - 10
+            self.widget.setFixedHeight(10 + new_height * (1 + len(handles)))
+            self.line.move(10, 33 + new_height * len(handles))
+
+            # Create and update handle information
+            self.create_handles()  # Also updates with new handles
+            self.update_handles()
+            for handle in self.handles_UI:
+                for widget in self.handles_UI[handle]:
+                    self.handles_UI[handle][widget].show()
         else:
-            self.widget.setStyleSheet('QLabel {}')
+            self.expanded = False
+            # Back to the original size
+            self.widget.setFixedHeight(self.height)
+            self.line.move(10, 33)
+            # Hide handle information
+            for handle in self.handles_UI:
+                for widget in self.handles_UI[handle]:
+                    self.handles_UI[handle][widget].hide()
+
+    def create_handles(self):
+        """ Creates new handles"""
+        new_height = self.height - 10
+
+        for idx, handle in enumerate(self.winrate_data):
+            if handle in self.handles_UI or handle == 'total':
+                continue
+
+            item_height = 10 + new_height * (1 + idx)
+            name = QtWidgets.QLabel(self.widget)
+            name.setGeometry(QtCore.QRect(20, item_height, 150, 21))
+
+            wins = QtWidgets.QLabel(self.widget)
+            wins.setGeometry(QtCore.QRect(150, item_height, 31, 21))
+            wins.setAlignment(QtCore.Qt.AlignCenter)
+
+            losses = QtWidgets.QLabel(self.widget)
+            losses.setGeometry(QtCore.QRect(205, item_height, 41, 21))
+            losses.setAlignment(QtCore.Qt.AlignCenter)
+
+            winrate = QtWidgets.QLabel(self.widget)
+            winrate.setGeometry(QtCore.QRect(260, item_height, 51, 21))
+            winrate.setAlignment(QtCore.Qt.AlignCenter)
+
+            apm = QtWidgets.QLabel(self.widget)
+            apm.setGeometry(QtCore.QRect(315, item_height, 51, 21))
+            apm.setAlignment(QtCore.Qt.AlignCenter)
+
+            kills = QtWidgets.QLabel(self.widget)
+            kills.setGeometry(QtCore.QRect(370, item_height, 51, 21))
+            kills.setAlignment(QtCore.Qt.AlignCenter)
+
+            commander = QtWidgets.QLabel(self.widget)
+            commander.setGeometry(QtCore.QRect(420, item_height, 81, 21))
+            commander.setAlignment(QtCore.Qt.AlignCenter)
+
+            frequency = QtWidgets.QLabel(self.widget)
+            frequency.setGeometry(QtCore.QRect(500, item_height, 51, 21))
+            frequency.setAlignment(QtCore.Qt.AlignCenter)
+
+            self.handles_UI[handle] = {
+                "name": name,
+                "wins": wins,
+                "losses": losses,
+                "winrate": winrate,
+                "apm": apm,
+                "kills": kills,
+                "commander": commander,
+                "frequency": frequency
+            }
+
+            for widget in self.handles_UI[handle].values():
+                opacity_effect = QtWidgets.QGraphicsOpacityEffect()
+                opacity_effect.setOpacity(0.6)
+                widget.setGraphicsEffect(opacity_effect)
+                widget.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
+    def update_handles(self):
+        """ Update handle information with new data"""
+        if not len(self.handles_UI):
+            return
+
+        data = self.winrate_data
+        for handle, widgets in self.handles_UI.items():
+            widgets["name"].setText(f"{handle} ({HF.get_region(handle)})")
+            widgets["name"].setToolTip(f"Last game played: {HF.get_time_difference(data[handle][6])}")
+            widgets["wins"].setText(str(data[handle][0]))
+            widgets["losses"].setText(str(data[handle][1]))
+            win_loss = data[handle][0] / (data[handle][0] + data[handle][1])
+            widgets["winrate"].setText(f"{win_loss:.0%}")
+            widgets["apm"].setText(f"{data[handle][2]:.0f}")
+            widgets["kills"].setText(f"{data[handle][5]:.0%}")
+            widgets["commander"].setText(data[handle][3])
+            widgets["frequency"].setText(f"{data[handle][4]:.0%}")
 
     def update_winrates(self, data):
         """ Updates winrate for the player. """
+        self.winrate_data = data
+        if self.expanded:
+            self.create_handles()  # Also updates with new data
+        self.update_handles()
+
+        data = data['total']
         self.wins = data[0]
         self.losses = data[1]
         self.winrate = 100 * self.wins / (self.wins + self.losses)
 
+        self.la_name.setToolTip(f"Last game played: {HF.get_time_difference(data[6])}")
         self.la_wins.setText(str(self.wins))
         self.la_losses.setText(str(self.losses))
         self.la_winrate.setText(f'{self.winrate:.0f}%')

@@ -4,22 +4,25 @@ sending info to the overlay with socket/JS. The oldest part of the app.
 
 Checking for new replays and games. Uploading replays to AOM. And more.
 """
-import os
-import json
-import time
+import asyncio
 import datetime
+import json
+import os
 import threading
+import time
 import traceback
 
 import requests
-import asyncio
 import websockets
-from websockets.legacy.server import serve as websockets_serve  # This direct import is required for Pyinstaller and Nuitka to find it correctly
+from websockets.legacy.server import \
+    serve as \
+    websockets_serve  # This direct import is required for Pyinstaller and Nuitka to find it correctly
 
+import SCOFunctions.HelperFunctions as HF
+from SCOFunctions.HelperFunctions import get_hash
+from SCOFunctions.IdentifyMap import identify_map
 from SCOFunctions.MLogging import logclass
 from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
-from SCOFunctions.IdentifyMap import identify_map
-from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.Settings import Setting_manager as SM
 
 OverlayMessages = []  # Storage for all messages
@@ -175,26 +178,12 @@ def update_last_game_time_difference(data):
         return data
 
     ndata = {player: data[player].copy()}
-    now = datetime.datetime.now()
-    try:
-        game_time = datetime.datetime.strptime(data[player][6], '%Y:%m:%d:%H:%M:%S')
-    except Exception:
-        logger.error(f"Failed to parse player date!\n{data}")
+    s = HF.get_time_difference()
+    if s:
+        ndata[player][6] = s
+        return ndata
+    else:
         return data
-    delta = (now - game_time).total_seconds()
-    days, delta = divmod(delta, 86400)
-    hours, delta = divmod(delta, 3600)
-    minutes, _ = divmod(delta, 60)
-
-    s = ""
-    if days > 0:
-        s += f"{days:.0f} days "
-    if hours > 0:
-        s += f"{hours:.0f} hours "
-    s += f"{minutes:.0f} minutes ago"
-    ndata[player][6] = s
-    return ndata
-
 
 def update_names_and_handles(ACCOUNTDIR, AllReplays):
     """ Takes player names and handles, and updates global variables with them"""
@@ -602,6 +591,7 @@ def check_for_new_game(progress_callback):
 
             # Find ally player and get your current player position
             player_names = set()
+            player_position = 1
             for player in players:
                 if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
                     player_names.add(player['name'])

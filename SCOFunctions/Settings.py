@@ -108,7 +108,7 @@ class CSettings:
         # We don't need a deepcopy here. When resetting only the lower level gets changed.
         self.settings = self.default_settings.copy()
 
-    def load_settings(self, filepath):
+    def load_settings(self, filepath: str):
         """ Load settings from a file"""
         self.filepath = filepath
         try:

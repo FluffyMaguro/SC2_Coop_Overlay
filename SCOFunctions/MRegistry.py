@@ -14,25 +14,31 @@ def reg_add_to_startup(name, value):
     reg.CloseKey(open)
 
 
-def reg_get_startup_field_value(name):
+def reg_get_startup_field_value(name: str):
     """ Returns value of given field in the startup registry key.
-    `name` is the name of given field.
-    If the field doesn't exist, returns `None`"""
+
+    Args:
+        name: is the name of given field.
+    Returns:
+        If the field doesn't exist, returns `None`"""
     key = reg.HKEY_CURRENT_USER
     key_value = r"Software\Microsoft\Windows\CurrentVersion\Run"
     open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+    response = None
     try:
         response = reg.QueryValueEx(open, name)[0]
     except Exception:
-        response = None
+        pass
     finally:
         reg.CloseKey(open)
         return response
 
 
-def reg_delete_startup_field(name):
-    """ Deletes a field from the startup registry key
-    `name` is the name of that field"""
+def reg_delete_startup_field(name: str):
+    """ Deletes a field from the startup registry key.
+
+    Args:
+        name: is the name of that field"""
     key = reg.HKEY_CURRENT_USER
     key_value = r"Software\Microsoft\Windows\CurrentVersion\Run"
     open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)

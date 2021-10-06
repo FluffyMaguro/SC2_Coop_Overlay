@@ -11,31 +11,9 @@ class PlayerTab(QtWidgets.QWidget):
         self.player_winrate_UI_dict = dict()
         self.last_ally_player = None
 
-        # Controls
-        self.FR_Winrate_Controls = QtWidgets.QFrame(self)
-        self.FR_Winrate_Controls.setGeometry(QtCore.QRect(0, 550, TabWidget.frameGeometry().width(), 50))
-        self.FR_Winrate_Controls.setAutoFillBackground(True)
-        self.FR_Winrate_Controls.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Winrate_Controls.setFrameShadow(QtWidgets.QFrame.Raised)
-
-        # Search
-        self.ED_Winrate_Search = QtWidgets.QLineEdit(self.FR_Winrate_Controls)
-        self.ED_Winrate_Search.setGeometry(QtCore.QRect(65, 7, 610, 20))
-        self.ED_Winrate_Search.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_Winrate_Search.setPlaceholderText("Search for player name or note")
-        self.ED_Winrate_Search.textChanged.connect(self.filter_players)
-
-        # Top 50
-        self.CH_OnlyTop50 = QtWidgets.QCheckBox(self.FR_Winrate_Controls)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(700, 8, 200, 17))
-        self.CH_OnlyTop50.setText("Show max 50 players")
-        self.CH_OnlyTop50.setToolTip("Unchecking this will likely cause lag. All players are always searched no matter the status of this setting.")
-        self.CH_OnlyTop50.setChecked(True)
-        self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
-
         # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self)
-        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 31, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 91))
+        self.SC_PlayersScrollArea.setGeometry(QtCore.QRect(0, 31, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 30))
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
@@ -50,57 +28,63 @@ class PlayerTab(QtWidgets.QWidget):
         # Heading
         self.WD_WinratesHeading = QtWidgets.QWidget(self)
         self.WD_WinratesHeading.setGeometry(QtCore.QRect(0, 0, 981, 31))
-        self.WD_WinratesHeading.setStyleSheet("font-weight:bold")
+        self.WD_WinratesHeading.setStyleSheet("QLabel {font-weight:bold}")
         self.WD_WinratesHeading.setAutoFillBackground(True)
         self.WD_WinratesHeading.setBackgroundRole(QtGui.QPalette.Background)
 
-        self.LA_Name = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_Name = QtWidgets.QLabel("Name", self.WD_WinratesHeading)
         self.LA_Name.setGeometry(QtCore.QRect(30, 0, 41, 31))
-        self.LA_Name.setText("Name")
 
-        self.LA_Wins = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_Wins = QtWidgets.QLabel("▼ Wins", self.WD_WinratesHeading)
         self.LA_Wins.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Wins.setGeometry(QtCore.QRect(145, 0, 50, 31))
-        self.LA_Wins.setText("▼ Wins")
 
-        self.LA_Losses = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_Losses = QtWidgets.QLabel("Losses", self.WD_WinratesHeading)
         self.LA_Losses.setAlignment(QtCore.Qt.AlignCenter)
         self.LA_Losses.setGeometry(QtCore.QRect(215, 0, 45, 31))
-        self.LA_Losses.setText("Losses")
 
-        self.LA_Winrate = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_Winrate = QtWidgets.QLabel("Winrate", self.WD_WinratesHeading)
         self.LA_Winrate.setGeometry(QtCore.QRect(270, 0, 51, 31))
         self.LA_Winrate.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Winrate.setText("Winrate")
 
-        self.LA_PL_APM = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_APM = QtWidgets.QLabel("APM", self.WD_WinratesHeading)
         self.LA_PL_APM.setGeometry(QtCore.QRect(325, 0, 51, 31))
         self.LA_PL_APM.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_APM.setText("APM")
         self.LA_PL_APM.setToolTip("Median APM")
 
-        self.LA_PL_Kills = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Kills = QtWidgets.QLabel("Kills", self.WD_WinratesHeading)
         self.LA_PL_Kills.setGeometry(QtCore.QRect(380, 0, 51, 31))
         self.LA_PL_Kills.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Kills.setText("Kills")
         self.LA_PL_Kills.setToolTip("Median percent of kills")
 
-        self.LA_PL_Commander = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Commander = QtWidgets.QLabel("#1 Com", self.WD_WinratesHeading)
         self.LA_PL_Commander.setGeometry(QtCore.QRect(430, 0, 81, 31))
         self.LA_PL_Commander.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Commander.setText("#1 Com")
         self.LA_PL_Commander.setToolTip("The most played commander")
 
-        self.LA_PL_Frequency = QtWidgets.QLabel(self.WD_WinratesHeading)
+        self.LA_PL_Frequency = QtWidgets.QLabel("Frequency", self.WD_WinratesHeading)
         self.LA_PL_Frequency.setGeometry(QtCore.QRect(495, 0, 81, 31))
         self.LA_PL_Frequency.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_PL_Frequency.setText("Frequency")
         self.LA_PL_Frequency.setToolTip("The most played commander frequency")
 
-        self.LA_Note = QtWidgets.QLabel(self.WD_WinratesHeading)
-        self.LA_Note.setGeometry(QtCore.QRect(580, 0, 300, 31))
+        self.LA_Note = QtWidgets.QLabel("Player note", self.WD_WinratesHeading)
+        self.LA_Note.setGeometry(QtCore.QRect(620, 0, 100, 31))
         self.LA_Note.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_Note.setText("Player note (displayed together with winrates)")
+
+        # Search
+        self.ED_Player_seach = QtWidgets.QLineEdit(self.WD_WinratesHeading)
+        self.ED_Player_seach.setGeometry(QtCore.QRect(740, 5, 160, 20))
+        self.ED_Player_seach.setAlignment(QtCore.Qt.AlignCenter)
+        self.ED_Player_seach.setPlaceholderText("Search")
+        self.ED_Player_seach.setToolTip("Search for players")
+        self.ED_Player_seach.textChanged.connect(self.filter_players)
+
+        # Top 50
+        self.CH_OnlyTop50 = QtWidgets.QCheckBox("50 max", self.WD_WinratesHeading)
+        self.CH_OnlyTop50.setGeometry(QtCore.QRect(910, 7, 81, 17))
+        self.CH_OnlyTop50.setToolTip("This limits the number of players visible at one time.\nUnchecking this will likely cause lag. All players are always searched no matter the status of this setting.")
+        self.CH_OnlyTop50.setChecked(True)
+        self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
 
         self.PlayerTabLine = MUI.Cline(self.WD_WinratesHeading)
         self.PlayerTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
@@ -187,7 +171,7 @@ class PlayerTab(QtWidgets.QWidget):
     def filter_players(self):
         """ Filters only players with string in name or note """
         self.filter_players_running = True
-        text = self.ED_Winrate_Search.text().lower()
+        text = self.ED_Player_seach.text().lower()
         idx = 0
         show_max = 50 if self.CH_OnlyTop50.isChecked() else 10000
         created = 0

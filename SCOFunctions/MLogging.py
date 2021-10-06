@@ -10,7 +10,7 @@ class logclass:
     """ Custom class for logging purposes """
     LOGGING = False
     LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
-    FILE = "Logs.txt"
+    file_path = "Logs.txt"
 
     def __init__(self, name, level, showtype=True, showdate=True):
         self.name = name
@@ -35,7 +35,7 @@ class logclass:
 
         if self.LOGGING:
             with lock:
-                with open(self.FILE, 'ab') as f:
+                with open(self.file_path, 'ab') as f:
                     f.write(f'{msg}\n'.encode())
 
     def debug(self, message):

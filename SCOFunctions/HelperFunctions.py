@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import os
@@ -10,7 +11,7 @@ from pathlib import Path
 import psutil
 import requests
 
-from SCOFunctions.MFilePath import truePath, innerPath
+from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
 
 logger = logclass('HELP', 'INFO')
@@ -66,6 +67,39 @@ def write_permission_granted():
         logger.info(f'Permission error:\n{traceback.format_exc()}')
 
     return permission_granted
+
+
+def get_region(handle: str) -> str:
+    """ Retuns region based on player handle"""
+    try:
+        region_dict = {1: 'NA', 2: 'EU', 3: 'KR', 5: 'CN', 98: 'PTR'}
+        s = handle.split("-S2-")[0]
+        return region_dict.get(int(s), "?")
+    except Exception:
+        logger.error(traceback.format_exc())
+        return "?"
+
+
+def get_time_difference(date: str) -> str:
+    """ Returns time difference from now"""
+    now = datetime.datetime.now()
+    try:
+        game_time = datetime.datetime.strptime(date, '%Y:%m:%d:%H:%M:%S')
+    except Exception:
+        logger.error(f"Failed to parse player date\n{date}\n{traceback.format_exc()}")
+        return ""
+    delta = (now - game_time).total_seconds()
+    days, delta = divmod(delta, 86400)
+    hours, delta = divmod(delta, 3600)
+    minutes, _ = divmod(delta, 60)
+
+    s = ""
+    if days > 0:
+        s += f"{days:.0f} days "
+    if hours > 0:
+        s += f"{hours:.0f} hours "
+    s += f"{minutes:.0f} minutes ago"
+    return s
 
 
 def app_running_multiple_instances():
