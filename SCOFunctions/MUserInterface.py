@@ -1299,7 +1299,7 @@ class PlayerEntry:
 
         # Highlight the last handle
         max_date = max(self.winrate_data[handle][6] for handle in self.winrate_data if handle != "total")
-        max_handle = [handle for handle in self.winrate_data if (handle != "total" and self.winrate_data[handle][6] == max_date)]
+        max_handle = [handle for handle in self.winrate_data if (handle != "total" and self.winrate_data[handle][6] == max_date)][0]
         for handle in self.handles_UI:
             for widget in self.handles_UI[handle]:                    
                 if handle == max_handle and b:

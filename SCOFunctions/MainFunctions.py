@@ -177,13 +177,15 @@ def update_last_game_time_difference(data):
     if data[player] == [None]:
         return data
 
-    ndata = {player: data[player].copy()}
-    s = HF.get_time_difference()
+    ndata = {player: data[player]['total'].copy()}
+    s = HF.get_time_difference(data[player]['total'][6])
+
     if s:
         ndata[player][6] = s
         return ndata
     else:
-        return data
+        return data['total']
+
 
 def update_names_and_handles(ACCOUNTDIR, AllReplays):
     """ Takes player names and handles, and updates global variables with them"""

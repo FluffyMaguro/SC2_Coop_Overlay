@@ -12,6 +12,9 @@ class GameTab(QtWidgets.QWidget):
         super().__init__()
         self.p = parent
         self.game_UI_dict = dict()
+        self.showing_games = 50
+        self.last_searched_words = ""
+        self.presented_replays = []
 
         # Scroll
         self.SC_GamesScrollArea = QtWidgets.QScrollArea(self)
@@ -19,6 +22,7 @@ class GameTab(QtWidgets.QWidget):
         self.SC_GamesScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_GamesScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_GamesScrollArea.setWidgetResizable(True)
+        self.SC_GamesScrollArea.verticalScrollBar().valueChanged.connect(self.scrollbar_moved)
 
         self.SC_GamesScrollAreaContent = QtWidgets.QWidget()
         self.SC_GamesScrollAreaContent.setGeometry(QtCore.QRect(0, 0, 931, 561))
@@ -99,8 +103,16 @@ class GameTab(QtWidgets.QWidget):
         self.SC_GamesScrollAreaContent.setLayout(self.SC_GamesScrollAreaContentLayout)
         self.SC_GamesScrollArea.setWidget(self.SC_GamesScrollAreaContent)
 
+    def scrollbar_moved(self):
+        """ Adds new games if we scrolled down"""
+        if not self.SC_GamesScrollArea.verticalScrollBar().value() > 0.95 * self.SC_GamesScrollArea.verticalScrollBar().maximum():
+            return
+
+        self.showing_games += 20 if self.ed_games_search.text() else 5
+        self.search_games()
+
     def initialize_data(self, CAnalysis):
-        for game in CAnalysis.get_last_replays(SM.settings['list_games']):
+        for game in CAnalysis.get_last_replays(self.showing_games):
             self.game_UI_dict[game.file] = MUI.GameEntry(game, CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
@@ -110,14 +122,19 @@ class GameTab(QtWidgets.QWidget):
         if self.p.CAnalysis is None:
             return
 
+        # Reset the number of games if we are not looking down
+        if self.SC_GamesScrollArea.verticalScrollBar().value() < 0.5 * self.SC_GamesScrollArea.verticalScrollBar().maximum():
+            self.showing_games = 50
+
         search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
         if len(search_for) == 0:
-            # Restore default
-            new_replays = self.p.CAnalysis.get_last_replays(SM.settings['list_games'])
-        else:
+            self.presented_replays = self.p.CAnalysis.get_last_replays(self.showing_games)
+
+        elif self.last_searched_words != self.ed_games_search.text():
             # Search for replays with strings in them
-            new_replays = self.p.CAnalysis.search(*search_for)
-            logger.info(f'Searching games with {search_for} | found {len(new_replays)} replays')
+            self.last_searched_words = self.ed_games_search.text()
+            self.presented_replays = self.p.CAnalysis.search(*search_for)
+            logger.info(f'Searching games with {search_for} | found {len(self.presented_replays)} replays')
 
         # Hide current replays that are not in there
         for i in range(self.SC_GamesScrollAreaContentLayout.count()):
@@ -125,7 +142,7 @@ class GameTab(QtWidgets.QWidget):
             widget.hide()
 
         # Add replays
-        for r in new_replays[:SM.settings['list_games']]:
+        for r in self.presented_replays[:self.showing_games]:
             if r.file in self.game_UI_dict:
                 self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[r.file].widget)
                 self.game_UI_dict[r.file].widget.show()

@@ -54,7 +54,6 @@ class CSettings:
             'aom_secret_key': None,
             'player_notes': dict(),
             'main_names': list(),
-            'list_games': 100,
             'right_offset': 0,
             'top_offset': 0,
             'width': 0.7,

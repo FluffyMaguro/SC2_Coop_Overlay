@@ -470,12 +470,6 @@ func_on_new_data = function some_function_name(data) {
    }
 ```
 
-You can change the **number of recent games** visible in the game tab.
-Default it 100 games.
-
-```
-"list_games": 100,
-```
 You can change the **offset from the right side of the monitor**.
 Negative values mean more to the left.
 

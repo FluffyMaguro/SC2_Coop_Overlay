@@ -10,6 +10,7 @@ class PlayerTab(QtWidgets.QWidget):
         self.filter_players_running = False
         self.player_winrate_UI_dict = dict()
         self.last_ally_player = None
+        self.showing_players = 50
 
         # Scroll
         self.SC_PlayersScrollArea = QtWidgets.QScrollArea(self)
@@ -17,6 +18,7 @@ class PlayerTab(QtWidgets.QWidget):
         self.SC_PlayersScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.SC_PlayersScrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
         self.SC_PlayersScrollArea.setWidgetResizable(True)
+        self.SC_PlayersScrollArea.verticalScrollBar().valueChanged.connect(self.scrollbar_moved)
 
         self.SC_PlayersScrollAreaContents = QtWidgets.QWidget()
         self.SC_PlayersScrollAreaContents.setGeometry(QtCore.QRect(0, 31, 961, 530))
@@ -79,13 +81,6 @@ class PlayerTab(QtWidgets.QWidget):
         self.ED_Player_seach.setToolTip("Search for players")
         self.ED_Player_seach.textChanged.connect(self.filter_players)
 
-        # Top 50
-        self.CH_OnlyTop50 = QtWidgets.QCheckBox("50 max", self.WD_WinratesHeading)
-        self.CH_OnlyTop50.setGeometry(QtCore.QRect(910, 7, 81, 17))
-        self.CH_OnlyTop50.setToolTip("This limits the number of players visible at one time.\nUnchecking this will likely cause lag. All players are always searched no matter the status of this setting.")
-        self.CH_OnlyTop50.setChecked(True)
-        self.CH_OnlyTop50.stateChanged.connect(self.filter_players)
-
         self.PlayerTabLine = MUI.Cline(self.WD_WinratesHeading)
         self.PlayerTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
 
@@ -94,6 +89,19 @@ class PlayerTab(QtWidgets.QWidget):
         self.LA_Winrates_Wait.setGeometry(QtCore.QRect(0, 0, self.SC_PlayersScrollAreaContents.width(), self.SC_PlayersScrollAreaContents.height()))
         self.LA_Winrates_Wait.setText('<b>Please wait. This can take few minutes the first time.<br>Analyzing your replays.</b>')
         self.LA_Winrates_Wait.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
+
+    def scrollbar_moved(self):
+        """ Adds new players if we scrolled down"""
+        if not self.SC_PlayersScrollArea.verticalScrollBar().value() > 0.95 * self.SC_PlayersScrollArea.verticalScrollBar().maximum():
+            return
+
+        self.showing_players += 5
+        self.filter_players()
+
+    def try_reducing_players(self):
+        """ Tries to reduce the number of visible players"""
+        if self.SC_PlayersScrollArea.verticalScrollBar().value() < 0.5 * self.SC_PlayersScrollArea.verticalScrollBar().maximum():
+            self.showing_players = 50
 
     def put_player_first(self, player):
         """ Moves a player to the top spot in the player tab.
@@ -134,15 +142,17 @@ class PlayerTab(QtWidgets.QWidget):
         w.highlight(True)
         w.widget.show()
 
-    def update(self, winrate_data, show_max=50):
+    def update(self, winrate_data):
         """ Updates player tab based on provide winrate data """
         if self.LA_Winrates_Wait is not None:
             self.LA_Winrates_Wait.deleteLater()
             self.LA_Winrates_Wait = None
 
-        # Create new or update top `show_nax` players
+        self.try_reducing_players()
+
+        # Create new or update top self.showing_players players
         for idx, player in enumerate(winrate_data):
-            if idx >= show_max:
+            if idx >= self.showing_players:
                 break
             if not player in self.player_winrate_UI_dict:
                 self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
@@ -153,9 +163,9 @@ class PlayerTab(QtWidgets.QWidget):
             else:
                 self.player_winrate_UI_dict[player].update_winrates(winrate_data[player])
 
-        # Show top `show_max` and hide the rest
+        # Show top self.showing_players and hide the rest
         for idx, player in enumerate(self.player_winrate_UI_dict):
-            if idx < show_max:
+            if idx < self.showing_players:
                 self.player_winrate_UI_dict[player].show()
             else:
                 self.player_winrate_UI_dict[player].hide()
@@ -173,8 +183,9 @@ class PlayerTab(QtWidgets.QWidget):
         self.filter_players_running = True
         text = self.ED_Player_seach.text().lower()
         idx = 0
-        show_max = 50 if self.CH_OnlyTop50.isChecked() else 10000
         created = 0
+
+        self.try_reducing_players()
 
         # First hide all
         for player in self.player_winrate_UI_dict:
@@ -182,7 +193,7 @@ class PlayerTab(QtWidgets.QWidget):
 
         # Go through winrate data and check for player names
         for player in self.p.winrate_data:
-            if text in player.lower() and idx < show_max:
+            if text in player.lower() and idx < self.showing_players:
 
                 # If many created, pause for bit. Otherwise some PCs might struggle
                 if created > 100:
@@ -202,7 +213,7 @@ class PlayerTab(QtWidgets.QWidget):
 
         # Go though notes
         for player, note in SM.settings['player_notes'].items():
-            if text in note.lower() and idx < show_max:
+            if text in note.lower() and idx < self.showing_players:
                 # Create element if necessary and show
                 if not player in self.player_winrate_UI_dict:
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
