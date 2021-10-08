@@ -1,8 +1,9 @@
+import json
 import os
 import shutil
-from zipfile import ZipFile, ZIP_BZIP2
+from zipfile import ZIP_BZIP2, ZipFile
 
-from useful_functions import get_version, clear_pycache
+from useful_functions import clear_pycache, get_hash, get_version
 
 app_version = get_version()
 clear_pycache()
@@ -34,8 +35,18 @@ print('Compressing files...')
 with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
     for file in to_zip:
         zip.write(file, file[9:])  # The second argument makes it not appear in SCO/ directory in the zip file
-
+        
 # Cleanup
 for item in ('SCO.build', 'SCO.dist', 'dist'):
     if os.path.isdir(item):
         shutil.rmtree(item)
+
+# Hash
+with open('version.txt', 'r') as f:
+    version_data = json.load(f)
+
+version_data['hash'] = get_hash(file_name, sha=True)
+version_data['version'] = app_version
+
+with open('version.txt', 'w') as f:
+    json.dump(version_data, f, indent=2)
