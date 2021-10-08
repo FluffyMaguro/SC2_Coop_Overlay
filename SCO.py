@@ -191,6 +191,11 @@ class UI_TabWidget(object):
 
     def check_for_updates(self):
         """ Checks for updates and changes UI accordingly"""
+
+        # Skip if there is already a button (perhaps we have awoken and there is still an update ready)
+        if hasattr(self, "BT_NewUpdate"):
+            return
+
         self.new_version = HF.new_version(APPVERSION)
 
         if not self.new_version:
@@ -794,10 +799,14 @@ class UI_TabWidget(object):
         """ This function is run when the PC is awoken """
         if diff is None:
             return
+
         logger.info(f'The computer just awoke! ({diff:.0f} seconds)')
         thread_awakening = MUI.Worker(MF.wait_for_wake)
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)
+
+        # Check for new updates & reset keyboard threads
+        self.check_for_updates()
         self.reset_keyboard_thread()
 
     def reset_keyboard_thread(self):
