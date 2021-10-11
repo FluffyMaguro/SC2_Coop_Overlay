@@ -1291,7 +1291,9 @@ class PlayerEntry:
         self.widget.hide()
 
     def highlight(self, b: bool):
-        for item in {self.widget, self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note, self.la_kills, self.la_apm}:
+        self.create_handles()
+        for item in (self.line, self.la_name, self.la_wins, self.la_losses, self.la_winrate, self.ed_note, self.la_kills, self.la_apm,
+                     self.la_commander, self.la_frequency):
             if b:
                 item.setStyleSheet(f'QLabel {{color: {MColors.player_highlight}; font-weight: bold}}')
             else:
@@ -1301,7 +1303,7 @@ class PlayerEntry:
         max_date = max(self.winrate_data[handle][6] for handle in self.winrate_data if handle != "total")
         max_handle = [handle for handle in self.winrate_data if (handle != "total" and self.winrate_data[handle][6] == max_date)][0]
         for handle in self.handles_UI:
-            for widget in self.handles_UI[handle]:                    
+            for widget in self.handles_UI[handle]:
                 if handle == max_handle and b:
                     self.handles_UI[handle][widget].setStyleSheet(f'QLabel {{color: {MColors.player_highlight}; font-weight: bold}}')
                 else:
