@@ -479,11 +479,8 @@ class UI_TabWidget(object):
 
     def hotkey_changed(self):
         """ Wait a bit for the sequence to update, and then check if not to delete the key"""
-        self.hotkey_changed_timer = QtCore.QTimer()
-        self.hotkey_changed_timer.setInterval(50)
-        self.hotkey_changed_timer.setSingleShot(True)
-        self.hotkey_changed_timer.timeout.connect(self.check_to_remove_hotkeys)
-        self.hotkey_changed_timer.start()
+        self.wait_ms(50)
+        self.check_to_remove_hotkeys()
 
     def check_to_remove_hotkeys(self):
         """ Checks if a key is 'Del' and sets it to None """
@@ -835,11 +832,8 @@ class UI_TabWidget(object):
         self.threadpool.start(thread_replays)
 
         # Delay updating new data to prevent lag when showing the overlay
-        self.timeoutTimer = QtCore.QTimer()
-        self.timeoutTimer.setInterval(2000)
-        self.timeoutTimer.setSingleShot(True)
-        self.timeoutTimer.timeout.connect(partial(self.TAB_Games.add_new_game_data, replay_dict))
-        self.timeoutTimer.start()
+        self.wait_ms(2000)
+        self.TAB_Games.add_new_game_data(replay_dict)
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""
