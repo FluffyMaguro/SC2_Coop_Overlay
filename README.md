@@ -1,5 +1,5 @@
 # StarCraft II Coop Overlay (SCO)
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.40/SC2CoopOverlay.2.40.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.41/SC2CoopOverlay.2.41.zip)
 
 * Or run the script with Python 3.8+:
 
@@ -7,8 +7,6 @@
 pip install -r requirements.txt
 python SCO.py
 ```
-* Or try [Nuitka-compiled version](https://mega.nz/file/810WVZbC#NzE3AATIedpn7OLxGVBdTDIW6M1zMVXpXW4rEmSJ3Lw)
-
 
 The app shows an overlay with replay analysis of StarCraft II Co-op games. It also provides match history, various statistics based on your replays, commander randomizer, info about players shown at the start of the game, custom twitch bot with game integration into MM maps, and more.
 
@@ -146,6 +144,17 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.41 version
+
+      - Player tab shows different stats for different player handles with the same name
+      - Player tab shows the time since last game for each player handle
+      - Bonus objectives are shown as (completed/total) instead of times when they were completed
+      - New games and players are automatically added when scrolling to the end of game/player tab
+      - During update the app checks the hash of the downloaded archive
+      - App now complied with [Nuitka](https://nuitka.net/)
+      - Visual tweaks & bug fixes
+      - Updated packages
 
 * 2.40 version
 

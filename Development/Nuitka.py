@@ -22,9 +22,18 @@ os.system('cmd /c "python -m nuitka'
           ' --include-data-file=SCOFunctions/SC2Dictionaries/*.txt=SCOFunctions/SC2Dictionaries/"'
           ' SCO.py')
 
-# Zip
-file_name = f"SC2CoopOverlay_nuitka ({app_version // 100}.{app_version % 100}).zip"
+# Copy readme
 shutil.copy('Read me (Github).url', 'SCO.dist/Read me (Github).url')
+
+# Copy QtWebEngineProcess.exe if it wasn't included automatically (depends on package versions)
+webengine_path_venv = "venv/Lib/site-packages/PyQt5/Qt/bin/QtWebEngineProcess.exe"
+webengine_path_pack = "SCO.dist/QtWebEngineProcess.exe"
+if not os.path.isfile(webengine_path_pack):
+    print("Copying QtWebEngineProcess.exe")
+    shutil.copy(webengine_path_venv, webengine_path_pack)
+
+# Zip
+file_name = f"SC2CoopOverlay ({app_version // 100}.{app_version % 100}).zip"
 
 to_zip = []
 for root, directories, files in os.walk('SCO.dist'):
@@ -35,7 +44,7 @@ print('Compressing files...')
 with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
     for file in to_zip:
         zip.write(file, file[9:])  # The second argument makes it not appear in SCO/ directory in the zip file
-        
+
 # Cleanup
 for item in ('SCO.build', 'SCO.dist', 'dist'):
     if os.path.isdir(item):
