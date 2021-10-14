@@ -611,9 +611,14 @@ class UI_TabWidget(object):
             else:
                 self.sendInfoMessage('Invalid account folder!', color=MColors.msg_failure)
 
-    def start_main_functionality(self):
-        """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f}) [{platform.system()} {platform.release()}]\n{SM.settings_for_logs()}')
+    def create_reset_overlay(self):
+        """ Creates or resets the webwidget overlay"""
+
+        # Hide and delete old web windget if we are resetting
+        if hasattr(self, "WebView"):
+            logger.info("Resetting overlay")
+            self.WebView.hide()
+            self.WebView.deleteLater()
 
         # Custom CSS/JS
         if not os.path.isfile(truePath('Layouts/custom.css')):
@@ -628,26 +633,32 @@ class UI_TabWidget(object):
         if not os.path.isfile(truePath('Layouts/Layout.html')):
             self.sendInfoMessage("Error! Failed to locate the html file", color=MColors.msg_failure)
             logger.error("Error! Failed to locate the html file")
+            return
 
-        else:
-            self.WebView = MUI.CustomWebView()
-            self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
-                                        | eval(f"QtCore.Qt.{SM.settings['webflag']}") | QtCore.Qt.NoDropShadowWindowHint
-                                        | QtCore.Qt.WindowDoesNotAcceptFocus)
+        self.WebView = MUI.CustomWebView()
+        self.WebView.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint
+                                    | eval(f"QtCore.Qt.{SM.settings['webflag']}") | QtCore.Qt.NoDropShadowWindowHint
+                                    | QtCore.Qt.WindowDoesNotAcceptFocus)
 
-            self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+        self.WebView.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
-            self.WebPage = MUI.WebEnginePage(self.WebView)
-            self.WebView.setPage(self.WebPage)
-            self.WebPage.setBackgroundColor(QtCore.Qt.transparent)
-            self.set_WebView_size_location(SM.settings['monitor'])
+        self.WebPage = MUI.WebEnginePage(self.WebView)
+        self.WebView.setPage(self.WebPage)
+        self.WebPage.setBackgroundColor(QtCore.Qt.transparent)
+        self.set_WebView_size_location(SM.settings['monitor'])
 
-            self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
+        self.WebView.load(QtCore.QUrl().fromLocalFile(truePath('Layouts/Layout.html')))
 
-            if not SM.settings['force_hide_overlay']:
-                self.WebView.show()
+        if not SM.settings['force_hide_overlay']:
+            self.WebView.show()
 
-            MF.WEBPAGE = self.WebPage
+        MF.WEBPAGE = self.WebPage
+
+    def start_main_functionality(self):
+        """ Doing the main work of looking for replays, analysing, etc. """
+        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f}) [{platform.system()} {platform.release()}]\n{SM.settings_for_logs()}')
+
+        self.create_reset_overlay()
 
         # Pass current settings
         MF.update_init_message()

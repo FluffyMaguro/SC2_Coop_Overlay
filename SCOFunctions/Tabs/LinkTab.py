@@ -15,9 +15,16 @@ class LinkTab(QtWidgets.QWidget):
         self.bt_reset_keyboard.setToolTip('Resets keyboard threads.\nThis might fix issues if hotkeys are not reacting.')
         self.bt_reset_keyboard.clicked.connect(self.p.reset_keyboard_thread)
 
+        # Reset keyboard threads
+        self.bt_reset_overlay = QtWidgets.QPushButton(self)
+        self.bt_reset_overlay.setGeometry(QtCore.QRect(830, 50, 125, 25))
+        self.bt_reset_overlay.setText('Reset overlay')
+        self.bt_reset_overlay.setToolTip('Resets the overlay widget.\nThis might fix issues if overlay is not reacting.')
+        self.bt_reset_overlay.clicked.connect(self.p.create_reset_overlay)
+
         # Debug
         self.bt_debug_window = QtWidgets.QPushButton(self)
-        self.bt_debug_window.setGeometry(QtCore.QRect(830, 50, 125, 25))
+        self.bt_debug_window.setGeometry(QtCore.QRect(830, 85, 125, 25))
         self.bt_debug_window.setText('Debug window')
         self.bt_debug_window.clicked.connect(self.debug_window_clicked)
 
