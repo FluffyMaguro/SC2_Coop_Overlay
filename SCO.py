@@ -305,7 +305,7 @@ class UI_TabWidget(object):
                                 f'rmdir /s /q "{truePath("Updates")}"',
                                 'echo Installation completed...',
                                 # Start application
-                                f'"{truePath("App/SCO.exe")}"'
+                                f'"{truePath("SCO.exe")}"'
                                 ))) # yapf: disable
 
         self.saveSettings()
