@@ -1,7 +1,7 @@
 import json
 import os
 import shutil
-from zipfile import ZIP_BZIP2, ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from useful_functions import clear_pycache, get_hash, get_version
 
@@ -41,7 +41,7 @@ for root, directories, files in os.walk('SCO.dist'):
         to_zip.append(os.path.join(root, file))
 
 print('Compressing files...')
-with ZipFile(file_name, 'w', compression=ZIP_BZIP2) as zip:
+with ZipFile(file_name, 'w', compression=ZIP_DEFLATED) as zip:
     for file in to_zip:
         zip.write(file, file[9:])  # The second argument makes it not appear in SCO/ directory in the zip file
 
