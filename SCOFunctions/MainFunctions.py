@@ -168,23 +168,31 @@ def names_fallback(handles, replays):
     return snames
 
 
-def update_last_game_time_difference(data):
-    """ Replaces last game time with time delta"""
-    if data is None:
-        return None
+def get_player_data(player_names: list):
+    """ Takes the first player, gets its data from player_winrate_data.
+    Appends player notes if there are any. Calculates the time difference from the last time played."""
 
-    player = list(data.keys())[0]
-    if data[player] == [None]:
-        return data
+    # No players
+    if not player_names:
+        return {}
 
-    ndata = {player: data[player]['total'].copy()}
-    s = HF.get_time_difference(data[player]['total'][6])
+    player = player_names[0]
+
+    if player not in player_winrate_data:
+        return {player: [None]}
+
+    data = {player: player_winrate_data[player]['total'].copy()}
+
+    # Get player notes
+    if player in SM.settings['player_notes']:
+        data[player].append(SM.settings['player_notes'][player])
+
+    # Get time difference
+    s = HF.get_time_difference(data[player][6])
 
     if s:
-        ndata[player][6] = s
-        return ndata
-    else:
-        return data['total']
+        data[player][6] = s
+    return data
 
 
 def update_names_and_handles(ACCOUNTDIR, AllReplays):
@@ -488,7 +496,7 @@ def keyboard_SHOW():
 def keyboard_PLAYERWINRATES():
     """Show/hide winrate & notes """
     if most_recent_playerdata:
-        sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(most_recent_playerdata)})
+        sendEvent({'playerEvent': True, 'data': most_recent_playerdata})
     else:
         logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
@@ -592,25 +600,18 @@ def check_for_new_game(progress_callback):
                 continue
 
             # Find ally player and get your current player position
-            player_names = set()
+            player_names = list()
             player_position = 1
             for player in players:
                 if player['id'] in {1, 2} and not player['name'].lower() in test_names_against and player['type'] != 'computer':
-                    player_names.add(player['name'])
+                    player_names.append(player['name'])
                     player_position = 2 if player['id'] == 1 else 1
                     break
 
             # If we have players to show
-            if len(player_names) > 0:
-                # Get player winrate data
-                data = {p: player_winrate_data.get(p, [None]) for p in player_names}
-                # Get player notes
-                for player in data:
-                    if player in SM.settings['player_notes']:
-                        data[player].append(SM.settings['player_notes'][player])
-
-                most_recent_playerdata = data
-                sendEvent({'playerEvent': True, 'data': update_last_game_time_difference(data)})
+            if player_names:
+                most_recent_playerdata = get_player_data(player_names)
+                sendEvent({'playerEvent': True, 'data': most_recent_playerdata})
 
             # Identify map
             try:

@@ -81,6 +81,13 @@ class PlayerTab(QtWidgets.QWidget):
         self.ED_Player_seach.setToolTip("Search for players")
         self.ED_Player_seach.textChanged.connect(self.filter_players)
 
+        self.bt_games_search = QtWidgets.QPushButton(self.WD_WinratesHeading)
+        self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))
+        self.bt_games_search.setStyleSheet("font-weight: normal")
+        self.bt_games_search.setIcon(self.style().standardIcon(getattr(QtWidgets.QStyle, 'SP_FileDialogContentsView')))
+        self.bt_games_search.clicked.connect(self.filter_players)
+        self.bt_games_search.setShortcut("Return")
+
         self.PlayerTabLine = MUI.Cline(self.WD_WinratesHeading)
         self.PlayerTabLine.setGeometry(QtCore.QRect(20, 30, 921, 1))
 
