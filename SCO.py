@@ -656,7 +656,10 @@ class UI_TabWidget(object):
 
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
-        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f}) [{platform.system()} {platform.release()}]\n{SM.settings_for_logs()}')
+        logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})'
+                    f' [{HF.app_type()}]'
+                    f' [{platform.system()} {platform.release()}]'
+                    f'\n{SM.settings_for_logs()}')
 
         self.create_reset_overlay()
 

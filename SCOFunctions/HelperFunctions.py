@@ -11,6 +11,7 @@ from pathlib import Path
 import psutil
 import requests
 
+from SCOFunctions.nuitka_func import is_compiled
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
 
@@ -36,6 +37,20 @@ else:
 def isFrozen():
     """ Checks whether the app is frozen by Pyinstaller"""
     return getattr(sys, 'frozen', False)
+
+
+def app_type() -> str:
+    """ Returns how the app is packaged
+
+    Returns:
+        'Nuitka' | 'Pyinstaller' | 'Script'
+    """
+
+    if is_compiled():
+        return "Nuitka"
+    if isFrozen():
+        return "Pyinstaller"
+    return "Script"
 
 
 def get_hash(file, sha=False):
