@@ -26,7 +26,6 @@ from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
 from SCOFunctions.Settings import Setting_manager as SM
 
 OverlayMessages = []  # Storage for all messages
-globalOverlayMessagesSent = 0  # Global variable to keep track of messages sent. Useful when opening new overlay instances later.
 lock = threading.Lock()
 logger = logclass('MAIN', 'INFO')
 initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60, 'show_charts': True}
@@ -59,11 +58,7 @@ def update_init_message():
 
 def sendEvent(event, raw=False):
     """ Send message to the overlay """
-    global globalOverlayMessagesSent
-
     with lock:
-        # Update global messages. So a new socket doesn't get all previous once at once.
-        globalOverlayMessagesSent += 1
         # Websocket connection for non-primary overlay
         OverlayMessages.append(event)
 
@@ -403,7 +398,7 @@ def show_overlay(file, add_replay=True):
 
 async def manager(websocket, path):
     """ Manages websocket connection for each client """
-    overlayMessagesSent = globalOverlayMessagesSent
+    overlayMessagesSent = len(OverlayMessages)
     logger.info(f"Starting: {websocket}\nSending init message: {initMessage}")
     await websocket.send(json.dumps(initMessage))
     while True:
