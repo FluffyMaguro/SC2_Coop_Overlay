@@ -25,6 +25,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.playerPosition = 1
         self.hotkeys = []
         self.initUI()
+        keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0])
 
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
@@ -81,9 +82,8 @@ class FastExpandSelector(QtWidgets.QWidget):
             labelString += "NUM" + str(9 - idx) + " - " + commander + "\r\n"
             self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["commander", commander.lower()]))
 
-        # Add the Cancel option at the bottom and hook a hotkey
+        # Add the Cancel option at the bottom
         labelString += "NUM0 - None"
-        self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
 
         self.selectionText.setText(labelString)
         self.title.setText("Choose your commander:")
@@ -108,9 +108,8 @@ class FastExpandSelector(QtWidgets.QWidget):
             labelString += "NUM" + str(9 - idx) + " - " + race + "\r\n"
             self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["race", race.lower()]))
 
-        # Add the Cancel option at the bottom and hook a hotkey
+        # Add the Cancel option at the bottom
         labelString += "NUM0 - None"
-        self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
 
         # Add the label to the layout
         self.selectionText.setText(labelString)
@@ -142,7 +141,6 @@ class FastExpandSelector(QtWidgets.QWidget):
             self.pic.setPixmap(pixmap)
             self.selectionText.hide()
             self.title.setText("NUM0 - Close")
-            self.hotkeys.append(keyboard.add_hotkey("NUM 0", self.selectionMade, args=["cancel", 0]))
             self.title.setStyleSheet("color:white; font-size: 18px")
         except Exception:
             logger.error(traceback.format_exc)
@@ -154,7 +152,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Remove all hotkeys first
         self.clearHotkeys()
         # If a "close" action was sent, hide the window, then reset all components so they're ready for the next run0
-        if action == "cancel":
+        if action == "cancel" and self.isVisible():
             self.hide()
             self.reset()
         elif action == "commander":
@@ -175,6 +173,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.selectedRace = ""
         self.playerPosition = 1
 
+    @catch_exceptions(logger)
     def clearHotkeys(self):
         for hotkey in self.hotkeys:
             keyboard.remove_hotkey(hotkey)
