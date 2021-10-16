@@ -148,6 +148,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             self.hide()
             self.reset()
 
+    @catch_exceptions(logger)
     def selectionMade(self, action, selection):
         # Remove all hotkeys first
         self.clearHotkeys()
