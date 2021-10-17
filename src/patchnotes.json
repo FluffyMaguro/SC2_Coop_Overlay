@@ -135,8 +135,7 @@
     "Fixes for multi-monitor setups",
     "Unique player handles are shown in tooltips for players in the games tab",
     "Various tweaks and fixes"
-  ]
-  ,
+  ],
   "240": [
     "App is no longer compressed into one big executable. This will make app start faster",
     "Initial and full replay analyses run on all available CPU cores",
@@ -159,5 +158,8 @@
     "App now complied with nuitka",
     "Visual tweaks & bug fixes",
     "Updated packages"
+  ],
+  "242": [
+    "Bug fixes"
   ]
 }
