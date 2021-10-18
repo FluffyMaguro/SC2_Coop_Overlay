@@ -5,6 +5,7 @@ import time
 import traceback
 
 import mpyq
+import s2protocol.decoders # Including this so Nuitka packages it correctly
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
 
