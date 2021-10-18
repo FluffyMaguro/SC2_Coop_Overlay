@@ -1,5 +1,5 @@
 # StarCraft II Coop Overlay (SCO)
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.42/SC2CoopOverlay.2.42.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.43/SC2CoopOverlay.2.43.zip)
 
 * Or run the script with Python 3.8+:
 
@@ -144,6 +144,10 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.43 version
+
+      - Bug fixes
 
 * 2.42 version
 
