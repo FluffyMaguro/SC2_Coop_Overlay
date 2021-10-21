@@ -13,7 +13,7 @@ class SystemInfo(QtWidgets.QWidget):
     def __init__(self, geometry=None, process_names=None, parent=None):
         super().__init__(parent)
 
-        if geometry == None:
+        if geometry is None:
             self.setGeometry(0, 0, 260, 400)
             sg = QtWidgets.QDesktopWidget().screenGeometry(0)
             self.move(sg.width() - self.width() - 10, sg.top() + 210)
@@ -190,7 +190,7 @@ class SystemInfo(QtWidgets.QWidget):
     def update(self):
         # Network up and down
         network_data = psutil.net_io_counters()
-        if self.bytes_sent != None and self.bytes_recv != None:
+        if self.bytes_sent is not None and self.bytes_recv is not None:
             sent = (1000 / self.iter) * (network_data.bytes_sent - self.bytes_sent)
             recv = (1000 / self.iter) * (network_data.bytes_recv - self.bytes_recv)
             self.la_download_value.setText(f"{self.format_bytes(recv)}/s")
@@ -230,7 +230,7 @@ class SystemInfo(QtWidgets.QWidget):
             return
 
         # Get StarCraft 2 process if there is none
-        if self.sc2_process == None:
+        if self.sc2_process is None:
             self.sc2_idx_search += 1
 
             # Check only every few iterations for a process to prevent high overhead
@@ -257,7 +257,7 @@ class SystemInfo(QtWidgets.QWidget):
                     logger.info(f'Error when finding process\n{traceback.format_exc()}')
 
         # We haven't found StarCraft process running
-        if self.sc2_process == None:
+        if self.sc2_process is None:
             self.restart()
             logger.debug(f"Debug: No SC2 process. Restarting.")
             return
@@ -274,7 +274,7 @@ class SystemInfo(QtWidgets.QWidget):
             try:
                 logger.debug('Debug: updating SC2....')
                 # Disk usage
-                if self.sc2_bytes_read != None:
+                if self.sc2_bytes_read is not None:
                     read = (1 / self.iter) * (self.sc2_process.io_counters().read_bytes - self.sc2_bytes_read)
                     writen = (1 / self.iter) * (self.sc2_process.io_counters().write_bytes - self.sc2_bytes_written)
                     self.la_sc2_read_value.setText(f"{self.format_bytes(read)}/s")

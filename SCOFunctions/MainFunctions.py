@@ -63,7 +63,7 @@ def sendEvent(event, raw=False):
         OverlayMessages.append(event)
 
     # Send message directly thorugh javascript for the primary overlay.
-    if WEBPAGE == None:
+    if WEBPAGE is None:
         return
 
     elif raw:
@@ -135,9 +135,9 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
         names = set(SM.settings['main_names'])
         logger.info(f'No player names found, falling back to settings: {names}')
 
-    if len(names) == 0 and len(handles) > 0 and replays != None:
-        replays = [v.get('replay_dict', {'parser': None}).get('parser', None) for k, v in replays.items() if v != None]
-        replays = [r for r in replays if r != None]
+    if len(names) == 0 and len(handles) > 0 and replays is not None:
+        replays = [v.get('replay_dict', {'parser': None}).get('parser', None) for k, v in replays.items() if v is not None]
+        replays = [r for r in replays if r is not None]
         names = names_fallback(handles, replays)
         logger.info(f'No player names found, falling back to replays: {names}')
 
@@ -567,7 +567,7 @@ def check_for_new_game(progress_callback):
                 continue
 
             # If the last time is the same, then we are in menus. Otherwise in-game.
-            if last_game_time == None or resp['displayTime'] == 0:
+            if last_game_time is None or resp['displayTime'] == 0:
                 last_game_time = resp['displayTime']
                 continue
 

@@ -7,19 +7,20 @@ import sys
 import traceback
 import zipfile
 from pathlib import Path
+from typing import Dict, Optional, Union
 
 import psutil
 import requests
 
-from SCOFunctions.nuitka_func import is_compiled
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import logclass
+from SCOFunctions.nuitka_func import is_compiled
 
 logger = logclass('HELP', 'INFO')
 version_link = 'https://raw.githubusercontent.com/FluffyMaguro/SC2_Coop_overlay/master/version.txt'
 
 
-def isWindows():
+def isWindows() -> bool:
     if os.name == 'nt':
         return True
     return False
@@ -29,14 +30,16 @@ def isWindows():
 if isWindows():
     import ctypes.wintypes
 
-    from SCOFunctions.MRegistry import (reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value)
+    from SCOFunctions.MRegistry import (reg_add_to_startup,
+                                        reg_delete_startup_field,
+                                        reg_get_startup_field_value)
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
 
 
-def isFrozen():
+def isFrozen() -> bool:
     """ Checks whether the app is frozen by Pyinstaller"""
-    return getattr(sys, 'frozen', False)
+    return bool(getattr(sys, 'frozen', False))
 
 
 def app_type() -> str:
@@ -53,7 +56,7 @@ def app_type() -> str:
     return "Script"
 
 
-def get_hash(file, sha=False):
+def get_hash(file: str, sha: bool = False) -> Optional[str]:
     """ Returns MD5/SHA256 file hash for a file """
     try:
         with open(file, "rb") as f:
@@ -69,7 +72,7 @@ def get_hash(file, sha=False):
         return None
 
 
-def write_permission_granted():
+def write_permission_granted() -> bool:
     """ Returns True if the app can write into its directory """
     permission_granted = True
     tfile = truePath('test_permission_file')
@@ -95,6 +98,26 @@ def get_region(handle: str) -> str:
         return "?"
 
 
+def strtime(t: Union[int, float], show_seconds: bool = False) -> str:
+    """ Returns formatted string 
+    X days, Y hours, Z minutes
+    """
+    days, delta = divmod(t, 86400)
+    hours, delta = divmod(delta, 3600)
+    minutes, seconds = divmod(delta, 60)
+
+    s = []
+    if days:
+        s.append(f"{days:.0f} days")
+    if hours:
+        s.append(f"{hours:.0f} hours")
+    if minutes or not show_seconds:
+        s.append(f"{minutes:.0f} minutes")
+    if show_seconds:
+        s.append(f"{seconds:.0f} seconds")
+    return " ".join(s)
+
+
 def get_time_difference(date: str) -> str:
     """ Returns time difference from now"""
     now = datetime.datetime.now()
@@ -104,20 +127,10 @@ def get_time_difference(date: str) -> str:
         logger.error(f"Failed to parse player date\n{date}\n{traceback.format_exc()}")
         return ""
     delta = (now - game_time).total_seconds()
-    days, delta = divmod(delta, 86400)
-    hours, delta = divmod(delta, 3600)
-    minutes, _ = divmod(delta, 60)
-
-    s = ""
-    if days > 0:
-        s += f"{days:.0f} days "
-    if hours > 0:
-        s += f"{hours:.0f} hours "
-    s += f"{minutes:.0f} minutes ago"
-    return s
+    return f"{strtime(delta)} ago"
 
 
-def app_running_multiple_instances():
+def app_running_multiple_instances() -> bool:
     """ Returns True if the app is running multiple instances.
     Normally there are two instances of SCO.exe running. """
     running = 0
@@ -132,7 +145,7 @@ def app_running_multiple_instances():
     return running > 1
 
 
-def create_shortcut():
+def create_shortcut() -> None:
     """ Creates a shortcut to desktop"""
 
     if not isFrozen() or not isWindows():
@@ -153,7 +166,7 @@ def create_shortcut():
         os.popen(i).read()  # Compared to os.system this doesn't open a console window when the app is packaged
 
 
-def add_to_startup(Add):
+def add_to_startup(Add: bool) -> Optional[str]:
     """ Add to startup. Returns error string or None."""
 
     if not isWindows() and Add:
@@ -163,7 +176,7 @@ def add_to_startup(Add):
         return 'App is not packaged. Not adding to the startup!'
 
     if not isWindows():
-        return
+        return None
 
     try:
         key = 'StarCraft Co-op Overlay'
@@ -171,7 +184,7 @@ def add_to_startup(Add):
         if Add:
             logger.info(f'Adding {path} to registry as {key}')
             reg_add_to_startup(key, path)
-        elif reg_get_startup_field_value(key) != None:
+        elif reg_get_startup_field_value(key) is not None:
             logger.info(f'Removing {path} from registry as {key}')
             reg_delete_startup_field(key)
     except Exception:
@@ -182,7 +195,7 @@ def add_to_startup(Add):
         return None
 
 
-def new_version(current_version):
+def new_version(current_version: int) -> Union[bool, Dict[str, str]]:
     """ Checks for a new version of the app. Returns a download link if a new version available. """
     try:
         data = json.loads(requests.get(version_link).text)
@@ -196,27 +209,27 @@ def new_version(current_version):
         return False
 
 
-def archive_is_corrupt(archive):
+def archive_is_corrupt(archive: str) -> bool:
     """ Checks if an archive is corrupt"""
     print(f'Checking: {archive}')
     test = zipfile.ZipFile(archive).testzip()
 
-    if test == None:
+    if test is None:
         return False
     return True
 
 
-def extract_archive(file, targetdir):
+def extract_archive(file_path: str, targetdir: str) -> None:
     """ Extracts file to target directory """
-    with zipfile.ZipFile(file, 'r') as f:
+    with zipfile.ZipFile(file_path, 'r') as f:
         f.extractall(targetdir)
 
 
-def get_account_dir(path=None):
+def get_account_dir(path: Optional[str] = None) -> str:
     """ Locates StarCraft account directory or returns one if it's good"""
 
     # If the one provided is good, just return it.
-    if path != None and os.path.isdir(path) and 'StarCraft' in path:
+    if path is not None and os.path.isdir(path) and 'StarCraft' in path:
         return path
 
     # On windows use Use ctypes.wintypes
@@ -271,7 +284,7 @@ def get_account_dir(path=None):
     return ''
 
 
-def validate_aom_account_key(account, key):
+def validate_aom_account_key(account: str, key: str) -> str:
     """ Returns 'Success' for valid combination of account name and key, error (string) for invalid combination"""
     url = f'https://starcraft2coop.com/scripts/assistant/replay.php?test=1&username={account}&secretkey={key}'
     response = requests.get(url)

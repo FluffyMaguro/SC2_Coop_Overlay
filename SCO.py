@@ -48,7 +48,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = logclass('SCO', 'INFO')
 logclass.file_path = truePath("Logs.txt")
 
-APPVERSION = 243
+APPVERSION = 244
 
 
 class Signal_Manager(QtCore.QObject):
@@ -503,7 +503,7 @@ class UI_TabWidget(object):
 
     def manage_keyboard_threads(self, previous_settings=None):
         """ Compares previous settings with current ones, and restarts keyboard threads if necessary.
-        if `previous_settings` == None, then init hotkeys instead """
+        if `previous_settings` is None, then init hotkeys instead """
         hotkey_func_dict = {
             'performance_hotkey': self.signal_manager.showHidePerfOverlay.emit,
             'hotkey_show/hide': MF.keyboard_SHOWHIDE,
@@ -811,7 +811,7 @@ class UI_TabWidget(object):
         if diff is None:
             return
 
-        logger.info(f'The computer just awoke! ({diff:.0f} seconds)')
+        logger.info(f'The computer just awoke! ({HF.strtime(diff, show_seconds=True)})')
         thread_awakening = MUI.Worker(MF.wait_for_wake)
         thread_awakening.signals.result.connect(self.pc_waken_from_sleep)
         self.threadpool.start(thread_awakening)

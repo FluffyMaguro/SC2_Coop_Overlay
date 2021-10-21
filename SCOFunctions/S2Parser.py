@@ -5,7 +5,7 @@ import time
 import traceback
 
 import mpyq
-import s2protocol.decoders # Including this so Nuitka packages it correctly
+import s2protocol.decoders  # Including this so Nuitka packages it correctly
 from s2protocol import versions
 from s2protocol.build import game_version as protocol_build
 
@@ -155,7 +155,7 @@ def s2_parse_replay(file,
     replay['length'] = metadata['Duration']
     replay['start_time'] = get_start_time(events)
     replay['last_deselect_event'] = get_last_deselect_event(events)
-    replay['last_deselect_event'] = replay['last_deselect_event'] if replay['last_deselect_event'] != None else replay['length']
+    replay['last_deselect_event'] = replay['last_deselect_event'] if replay['last_deselect_event'] is not None else replay['length']
     replay['result'] = 'Victory' if metadata['Players'][0]['Result'] == 'Win' or metadata['Players'][1]['Result'] == 'Win' else 'Defeat'
 
     if replay['result'] == 'Victory' and parse_events:

@@ -361,15 +361,15 @@ class UnitStats(QtWidgets.QWidget):
         """ Updates unit stats for given commander and main/ally"""
 
         # Init variables. None values are coming from sort and will use self.attributes. Filled values come from buttons.
-        if main == None:
+        if main is None:
             which = self.which
         else:
             which = 'main' if main else 'ally'
             self.which = which
 
-        if commander == None and not hasattr(self, 'commander'):
+        if commander is None and not hasattr(self, 'commander'):
             return  # Don't update if user hasn't clicked anything yet (updating after a new game)
-        elif commander == None:
+        elif commander is None:
             commander = self.commander
         else:
             self.commander = commander
@@ -465,7 +465,7 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('lost_percent', unit)] = QtWidgets.QLabel(self.WD_units)
             self.units[('lost_percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 340, self.top_offset + idx * 17, 60, 17))
 
-            if self.unit_data[which][commander][unit]['lost_percent'] != None:
+            if self.unit_data[which][commander][unit]['lost_percent'] is not None:
                 lost_percent = f"{100*self.unit_data[which][commander][unit]['lost_percent']:.0f}%"
             else:
                 lost_percent = '-'
@@ -480,7 +480,7 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('KD', unit)].setGeometry(QtCore.QRect(self.left_offset + 450, self.top_offset + idx * 17, 60, 17))
             self.units[('KD', unit)].setToolTip(f"Kill / death ratio")
             kd = self.unit_data[which][commander][unit]['KD']
-            if kd != None:
+            if kd is not None:
                 self.units[('KD', unit)].setText(f"{kd:.1f}")
             else:
                 self.units[('KD', unit)].setText("-")
@@ -488,7 +488,7 @@ class UnitStats(QtWidgets.QWidget):
             self.units[('percent', unit)] = QtWidgets.QLabel(self.WD_units)
             self.units[('percent', unit)].setGeometry(QtCore.QRect(self.left_offset + 505, self.top_offset + idx * 17, 60, 17))
             percent = self.unit_data[which][commander][unit]['kill_percentage']
-            percent = percent if percent != None else 0
+            percent = percent if percent is not None else 0
             self.units[('percent', unit)].setText(f"{100*percent:.1f}%")
             self.units[('percent', unit)].setToolTip(f"Typical percent of total kills")
 

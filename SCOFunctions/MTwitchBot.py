@@ -109,7 +109,7 @@ class TwitchBot:
             logger.info(f"(sent: {message})")
         try:
             self.s.send(f"{messageTemp}\r\n".encode("utf-8"))
-            if self.widget != None and not ('/color' in message):
+            if self.widget is not None and not ('/color' in message):
                 self.widget.add_message(self.bot_name, message)
         except BrokenPipeError:
             logger.error('BrokenPipeError. Opening socket again')
@@ -243,13 +243,13 @@ class TwitchBot:
 
                 # Get user, first and following words
                 user = self.getUser(line)
-                if user == None:
+                if user is None:
                     continue
 
                 message = self.getMessage(line)
                 first_word = message.split()[0].lower()
                 self.saveMessage(user, message)
-                if self.widget != None:
+                if self.widget is not None:
                     self.widget.add_message(user, message)
                 try:
                     following_words = message.split(' ', 1)[1].rstrip()

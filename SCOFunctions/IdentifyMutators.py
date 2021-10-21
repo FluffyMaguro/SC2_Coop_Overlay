@@ -82,7 +82,7 @@ def identify_mutators(events, extension=True, mm=False, detailed_info=None):
             # Mutator clicked
             if 41 <= action <= 83:
                 new_mutator = get_mutator(action, panel)
-                if new_mutator != None and (not new_mutator in mutators or new_mutator == 'Random'):
+                if new_mutator is not None and (not new_mutator in mutators or new_mutator == 'Random'):
                     mutators.append(new_mutator)
 
             # Panel Changed

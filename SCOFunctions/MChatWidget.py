@@ -35,7 +35,7 @@ class ChatMessage():
 
     def update(self, user, message, color):
         """ Update with new data"""
-        if user == None:
+        if user is None:
             return
         self.empty = False
         self.value = (user, message, color)
@@ -51,7 +51,7 @@ class ChatWidget(QtWidgets.QWidget):
     def __init__(self, chat_font_scale=1.3, geometry=None, parent=None):
         super().__init__(parent)
 
-        if geometry == None:
+        if geometry is None:
             self.setGeometry(700, 300, 500, 500)
         else:
             self.setGeometry(*geometry)
