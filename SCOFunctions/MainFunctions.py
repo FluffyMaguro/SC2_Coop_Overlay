@@ -5,15 +5,16 @@ sending info to the overlay with socket/JS. The oldest part of the app.
 Checking for new replays and games. Uploading replays to AOM. And more.
 """
 import asyncio
-import datetime
 import json
 import os
 import threading
 import time
 import traceback
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import requests
 import websockets
+from PyQt5 import QtCore
 from websockets.legacy.server import \
     serve as \
     websockets_serve  # This direct import is required for Pyinstaller and Nuitka to find it correctly
@@ -32,8 +33,8 @@ initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'd
 ReplayPosition = 0
 AllReplays = dict()
 player_winrate_data = dict()
-PLAYER_HANDLES = set()  # Set of handles of the main player
-PLAYER_NAMES = set()  # Set of names of the main player generated from handles and used in winrate notification
+PLAYER_HANDLES: Set[str] = set()  # Set of handles of the main player
+PLAYER_NAMES: Set[str] = set()  # Set of names of the main player generated from handles and used in winrate notification
 most_recent_playerdata = None
 CAnalysis = None
 APP_CLOSING = False
@@ -43,20 +44,20 @@ RNG_COMMANDER = dict()
 session = requests.Session()
 
 
-def stop_threads():
+def stop_threads() -> None:
     """ Sets a variable that lets threads know they should finish early """
     global APP_CLOSING
     APP_CLOSING = True
 
 
-def update_init_message():
+def update_init_message() -> None:
     """ Through this function the main script passes all its settings here """
     initMessage['colors'] = [SM.settings['color_player1'], SM.settings['color_player2'], SM.settings['color_amon'], SM.settings['color_mastery']]
     initMessage['duration'] = SM.settings['duration']
     initMessage['show_charts'] = SM.settings['show_charts']
 
 
-def sendEvent(event, raw=False):
+def sendEvent(event: Dict[str, Any], raw: bool = False) -> None:
     """ Send message to the overlay """
     with lock:
         # Websocket connection for non-primary overlay
@@ -100,12 +101,12 @@ def sendEvent(event, raw=False):
         WEBPAGE.runJavaScript(f"showHidePlayerWinrate({data})")
 
 
-def resend_init_message():
+def resend_init_message() -> None:
     """ Resends init message. In case duration of colors have changed. """
     sendEvent(initMessage)
 
 
-def find_names_and_handles(ACCOUNTDIR, replays=None):
+def find_names_and_handles(ACCOUNTDIR: str, replays: Any = None) -> Tuple[Set[str], Set[str]]:
     """ Finds player handles and names from the account directory (or its subfolder) """
     # First walk up as far as possible in-case the user has selected one the of subfolders.
     folder = ACCOUNTDIR
@@ -148,7 +149,7 @@ def find_names_and_handles(ACCOUNTDIR, replays=None):
     return names, handles
 
 
-def names_fallback(handles, replays):
+def names_fallback(handles: Set[str], replays: List[Any]) -> Set[str]:
     """ Finds new main player names from handles and replays.Assumes S2Parser format of replays. """
     shandles = set(handles)
     snames = set()
@@ -163,7 +164,7 @@ def names_fallback(handles, replays):
     return snames
 
 
-def get_player_data(player_names: list):
+def get_player_data(player_names: List[str]) -> Dict[str, List[Any]]:
     """ Takes the first player, gets its data from player_winrate_data.
     Appends player notes if there are any. Calculates the time difference from the last time played."""
 
@@ -190,7 +191,7 @@ def get_player_data(player_names: list):
     return data
 
 
-def update_names_and_handles(ACCOUNTDIR, AllReplays):
+def update_names_and_handles(ACCOUNTDIR: str, AllReplays: Any) -> None:
     """ Takes player names and handles, and updates global variables with them"""
     global PLAYER_HANDLES
     global PLAYER_NAMES
@@ -210,7 +211,7 @@ def update_names_and_handles(ACCOUNTDIR, AllReplays):
         logger.error('No player names found!')
 
 
-def find_replays(directory):
+def find_replays(directory: str) -> Set[str]:
     """ Finds all replays in a directory. Returns a set."""
     replays = set()
     for root, directories, files in os.walk(directory):
@@ -222,8 +223,9 @@ def find_replays(directory):
     return replays
 
 
-def initialize_AllReplays(ACCOUNTDIR):
+def initialize_AllReplays(ACCOUNTDIR: str) -> Dict[str, Dict[str, float]]:
     """ Creates a sorted dictionary of all replays with their last modified times """
+    AllReplays = dict()
     try:
         AllReplays = find_replays(ACCOUNTDIR)
         # Get dictionary of all replays with their last modification time
@@ -235,13 +237,13 @@ def initialize_AllReplays(ACCOUNTDIR):
         return AllReplays
 
 
-def set_player_winrate_data(winrate_data):
+def set_player_winrate_data(winrate_data: Dict[str, Any]) -> None:
     global player_winrate_data
     with lock:
         player_winrate_data = winrate_data.copy()
 
 
-def initialize_replays_names_handles():
+def initialize_replays_names_handles() -> None:
     """ Checks every few seconds for new replays """
     global AllReplays
     global ReplayPosition
@@ -255,15 +257,16 @@ def initialize_replays_names_handles():
     return None
 
 
-def check_names_handles():
+def check_names_handles() -> None:
     try:
         update_names_and_handles(SM.settings['account_folder'], AllReplays)
     except Exception:
         logger.error(f'Error when finding player handles:\n{traceback.format_exc()}')
 
 
-def check_replays():
-    """ Checks every few seconds for new replays """
+def check_replays() -> Optional[Dict[str, Any]]:
+    """ Checks every few seconds for new replays
+    Returns replay data """
     global AllReplays
     global session_games
     global ReplayPosition
@@ -336,7 +339,7 @@ def check_replays():
                 return None
 
 
-def upload_to_aom(file_path, replay_dict):
+def upload_to_aom(file_path: str, replay_dict: Dict[str, Any]) -> None:
     """ Function handling uploading the replay on the Aommaster's server"""
     # Credentials need to be set up
     if SM.settings['aom_account'] in {'', None} or SM.settings['aom_secret_key'] in {'', None}:
@@ -365,8 +368,12 @@ def upload_to_aom(file_path, replay_dict):
         logger.error(f'Failed to upload replay\n{traceback.format_exc()}')
 
 
-def show_overlay(file, add_replay=True):
-    """ Shows overlay. If it wasn't analysed before, analyse now."""
+def show_overlay(file: str, add_replay: bool = True) -> Union[str, Dict[str, Any]]:
+    """ Shows overlay. If it wasn't analysed before, analyse now.
+    Returns:
+        'Error'
+        Dict of parsed data
+        """
     global ReplayPosition
 
     if file in AllReplays.keys():
@@ -396,7 +403,7 @@ def show_overlay(file, add_replay=True):
         return 'Error'
 
 
-async def manager(websocket, path):
+async def manager(websocket: websockets.legacy.server.WebSocketServerProtocol, path: str) -> None:
     """ Manages websocket connection for each client """
     overlayMessagesSent = len(OverlayMessages)
     logger.info(f"Starting: {websocket}\nSending init message: {initMessage}")
@@ -429,7 +436,7 @@ async def manager(websocket, path):
             await asyncio.sleep(0.1)
 
 
-def server_thread(PORT=7305):
+def server_thread(PORT: int = 7305) -> None:
     """ Creates a websocket server """
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -442,7 +449,7 @@ def server_thread(PORT=7305):
         logger.error(traceback.format_exc())
 
 
-def move_in_AllReplays(delta):
+def move_in_AllReplays(delta: int) -> None:
     """ Moves across all replays and sends info to overlay to show parsed data """
     global ReplayPosition
     logger.info(f'Attempt to move to {ReplayPosition + delta}/{len(AllReplays)-1}')
@@ -460,35 +467,35 @@ def move_in_AllReplays(delta):
         move_in_AllReplays(delta)
 
 
-def keyboard_OLDER():
+def keyboard_OLDER() -> None:
     """ Show older replay"""
     move_in_AllReplays(-1)
 
 
-def keyboard_NEWER():
+def keyboard_NEWER() -> None:
     """ Show newer replay"""
     move_in_AllReplays(1)
 
 
-def keyboard_SHOWHIDE():
+def keyboard_SHOWHIDE() -> None:
     """ Show/hide overlay"""
     logger.info('Show-Hide event')
     sendEvent({'showHideEvent': True})
 
 
-def keyboard_HIDE():
+def keyboard_HIDE() -> None:
     """ Hide overlay """
     logger.info('Hide event')
     sendEvent({'hideEvent': True})
 
 
-def keyboard_SHOW():
+def keyboard_SHOW() -> None:
     """ Show overlay """
     logger.info('Show event')
     sendEvent({'showEvent': True})
 
 
-def keyboard_PLAYERWINRATES():
+def keyboard_PLAYERWINRATES() -> None:
     """Show/hide winrate & notes """
     if most_recent_playerdata:
         sendEvent({'playerEvent': True, 'data': most_recent_playerdata})
@@ -496,7 +503,7 @@ def keyboard_PLAYERWINRATES():
         logger.info(f'Could not send player data event since most_recent_playerdata was: {most_recent_playerdata}')
 
 
-def wait_for_wake():
+def wait_for_wake() -> Optional[float]:
     """
     The goal of this function is to detect when a PC was awaken from sleeping.
     It will be checking time, and if there is a big discrepancy, it will return it.
@@ -517,7 +524,7 @@ def wait_for_wake():
             return diff - 10
 
 
-def check_for_new_game(progress_callback):
+def check_for_new_game(progress_callback: QtCore.pyqtSignal) -> None:
     global most_recent_playerdata
     """ Thread checking for a new game and sending signals to the overlay with player winrate stats"""
     # Wait a bit for the replay initialization to complete

@@ -3,7 +3,7 @@ import winreg as reg
 # This might need administrative access to edit the keys
 
 
-def reg_add_to_startup(name, value):
+def reg_add_to_startup(name: str, value: str) -> None:
     """ Adds a new field to the startup registry field.
     `name` is the name of the new field.
     `value` is its value (e.g. file path)"""
@@ -34,7 +34,7 @@ def reg_get_startup_field_value(name: str):
         return response
 
 
-def reg_delete_startup_field(name: str):
+def reg_delete_startup_field(name: str) -> None:
     """ Deletes a field from the startup registry key.
 
     Args:

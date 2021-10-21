@@ -6,7 +6,7 @@ import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.nuitka_func as NF
 
 
-def truePath(file):
+def truePath(file: str) -> str:
     """ Returns the path to the main directory regardless of the current working directory 
     For non-packaged run, this is assuming that MFilePath is in a direct subfolder of the main folder (hence double .parent)"""
 
@@ -21,7 +21,7 @@ def truePath(file):
     return os.path.normpath(path)
 
 
-def innerPath(file):
+def innerPath(file: str) -> str:
     """ Gets path to a packaged file
     Takes care of cases when it's packaged with pyinstaller.
     """

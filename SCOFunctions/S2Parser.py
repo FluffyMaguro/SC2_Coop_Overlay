@@ -3,6 +3,7 @@ import json
 import os
 import time
 import traceback
+from typing import Any, Dict, List, Optional, Set
 
 import mpyq
 import s2protocol.decoders  # Including this so Nuitka packages it correctly
@@ -23,14 +24,14 @@ protocols = [
 ]
 
 
-def find_closest_values(number: int, llist: list, amount=2):
+def find_closest_values(number: int, st: Dict[int, int], amount: int = 2) -> List[int]:
     """ Finds `amount` of closest numbers in a list to the provided number"""
-    closest = {abs(p - number): p for p in llist}
+    closest = {abs(p - number): p for p in st}
     closest = {k: v for k, v in sorted(closest.items())}
     return list(closest.values())[:amount]
 
 
-def get_last_deselect_event(events):
+def get_last_deselect_event(events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     """ Returns the last deselect event in replay's events """
     last_event = None
     for event in events:
@@ -40,7 +41,7 @@ def get_last_deselect_event(events):
     return last_event
 
 
-def get_start_time(events):
+def get_start_time(events: List[Dict[str, Any]]) -> float:
     """ Returns accurate start time based on upgrades and mineral collection as fallback"""
     for event in events:
         if event['_event'] == 'NNet.Replay.Tracker.SPlayerStatsEvent' and event[
@@ -52,22 +53,24 @@ def get_start_time(events):
     return 0
 
 
-def s2_parse_replay(file,
-                    try_lastest=True,
-                    parse_events=True,
-                    onlyBlizzard=False,
-                    withoutRecoverEnabled=False,
-                    return_raw=False,
-                    return_events=False,
-                    try_closest=False):
+def s2_parse_replay(file: str,
+                    try_lastest: bool = True,
+                    parse_events: bool = True,
+                    onlyBlizzard: bool = False,
+                    withoutRecoverEnabled: bool = False,
+                    return_raw: bool = False,
+                    return_events: bool = False,
+                    try_closest: bool = False) -> Optional[Dict[str, Any]]:
     """ Function parsing the replay and returning a replay class
 
-    `try_lastest=False` doesn't try the lastest protocol version
-    `parse_events = False` prevents parsing replay events, less accurate game length
-    `onlyBlizzard = True` returns `None` for non-blizzard replays. Commanders have to be found.
-    `withoutRecoverEnabled = True` returns `None` for games with game recovery enabled
-    `return_raw = True` returns raw data as well
-    `return_events = True` returns events as well
+    Args:
+        file: filepath
+        `try_lastest=False` doesn't try the lastest protocol version
+        `parse_events = False` prevents parsing replay events, less accurate game length
+        `onlyBlizzard = True` returns `None` for non-blizzard replays. Commanders have to be found.
+        `withoutRecoverEnabled = True` returns `None` for games with game recovery enabled
+        `return_raw = True` returns raw data as well
+        `return_events = True` returns events as well
     """
 
     # Exit straight away if onlyBlizzard enforced

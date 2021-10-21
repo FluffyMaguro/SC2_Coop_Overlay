@@ -1,10 +1,12 @@
 import traceback
-import keyboard
 import urllib.request
-from PyQt5 import QtWidgets, QtCore, QtGui
+from typing import Callable, Optional, List
+
+import keyboard
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MFilePath import innerPath
-from SCOFunctions.MLogging import logclass, catch_exceptions
+from SCOFunctions.MLogging import catch_exceptions, logclass
 from SCOFunctions.Settings import Setting_manager as SM
 
 logger = logclass('FAST', 'INFO')
@@ -17,7 +19,7 @@ class FastExpandSelector(QtWidgets.QWidget):
     padding = 6
 
     # Data will be received as [MapName, PlayerPosition]
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QtWidgets.QWidget] = None):
         super().__init__()
         self.selectedMap = ""
         self.selectedCommander = ""

@@ -1,17 +1,19 @@
 import binascii
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from SCOFunctions.SC2Dictionaries import Mutators, mutator_ids, cached_mutators
+from SCOFunctions.SC2Dictionaries import Mutators, cached_mutators, mutator_ids
 
 # Create mutator list by removing my mutators and those that are not in custom mutations
-mutators_list_all = list(Mutators.keys())[:-19]
-mutators_list = mutators_list_all.copy()
+mutators_list_all: List[str] = list(Mutators.keys())[:-19]
+mutators_list: List[str] = mutators_list_all.copy()
+
 for item in ('Nap Time', 'Stone Zealots', 'Chaos Studios', 'Undying Evil', 'Afraid of the Dark', 'Trick or Treat', 'Turkey Shoot',
              'Sharing Is Caring', 'Gift Exchange', 'Naughty List', 'Extreme Caution', 'Insubordination', 'Fireworks', 'Lucky Envelopes',
              'Sluggishness'):
     mutators_list.remove(item)
 
 
-def get_mutator(button, panel):
+def get_mutator(button: int, panel: int) -> Optional[str]:
     """ Returns mutator based on button (41-83) and currently selected panel (1-4) """
     button = (button - 41) // 3 + (panel - 1) * 15
     if 0 <= button < len(mutators_list):
@@ -20,7 +22,7 @@ def get_mutator(button, panel):
         return None
 
 
-def identify_mutators(events, extension=True, mm=False, detailed_info=None):
+def identify_mutators(events: List[Dict[str, Any]], extension=True, mm=False, detailed_info=None) -> Dict[str, Union[bool, Tuple[str]]]:
     """ Identify mutators based on dirty STriggerDialogControl events.
     Custom mutations works but random mutator isn't decided.
     Weekly mutations uses dictionary, so some values could be missing.
