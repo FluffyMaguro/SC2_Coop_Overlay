@@ -22,13 +22,13 @@ from websockets.legacy.server import \
 import SCOFunctions.HelperFunctions as HF
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.IdentifyMap import identify_map
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 from SCOFunctions.ReplayAnalysis import parse_and_analyse_replay
 from SCOFunctions.Settings import Setting_manager as SM
 
 OverlayMessages = []  # Storage for all messages
 lock = threading.Lock()
-logger = logclass('MAIN', 'INFO')
+logger = Logger('MAIN', Logger.levels.INFO)
 initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60, 'show_charts': True}
 ReplayPosition = 0
 AllReplays = dict()

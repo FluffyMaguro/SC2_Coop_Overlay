@@ -9,9 +9,9 @@ import xml.etree.ElementTree as ET
 
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.SC2Dictionaries import UnitNameDict, Mutators
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 
-logger = logclass('TWITCH', 'INFO')
+logger = Logger('TWITCH', Logger.levels.INFO)
 all_unit_ids = {u.lower() for u in set(UnitNameDict.keys())}
 mutator_set = {m.lower() for m in set(Mutators.keys())}
 

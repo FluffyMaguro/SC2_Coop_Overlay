@@ -9,7 +9,7 @@ import time
 import traceback
 from pprint import pprint
 
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.StatsCounter import StatsCounter, DroneIdentifier
 from SCOFunctions.SC2Dictionaries import UnitNameDict, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
@@ -104,7 +104,7 @@ UnitAddLossesTo = {
     'DehakaMutaliskReviveEgg': 'Primal Mutalisk'
 }
 
-logger = logclass('REPA', 'INFO')
+logger = Logger('REPA', Logger.levels.INFO)
 
 
 def contains_skip_strings(pname):

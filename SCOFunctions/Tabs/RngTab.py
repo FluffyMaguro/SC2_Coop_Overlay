@@ -6,9 +6,9 @@ import SCOFunctions.MainFunctions as MF
 from SCOFunctions.MRandomizer import randomize
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.SC2Dictionaries import prestige_names, CommanderMastery
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 
-logger = logclass('RNG', 'INFO')
+logger = Logger('RNG', Logger.levels.INFO)
 
 
 class RngTab(QtWidgets.QWidget):

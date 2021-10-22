@@ -1,9 +1,9 @@
 from functools import partial
 from PyQt5 import QtWidgets, QtGui, QtCore
 import SCOFunctions.MUserInterface as MUI
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 
-logger = logclass('STATS', 'INFO')
+logger = Logger('STATS', Logger.levels.INFO)
 
 
 class StatsTab(QtWidgets.QWidget):

@@ -13,10 +13,10 @@ import psutil
 import requests
 
 from SCOFunctions.MFilePath import innerPath, truePath
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 from SCOFunctions.nuitka_func import is_compiled
 
-logger = logclass('HELP', 'INFO')
+logger = Logger('HELP', Logger.levels.INFO)
 version_link = 'https://raw.githubusercontent.com/FluffyMaguro/SC2_Coop_overlay/master/version.txt'
 
 
@@ -30,9 +30,7 @@ def isWindows() -> bool:
 if isWindows():
     import ctypes.wintypes
 
-    from SCOFunctions.MRegistry import (reg_add_to_startup,
-                                        reg_delete_startup_field,
-                                        reg_get_startup_field_value)
+    from SCOFunctions.MRegistry import (reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value)
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
 
@@ -102,11 +100,14 @@ def strtime(t: Union[int, float], show_seconds: bool = False) -> str:
     """ Returns formatted string 
     X days, Y hours, Z minutes
     """
-    days, delta = divmod(t, 86400)
+    years, delta = divmod(t, 31557600)
+    days, delta = divmod(delta, 86400)
     hours, delta = divmod(delta, 3600)
     minutes, seconds = divmod(delta, 60)
 
     s = []
+    if years:
+        s.append(f"{years:.0f} years")
     if days:
         s.append(f"{days:.0f} days")
     if hours:

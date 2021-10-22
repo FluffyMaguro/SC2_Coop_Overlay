@@ -1,10 +1,10 @@
 import traceback
 from PyQt5 import QtWidgets, QtGui, QtCore
 import SCOFunctions.MUserInterface as MUI
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 from SCOFunctions.Settings import Setting_manager as SM
 
-logger = logclass('GT', 'INFO')
+logger = Logger('GT', Logger.levels.INFO)
 
 
 class GameTab(QtWidgets.QWidget):

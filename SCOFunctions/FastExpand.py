@@ -6,10 +6,10 @@ import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MFilePath import innerPath
-from SCOFunctions.MLogging import catch_exceptions, logclass
+from SCOFunctions.MLogging import catch_exceptions, Logger
 from SCOFunctions.Settings import Setting_manager as SM
 
-logger = logclass('FAST', 'INFO')
+logger = Logger('FAST', Logger.levels.INFO)
 
 
 class FastExpandSelector(QtWidgets.QWidget):
@@ -152,6 +152,7 @@ class FastExpandSelector(QtWidgets.QWidget):
 
     @catch_exceptions(logger)
     def selectionMade(self, action, selection):
+        logger.info(f"Selection made: {action} | {selection}")
         # Remove all hotkeys first
         self.clearHotkeys()
         # If a "close" action was sent, hide the window, then reset all components so they're ready for the next run0

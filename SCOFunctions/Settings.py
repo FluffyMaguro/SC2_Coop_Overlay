@@ -3,8 +3,8 @@ import json
 import traceback
 from datetime import datetime
 
-from SCOFunctions.MLogging import logclass
-logger = logclass('SETT', 'INFO')
+from SCOFunctions.MLogging import Logger
+logger = Logger('SETT', Logger.levels.INFO)
 
 
 def update_with_defaults(loaded: dict, default: dict):

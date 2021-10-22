@@ -20,13 +20,13 @@ import s2protocol
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
 from SCOFunctions.MFilePath import truePath
-from SCOFunctions.MLogging import catch_exceptions, logclass
+from SCOFunctions.MLogging import catch_exceptions, Logger
 from SCOFunctions.MReplayData import replay_data
 from SCOFunctions.ReplayAnalysis import (analyse_parsed_replay, parse_replay_file)
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats)
 
-logger = logclass('MASS', 'INFO')
+logger = Logger('MASS', Logger.levels.INFO)
 lock = threading.Lock()
 
 

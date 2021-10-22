@@ -18,10 +18,10 @@ a bit faster (leading to bonus army value). These spikes are removed with a addi
 
 """
 
-from SCOFunctions.MLogging import logclass, catch_exceptions
+from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.SC2Dictionaries import unit_base_costs, royal_guards, horners_units, tychus_base_upgrades, tychus_ultimate_upgrades, outlaws
 
-logger = logclass('COUNT', 'INFO')
+logger = Logger('COUNT', Logger.levels.INFO)
 debug_negative_members = set()
 
 

@@ -1,30 +1,36 @@
 import datetime
-import traceback
 import functools
 import threading
+import traceback
+from enum import Enum
 
 lock = threading.Lock()
 
 
-class logclass:
+class LogLevel(Enum):
+    DEBUG = 1
+    INFO = 2
+    WARNING = 3
+    ERROR = 4
+
+
+class Logger:
     """ Custom class for logging purposes """
     LOGGING = False
-    LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
     file_path = "Logs.txt"
+    levels = LogLevel
 
-    def __init__(self, name, level, showtype=True, showdate=True):
+    def __init__(self, name: str, level: LogLevel, showdate: bool = True):
         self.name = name
-        self.showtype = showtype
         self.level = level
         self.showdate = showdate
 
-        if not (level in self.LEVELS):
-            raise Exception(f'logging level has to be in {self.LEVELS}')
+        if not isinstance(level, LogLevel):
+            raise Exception(f'Logging level has to be of type {type(LogLevel)}')
 
-    def printsave(self, mtype, message):
+    def printsave(self, mtype: LogLevel, message: str) -> None:
         time = datetime.datetime.now().strftime("%d/%m %H:%M:%S") if self.showdate else ''
-        ctype = mtype if self.showtype else ''
-        msg = f'{time} - {self.name} ({ctype}): {message}'
+        msg = f'{time} - {self.name} ({mtype}): {message}'
         try:
             print(msg)
         except Exception:
@@ -34,34 +40,29 @@ class logclass:
                 print(traceback.format_exc())
 
         if self.LOGGING:
-            with lock:
-                with open(self.file_path, 'ab') as f:
-                    f.write(f'{msg}\n'.encode())
+            with lock, open(self.file_path, 'ab') as f:
+                f.write(f'{msg}\n'.encode())
 
-    def debug(self, message):
-        if self.level in self.LEVELS[1:]:
+    def debug(self, message: str) -> None:
+        if self.level.value > LogLevel.DEBUG.value:
             return
-        mtype = 'debug'
-        self.printsave(mtype, message)
+        self.printsave('debug', message)
 
-    def info(self, message):
-        if self.level in self.LEVELS[2:]:
+    def info(self, message: str) -> None:
+        if self.level.value > LogLevel.INFO.value:
             return
-        mtype = 'info'
-        self.printsave(mtype, message)
+        self.printsave('info', message)
 
-    def warning(self, message):
-        if self.level in self.LEVELS[3:]:
+    def warning(self, message: str) -> None:
+        if self.level.value > LogLevel.WARNING.value:
             return
-        mtype = 'warning'
-        self.printsave(mtype, message)
+        self.printsave('warning', message)
 
-    def error(self, message):
-        mtype = 'ERROR'
-        self.printsave(mtype, message)
+    def error(self, message: str) -> None:
+        self.printsave('ERROR', message)
 
 
-def catch_exceptions(logger):
+def catch_exceptions(logger: Logger):
     """ Catches exceptions for given function and writes a log"""
 
     # Outer function is here to provide argument for the decorator

@@ -3,9 +3,9 @@ import traceback
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MFilePath import innerPath
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 
-logger = logclass('SYS', 'INFO')
+logger = Logger('SYS', Logger.levels.INFO)
 
 
 class SystemInfo(QtWidgets.QWidget):

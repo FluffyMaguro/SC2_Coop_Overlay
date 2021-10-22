@@ -9,9 +9,9 @@ from SCOFunctions.MFilePath import innerPath
 from SCOFunctions.MTheming import MColors
 from SCOFunctions.Settings import Setting_manager as SM
 from SCOFunctions.FastExpand import FastExpandSelector
-from SCOFunctions.MLogging import logclass, catch_exceptions
+from SCOFunctions.MLogging import Logger, catch_exceptions
 
-logger = logclass('TABM', 'INFO')
+logger = Logger('TABM', Logger.levels.INFO)
 
 
 class MainTab(QtWidgets.QWidget):

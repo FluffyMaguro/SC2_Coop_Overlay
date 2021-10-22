@@ -39,14 +39,14 @@ import SCOFunctions.Tabs as Tabs
 from SCOFunctions.FastExpand import FastExpandSelector
 from SCOFunctions.MChatWidget import ChatWidget
 from SCOFunctions.MFilePath import innerPath, truePath
-from SCOFunctions.MLogging import catch_exceptions, logclass
+from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MSystemInfo import SystemInfo
 from SCOFunctions.MTheming import MColors, set_dark_theme
 from SCOFunctions.MTwitchBot import TwitchBot
 from SCOFunctions.Settings import Setting_manager as SM
 
-logger = logclass('SCO', 'INFO')
-logclass.file_path = truePath("Logs.txt")
+logger = Logger('SCO', Logger.levels.INFO)
+Logger.file_path = truePath("Logs.txt")
 
 APPVERSION = 244
 
@@ -156,7 +156,7 @@ class UI_TabWidget(object):
         if not self.write_permissions:
             self.sendInfoMessage('Permission denied. Add an exception to your anti-virus for this folder. Sorry', color=MColors.msg_failure)
 
-        logclass.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
+        Logger.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
 
         self.manage_keyboard_threads()
 
@@ -437,7 +437,7 @@ class UI_TabWidget(object):
             self.sendInfoMessage('Warning: Overlapping hotkeys!', color=MColors.msg_failure)
 
         # Logging
-        logclass.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
+        Logger.LOGGING = SM.settings['enable_logging'] if self.write_permissions else False
 
         # Update settings for other threads
         MF.update_init_message()
@@ -827,7 +827,7 @@ class UI_TabWidget(object):
             keyboard._listener = keyboard._KeyboardListener()
             keyboard._listener.start_if_necessary()
             self.manage_keyboard_threads()
-            logger.info(f'Reseting keyboard thread')
+            logger.info(f'Resetting keyboard thread')
         except Exception:
             logger.error(f"Failed to reset keyboard\n{traceback.format_exc}")
 

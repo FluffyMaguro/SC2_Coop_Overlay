@@ -12,7 +12,7 @@ import SCOFunctions.MainFunctions as MF
 from SCOFunctions.HelperFunctions import isWindows
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.MFilePath import innerPath, truePath
-from SCOFunctions.MLogging import logclass
+from SCOFunctions.MLogging import Logger
 from SCOFunctions.MTheming import MColors, set_dark_theme
 from SCOFunctions.SC2Dictionaries import CommanderMastery, prestige_names
 from SCOFunctions.Settings import Setting_manager as SM
@@ -20,8 +20,8 @@ from SCOFunctions.Settings import Setting_manager as SM
 if isWindows():
     from PyQt5.QtWinExtras import QWinTaskbarButton
 
-logger = logclass('UI', 'INFO')
-loggerJS = logclass('JS', 'INFO')
+logger = Logger('UI', Logger.levels.INFO)
+loggerJS = Logger('JS', Logger.levels.INFO)
 
 
 def get_shadow():
