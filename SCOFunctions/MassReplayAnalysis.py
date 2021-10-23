@@ -464,7 +464,7 @@ def _add_units_amon(unit_data: dict, r: dict):
                 if isinstance(r.amon_units[unit][i], int) or isinstance(r.amon_units[unit][i], float):
                     unit_data[unit][names[i]] += r.amon_units[unit][i]
             except Exception:
-                logger.error(f"{r.amon_units[unit]=}\n{traceback.format_exc()}")
+                logger.error(f"unit={r.amon_units[unit]}\n{traceback.format_exc()}")
 
 
 def _process_dict_amon(unit_data: dict):
@@ -1273,7 +1273,7 @@ class mass_replay_analysis:
             data = [r for r in data if r.accurate_length <= maxLength * 60]
 
         if difficulty_filter is not None and len(difficulty_filter) > 0:
-            logger.info(f'{difficulty_filter=}')
+            logger.info(f'difficulty_filter={difficulty_filter}')
             for difficulty in difficulty_filter:
                 if isinstance(difficulty, str):
                     data = [r for r in data if not difficulty in r.difficulty or r.brutal_plus > 0]  # Don't filter out B+ if filtering out "Brutal"
@@ -1282,7 +1282,7 @@ class mass_replay_analysis:
                     data = [r for r in data if not difficulty == r.brutal_plus]
 
         if region_filter is not None and len(region_filter) > 0:
-            logger.info(f'{region_filter=}')
+            logger.info(f'region_filter={region_filter}')
             data = [r for r in data if not r.region in region_filter and r.region in {'NA', 'EU', 'KR', 'CN'}]
 
         if not sub_15:

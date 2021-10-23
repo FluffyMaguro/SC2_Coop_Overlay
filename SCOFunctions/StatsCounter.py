@@ -492,7 +492,6 @@ class StatsCounter:
 
     def get_stats(self, player_name: str) -> dict:
         """ Returns collected stats as a dictionary"""
-        # logger.info(f'\n{debug_negative_members=}\n')
         if self.commander == 'Dehaka':
             self.remove_upward_spikes(self.army_value)
         return {

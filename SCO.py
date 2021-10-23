@@ -776,7 +776,7 @@ class UI_TabWidget(object):
         # Run the both if settings are ok
         if twitchbot_settings['channel_name'] == '' or twitchbot_settings['bot_name'] == '' or twitchbot_settings['bot_oauth'] == '':
             logger.error(
-                f"Invalid data for the bot\n{SM.settings['twitchbot']['channel_name']=}\n{SM.settings['twitchbot']['bot_name']=}\n{SM.settings['twitchbot']['bot_oauth']=}"
+                f"Invalid data for the bot\nchannel_name={SM.settings['twitchbot']['channel_name']}\nbot_name={SM.settings['twitchbot']['bot_name']}\nbot_oauth={SM.settings['twitchbot']['bot_oauth']}"
             )
             self.TAB_TwitchBot.LA_InfoTwitch.setText('Twitch bot not started. Check your settings!')
         else:
