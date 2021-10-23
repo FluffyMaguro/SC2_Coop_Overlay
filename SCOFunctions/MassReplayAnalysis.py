@@ -424,7 +424,7 @@ def _add_units(unit_data: dict, r: dict, p: int):
             unit_data[commander][unit] = {'created': 0, 'lost': 0, 'kills': 0, 'kill_percentage': list(), 'made': 0}
 
         # Save units made for frequency
-        if not isinstance(r.players[p]['units'][unit][0], str):
+        if not isinstance(r.players[p]['units'][unit][0], str) or commander == 'Tychus':
             unit_data[commander][unit]['made'] += 1
 
         # Add unit [created, lost, kills]

@@ -30,7 +30,7 @@ def isWindows() -> bool:
 if isWindows():
     import ctypes.wintypes
 
-    from SCOFunctions.MRegistry import (reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value)
+    from SCOFunctions.MRegistry import reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
 
