@@ -195,7 +195,8 @@ class PlayerTab(QtWidgets.QWidget):
         self.try_reducing_players()
 
         # First hide all
-        for player in self.player_winrate_UI_dict:
+        # Creating a tuple here so it doesn't matter if the dict changes during the operation
+        for player in tuple(self.player_winrate_UI_dict):
             self.player_winrate_UI_dict[player].hide()
 
         # Go through winrate data and check for player names
