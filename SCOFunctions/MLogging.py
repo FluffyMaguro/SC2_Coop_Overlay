@@ -20,17 +20,16 @@ class Logger:
     file_path = "Logs.txt"
     levels = LogLevel
 
-    def __init__(self, name: str, level: LogLevel, showdate: bool = True):
+    def __init__(self, name: str, level: LogLevel):
         self.name = name
         self.level = level
-        self.showdate = showdate
 
         if not isinstance(level, LogLevel):
             raise Exception(f'Logging level has to be of type {type(LogLevel)}')
 
-    def printsave(self, mtype: LogLevel, message: str) -> None:
-        time = datetime.datetime.now().strftime("%d/%m %H:%M:%S") if self.showdate else ''
-        msg = f'{time} - {self.name} ({mtype}): {message}'
+    def printsave(self, mtype: str, message: str) -> None:
+        time = datetime.datetime.now().strftime("%d/%m %H:%M:%S")
+        msg = f'{time} - {self.name:4} ({mtype}): {message}'
         try:
             print(msg)
         except Exception:
