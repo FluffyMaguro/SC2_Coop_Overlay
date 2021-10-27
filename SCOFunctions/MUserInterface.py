@@ -7,17 +7,17 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 
+import SCOFunctions.AppFunctions as AF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MainFunctions as MF
-from SCOFunctions.HelperFunctions import isWindows
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import Logger
-from SCOFunctions.MTheming import MColors, set_dark_theme
+from SCOFunctions.MTheming import MColors
 from SCOFunctions.SC2Dictionaries import CommanderMastery, prestige_names
 from SCOFunctions.Settings import Setting_manager as SM
 
-if isWindows():
+if AF.isWindows():
     from PyQt5.QtWinExtras import QWinTaskbarButton
 
 logger = Logger('UI', Logger.levels.INFO)
@@ -35,7 +35,7 @@ def get_shadow():
 def find_file(file):
     new_path = os.path.abspath(file)
     logger.info(f'Finding file {new_path}')
-    if isWindows():
+    if AF.isWindows():
         subprocess.Popen(f'explorer /select,"{new_path}"')
     else:
         subprocess.Popen(["open", new_path])
@@ -1573,7 +1573,7 @@ class CustomQTabWidget(QtWidgets.QTabWidget):
 
     def showEvent(self, evt):
         """ Create a progress bar on the taskbar for Windows"""
-        if isWindows() and not self.taskbar_progress is not None:
+        if AF.isWindows() and not self.taskbar_progress is not None:
             self.taskbar_button = QWinTaskbarButton()
             self.taskbar_progress = self.taskbar_button.progress()
             self.taskbar_progress.setRange(0, 100)

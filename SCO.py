@@ -31,6 +31,7 @@ from multiprocessing import freeze_support
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import SCOFunctions.AppFunctions as AF
 import SCOFunctions.HelperFunctions as HF
 import SCOFunctions.MainFunctions as MF
 import SCOFunctions.MassReplayAnalysis as MR
@@ -101,7 +102,7 @@ class UI_TabWidget(object):
 
         QtCore.QMetaObject.connectSlotsByName(TabWidget)
 
-        if not HF.isWindows():
+        if not AF.isWindows():
             self.TAB_Main.CH_StartWithWindows.setChecked(False)
             self.TAB_Main.CH_StartWithWindows.setEnabled(False)
 
@@ -115,14 +116,14 @@ class UI_TabWidget(object):
         SM.load_settings(truePath('Settings.json'))
 
         # Check for multiple instances
-        if SM.settings['check_for_multiple_instances'] and HF.isWindows():
+        if SM.settings['check_for_multiple_instances'] and AF.isWindows():
             if HF.app_running_multiple_instances():
                 logger.error('App running at multiple instances. Closing!')
                 raise MultipleInstancesRunning
 
         # Update fix font size
         font = QtGui.QFont()
-        if HF.isWindows():
+        if AF.isWindows():
             font.fromString(f"MS Shell Dlg 2,{8.25*SM.settings['font_scale']},-1,5,50,0,0,0,0,0")
         else:
             font.setPointSize(font.pointSize() * SM.settings['font_scale'])
@@ -215,7 +216,7 @@ class UI_TabWidget(object):
         # Check if it's already downloaded
         save_path = truePath(f'Updates\\{self.new_version["link"].split("/")[-1]}')
 
-        if not HF.isWindows():
+        if not AF.isWindows():
             self.sendInfoMessage('Update available', color=MColors.msg_success)
             return
 
@@ -657,7 +658,7 @@ class UI_TabWidget(object):
     def start_main_functionality(self):
         """ Doing the main work of looking for replays, analysing, etc. """
         logger.info(f'\n>>> Starting (v{APPVERSION/100:.2f})'
-                    f' [{HF.app_type()}]'
+                    f' [{AF.app_type()}]'
                     f' [{platform.system()} {platform.release()}]'
                     f'\n{SM.settings_for_logs()}')
 

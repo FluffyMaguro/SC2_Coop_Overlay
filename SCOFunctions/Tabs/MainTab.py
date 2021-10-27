@@ -1,15 +1,16 @@
 import json
 import webbrowser
-from PyQt5 import QtWidgets, QtGui, QtCore
 
-import SCOFunctions.MainFunctions as MF
+import SCOFunctions.AppFunctions as AF
 import SCOFunctions.HelperFunctions as HF
+import SCOFunctions.MainFunctions as MF
 import SCOFunctions.MUserInterface as MUI
+from PyQt5 import QtCore, QtGui, QtWidgets
+from SCOFunctions.FastExpand import FastExpandSelector
 from SCOFunctions.MFilePath import innerPath
+from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MTheming import MColors
 from SCOFunctions.Settings import Setting_manager as SM
-from SCOFunctions.FastExpand import FastExpandSelector
-from SCOFunctions.MLogging import Logger, catch_exceptions
 
 logger = Logger('TABM', Logger.levels.INFO)
 
@@ -165,7 +166,7 @@ class MainTab(QtWidgets.QWidget):
         self.BT_Desktop_shortcut.setText('Create desktop shortcut')
         self.BT_Desktop_shortcut.clicked.connect(HF.create_shortcut)
 
-        if not HF.isWindows() or not HF.isFrozen():
+        if not AF.isWindows() or not AF.isFrozen():
             self.BT_Desktop_shortcut.setDisabled(True)
             self.BT_Desktop_shortcut.setToolTip("Only available when the app is packaged and on Windows")
 

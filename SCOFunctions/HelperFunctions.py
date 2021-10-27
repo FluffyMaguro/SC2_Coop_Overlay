@@ -12,46 +12,22 @@ from typing import Dict, Optional, Union
 import psutil
 import requests
 
+import SCOFunctions.AppFunctions as AF
 from SCOFunctions.MFilePath import innerPath, truePath
 from SCOFunctions.MLogging import Logger
-from SCOFunctions.nuitka_func import is_compiled
 
 logger = Logger('HELP', Logger.levels.INFO)
 version_link = 'https://raw.githubusercontent.com/FluffyMaguro/SC2_Coop_overlay/master/version.txt'
 
-
-def isWindows() -> bool:
-    if os.name == 'nt':
-        return True
-    return False
-
-
 # Use ctypes.wintypes and regirsty stuff only on windows platform
-if isWindows():
+if AF.isWindows():
     import ctypes.wintypes
 
-    from SCOFunctions.MRegistry import reg_add_to_startup, reg_delete_startup_field, reg_get_startup_field_value
+    from SCOFunctions.MRegistry import (reg_add_to_startup,
+                                        reg_delete_startup_field,
+                                        reg_get_startup_field_value)
 else:
     logger.info("Not a Windows operation system, won't use ctypes.wintypes or winreg")
-
-
-def isFrozen() -> bool:
-    """ Checks whether the app is frozen by Pyinstaller"""
-    return bool(getattr(sys, 'frozen', False))
-
-
-def app_type() -> str:
-    """ Returns how the app is packaged
-
-    Returns:
-        'Nuitka' | 'Pyinstaller' | 'Script'
-    """
-
-    if is_compiled():
-        return "Nuitka"
-    if isFrozen():
-        return "Pyinstaller"
-    return "Script"
 
 
 def get_hash(file: str, sha: bool = False) -> Optional[str]:
@@ -149,7 +125,7 @@ def app_running_multiple_instances() -> bool:
 def create_shortcut() -> None:
     """ Creates a shortcut to desktop"""
 
-    if not isFrozen() or not isWindows():
+    if not AF.isFrozen() or not AF.isWindows():
         return
 
     shortcut_location = os.path.normpath(os.path.join(os.path.expanduser('~'), 'Desktop', 'SCO.url'))
@@ -170,13 +146,13 @@ def create_shortcut() -> None:
 def add_to_startup(Add: bool) -> Optional[str]:
     """ Add to startup. Returns error string or None."""
 
-    if not isWindows() and Add:
+    if not AF.isWindows() and Add:
         return 'Not a Windows-type OS. Not adding to the startup!'
 
-    if not isFrozen() and Add:
+    if not AF.isFrozen() and Add:
         return 'App is not packaged. Not adding to the startup!'
 
-    if not isWindows():
+    if not AF.isWindows():
         return None
 
     try:
@@ -234,7 +210,7 @@ def get_account_dir(path: Optional[str] = None) -> str:
         return path
 
     # On windows use Use ctypes.wintypes
-    if isWindows():
+    if AF.isWindows():
         CSIDL_PERSONAL = 5  # My Documents
         SHGFP_TYPE_CURRENT = 1  # Get current, not default value
         buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)

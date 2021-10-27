@@ -1,7 +1,7 @@
 import os
-from PyQt5 import QtWidgets, QtGui, QtCore
-import SCOFunctions.MUserInterface as MUI
-import SCOFunctions.HelperFunctions as HF
+
+import SCOFunctions.AppFunctions as AF
+from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.Settings import Setting_manager as SM
 
 
@@ -15,7 +15,7 @@ class TwitchTab(QtWidgets.QWidget):
         self.qb_twitch_text.setAutoFillBackground(True)
         self.qb_twitch_text.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.qb_twitch_text.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 380 if HF.isWindows() else 555))
+        self.qb_twitch_text.setGeometry(QtCore.QRect(15, 15, 550, 380 if AF.isWindows() else 555))
 
         self.la_twitch_text = QtWidgets.QLabel(self.qb_twitch_text)
         self.la_twitch_text.setWordWrap(True)
