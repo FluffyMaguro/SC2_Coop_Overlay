@@ -7,7 +7,6 @@ I shouldn't have differentiated between "main" and "ally" player here, perhaps o
 """
 import time
 import traceback
-from pprint import pprint
 
 from SCOFunctions.MLogging import Logger
 from SCOFunctions.S2Parser import s2_parse_replay
@@ -350,6 +349,7 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
     user_leave_times = dict()
     mind_controlled_units = set()
     zagaras_dummy_zerglings = set()
+    unit_killed_by = dict()
     ally_kills_counted_toward_main = 0  # Number of kills counted from ally toward main because the ally left
     VespeneDroneIdentifier = DroneIdentifier(replay['players'][main_player].get('commander', None),
                                              replay['players'][ally_player].get('commander', None))
@@ -867,10 +867,6 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
                     else:
                         bonus_timings.append(round(event['_gameloop'] / 16 - START_TIME, 0))
 
-                    # logger.debug(
-                    #     f'-------------\nBO: {_killed_unit_type} ({_losing_player}) killed by {_killing_player} ({event["_gameloop"]/16/60:.2f})min\n{event}\n-------------'
-                    # )
-
                 # Don't save salvaged units
                 if _killed_unit_type in salvage_units and _losing_player == _killing_player:
                     if _losing_player == main_player:
@@ -908,6 +904,12 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
                     else:
                         unit_type_dict_main[_killed_unit_type] = [0, 1, 0, 0]
 
+                    # Saving what killed what
+                    if _killed_unit_type not in unit_killed_by:
+                        unit_killed_by[_killed_unit_type] = [_killing_unit_type]
+                    else:
+                        unit_killed_by[_killed_unit_type].append(_killing_unit_type)
+
                     if unit_id in mind_controlled_units:
                         mainStatsCounter.mindcontrolled_unit_dies(_killed_unit_type)
 
@@ -930,10 +932,12 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
             except Exception:
                 logger.error(traceback.format_exc())
 
-    # pprint(unit_type_dict_main)
-    # pprint(unit_type_dict_ally)
-    # pprint(unit_type_dict_amon)
-    # logger.info(f'Kill counts: {killcounts}')
+    # Save data about what killed trakced units in the log
+    for unit in unit_killed_by:
+        if unit_type_dict_main[unit][2] > 0:
+            d = {u: unit_killed_by[unit].count(u) for u in unit_killed_by[unit]}
+            d = {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
+            logger.info(f"What killed {unit}?\n{d}")
 
     # Save more data to final dictionary
     replay_report_dict['player_stats'] = {
