@@ -543,7 +543,7 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
             if _control_pid == 7 and _unit_type == 'ResearchVesselLanded':
                 ResearchVesselLandedTiming = event['_gameloop']
 
-            if _control_pid == 7 and _unit_type == 'ResearchVessel' and ResearchVesselLandedTiming is not None and (ResearchVesselLandedTiming + 1100
+            if _control_pid == 7 and _unit_type == 'ResearchVessel' and ResearchVesselLandedTiming is not None and (ResearchVesselLandedTiming + 1500
                                                                                                                     > event['_gameloop']):
                 bonus_timings.append(event['_gameloop'] / 16 - START_TIME)
                 ResearchVesselLandedTiming = None
