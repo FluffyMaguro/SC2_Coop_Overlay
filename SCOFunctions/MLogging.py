@@ -16,13 +16,13 @@ class LogLevel(Enum):
 
 class Logger:
     """ Custom class for logging purposes """
-    LOGGING = False
-    file_path = "Logs.txt"
+    LOGGING: bool = False
+    file_path: str = "Logs.txt"
     levels = LogLevel
 
     def __init__(self, name: str, level: LogLevel):
-        self.name = name
-        self.level = level
+        self.name: str = name
+        self.level: LogLevel = level
 
         if not isinstance(level, LogLevel):
             raise Exception(f'Logging level has to be of type {type(LogLevel)}')

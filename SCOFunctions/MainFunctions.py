@@ -74,10 +74,6 @@ def sendEvent(event: Dict[str, Any], raw: bool = False) -> None:
         data = json.dumps(event)
         WEBPAGE.runJavaScript(f"postGameStatsTimed({data});")
 
-    elif event.get('mutatordata') is not None:
-        data = json.dumps(event)
-        WEBPAGE.runJavaScript(f"mutatorInfo({data['data']})")
-
     elif event.get('hideEvent') is not None:
         WEBPAGE.runJavaScript("hidestats()")
 

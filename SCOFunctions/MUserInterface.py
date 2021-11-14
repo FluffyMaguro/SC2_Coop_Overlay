@@ -1523,10 +1523,10 @@ class TitleBar(QtWidgets.QFrame):
         self.minimize.clicked.connect(parent.showMinimized)
 
         # Maximize button
-        self.close = QtWidgets.QToolButton(self)
-        self.close.setGeometry(QtCore.QRect(445, 2, 20, 20))
-        self.close.setText('⨉')
-        self.close.clicked.connect(parent.minimize_to_tray)
+        self.close_button = QtWidgets.QToolButton(self)
+        self.close_button.setGeometry(QtCore.QRect(445, 2, 20, 20))
+        self.close_button.setText('⨉')
+        self.close_button.clicked.connect(parent.minimize_to_tray)
 
     def mousePressEvent(self, event):
         if self.parent.dark_mode_active and event.button() == QtCore.Qt.LeftButton:

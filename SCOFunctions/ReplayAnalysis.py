@@ -937,7 +937,7 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
         if unit_type_dict_main[unit][2] > 0:
             d = {u: unit_killed_by[unit].count(u) for u in unit_killed_by[unit]}
             d = {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
-            logger.info(f"What killed {unit}?\n{d}")
+            logger.info(f"What killed {unit}? {d}")
 
     # Save more data to final dictionary
     replay_report_dict['player_stats'] = {

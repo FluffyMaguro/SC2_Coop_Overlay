@@ -19,7 +19,7 @@ def isCompiled() -> bool:
     return '__compiled__' in globals()
 
 
-def nuitka_exe_folder() -> str:
+def nuitka_exe_folder():
     """ Returns the folder of the executable"""
     return pathlib.Path(sys.argv[0]).parent.absolute()
 

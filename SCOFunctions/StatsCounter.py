@@ -289,6 +289,7 @@ class StatsCounter:
         if unit in self.salvaged_units:
             unit_alive -= self.salvaged_units.count(unit)
 
+        result = 0
         # Special case for Zagara's Banelings
         if self.commander == 'Zagara' and unit in {'Baneling', 'HotSSplitterlingBig'}:
             logger.debug(f"Free {self.zagara_free_banelings} {unit}")

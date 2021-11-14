@@ -238,7 +238,7 @@ class TwitchBot:
                 if "PING" in line and self.console(line):
                     msgg = "PONG :tmi.twitch.tv\r\n".encode()
                     self.s.send(msgg)
-                    logger.info(msgg)
+                    logger.info(msgg.decode())
                     break
 
                 # Get user, first and following words

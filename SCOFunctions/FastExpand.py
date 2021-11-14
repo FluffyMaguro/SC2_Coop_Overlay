@@ -145,7 +145,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             self.title.setText("NUM0 - Close")
             self.title.setStyleSheet("color:white; font-size: 18px")
         except Exception:
-            logger.error(traceback.format_exc)
+            logger.error(traceback.format_exc())
             self.clearHotkeys()
             self.hide()
             self.reset()
