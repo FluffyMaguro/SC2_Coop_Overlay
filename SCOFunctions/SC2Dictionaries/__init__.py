@@ -1378,6 +1378,7 @@ mutator_ids = {
 
 cached_mutators = {
     "01a686a72bc7913e88372836fa4927fc030065a2a5975f9890e8639f8ac3d675": "Just Die!",
+    "01cca5a8f4bcc06cc4aca3af8c2f821894d3b15fe7ebc20721c514fb7613484f": "Life Leech",
     "04b1c156186ea45b806a1240f7b0afff5fb28ed7a84544eef2df69b04624e498": "Purifier Beam",
     "05275a4be121ff1934bb97c0c9c971116eb23e395795281bb3b04f70143c48e9": "Photon Overload",
     "057876296486c3b308c07a5bd381edb2902535a8aaedc98d370ec8f21491146f": "Eminent Domain",
