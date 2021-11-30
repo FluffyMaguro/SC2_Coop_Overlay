@@ -883,6 +883,7 @@ class UI_TabWidget(object):
         self.TAB_Stats.LA_Stats_Wait.deleteLater()
         self.TAB_Games.LA_Games_Wait.deleteLater()
         self.TAB_Stats.generate_stats()
+        self.TAB_Mutations.update_data(self.CAnalysis.get_weekly_data())
 
         self.update_winrate_data()
         MF.check_names_handles()

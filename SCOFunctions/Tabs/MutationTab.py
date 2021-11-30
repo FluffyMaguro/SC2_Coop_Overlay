@@ -1,16 +1,23 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
+from SCOFunctions.MTheming import MColors
+from SCOFunctions.MUserInterface import Cline, DifficultyEntry
 from SCOFunctions.SC2Dictionaries import weekly_mutations
-from SCOFunctions.MUserInterface import Cline
 
 
 class MutationWidget(QtWidgets.QWidget):
-    def __init__(self, mutation_name: str, mutation_data):
+    def __init__(self, mutation_name: str, mutation_data, bg: bool = False):
         super().__init__()
 
         height = 22
         self.setGeometry(QtCore.QRect(0, 0, 931, 22))
         self.setMinimumHeight(height)
         self.setMaximumHeight(height)
+
+        if bg:
+            self.bg = QtWidgets.QFrame(self)
+            self.bg.setGeometry(QtCore.QRect(5, 0, 901, height + 1))
+            self.bg.setAutoFillBackground(True)
+            self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
         self.name = QtWidgets.QLabel(mutation_name, self)
         self.name.setGeometry(QtCore.QRect(10, 0, 200, 20))
@@ -23,6 +30,16 @@ class MutationWidget(QtWidgets.QWidget):
 
         self.mutators = QtWidgets.QLabel('   |   '.join(mutation_data['mutators']), self)
         self.mutators.setGeometry(QtCore.QRect(420, 0, 600, 20))
+
+    def set_difficulty(self, difficulty: str):
+        """ Updates the difficulty"""
+        self.difficulty.setText(difficulty)
+        if difficulty == "Brutal":
+            self.setStyleSheet(f"color: {MColors.game_weekly}")
+        elif difficulty != "None":
+            self.setStyleSheet(f"color: {MColors.player_highlight}")
+        else:
+            self.setStyleSheet(f"")
 
 
 class MutationTab(QtWidgets.QWidget):
@@ -49,9 +66,12 @@ class MutationTab(QtWidgets.QWidget):
         self.line = Cline(self)
         self.line.setGeometry(QtCore.QRect(5, 22, 921, 1))
 
+        for item in (self.name, self.map, self.difficulty, self.mutators):
+            item.setStyleSheet("font-weight: bold")
+
         # Scroll
         self.scroll_area = QtWidgets.QScrollArea(self)
-        self.scroll_area.setGeometry(QtCore.QRect(0, 23, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 30))
+        self.scroll_area.setGeometry(QtCore.QRect(0, 23, TabWidget.frameGeometry().width() - 5, TabWidget.frameGeometry().height() - 50))
         self.scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.scroll_area.setFrameShadow(QtWidgets.QFrame.Plain)
         self.scroll_area.setWidgetResizable(True)
@@ -68,6 +88,12 @@ class MutationTab(QtWidgets.QWidget):
         self.scroll_area.setWidget(self.scroll_area_content)
 
         # Create mutations
+        iter = 0
         for mutation_name, mutation_data in weekly_mutations.items():
-            self.mutations[mutation_name] = MutationWidget(mutation_name, mutation_data)
+            iter += 1
+            self.mutations[mutation_name] = MutationWidget(mutation_name, mutation_data, bool(iter % 2))
             self.scroll_area_contentLayout.addWidget(self.mutations[mutation_name])
+
+    def update_data(self, weekly_data):
+        for mutation, widget in self.mutations.items():
+            widget.set_difficulty(weekly_data[mutation])

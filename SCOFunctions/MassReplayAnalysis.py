@@ -13,18 +13,18 @@ import threading
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor
-from pprint import pprint
+from typing import Dict
 
 import s2protocol
 
 from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
 from SCOFunctions.MFilePath import truePath
-from SCOFunctions.MLogging import catch_exceptions, Logger
+from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MReplayData import replay_data
 from SCOFunctions.ReplayAnalysis import (analyse_parsed_replay, parse_replay_file)
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats)
+from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats, weekly_mutations)
 
 logger = Logger('MASS', Logger.levels.INFO)
 lock = threading.Lock()
@@ -1318,6 +1318,38 @@ class mass_replay_analysis:
             'AllyCommanderData': AllyCommanderData,
             'games': len(data)
         }
+
+    @staticmethod
+    def get_highest_difficulty(a: str, b: str) -> str:
+        d = {"Brutal": 4, "Hard": 3, "Normal": 2, "Casual": 1, "None": 0}
+        if a not in d or b not in d:
+            print("ERROR, difficulty not in dict", a, b)
+        return a if d.get(a, 0) >= d.get(b, 0) else b
+
+    def get_weekly_data(self) -> Dict[str, str]:
+        """ Finds the highest difficulty on which each mutation was completed
+
+        Returns:
+            Dict[weekly, diff]"""
+
+        weeklies = {mut: "None" for mut in weekly_mutations}
+
+        # Iterate over replays
+        for r in self.ReplayData:
+            if r.result != "Victory" or not r.mutators:
+                continue
+            mutators = set(r.mutators)
+            difficulty = self.get_highest_difficulty(*r.difficulty)
+
+            # Find the correct weekly mutations
+            for mut in weekly_mutations:
+                if r.map_name != weekly_mutations[mut]['map'] or mutators != weekly_mutations[mut]['mutators']:
+                    continue
+
+                weeklies[mut] = self.get_highest_difficulty(difficulty, weeklies[mut])
+                break
+
+        return weeklies
 
 
 def mass_replay_analysis_thread(ACCOUNTDIR, progress_callback=None):
