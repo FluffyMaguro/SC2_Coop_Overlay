@@ -6,3 +6,4 @@ from .MainTab import MainTab
 from .StatsTab import StatsTab
 from .RngTab import RngTab
 from .TwitchTab import TwitchTab
+from .MutationTab import MutationTab

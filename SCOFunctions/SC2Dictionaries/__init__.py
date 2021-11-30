@@ -1802,3 +1802,726 @@ tychus_ultimate_upgrades = {
 }
 
 outlaws = {'TychusFirebat', 'TychusGhost', 'TychusHERC', 'TychusMarauder', 'TychusReaper', 'TychusSpectre', 'TychusWarhound', 'TychusMedic'}
+
+weekly_mutations = {
+    'Aggressive Recriutment': {
+        'map': 'Malwarfare',
+        'mutators': {'Speed Freaks', 'We Move Unseen', 'Propagators'}
+    },
+    'And Drops and Rifts': {
+        'map': 'Part and Parcel',
+        'mutators': {'Aggressive Deployment', 'Void Rifts'}
+    },
+    'Assembly of Vengeance': {
+        'map': 'Temple of the Past',
+        'mutators': {'Heroes from the Storm', 'Avenger'}
+    },
+    'Astigmatism': {
+        'map': 'Malwarfare',
+        'mutators': {'Long Range', 'We Move Unseen', 'Shortsighted'}
+    },
+    'Attrition Warfare': {
+        'map': 'Void Thrashing',
+        'mutators': {'Minesweeper', 'Diffusion'}
+    },
+    'Bad Weather': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Void Rifts', 'Twister'}
+    },
+    'Bannable Offense': {
+        'map': 'Malwarfare',
+        'mutators': {'Power Overwhelming', 'Evasive Maneuvers'}
+    },
+    'Barrier to Entry': {
+        'map': 'Lock & Load',
+        'mutators': {'Just Die!', 'Mineral Shields', 'Barrier'}
+    },
+    'Battle Hardened': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Inspiration', 'Missile Command', 'Hardened Will'}
+    },
+    "Beggars Can't be Choosers": {
+        'map': 'Lock & Load',
+        'mutators': {'Mag-nificent', 'Minesweeper', 'Slim Pickings'}
+    },
+    'Binary Choice': {
+        'map': 'Malwarfare',
+        'mutators': {'Polarity', 'Void Reanimators'}
+    },
+    'Blast from the Past': {
+        'map': 'Temple of the Past',
+        'mutators': {'Eminent Domain', 'Mutually Assured Destruction'}
+    },
+    'Blasting Off Again': {
+        'map': 'Void Launch',
+        'mutators': {'Power Overwhelming', 'Going Nuclear', 'Lava Burst'}
+    },
+    'Blind Tribute': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Kill Bots', 'Shortsighted'}
+    },
+    'Boom Town': {
+        'map': 'Oblivion Express',
+        'mutators': {'Self Destruction', 'Fear', 'Going Nuclear'}
+    },
+    'Breath of Destruction': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Speed Freaks', 'Aggressive Deployment', 'Avenger'}
+    },
+    'Bubble Pop': {
+        'map': 'Cradle of Death',
+        'mutators': {'Mineral Shields', 'Barrier', 'Time Warp'}
+    },
+    'Burning Evacuation': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Eminent Domain', 'Avenger', 'Scorched Earth'}
+    },
+    'Burning Legion': {
+        'map': 'Lock & Load',
+        'mutators': {'Avenger', 'Void Rifts', 'Scorched Earth'}
+    },
+    'By Fire Be Purged': {
+        'map': 'Oblivion Express',
+        'mutators': {'Lava Burst', 'Going Nuclear', 'Scorched Earth'}
+    },
+    'Call it a Comeback': {
+        'map': 'Temple of the Past',
+        'mutators': {'Eminent Domain', 'Just Die!', 'Avenger'}
+    },
+    'Call of the Void': {
+        'map': 'Void Thrashing',
+        'mutators': {'Void Reanimators', 'Void Rifts'}
+    },
+    'Catch the Train': {
+        'map': 'Oblivion Express',
+        'mutators': {'Afraid of the Dark', 'Speed Freaks', 'Shortsighted'}
+    },
+    'Certain Demise': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Avenger', 'Void Reanimators'}
+    },
+    'Cold Adaptation': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Transmutation', 'Blizzard'}
+    },
+    'Cold is the Void': {
+        'map': 'Oblivion Express',
+        'mutators': {'Blizzard', 'Void Reanimators', 'Void Rifts'}
+    },
+    'Conflagration': {
+        'map': 'Temple of the Past',
+        'mutators': {'Walking Infested', 'Alien Incubation', 'Scorched Earth'}
+    },
+    'Coordinated Defense': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Polarity', 'Missile Command'}
+    },
+    'Cremation': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Void Reanimators', 'Scorched Earth'}
+    },
+    'Dance Dance Evolution': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Speed Freaks', 'Moment Of Silence', 'Transmutation'}
+    },
+    'Dark Ritual': {
+        'map': 'Temple of the Past',
+        'mutators': {'Power Overwhelming', 'Speed Freaks'}
+    },
+    'Dead Heat': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Fatal Attraction', 'Self Destruction', 'Walking Infested'}
+    },
+    'Death and Taxes': {
+        'map': 'Dead of Night',
+        'mutators': {'Micro Transactions', 'Black Death', 'Slim Pickings'}
+    },
+    'Death from Below': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Minesweeper', 'Lava Burst', 'Scorched Earth'}
+    },
+    'Death is Fleeting': {
+        'map': 'Dead of Night',
+        'mutators': {'Just Die!', 'Void Reanimators'}
+    },
+    'Decade of Decadence': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Gift Exchange', 'Fireworks', 'Lucky Envelopes'}
+    },
+    'Delivery Guaranteed': {
+        'map': 'Void Launch',
+        'mutators': {'Just Die!', 'Barrier', 'Going Nuclear'}
+    },
+    'Die Together': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Just Die!', 'Polarity'}
+    },
+    'Diplomatic Immunity': {
+        'map': 'Oblivion Express',
+        'mutators': {'Polarity', 'Barrier', 'Evasive Maneuvers'}
+    },
+    'Distant Threat': {
+        'map': 'Dead of Night',
+        'mutators': {'Purifier Beam', 'Long Range', 'Time Warp'}
+    },
+    'Dodge This': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Orbital Strike', 'Going Nuclear', 'Darkness'}
+    },
+    'Doomsday Report': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Orbital Strike', 'Propagators', 'Going Nuclear'}
+    },
+    'Double Trouble': {
+        'map': 'Void Launch',
+        'mutators': {'Propagators', 'Kill Bots'}
+    },
+    'Encroaching Madness': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Eminent Domain', 'Purifier Beam', 'Void Rifts'}
+    },
+    'Endless Infection': {
+        'map': 'Void Launch',
+        'mutators': {'Black Death', 'Walking Infested', 'Alien Incubation'}
+    },
+    'Endless Sparkles': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Self Destruction', 'Alien Incubation'}
+    },
+    'Enhanced Defenses': {
+        'map': 'Cradle of Death',
+        'mutators': {'Barrier', 'Photon Overload', 'Going Nuclear'}
+    },
+    'Enter the Nexus': {
+        'map': 'Cradle of Death',
+        'mutators': {'Blizzard', 'Heroes from the Storm'}
+    },
+    'Equivalent Exchange': {
+        'map': 'Void Thrashing',
+        'mutators': {'Just Die!', 'Diffusion'}
+    },
+    'Experimental Artillery': {
+        'map': 'Part and Parcel',
+        'mutators': {'Laser Drill', 'Photon Overload', 'Long Range'}
+    },
+    'Explosive Hunt': {
+        'map': 'Part and Parcel',
+        'mutators': {'Slim Pickings', 'Minesweeper'}
+    },
+    'Explosive Results': {
+        'map': 'Void Thrashing',
+        'mutators': {'Mutually Assured Destruction', 'Self Destruction', 'Going Nuclear'}
+    },
+    'Fear and Lava': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Void Rifts', 'Fear'}
+    },
+    'Field of Screams': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Polarity', 'Minesweeper'}
+    },
+    'Fire in the Hole': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Boom Bots', 'Missile Command'}
+    },
+    'Firewall': {
+        'map': 'Malwarfare',
+        'mutators': {'Minesweeper', 'Lava Burst', 'Barrier'}
+    },
+    'First Strike': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Laser Drill', 'Long Range', 'Shortsighted'}
+    },
+    'Flip My Base': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Eminent Domain', 'Purifier Beam', 'Missile Command'}
+    },
+    'Flipping Out': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Vertigo', 'Fear', 'Evasive Maneuvers'}
+    },
+    'Fowl Play': {
+        'map': 'Oblivion Express',
+        'mutators': {'Turkey Shoot', 'Sharing Is Caring'}
+    },
+    'Fright Night': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Afraid of the Dark', 'Trick or Treat'}
+    },
+    'Frostbite': {
+        'map': 'Dead of Night',
+        'mutators': {'Mag-nificent', 'Blizzard'}
+    },
+    'Futile Resistance': {
+        'map': 'Lock & Load',
+        'mutators': {'Propagators', 'Concussive Attacks', 'Temporal Field'}
+    },
+    'Get Out More': {
+        'map': 'Dead of Night',
+        'mutators': {'Mineral Shields', 'Eminent Domain', 'Self Destruction'}
+    },
+    'Getting Along': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Polarity', 'Sharing Is Caring'}
+    },
+    'Grave Danger': {
+        'map': 'Temple of the Past',
+        'mutators': {'Transmutation', 'Walking Infested', 'Void Reanimators'}
+    },
+    'Graveyard Shift': {
+        'map': 'Dead of Night',
+        'mutators': {'Purifier Beam', 'Afraid of the Dark'}
+    },
+    'Growing Threat': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Transmutation', 'Mutually Assured Destruction', 'Alien Incubation'}
+    },
+    'Hard Target': {
+        'map': 'Void Thrashing',
+        'mutators': {'Polarity', 'Barrier', 'Hardened Will'}
+    },
+    'Hardware Malfunction': {
+        'map': 'Malwarfare',
+        'mutators': {'Laser Drill', 'Minesweeper', 'Kill Bots'}
+    },
+    'Hell Train': {
+        'map': 'Oblivion Express',
+        'mutators': {'Just Die!', 'Scorched Earth'}
+    },
+    'Hello My Old Friend': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Moment Of Silence', 'Black Death', 'Darkness'}
+    },
+    'Hostile Takeover': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Eminent Domain', 'Laser Drill', 'Missile Command'}
+    },
+    'Hostile Territory': {
+        'map': 'Dead of Night',
+        'mutators': {'Photon Overload', 'Power Overwhelming', 'Barrier'}
+    },
+    "Hot 'n' Cold": {
+        'map': 'Void Launch',
+        'mutators': {'Blizzard', 'Lava Burst', 'Scorched Earth'}
+    },
+    'Chain Explosions': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Walking Infested', 'Lava Burst'}
+    },
+    'Charnel House': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Photon Overload', 'Black Death', 'Darkness'}
+    },
+    'Choices Choices': {
+        'map': 'Temple of the Past',
+        'mutators': {'Mutually Assured Destruction', 'Inspiration', 'Hardened Will'}
+    },
+    'In the Name of Love': {
+        'map': 'Cradle of Death',
+        'mutators': {'Purifier Beam', 'Concussive Attacks', 'Time Warp'}
+    },
+    'Infection Detected': {
+        'map': 'Malwarfare',
+        'mutators': {'Self Destruction', 'Alien Incubation', 'Outbreak'}
+    },
+    'Inner Power': {
+        'map': 'Temple of the Past',
+        'mutators': {'Power Overwhelming', 'Alien Incubation'}
+    },
+    'Inordinate Response': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Power Overwhelming', 'Avenger'}
+    },
+    'Instant Karma': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Double-Edged', 'Mutually Assured Destruction', 'Self Destruction'}
+    },
+    'Kill Bot Wars': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Moment Of Silence', 'Kill Bots'}
+    },
+    'Knock Knock': {
+        'map': 'Dead of Night',
+        'mutators': {'Avenger', 'Propagators'}
+    },
+    'Like Swatting Insects': {
+        'map': 'Cradle of Death',
+        'mutators': {'Missile Command', 'Alien Incubation', 'Outbreak'}
+    },
+    'Locked and Loaded': {
+        'map': 'Lock & Load',
+        'mutators': {'Mineral Shields', 'Kill Bots', 'Temporal Field'}
+    },
+    'Magnetic Attraction': {
+        'map': 'Void Thrashing',
+        'mutators': {'Mag-nificent', 'Fatal Attraction', 'We Move Unseen'}
+    },
+    'Mass Manufacturing': {
+        'map': 'Part and Parcel',
+        'mutators': {'Propagators', 'Void Rifts'}
+    },
+    'Masters of Midnight': {
+        'map': 'Part and Parcel',
+        'mutators': {'Shortsighted', 'Life Leech', 'Fear'}
+    },
+    'Media Blackout': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'We Move Unseen', 'Missile Command', 'Darkness'}
+    },
+    'Medieval Times': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Transmutation', 'Black Death'}
+    },
+    'Memorable Boss': {
+        'map': 'Void Launch',
+        'mutators': {'Moment Of Silence', 'Heroes from the Storm'}
+    },
+    'Miner Concerns': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Mag-nificent', 'Slim Pickings', 'Fear'}
+    },
+    'Moths to the Flame': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Fatal Attraction', 'Purifier Beam', 'Alien Incubation'}
+    },
+    'Moving Fees': {
+        'map': 'Cradle of Death',
+        'mutators': {'Micro Transactions', 'Scorched Earth'}
+    },
+    'Multitasking Trainer': {
+        'map': 'Malwarfare',
+        'mutators': {'Micro Transactions', 'Void Rifts'}
+    },
+    'My Bots!': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Boom Bots', 'Kill Bots'}
+    },
+    'Negative Reinforcement': {
+        'map': 'Part and Parcel',
+        'mutators': {'Fatal Attraction', 'Avenger'}
+    },
+    'Never Say Die': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Just Die!', 'Life Leech', 'Barrier'}
+    },
+    'Night Drive': {
+        'map': 'Cradle of Death',
+        'mutators': {'Afraid of the Dark', 'Mag-nificent'}
+    },
+    'No Money, More Problems': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Slim Pickings', 'Self Destruction', 'Twister'}
+    },
+    'Nuclear Family': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Mutually Assured Destruction', 'Hardened Will', 'Outbreak'}
+    },
+    'Of Mines and Miners': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Mag-nificent', 'Minesweeper', 'Missile Command'}
+    },
+    'Of One Mind': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Boom Bots', 'Polarity', 'Sharing Is Caring'}
+    },
+    'One for All': {
+        'map': 'Temple of the Past',
+        'mutators': {'Transmutation', 'Inspiration', 'Hardened Will'}
+    },
+    'Onslaught': {
+        'map': 'Dead of Night',
+        'mutators': {'Aggressive Deployment', 'Void Reanimators', 'Outbreak'}
+    },
+    'Operation Cooperation': {
+        'map': 'Lock & Load',
+        'mutators': {'Polarity', 'Propagators'}
+    },
+    'Opportunities Unleashed': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Power Overwhelming', 'Speed Freaks', 'Barrier'}
+    },
+    'Out of Order': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Micro Transactions', 'Darkness', 'Time Warp'}
+    },
+    'Out of Sight': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Purifier Beam', 'We Move Unseen'}
+    },
+    'Overclocked': {
+        'map': 'Malwarfare',
+        'mutators': {'Speed Freaks', 'Photon Overload', 'Avenger'}
+    },
+    'Perfect Storm': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Blizzard', 'Twister', 'Shortsighted'}
+    },
+    'Portal Power': {
+        'map': 'Void Thrashing',
+        'mutators': {'Power Overwhelming', 'Void Rifts'}
+    },
+    'Power Trip': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Power Overwhelming', 'Long Range', 'Photon Overload'}
+    },
+    'Price of Progress': {
+        'map': 'Malwarfare',
+        'mutators': {'Micro Transactions', 'Kill Bots'}
+    },
+    'Quick Killers': {
+        'map': 'Temple of the Past',
+        'mutators': {'Kill Bots', 'Inspiration', 'Speed Freaks'}
+    },
+    'Radiation Zone': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Black Death', 'Going Nuclear', 'Outbreak'}
+    },
+    'Railroad Switch': {
+        'map': 'Oblivion Express',
+        'mutators': {'Just Die!', 'Polarity'}
+    },
+    'Resilient Rifts': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Just Die!', 'Void Rifts'}
+    },
+    'Rest in Peace': {
+        'map': 'Void Thrashing',
+        'mutators': {'Moment Of Silence', 'Propagators'}
+    },
+    'Retribution': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Double-Edged', 'Void Rifts'}
+    },
+    'Rise from Ashes': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Void Reanimators', 'Lava Burst', 'Self Destruction'}
+    },
+    'Robotic Revival': {
+        'map': 'Part and Parcel',
+        'mutators': {'Laser Drill', 'Just Die!', 'Fear'}
+    },
+    'Rubber and Glue': {
+        'map': 'Void Launch',
+        'mutators': {'Double-Edged', 'Temporal Field', 'Diffusion'}
+    },
+    'Rumble in the Jungle': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Aggressive Deployment', 'Temporal Field', 'We Move Unseen'}
+    },
+    'Safety Violation': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Mag-nificent', 'Laser Drill', 'Self Destruction'}
+    },
+    'Scary Scavengers': {
+        'map': 'Dead of Night',
+        'mutators': {'Slim Pickings', 'Outbreak'}
+    },
+    'Season of Giving': {
+        'map': 'Cradle of Death',
+        'mutators': {'Gift Exchange', 'Blizzard', 'Naughty List'}
+    },
+    'Secret Storm': {
+        'map': 'Lock & Load',
+        'mutators': {'Aggressive Deployment', 'Twister', 'We Move Unseen'}
+    },
+    'Shared Pain': {
+        'map': 'Part and Parcel',
+        'mutators': {'Fatal Attraction', 'Diffusion'}
+    },
+    'Shields Up!': {
+        'map': 'Void Launch',
+        'mutators': {'Diffusion', 'Mineral Shields', 'Shortsighted'}
+    },
+    'Shining Bright': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Laser Drill', 'Purifier Beam', 'Concussive Attacks'}
+    },
+    'Shir Chaos': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Speed Freaks', 'Just Die!', 'Outbreak'}
+    },
+    'Sick Micro': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Micro Transactions', 'Black Death'}
+    },
+    'Slow and Steady': {
+        'map': 'Mist Opportunities',
+        'mutators': {'Speed Freaks', 'Concussive Attacks', 'Time Warp'}
+    },
+    'Spear of Your Doom': {
+        'map': 'Lock & Load',
+        'mutators': {'Purifier Beam', 'Orbital Strike', 'Temporal Field'}
+    },
+    'Special Delivery': {
+        'map': 'Void Launch',
+        'mutators': {'Aggressive Deployment', 'Self Destruction', 'Alien Incubation'}
+    },
+    'Specter of Death': {
+        'map': 'Part and Parcel',
+        'mutators': {'We Move Unseen', 'Void Reanimators'}
+    },
+    'Survival of the Fittest': {
+        'map': 'Void Thrashing',
+        'mutators': {'Transmutation', 'Barrier'}
+    },
+    'Tax Day': {
+        'map': 'Void Launch',
+        'mutators': {'Micro Transactions', 'Fear'}
+    },
+    'Temple of Pain': {
+        'map': 'Temple of the Past',
+        'mutators': {'Mineral Shields', 'Barrier', 'Avenger'}
+    },
+    'Temple of Rebirth': {
+        'map': 'Temple of the Past',
+        'mutators': {'Just Die!', 'Life Leech', 'Barrier'}
+    },
+    'Temple of Terror': {
+        'map': 'Temple of the Past',
+        'mutators': {'Afraid of the Dark', 'Fear', 'Alien Incubation'}
+    },
+    'The Ascended': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Transmutation', 'Inspiration'}
+    },
+    'The Injustice League': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Heroes from the Storm', 'Inspiration', 'Hardened Will'}
+    },
+    'The League of Vermillains': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Heroes from the Storm', 'Evasive Maneuvers'}
+    },
+    'The Longest Night': {
+        'map': 'Dead of Night',
+        'mutators': {'Long Range', 'Just Die!', 'Photon Overload'}
+    },
+    'The Quick and the Dead': {
+        'map': 'Dead of Night',
+        'mutators': {'Speed Freaks', 'Black Death'}
+    },
+    'The Quick and the Undead': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Speed Freaks', 'Void Reanimators'}
+    },
+    'The Ultimate Price': {
+        'map': 'Lock & Load',
+        'mutators': {'Mineral Shields', 'Missile Command', 'Micro Transactions'}
+    },
+    'Think Fast': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Speed Freaks', 'Propagators'}
+    },
+    'Thunder Dome': {
+        'map': 'Lock & Load',
+        'mutators': {'Mag-nificent', 'Heroes from the Storm'}
+    },
+    'Time Lock': {
+        'map': 'Lock & Load',
+        'mutators': {'Mag-nificent', 'Speed Freaks', 'Time Warp'}
+    },
+    'Timely Reinforcements': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Void Rifts', 'Temporal Field'}
+    },
+    'Together Forever': {
+        'map': 'Chain of Ascension',
+        'mutators': {'Just Die!', 'Polarity'}
+    },
+    'Train of Pain': {
+        'map': 'Oblivion Express',
+        'mutators': {'Double-Edged', 'Going Nuclear', 'Mutually Assured Destruction'}
+    },
+    'Train of the Dead': {
+        'map': 'Oblivion Express',
+        'mutators': {'Outbreak', 'Walking Infested', 'Darkness'}
+    },
+    'Triple Threat': {
+        'map': 'Void Launch',
+        'mutators': {'Laser Drill', 'Orbital Strike', 'Outbreak'}
+    },
+    'Ulnar New Year': {
+        'map': 'Lock & Load',
+        'mutators': {'Fireworks', 'Lucky Envelopes'}
+    },
+    'Undermined': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'Minesweeper', 'Void Rifts'}
+    },
+    'Unstable Environment': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Lava Burst', 'Twister', 'Time Warp'}
+    },
+    'Urban Warfare': {
+        'map': 'Rifts to Korhal',
+        'mutators': {'We Move Unseen', 'Minesweeper', 'Photon Overload'}
+    },
+    'Violent Night': {
+        'map': 'Void Launch',
+        'mutators': {'Gift Exchange', 'Naughty List'}
+    },
+    'War is Hell': {
+        'map': 'Void Thrashing',
+        'mutators': {'Lava Burst', 'Evasive Maneuvers', 'Scorched Earth'}
+    },
+    'Warp Zone': {
+        'map': 'Lock & Load',
+        'mutators': {'Temporal Field', 'Twister', 'Time Warp'}
+    },
+    'Watch the Skies': {
+        'map': 'Void Launch',
+        'mutators': {'Aggressive Deployment', 'Missile Command', 'Orbital Strike'}
+    },
+    'Well Trained': {
+        'map': 'Oblivion Express',
+        'mutators': {'Aggressive Deployment', 'Inspiration', 'Avenger'}
+    },
+    'What Goes Around': {
+        'map': 'Scythe of Amon',
+        'mutators': {'Double-Edged', 'Mutually Assured Destruction'}
+    },
+    'What We Do in the Shadows': {
+        'map': 'Void Thrashing',
+        'mutators': {'We Move Unseen', 'Darkness', 'Shortsighted'}
+    },
+    'Wheel of Misfortune (Thrashers)': {
+        'map': 'Void Thrashing',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Misfortune (Lava)': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Misfortune (Train)': {
+        'map': 'Oblivion Express',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Misfortune (Launch)': {
+        'map': 'Void Launch',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Misfortune (Locks)': {
+        'map': 'Lock & Load',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Stupidity (Cradle)': {
+        'map': 'Cradle of Death',
+        'mutators': {'Chaos Studios'}
+    },
+    'Wheel of Stupidity (Evac)': {
+        'map': 'Miner Evacuation',
+        'mutators': {'Chaos Studios'}
+    },
+    'Whiteout': {
+        'map': 'Void Launch',
+        'mutators': {'Blizzard', 'Slim Pickings'}
+    },
+    'World on Fire': {
+        'map': 'The Vermillion Problem',
+        'mutators': {'Purifier Beam', 'Missile Command', 'Going Nuclear'}
+    },
+    'Worn Out Welcome': {
+        'map': 'Temple of the Past',
+        'mutators': {'Just Die!', 'Inspiration', 'Long Range'}
+    }
+}
