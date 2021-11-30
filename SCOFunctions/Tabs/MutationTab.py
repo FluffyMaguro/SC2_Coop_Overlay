@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MTheming import MColors
-from SCOFunctions.MUserInterface import Cline, DifficultyEntry
+from SCOFunctions.MUserInterface import Cline
 from SCOFunctions.SC2Dictionaries import weekly_mutations
 
 
@@ -15,7 +15,7 @@ class MutationWidget(QtWidgets.QWidget):
 
         if bg:
             self.bg = QtWidgets.QFrame(self)
-            self.bg.setGeometry(QtCore.QRect(5, 0, 901, height + 1))
+            self.bg.setGeometry(QtCore.QRect(5, 0, 921, height + 1))
             self.bg.setAutoFillBackground(True)
             self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
 
@@ -39,13 +39,12 @@ class MutationWidget(QtWidgets.QWidget):
         elif difficulty != "None":
             self.setStyleSheet(f"color: {MColors.player_highlight}")
         else:
-            self.setStyleSheet(f"")
+            self.setStyleSheet("")
 
 
 class MutationTab(QtWidgets.QWidget):
-    def __init__(self, parent, TabWidget):
+    def __init__(self, TabWidget):
         super().__init__()
-        self.p = parent
         self.mutations = dict()
 
         # Labels
@@ -64,10 +63,10 @@ class MutationTab(QtWidgets.QWidget):
         self.mutators.setGeometry(QtCore.QRect(offset + 420, 0, 600, 20))
 
         self.line = Cline(self)
-        self.line.setGeometry(QtCore.QRect(5, 22, 921, 1))
+        self.line.setGeometry(QtCore.QRect(5, 22, 941, 1))
 
         for item in (self.name, self.map, self.difficulty, self.mutators):
-            item.setStyleSheet("font-weight: bold")
+            item.setStyleSheet("QLabel {font-weight: bold}")
 
         # Scroll
         self.scroll_area = QtWidgets.QScrollArea(self)
@@ -88,9 +87,7 @@ class MutationTab(QtWidgets.QWidget):
         self.scroll_area.setWidget(self.scroll_area_content)
 
         # Create mutations
-        iter = 0
-        for mutation_name, mutation_data in weekly_mutations.items():
-            iter += 1
+        for iter, (mutation_name, mutation_data) in enumerate(weekly_mutations.items()):
             self.mutations[mutation_name] = MutationWidget(mutation_name, mutation_data, bool(iter % 2))
             self.scroll_area_contentLayout.addWidget(self.mutations[mutation_name])
 

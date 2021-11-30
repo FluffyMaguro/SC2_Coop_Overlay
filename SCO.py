@@ -89,7 +89,7 @@ class UI_TabWidget(object):
         self.TAB_TwitchBot = Tabs.TwitchTab(self)
         self.TAB_Resources = Tabs.ResourceTab(self)
         self.TAB_Links = Tabs.LinkTab(self)
-        self.TAB_Mutations = Tabs.MutationTab(self, TabWidget)
+        self.TAB_Mutations = Tabs.MutationTab(TabWidget)
 
         # Add tabs to the widget
         TabWidget.addTab(self.TAB_Main, "Settings")

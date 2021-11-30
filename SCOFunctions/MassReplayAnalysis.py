@@ -1322,8 +1322,6 @@ class mass_replay_analysis:
     @staticmethod
     def get_highest_difficulty(a: str, b: str) -> str:
         d = {"Brutal": 4, "Hard": 3, "Normal": 2, "Casual": 1, "None": 0}
-        if a not in d or b not in d:
-            print("ERROR, difficulty not in dict", a, b)
         return a if d.get(a, 0) >= d.get(b, 0) else b
 
     def get_weekly_data(self) -> Dict[str, str]:
