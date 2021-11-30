@@ -1,17 +1,22 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.MTheming import MColors
-from SCOFunctions.MUserInterface import Cline
+from SCOFunctions.MUserInterface import Cline, find_file
 from SCOFunctions.SC2Dictionaries import weekly_mutations
 
 
 class MutationWidget(QtWidgets.QWidget):
-    def __init__(self, mutation_name: str, mutation_data, bg: bool = False):
+    def __init__(self, mutation_name: str, mutation_data, bg: bool):
         super().__init__()
 
         height = 22
         self.setGeometry(QtCore.QRect(0, 0, 931, 22))
         self.setMinimumHeight(height)
         self.setMaximumHeight(height)
+
+        self.files = []
+        self.file_iter = 0
+        self.last_type = None
 
         if bg:
             self.bg = QtWidgets.QFrame(self)
@@ -25,19 +30,60 @@ class MutationWidget(QtWidgets.QWidget):
         self.map = QtWidgets.QLabel(mutation_data['map'], self)
         self.map.setGeometry(QtCore.QRect(200, 0, 200, 20))
 
+        self.winloss = QtWidgets.QLabel(self)
+        self.winloss.setGeometry(QtCore.QRect(305, 0, 80, 20))
+        self.winloss.setAlignment(QtCore.Qt.AlignCenter)
+
         self.difficulty = QtWidgets.QLabel("None", self)
-        self.difficulty.setGeometry(QtCore.QRect(350, 0, 100, 20))
+        self.difficulty.setGeometry(QtCore.QRect(345, 0, 100, 20))
+        self.difficulty.setAlignment(QtCore.Qt.AlignCenter)
 
         self.mutators = QtWidgets.QLabel('   |   '.join(mutation_data['mutators']), self)
-        self.mutators.setGeometry(QtCore.QRect(420, 0, 600, 20))
+        self.mutators.setGeometry(QtCore.QRect(435, 0, 600, 20))
 
-    def set_difficulty(self, difficulty: str):
-        """ Updates the difficulty"""
-        self.difficulty.setText(difficulty)
-        if difficulty == "Brutal":
-            self.setStyleSheet(f"color: {MColors.game_weekly}")
-        elif difficulty != "None":
-            self.setStyleSheet(f"color: {MColors.player_highlight}")
+        self.overlay_btn = QtWidgets.QPushButton("Overlay", self)
+        self.overlay_btn.setGeometry(QtCore.QRect(811, 0, 55, 22))
+        self.overlay_btn.clicked.connect(lambda: show_overlay(self.get_file(1)))
+        self.overlay_btn.setDisabled(True)
+
+        self.file_btn = QtWidgets.QPushButton("File", self)
+        self.file_btn.setGeometry(QtCore.QRect(871, 0, 55, 22))
+        self.file_btn.clicked.connect(lambda: find_file(self.get_file(2)))
+        self.file_btn.setDisabled(True)
+
+    def get_file(self, type: int) -> str:
+        """ Returns the next file to show"""
+
+        # Move to another replay if we are clicking repeatedly
+        if self.last_type == type:
+            self.file_iter += 1
+        else:
+            self.last_type = type
+
+        # The button is disabled if there are no files, no need to check for zero division
+        self.file_iter %= len(self.files)
+        return self.files[self.file_iter]
+
+    def update(self, mutation):
+        """ Updates the difficulty
+        Args:
+            mutation: dictionary containing information about difficulty, files, and W/L
+        """
+        # Files & buttons
+        self.files = mutation['files']
+        if self.files:
+            self.overlay_btn.setDisabled(False)
+            self.file_btn.setDisabled(False)
+
+        # Win/loss
+        self.winloss.setText(f"{mutation['wins']}/{mutation['losses']}")
+
+        # Difficulty
+        self.difficulty.setText(mutation['diff'])
+        if mutation['diff'] == "Brutal":
+            self.setStyleSheet(f"QLabel {{color: {MColors.game_weekly}}}")
+        elif mutation['diff'] != "None":
+            self.setStyleSheet(f"QLabel {{color: {MColors.player_highlight}}}")
         else:
             self.setStyleSheet("")
 
@@ -55,17 +101,23 @@ class MutationTab(QtWidgets.QWidget):
         self.map = QtWidgets.QLabel("Map", self)
         self.map.setGeometry(QtCore.QRect(offset + 200, 0, 200, 20))
 
-        self.difficulty = QtWidgets.QLabel("Difficulty", self)
-        self.difficulty.setToolTip("Maximum difficulty the mutation was completed on")
-        self.difficulty.setGeometry(QtCore.QRect(offset + 350, 0, 100, 20))
+        self.winloss = QtWidgets.QLabel("W/L", self)
+        self.winloss.setToolTip("Win/Loss ratio")
+        self.winloss.setGeometry(QtCore.QRect(offset + 305, 0, 80, 20))
+        self.winloss.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.difficulty = QtWidgets.QLabel("Completed", self)
+        self.difficulty.setToolTip("The highest difficulty the mutation was completed on")
+        self.difficulty.setGeometry(QtCore.QRect(offset + 345, 0, 100, 20))
+        self.difficulty.setAlignment(QtCore.Qt.AlignCenter)
 
         self.mutators = QtWidgets.QLabel("Mutators", self)
-        self.mutators.setGeometry(QtCore.QRect(offset + 420, 0, 600, 20))
+        self.mutators.setGeometry(QtCore.QRect(offset + 435, 0, 600, 20))
 
         self.line = Cline(self)
         self.line.setGeometry(QtCore.QRect(5, 22, 941, 1))
 
-        for item in (self.name, self.map, self.difficulty, self.mutators):
+        for item in (self.name, self.map, self.winloss, self.difficulty, self.mutators):
             item.setStyleSheet("QLabel {font-weight: bold}")
 
         # Scroll
@@ -93,4 +145,4 @@ class MutationTab(QtWidgets.QWidget):
 
     def update_data(self, weekly_data):
         for mutation, widget in self.mutations.items():
-            widget.set_difficulty(weekly_data[mutation])
+            widget.update(weekly_data[mutation])

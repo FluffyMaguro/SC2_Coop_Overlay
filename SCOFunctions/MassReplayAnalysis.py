@@ -1324,17 +1324,17 @@ class mass_replay_analysis:
         d = {"Brutal": 4, "Hard": 3, "Normal": 2, "Casual": 1, "None": 0}
         return a if d.get(a, 0) >= d.get(b, 0) else b
 
-    def get_weekly_data(self) -> Dict[str, str]:
+    def get_weekly_data(self):
         """ Finds the highest difficulty on which each mutation was completed
 
         Returns:
-            Dict[weekly, diff]"""
+            Dict[weekly, Dict['diff' or 'files']]"""
 
-        weeklies = {mut: "None" for mut in weekly_mutations}
+        weeklies = {mut: {"diff": "None", "files": [], "wins": 0, "losses": 0} for mut in weekly_mutations}
 
         # Iterate over replays
         for r in self.ReplayData:
-            if r.result != "Victory" or not r.mutators:
+            if not r.mutators:
                 continue
             mutators = set(r.mutators)
             difficulty = self.get_highest_difficulty(*r.difficulty)
@@ -1344,8 +1344,12 @@ class mass_replay_analysis:
                 if r.map_name != weekly_mutations[mut]['map'] or mutators != weekly_mutations[mut]['mutators']:
                     continue
 
-                weeklies[mut] = self.get_highest_difficulty(difficulty, weeklies[mut])
-                break
+                if r.result == "Victory":
+                    weeklies[mut]['diff'] = self.get_highest_difficulty(difficulty, weeklies[mut]['diff'])
+                    weeklies[mut]['files'].append(r.file)
+                    weeklies[mut]['wins'] += 1
+                else:
+                    weeklies[mut]['losses'] += 1
 
         return weeklies
 

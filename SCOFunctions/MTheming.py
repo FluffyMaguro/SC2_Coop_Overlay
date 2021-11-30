@@ -31,7 +31,7 @@ def set_dark_theme(main, app, tab, version):
 
     DARK0 = QtGui.QColor(33, 33, 33)
     DARK1 = QtGui.QColor(55, 55, 55)
-    ALT = QtGui.QColor(88, 88, 88)
+    ALT = QtGui.QColor(83, 83, 83)
     LINK = QtGui.QColor(200, 200, 200)
     ORG = QtGui.QColor(255, 125, 0)
 
