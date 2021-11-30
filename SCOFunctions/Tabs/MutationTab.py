@@ -1,6 +1,7 @@
+from functools import partial
 from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MTheming import MColors
-from SCOFunctions.MUserInterface import Cline
+from SCOFunctions.MUserInterface import Cline, SortingQLabel
 from SCOFunctions.SC2Dictionaries import weekly_mutations
 
 
@@ -45,21 +46,33 @@ class MutationWidget(QtWidgets.QWidget):
 class MutationTab(QtWidgets.QWidget):
     def __init__(self, TabWidget):
         super().__init__()
+        self.p = self
         self.mutations = dict()
 
         # Labels
         offset = 10
-        self.name = QtWidgets.QLabel("Mutation", self)
+        self.name = SortingQLabel(self)
+        self.name.setText("Mutation")
         self.name.setGeometry(QtCore.QRect(offset + 10, 0, 200, 20))
+        self.name.setAlignment(QtCore.Qt.AlignLeft)
+        self.name.activate()
+        self.name.clicked.connect(partial(self.sort_mutations, self.name))
 
-        self.map = QtWidgets.QLabel("Map", self)
+        self.map = SortingQLabel(self)
+        self.map.setText("Map")
+        self.map.setAlignment(QtCore.Qt.AlignLeft)
         self.map.setGeometry(QtCore.QRect(offset + 200, 0, 200, 20))
+        self.map.clicked.connect(partial(self.sort_mutations, self.map))
 
-        self.difficulty = QtWidgets.QLabel("Difficulty", self)
+        self.difficulty = SortingQLabel(self)
+        self.difficulty.setText("Difficulty")
         self.difficulty.setToolTip("Maximum difficulty the mutation was completed on")
+        self.difficulty.setAlignment(QtCore.Qt.AlignLeft)
         self.difficulty.setGeometry(QtCore.QRect(offset + 350, 0, 100, 20))
+        self.difficulty.clicked.connect(partial(self.sort_mutations, self.difficulty))
 
         self.mutators = QtWidgets.QLabel("Mutators", self)
+        self.mutators.setAlignment(QtCore.Qt.AlignLeft)
         self.mutators.setGeometry(QtCore.QRect(offset + 420, 0, 600, 20))
 
         self.line = Cline(self)
@@ -94,3 +107,9 @@ class MutationTab(QtWidgets.QWidget):
     def update_data(self, weekly_data):
         for mutation, widget in self.mutations.items():
             widget.set_difficulty(weekly_data[mutation])
+
+    def sort_mutations(self, caller):
+        caller.activate()
+
+        sort_by = SortingQLabel.active[self].value
+        reverse = SortingQLabel.active[self].reverse
