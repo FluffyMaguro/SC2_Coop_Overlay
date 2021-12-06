@@ -1351,6 +1351,10 @@ class mass_replay_analysis:
                 else:
                     weeklies[mut]['losses'] += 1
 
+        for w in weeklies:
+            total = (weeklies[w]['wins'] + weeklies[w]['losses'])
+            weeklies[w]['winrate'] = weeklies[w]['wins'] / total if total else 0
+
         return weeklies
 
 

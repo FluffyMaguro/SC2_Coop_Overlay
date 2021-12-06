@@ -1,14 +1,18 @@
 from functools import partial
+from typing import Any, Dict
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MainFunctions import show_overlay
 from SCOFunctions.MTheming import MColors
-from SCOFunctions.MUserInterface import Cline, find_file, SortingQLabel
+from SCOFunctions.MUserInterface import Cline, SortingQLabel, find_file
 from SCOFunctions.SC2Dictionaries import weekly_mutations
 
 
 class MutationWidget(QtWidgets.QWidget):
     def __init__(self, mutation_name: str, bg: bool):
         super().__init__()
+        self.data = dict()
+        self.mutation_name = mutation_name
 
         height = 22
         self.setGeometry(QtCore.QRect(0, 0, 931, 22))
@@ -19,11 +23,11 @@ class MutationWidget(QtWidgets.QWidget):
         self.file_iter = 0
         self.last_type = None
 
-        if bg:
-            self.bg = QtWidgets.QFrame(self)
-            self.bg.setGeometry(QtCore.QRect(5, 0, 921, height + 1))
-            self.bg.setAutoFillBackground(True)
-            self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
+        self.bg = QtWidgets.QFrame(self)
+        self.bg.setGeometry(QtCore.QRect(5, 0, 931, height + 1))
+        self.bg.setAutoFillBackground(True)
+        self.bg.setBackgroundRole(QtGui.QPalette.AlternateBase)
+        self.bg.hide()
 
         self.name = QtWidgets.QLabel(mutation_name, self)
         self.name.setGeometry(QtCore.QRect(10, 0, 200, 20))
@@ -32,19 +36,19 @@ class MutationWidget(QtWidgets.QWidget):
         self.map.setGeometry(QtCore.QRect(180, 0, 200, 20))
 
         self.wins = QtWidgets.QLabel(self)
-        self.wins.setGeometry(QtCore.QRect(285, 0, 30, 20))
+        self.wins.setGeometry(QtCore.QRect(290, 0, 30, 20))
         self.wins.setAlignment(QtCore.Qt.AlignCenter)
 
         self.losses = QtWidgets.QLabel(self)
         self.losses.setGeometry(QtCore.QRect(310, 0, 30, 20))
         self.losses.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.winloss = QtWidgets.QLabel(self)
-        self.winloss.setGeometry(QtCore.QRect(350, 0, 40, 20))
-        self.winloss.setAlignment(QtCore.Qt.AlignCenter)
+        self.winrate = QtWidgets.QLabel(self)
+        self.winrate.setGeometry(QtCore.QRect(350, 0, 40, 20))
+        self.winrate.setAlignment(QtCore.Qt.AlignCenter)
 
         self.difficulty = QtWidgets.QLabel("None", self)
-        self.difficulty.setGeometry(QtCore.QRect(390, 0, 100, 20))
+        self.difficulty.setGeometry(QtCore.QRect(385, 0, 100, 20))
         self.difficulty.setAlignment(QtCore.Qt.AlignCenter)
 
         self.mutators = QtWidgets.QLabel('   |   '.join(weekly_mutations[mutation_name]['mutators']), self)
@@ -75,11 +79,13 @@ class MutationWidget(QtWidgets.QWidget):
         self.file_iter %= len(self.files)
         return self.files[self.file_iter]
 
-    def update(self, mutation):
+    def update(self, mutation: Dict[str, Any]):
         """ Updates the difficulty
         Args:
             mutation: dictionary containing information about difficulty, files, and W/L
         """
+        self.data = mutation
+
         # Files & buttons
         self.files = mutation['files']
         if self.files:
@@ -87,15 +93,15 @@ class MutationWidget(QtWidgets.QWidget):
             self.file_btn.show()
 
         # Win/loss
-        self.wins.setText(str(mutation['W']))
-        self.losses.setText(str(mutation['L']))
-        self.winloss.setText(f"{mutation['ratio']:.0%}")
+        self.wins.setText(str(mutation['wins']))
+        self.losses.setText(str(mutation['losses']))
+        self.winrate.setText(f"{mutation['winrate']:.0%}")
 
         # Difficulty
-        self.difficulty.setText(mutation['Completed'])
-        if mutation['Completed'] == "Brutal":
+        self.difficulty.setText(mutation['diff'])
+        if mutation['diff'] == "Brutal":
             self.setStyleSheet(f"QLabel {{color: {MColors.game_weekly}}}")
-        elif mutation['Completed'] != "None":
+        elif mutation['diff'] != "None":
             self.setStyleSheet(f"QLabel {{color: {MColors.player_highlight}}}")
         else:
             self.setStyleSheet("")
@@ -105,15 +111,14 @@ class MutationTab(QtWidgets.QWidget):
     def __init__(self, TabWidget):
         super().__init__()
         self.p = self
-        self.mutations = list()
-        self.weekly = dict()
+        self.weekly_mutations: Dict[str, Any] = dict()
 
         # Labels
         offset = 10
 
         self.name = SortingQLabel(self)
         self.name.setText("Mutation")
-        self.name.setGeometry(QtCore.QRect(offset + 10, 0, 170, 20))
+        self.name.setGeometry(QtCore.QRect(offset + 12, 4, 170, 20))
         self.name.setAlignment(QtCore.Qt.AlignLeft)
         self.name.activate()
         self.name.clicked.connect(partial(self.sort_mutations, self.name))
@@ -121,13 +126,13 @@ class MutationTab(QtWidgets.QWidget):
         self.map = SortingQLabel(self)
         self.map.setText("Map")
         self.map.setAlignment(QtCore.Qt.AlignLeft)
-        self.map.setGeometry(QtCore.QRect(offset + 180, 0, 110, 20))
+        self.map.setGeometry(QtCore.QRect(offset + 180, 4, 110, 20))
         self.map.clicked.connect(partial(self.sort_mutations, self.map))
 
         self.wins = SortingQLabel(self, True)
         self.wins.setText("W")
         self.wins.setAlignment(QtCore.Qt.AlignCenter)
-        self.wins.setGeometry(QtCore.QRect(offset + 285, 0, 30, 20))
+        self.wins.setGeometry(QtCore.QRect(offset + 290, 0, 30, 20))
         self.wins.clicked.connect(partial(self.sort_mutations, self.wins))
 
         self.losses = SortingQLabel(self, True)
@@ -136,12 +141,11 @@ class MutationTab(QtWidgets.QWidget):
         self.losses.setGeometry(QtCore.QRect(offset + 310, 0, 30, 20))
         self.losses.clicked.connect(partial(self.sort_mutations, self.losses))
 
-        self.winloss = SortingQLabel(self, True)
-        self.winloss.setText("W/L")
-        self.winloss.setToolTip("Win/Loss ratio")
-        self.winloss.setGeometry(QtCore.QRect(offset + 345, 0, 40, 20))
-        self.winloss.setAlignment(QtCore.Qt.AlignCenter)
-        self.winloss.clicked.connect(partial(self.sort_mutations, self.winloss))
+        self.winrate = SortingQLabel(self, True)
+        self.winrate.setText("Winrate")
+        self.winrate.setGeometry(QtCore.QRect(offset + 340, 0, 60, 20))
+        self.winrate.setAlignment(QtCore.Qt.AlignCenter)
+        self.winrate.clicked.connect(partial(self.sort_mutations, self.winrate))
 
         self.difficulty = SortingQLabel(self, True)
         self.difficulty.setText("Completed")
@@ -156,7 +160,7 @@ class MutationTab(QtWidgets.QWidget):
         self.line = Cline(self)
         self.line.setGeometry(QtCore.QRect(5, 22, 941, 1))
 
-        for item in (self.name, self.map, self.wins, self.losses, self.winloss, self.difficulty, self.mutators):
+        for item in (self.name, self.map, self.wins, self.losses, self.winrate, self.difficulty, self.mutators):
             item.setStyleSheet("QLabel {font-weight: bold}")
 
         # Scroll
@@ -179,68 +183,42 @@ class MutationTab(QtWidgets.QWidget):
 
         # Create mutations
         for iter, mutation_name in enumerate(weekly_mutations.keys()):
-            widget = MutationWidget(mutation_name, bool(iter % 2))
-            self.scroll_area_contentLayout.addWidget(widget)
+            self.weekly_mutations[mutation_name] = MutationWidget(mutation_name, bool(iter % 2))
+            self.scroll_area_contentLayout.addWidget(self.weekly_mutations[mutation_name])
 
     def update_data(self, weekly_data):
-        self.weekly = weekly_data
-        #for mutation, widget in self.mutations.items():
-            #widget.update(weekly_data[mutation])
-        # Create mutations
-        
-        self.mutations = list()
-        
-        for iter, (mutation_name, mutation_data) in enumerate(weekly_mutations.items()):
-            muta = dict()
-            muta['Mutation'] = mutation_name
-            muta['Map'] = mutation_data['map'] 
-            muta['Completed'] = weekly_data[mutation_name]['diff']
-            #muta['Mutators'] = mutation_data['mutators']
-            muta['W'] = weekly_data[mutation_name]['wins']
-            muta['L'] = weekly_data[mutation_name]['losses']
-            muta['files'] = weekly_data[mutation_name]['files']
-            
-            games = weekly_data[mutation_name]['wins'] + weekly_data[mutation_name]['losses']
-            if games == 0: 
-                muta['ratio'] = 0
-            else:
-                muta['ratio'] = weekly_data[mutation_name]['wins'] / games
-            self.mutations.append(muta)
-
+        for mutation, widget in self.weekly_mutations.items():
+            widget.update(weekly_data[mutation])
         self.sort_mutations(self)
 
     def sort_mutations(self, caller):
         if type(caller) is SortingQLabel:
             caller.activate()
+
         sort_by = SortingQLabel.active[self].value
         reverse = SortingQLabel.active[self].reverse
-        
-        #empty list
-        while self.scroll_area_contentLayout.count():
-            item = self.scroll_area_contentLayout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-            else:
-                self.clearLayout(item.layout())
-        
-        #sort
-        if sort_by == 'W/L':
-            sort_by = 'ratio'
-                  
-                  
-        #sorted(list_to_be_sorted, key=lambda d: d['name']) 
-        #self.mutations = {k: v for k, v in sorted(self.mutations.items(), reverse=reverse)}
-        #self.mutations = {k: v for k, v in sorted(self.mutations, key=lambda x: x[1][trans_dict[sort_by]], reverse=reverse)}
-        self.mutations = sorted(self.mutations, key=lambda d: d[sort_by], reverse=reverse)
+        widgets = list(self.weekly_mutations.values())
 
+        # Remove widgets from layout
+        for widget in widgets:
+            self.scroll_area_contentLayout.removeWidget(widget)
 
-        #widget.update(weekly_data[mutation])
+        # Sort widgets
+        trans = {"W": "wins", "L": "losses", "Winrate": "winrate", "Completed": "diff"}
 
-        #results = {k: v for k, v in sorted(results.items(), key=lambda x: x[1], reverse=True) if v != 0}
-        
-        for iter, muta in enumerate(self.mutations):
-            widget = MutationWidget(muta['Mutation'], bool(iter % 2))
+        def sortingf(item):
+            # Data values (+ check if data saved for weekly widgets)
+            if sort_by in trans and trans[sort_by] in item.data:
+                return item.data[trans[sort_by]]
+            # Mutation name
+            elif sort_by == "Mutation":
+                return item.mutation_name
+            # Map
+            return weekly_mutations[item.mutation_name]['map']
+
+        widgets = sorted(widgets, key=sortingf, reverse=reverse)
+
+        # Add widgets to the layout and update backgrounds
+        for i, widget in enumerate(widgets):
             self.scroll_area_contentLayout.addWidget(widget)
-            widget.update(muta)
-        
+            widget.bg.show() if i % 2 else widget.bg.hide()
