@@ -1506,25 +1506,25 @@ class TitleBar(QtWidgets.QFrame):
     """ Custom title bar used in the dark theme. Handles minimization, closing and dragging the window."""
     def __init__(self, parent):
         super().__init__(parent)
-        self.setGeometry(QtCore.QRect(512, 0, 468, 24))
+        self.setGeometry(QtCore.QRect(582, 0, 468, 24))
         self.moving = False
         self.offset = None
         self.parent = parent
 
         # New title
         self.new_title = QtWidgets.QLabel(self)
-        self.new_title.setGeometry(QtCore.QRect(130, 1, 200, 20))
+        self.new_title.setGeometry(QtCore.QRect(100, 1, 200, 20))
         self.new_title.setStyleSheet("color: white; font-weight: bold")
 
         # Minimize button
         self.minimize = QtWidgets.QToolButton(self)
-        self.minimize.setGeometry(QtCore.QRect(425, 2, 20, 20))
+        self.minimize.setGeometry(QtCore.QRect(355, 2, 20, 20))
         self.minimize.setText('–')
         self.minimize.clicked.connect(parent.showMinimized)
 
         # Maximize button
         self.close_button = QtWidgets.QToolButton(self)
-        self.close_button.setGeometry(QtCore.QRect(445, 2, 20, 20))
+        self.close_button.setGeometry(QtCore.QRect(375, 2, 20, 20))
         self.close_button.setText('⨉')
         self.close_button.clicked.connect(parent.minimize_to_tray)
 

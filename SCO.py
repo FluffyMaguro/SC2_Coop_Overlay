@@ -851,6 +851,8 @@ class UI_TabWidget(object):
         # Delay updating new data to prevent lag when showing the overlay
         self.wait_ms(2000)
         self.TAB_Games.add_new_game_data(replay_dict)
+        if self.CAnalysis is not None and replay_dict['mutators']:
+            self.TAB_Mutations.update_data(self.CAnalysis.get_weekly_data())
 
     def save_playernotes_to_settings(self):
         """ Saves player notes from UI to settings dict"""

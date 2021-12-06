@@ -52,13 +52,15 @@ class MutationWidget(QtWidgets.QWidget):
 
         self.overlay_btn = QtWidgets.QPushButton("Overlay", self)
         self.overlay_btn.setGeometry(QtCore.QRect(821, 0, 55, 22))
+
         self.overlay_btn.clicked.connect(lambda: show_overlay(self.get_file(1)))
-        self.overlay_btn.setDisabled(True)
+        self.overlay_btn.hide()
 
         self.file_btn = QtWidgets.QPushButton("File", self)
         self.file_btn.setGeometry(QtCore.QRect(881, 0, 55, 22))
+
         self.file_btn.clicked.connect(lambda: find_file(self.get_file(2)))
-        self.file_btn.setDisabled(True)
+        self.file_btn.hide()
 
     def get_file(self, type: int) -> str:
         """ Returns the next file to show"""
@@ -81,8 +83,8 @@ class MutationWidget(QtWidgets.QWidget):
         # Files & buttons
         self.files = mutation['files']
         if self.files:
-            self.overlay_btn.setDisabled(False)
-            self.file_btn.setDisabled(False)
+            self.overlay_btn.show()
+            self.file_btn.show()
 
         # Win/loss
         self.wins.setText(str(mutation['W']))
