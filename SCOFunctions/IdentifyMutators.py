@@ -84,8 +84,10 @@ def identify_mutators(events: List[Dict[str, Any]], extension=True, mm=False, de
             # Mutator clicked
             if 41 <= action <= 83:
                 new_mutator = get_mutator(action, panel)
-                if new_mutator is not None and (not new_mutator in mutators or new_mutator == 'Random'):
+                if new_mutator is not None and (new_mutator not in mutators or new_mutator == 'Random'):
                     mutators.append(new_mutator)
+                elif new_mutator in mutators and new_mutator != 'Random':
+                    mutators.remove(new_mutator)
 
             # Panel Changed
             if action == 123 and panel > 1:
