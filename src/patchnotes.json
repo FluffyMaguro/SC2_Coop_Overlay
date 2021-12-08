@@ -164,5 +164,11 @@
   ],
   "243": [
     "Bug fixes"
+  ],
+  "244": [
+    "Weekly mutation tab showing which mutations you have completed (based on replays)",
+    "Tychus outlaw frequency shown in unit stats",
+    "What killed your units logged in the log file (Logs.txt)",
+    "Bug fixes"
   ]
 }

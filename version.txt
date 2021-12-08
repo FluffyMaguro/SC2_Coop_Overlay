@@ -1,5 +1,5 @@
 {
-  "version": 243,
-  "download_link_1": "https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.43/SC2CoopOverlay.2.43.zip",
-  "hash": "b404410278e4d504474fc1e5f673de9d7965f81e749139bd30476fed98b93cc5"
+  "version": 244,
+  "download_link_1": "https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.44/SC2CoopOverlay.2.44.zip",
+  "hash": "7944ba4d8089d319ffabacaa87dee3e01422df3fde95817e870231d4b04b5851"
 }

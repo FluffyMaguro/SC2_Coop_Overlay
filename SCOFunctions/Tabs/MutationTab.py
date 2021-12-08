@@ -9,7 +9,7 @@ from SCOFunctions.SC2Dictionaries import weekly_mutations
 
 
 class MutationWidget(QtWidgets.QWidget):
-    def __init__(self, mutation_name: str, bg: bool):
+    def __init__(self, mutation_name: str):
         super().__init__()
         self.data = dict()
         self.mutation_name = mutation_name
@@ -182,8 +182,8 @@ class MutationTab(QtWidgets.QWidget):
         self.scroll_area.setWidget(self.scroll_area_content)
 
         # Create mutations
-        for iter, mutation_name in enumerate(weekly_mutations.keys()):
-            self.weekly_mutations[mutation_name] = MutationWidget(mutation_name, bool(iter % 2))
+        for mutation_name in weekly_mutations.keys():
+            self.weekly_mutations[mutation_name] = MutationWidget(mutation_name)
             self.scroll_area_contentLayout.addWidget(self.weekly_mutations[mutation_name])
 
     def update_data(self, weekly_data):
@@ -206,7 +206,7 @@ class MutationTab(QtWidgets.QWidget):
         # Sort widgets
         trans = {"W": "wins", "L": "losses", "Winrate": "winrate", "Completed": "diff"}
 
-        def sortingf(item):
+        def sortingf(item: MutationWidget):
             # Data values (+ check if data saved for weekly widgets)
             if sort_by in trans and trans[sort_by] in item.data:
                 return item.data[trans[sort_by]]

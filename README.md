@@ -1,5 +1,5 @@
 # StarCraft II Coop Overlay (SCO)
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.43/SC2CoopOverlay.2.43.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_overlay/releases/download/2.44/SC2CoopOverlay.2.44.zip)
 
 * Or run the script with Python 3.8+:
 
@@ -144,6 +144,13 @@ func_on_new_data = function some_function_name(data) {
 
 
 # Changelog
+
+* 2.44 version
+
+      - Weekly mutation tab showing which mutations you have completed (based on replays)
+      - Tychus outlaw frequency shown in unit stats
+      - What killed your units logged in the log file (Logs.txt)
+      - Bug fixes
 
 * 2.43 version
 

@@ -2492,7 +2492,7 @@ weekly_mutations = {
         'map': 'The Vermillion Problem',
         'mutators': {'Chaos Studios'}
     },
-    'Wheel of Misfortune (Train)': {
+    'Wheel of Misfortune (Trains)': {
         'map': 'Oblivion Express',
         'mutators': {'Chaos Studios'}
     },
@@ -2500,15 +2500,15 @@ weekly_mutations = {
         'map': 'Void Launch',
         'mutators': {'Chaos Studios'}
     },
-    'Wheel of Misfortune (Locks)': {
+    'Wheel of Misfortune (Lock)': {
         'map': 'Lock & Load',
         'mutators': {'Chaos Studios'}
     },
-    'Wheel of Stupidity (Cradle)': {
+    'Wheel of Misfortune (Cradle)': {
         'map': 'Cradle of Death',
         'mutators': {'Chaos Studios'}
     },
-    'Wheel of Stupidity (Evac)': {
+    'Wheel of Misfortune (Evac)': {
         'map': 'Miner Evacuation',
         'mutators': {'Chaos Studios'}
     },
