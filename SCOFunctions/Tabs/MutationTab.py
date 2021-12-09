@@ -157,10 +157,13 @@ class MutationTab(QtWidgets.QWidget):
         self.mutators = QtWidgets.QLabel("Mutators", self)
         self.mutators.setGeometry(QtCore.QRect(offset + 480, 0, 200, 20))
 
+        self.mutation_count = QtWidgets.QLabel(f"Weeklies completed: ?/{len(weekly_mutations)}", self)
+        self.mutation_count.setGeometry(QtCore.QRect(offset + 760, 0, 200, 20))
+
         self.line = Cline(self)
         self.line.setGeometry(QtCore.QRect(5, 22, 941, 1))
 
-        for item in (self.name, self.map, self.wins, self.losses, self.winrate, self.difficulty, self.mutators):
+        for item in (self.name, self.map, self.wins, self.losses, self.winrate, self.difficulty, self.mutators, self.mutation_count):
             item.setStyleSheet("QLabel {font-weight: bold}")
 
         # Scroll
@@ -190,6 +193,10 @@ class MutationTab(QtWidgets.QWidget):
         for mutation, widget in self.weekly_mutations.items():
             widget.update(weekly_data[mutation])
         self.sort_mutations(self)
+
+        # Update mutation count
+        completed = len([w for w in weekly_data.values() if w['wins']])
+        self.mutation_count.setText(f"Weeklies completed: {completed}/{len(weekly_mutations)}")
 
     def sort_mutations(self, caller):
         if type(caller) is SortingQLabel:
