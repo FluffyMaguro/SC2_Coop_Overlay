@@ -32,6 +32,12 @@ if not os.path.isfile(webengine_path_pack):
     print("Copying QtWebEngineProcess.exe")
     shutil.copy(webengine_path_venv, webengine_path_pack)
 
+# Delete custom
+for f in ("custom.css", "custom.js"):
+    f = os.path.join('SCO.dist/Layouts', f)
+    if os.path.isfile(f):
+        os.remove(f)
+
 # Zip
 file_name = f"SC2CoopOverlay ({app_version // 100}.{app_version % 100}).zip"
 

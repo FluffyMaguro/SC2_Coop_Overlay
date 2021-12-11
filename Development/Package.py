@@ -30,6 +30,12 @@ shutil.copytree('Layouts', 'dist/SCO/Layouts')
 shutil.copy('Read me (Github).url', 'dist/SCO/Read me (Github).url')
 shutil.move('dist/SCO', 'SCO')
 
+# Delete custom
+for f in ("custom.css", "custom.js"):
+    f = os.path.join('dist/SCO/Layouts', f)
+    if os.path.isfile(f):
+        os.remove(f)
+
 to_zip = []
 for root, directories, files in os.walk('SCO'):
     for file in files:
