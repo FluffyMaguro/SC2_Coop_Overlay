@@ -251,7 +251,7 @@ def parse_replay_file(filepath):
     return replay
 
 
-def analyse_parsed_replay(filepath, replay, main_player_handles=None):
+def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_killby: bool = True):
     """
     This whole function is a bit messy. It originated in a very different form.
     I should be broken into more functions. Players shouldn't be hardcoded to
@@ -934,7 +934,7 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None):
 
     # Save data about what killed trakced units in the log
     for unit in unit_killed_by:
-        if unit_type_dict_main[unit][2] > 0:
+        if unit_type_dict_main[unit][2] > 0 and print_killby:
             d = {u: unit_killed_by[unit].count(u) for u in unit_killed_by[unit]}
             d = {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
             logger.info(f"What killed {unit}? {d}")

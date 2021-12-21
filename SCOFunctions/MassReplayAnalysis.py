@@ -13,7 +13,6 @@ import threading
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict
 
 import s2protocol
 
@@ -22,7 +21,7 @@ from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, na
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MReplayData import replay_data
-from SCOFunctions.ReplayAnalysis import (analyse_parsed_replay, parse_replay_file)
+from SCOFunctions.ReplayAnalysis import analyse_parsed_replay
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats, weekly_mutations)
 
@@ -1005,7 +1004,11 @@ class mass_replay_analysis:
 
         # Start
         logger.info('Starting full analysis!')
-        pool = ProcessPoolExecutor()
+        max_workers = 2
+        threads = os.cpu_count()
+        if isinstance(threads, int) and threads > 2:
+            max_workers = threads - 2
+        pool = ProcessPoolExecutor(max_workers=max_workers)
         results = []
         start = time.time()
         idx = 0
@@ -1034,7 +1037,11 @@ class mass_replay_analysis:
                 return False
 
             # Wait for the result
-            replay = future.result()
+            try:
+                replay = future.result()
+            except Exception:
+                logger.error(f"Multiprocessing error\n{traceback.format_exc()}")
+                continue
 
             # Propagate exceptions
             if isinstance(replay, Exception):
@@ -1043,7 +1050,7 @@ class mass_replay_analysis:
                 continue
             try:
                 # Finish analyzing replays
-                full_data = analyse_parsed_replay(filepath, replay, self.main_handles)
+                full_data = analyse_parsed_replay(filepath, replay, self.main_handles, print_killby=False)
                 full_data['full_analysis'] = True
                 if len(full_data) < 2:
                     continue
