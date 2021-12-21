@@ -8,6 +8,7 @@ import json
 import os
 import pathlib
 import pickle
+import random
 import statistics
 import threading
 import time
@@ -886,7 +887,7 @@ class mass_replay_analysis:
     @catch_exceptions(logger)
     def save_cache(self):
         """ Saves cache """
-        temp_file = f"{self.cachefile}_temp"
+        temp_file = f"{self.cachefile}_temp_{random.randint(0, 10000000)}"
         with lock:
             with open(temp_file, 'wb') as f:
                 pickle.dump(self.ReplayDataAll, f, protocol=pickle.HIGHEST_PROTOCOL)

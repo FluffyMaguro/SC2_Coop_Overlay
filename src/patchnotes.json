@@ -170,5 +170,9 @@
     "Tychus outlaw frequency shown in unit stats",
     "What killed your units logged in the log file (Logs.txt)",
     "Bug fixes"
+  ],
+  "245": [
+    "Count for weekly mutation completion (e.g., 158/180)",
+    "Bug fixes"
   ]
 }

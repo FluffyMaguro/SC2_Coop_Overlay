@@ -145,6 +145,11 @@ func_on_new_data = function some_function_name(data) {
 
 # Changelog
 
+* 2.45 version
+
+      - Count for weekly mutation completion (e.g., 158/180)
+      - Bug fixes
+
 * 2.44 version
 
       - Weekly mutation tab showing which mutations you have completed (based on replays)
