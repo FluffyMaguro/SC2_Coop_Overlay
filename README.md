@@ -134,11 +134,21 @@ CC = {
 Add something like this to custom.js. The function will run when new data is added.
 
 ```javascript
-func_on_new_data = function some_function_name(data) {
+function func_on_new_data(data) {
     // This shows you what's the structure of replay data (can be removed)
     for(var key in data) {
         console.log(key + ":\t\t" + data[key] + "\t\t")
     }
+}
+```
+
+This example shows bonus completion timings instead of just numbers.
+```javascript
+function func_on_new_data(data) {
+  setTimeout(() => {
+    document.getElementById("map").innerHTML = `${data['map_name']}&nbsp;&nbsp;(${format_length(data['length'])})`;
+    document.getElementById("brutal").innerHTML += `<br><span style="color: #FFE670">${data["bonus"].join("|")}</span>`
+  }, 1);
 }
 ```
 
