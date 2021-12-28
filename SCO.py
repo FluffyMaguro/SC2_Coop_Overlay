@@ -79,6 +79,7 @@ class UI_TabWidget(object):
 
         self.signal_manager = Signal_Manager()
         self.signal_manager.showHidePerfOverlay.connect(self.show_hide_performance_overlay)
+        self.write_permissions = True
 
         # Tabs
         self.TAB_Main = Tabs.MainTab(self, APPVERSION)
@@ -385,12 +386,13 @@ class UI_TabWidget(object):
         SM.settings['duration'] = self.TAB_Main.SP_Duration.value()
         SM.settings['monitor'] = self.TAB_Main.SP_Monitor.value()
 
-        SM.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString()
-        SM.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString()
-        SM.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString()
-        SM.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString()
-        SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString()
-        SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString()
+        self.check_to_remove_hotkeys()
+        SM.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString().replace("Num+", "")
+        SM.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString().replace("Num+", "")
+        SM.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString().replace("Num+", "")
+        SM.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString().replace("Num+", "")
+        SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString().replace("Num+", "")
+        SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString().replace("Num+", "")
 
         SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
         SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
@@ -483,7 +485,10 @@ class UI_TabWidget(object):
     def hotkey_changed(self):
         """ Wait a bit for the sequence to update, and then check if not to delete the key"""
         self.wait_ms(50)
-        self.check_to_remove_hotkeys()
+        try:
+            self.check_to_remove_hotkeys()
+        except Exception:
+            logger.error(traceback.format_exc())
 
     def check_to_remove_hotkeys(self):
         """ Checks if a key is 'Del' and sets it to None """
@@ -499,7 +504,7 @@ class UI_TabWidget(object):
 
         for key in key_dict:
             if key.keySequence().toString() == 'Del':
-                key.setKeySequence(QtGui.QKeySequence.fromString(None))
+                key.setKeySequence(QtGui.QKeySequence.fromString(""))
                 logger.info(f"Removed key for {key_dict[key]}")
                 self.saveSettings()
                 break
