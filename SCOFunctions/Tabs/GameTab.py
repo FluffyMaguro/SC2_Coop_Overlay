@@ -116,7 +116,7 @@ class GameTab(QtWidgets.QWidget):
             self.game_UI_dict[game.file] = MUI.GameEntry(game, CAnalysis.main_handles, self.SC_GamesScrollAreaContent)
             self.SC_GamesScrollAreaContentLayout.addWidget(self.game_UI_dict[game.file].widget)
 
-    def search_games(self):
+    def search_games(self, force_search: bool = False):
         """ Searches for games with given strings in them and updates games tab"""
 
         if self.p.CAnalysis is None:
@@ -128,9 +128,10 @@ class GameTab(QtWidgets.QWidget):
 
         search_for = [i.replace('_', ' ') for i in self.ed_games_search.text().split()]
         if len(search_for) == 0:
+            self.last_searched_words = ""
             self.presented_replays = self.p.CAnalysis.get_last_replays(self.showing_games)
 
-        elif self.last_searched_words != self.ed_games_search.text():
+        elif self.last_searched_words != self.ed_games_search.text() or force_search:
             # Search for replays with strings in them
             self.last_searched_words = self.ed_games_search.text()
             self.presented_replays = self.p.CAnalysis.search(*search_for)
@@ -178,5 +179,8 @@ class GameTab(QtWidgets.QWidget):
                     if not replay_dict['parser']['players'][player].get('handle', '-') in self.p.CAnalysis.main_handles:
                         self.p.TAB_Players.put_player_first(name)
                         break
+
+                # Search again
+                self.search_games(force_search=True)
             except Exception:
                 logger.error(traceback.format_exc())
