@@ -16,6 +16,7 @@ Overall it's messy with a lot of coupling, not enough separation between UI and
 core functinality, and similar issues. It's a great learning experience nevertheless.
 
 """
+import importlib
 import json
 import os
 import platform
@@ -830,10 +831,10 @@ class UI_TabWidget(object):
 
     def reset_keyboard_thread(self):
         """ Resets keyboard thread"""
+        global keyboard
         try:
             keyboard.unhook_all()
-            keyboard._listener = keyboard._KeyboardListener()
-            keyboard._listener.start_if_necessary()
+            keyboard = importlib.reload(keyboard)
             self.manage_keyboard_threads()
             logger.info(f'Resetting keyboard thread')
         except Exception:
