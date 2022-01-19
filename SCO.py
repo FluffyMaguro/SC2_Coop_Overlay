@@ -28,6 +28,8 @@ import urllib.request
 from datetime import datetime
 from functools import partial
 from multiprocessing import freeze_support
+from types import TracebackType
+from typing import Type
 
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -51,6 +53,31 @@ logger = Logger('SCO', Logger.levels.INFO)
 Logger.file_path = truePath("Logs.txt")
 
 APPVERSION = 246
+
+
+def excepthook(exc_type: Type[BaseException], exc_value: Exception, exc_tback: TracebackType):
+    """ Provides the top-most exception handling. Logs unhandled exceptions and cleanly shuts down the app."""
+    # Log the exception
+    s = "".join(traceback.format_exception(exc_type, exc_value, exc_tback))
+    logger.error(f"Unhandled exception!\n{s}")
+
+    # Try to save settings
+    try:
+        ui.saveSettings()
+    except Exception:
+        logger.error("Failed to save settings.")
+
+    # Shut down other threads
+    try:
+        TabWidget.tray_icon.hide()
+        ui.stop_full_analysis()
+        MF.stop_threads()
+    except Exception:
+        logger.error("Failed to order the app to stop checking api")
+    sys.exit()
+
+
+sys.excepthook = excepthook
 
 
 class Signal_Manager(QtCore.QObject):
@@ -1171,6 +1198,7 @@ if __name__ == "__main__":
     except MultipleInstancesRunning:
         sys.exit()
     except Exception:
+        print("ERROR CAUCHGT!................................................")
         logger.error(traceback.format_exc())
         TabWidget.tray_icon.hide()
         MF.stop_threads()
