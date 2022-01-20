@@ -174,5 +174,11 @@
   "245": [
     "Count for weekly mutation completion (e.g., 158/180)",
     "Bug fixes"
+  ],
+  "246": [
+    "Fix for hotkeys that use numpad",
+    "Fix for hotkeys after PC awaken from sleep",
+    "Fix for search in games tab",
+    "Unexpected exceptions are properly logged"
   ]
 }
