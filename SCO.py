@@ -415,12 +415,12 @@ class UI_TabWidget(object):
         SM.settings['monitor'] = self.TAB_Main.SP_Monitor.value()
 
         self.check_to_remove_hotkeys()
-        SM.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
-        SM.settings['hotkey_show'] = self.TAB_Main.KEY_Show.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
-        SM.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
-        SM.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
-        SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
-        SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.keySequence().toString().replace("Num+", "").replace("scrolllock", 'scroll lock')
+        SM.settings['hotkey_show/hide'] = self.TAB_Main.KEY_ShowHide.get_hotkey_string()
+        SM.settings['hotkey_show'] = self.TAB_Main.KEY_Show.get_hotkey_string()
+        SM.settings['hotkey_hide'] = self.TAB_Main.KEY_Hide.get_hotkey_string()
+        SM.settings['hotkey_newer'] = self.TAB_Main.KEY_Newer.get_hotkey_string()
+        SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.get_hotkey_string()
+        SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.get_hotkey_string()
 
         SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
         SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()

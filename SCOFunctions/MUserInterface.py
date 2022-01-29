@@ -1501,6 +1501,14 @@ class CustomKeySequenceEdit(QtWidgets.QKeySequenceEdit):
         value = self.keySequence()
         self.setKeySequence(QtGui.QKeySequence(value))
 
+    def get_hotkey_string(self) -> str:
+        """ Returns the hotkey string usable by the keyboard module"""
+        hotkey = self.keySequence().toString()
+        replace_dict = {"Num+": "", "scrolllock": 'scroll lock', "ScrollLock": 'scroll lock'}
+        for item, nitem in replace_dict.items():
+            hotkey = hotkey.replace(item, nitem)
+        return hotkey
+
 
 class TitleBar(QtWidgets.QFrame):
     """ Custom title bar used in the dark theme. Handles minimization, closing and dragging the window."""
