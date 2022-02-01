@@ -284,6 +284,7 @@ class UnitStats(QtWidgets.QWidget):
         super().__init__(parent)
         self.setGeometry(QtCore.QRect(0, 0, 950, 430))
         self.unit_data = unit_data
+        self.which = 'main'
 
         self.heading_main = QtWidgets.QLabel(self)
         self.heading_main.setGeometry(QtCore.QRect(20, 2, 100, 20))
@@ -357,7 +358,7 @@ class UnitStats(QtWidgets.QWidget):
             return x[1][sortby]
         return 0
 
-    def update_units(self, commander=None, main=True, caller=None):
+    def update_units(self, commander=None, main=None, caller=None):
         """ Updates unit stats for given commander and main/ally"""
 
         # Init variables. None values are coming from sort and will use self.attributes. Filled values come from buttons.
