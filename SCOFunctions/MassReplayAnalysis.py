@@ -18,13 +18,16 @@ from concurrent.futures import ProcessPoolExecutor
 import s2protocol
 
 from SCOFunctions.HelperFunctions import get_hash
-from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
+from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays,
+                                        names_fallback)
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MReplayData import replay_data
 from SCOFunctions.ReplayAnalysis import analyse_parsed_replay
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats, weekly_mutations)
+from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names,
+                                          mc_units, prestige_names,
+                                          units_to_stats, weekly_mutations)
 
 logger = Logger('MASS', Logger.levels.INFO)
 lock = threading.Lock()
@@ -978,7 +981,7 @@ class mass_replay_analysis:
     @staticmethod
     def remove_useless_keys(pdict):
         """ Removes keys from the dictionary that are no longer useful"""
-        to_remove = ('start_time', 'end_time', 'isBlizzard', 'last_deselect_event')
+        to_remove = ('start_time', 'end_time', 'isBlizzard', 'last_deselect_event', 'random_seed')
         for k in to_remove:
             if k in pdict:
                 del pdict[k]

@@ -3,7 +3,7 @@ import json
 import os
 import time
 import traceback
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import mpyq
 import s2protocol.decoders  # Including this so Nuitka packages it correctly
@@ -15,7 +15,7 @@ from SCOFunctions.SC2Dictionaries import map_names, prestige_names
 
 diff_dict = {1: 'Casual', 2: 'Normal', 3: 'Hard', 4: 'Brutal'}
 region_dict = {1: 'NA', 2: 'EU', 3: 'KR', 5: 'CN', 98: 'PTR'}
-valid_protocols = {81102: 81433, 80871: 81433, 76811: 76114, 80188: 78285, 79998: 78285, 81433: 83830, 84643: 83830}
+valid_protocols = {81102: 81433, 80871: 81433, 76811: 76114, 80188: 78285, 79998: 78285, 81433: 83830, 84643: 83830, 88500: 87702}
 protocols = [
     15405, 16561, 16605, 16755, 16939, 17266, 17326, 18092, 18468, 18574, 19132, 19458, 19595, 19679, 21029, 22612, 23260, 24944, 26490, 27950, 28272,
     28667, 32283, 51702, 52910, 53644, 54518, 55505, 55958, 56787, 57507, 58400, 59587, 60196, 60321, 62347, 62848, 63454, 64469, 65094, 65384, 65895,
@@ -154,6 +154,7 @@ def s2_parse_replay(file: str,
 
     replay['isBlizzard'] = player_info['m_isBlizzardMap']
     replay['extension'] = detailed_info['m_syncLobbyState']['m_gameDescription']['m_hasExtensionMod']
+    replay['random_seed'] = detailed_info['m_syncLobbyState']['m_lobbyState']['m_randomSeed']
     replay['brutal_plus'] = detailed_info['m_syncLobbyState']['m_lobbyState']['m_slots'][0].get('m_brutalPlusDifficulty', 0)
     replay['length'] = metadata['Duration']
     replay['start_time'] = get_start_time(events)

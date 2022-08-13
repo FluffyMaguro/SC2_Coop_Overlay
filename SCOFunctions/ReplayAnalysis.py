@@ -10,8 +10,9 @@ import traceback
 
 from SCOFunctions.MLogging import Logger
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.StatsCounter import StatsCounter, DroneIdentifier
-from SCOFunctions.SC2Dictionaries import UnitNameDict, UnitAddKillsTo, UnitCompDict, UnitsInWaves, COMasteryUpgrades, HFTS_Units, TUS_Units, prestige_upgrades, amon_player_ids
+from SCOFunctions.SC2Dictionaries import (COMasteryUpgrades, HFTS_Units, TUS_Units, UnitAddKillsTo, UnitCompDict, UnitNameDict, UnitsInWaves,
+                                          amon_player_ids, prestige_upgrades)
+from SCOFunctions.StatsCounter import DroneIdentifier, StatsCounter
 
 do_not_count_kills = {'FuelCellPickupUnit', 'ForceField', 'Scarab'}
 duplicating_units = {'HotSRaptor', 'MutatorAmonArtanis', 'HellbatBlackOps', 'LurkerStetmannBurrowed'}
@@ -1144,5 +1145,6 @@ def parse_and_analyse_replay(filepath, main_player_handles=None):
         replay = parse_replay_file(filepath)
     except Exception:
         logger.error(f'Parsing error ({filepath})\n{traceback.format_exc()}')
+        return {}
 
     return analyse_parsed_replay(filepath, replay, main_player_handles)

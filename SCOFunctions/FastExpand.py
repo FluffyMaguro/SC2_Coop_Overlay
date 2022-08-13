@@ -1,12 +1,12 @@
 import traceback
 import urllib.request
-from typing import Callable, Optional, List
+from typing import Optional, Tuple, Union
 
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from SCOFunctions.MFilePath import innerPath
-from SCOFunctions.MLogging import catch_exceptions, Logger
+from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.Settings import Setting_manager as SM
 
 logger = Logger('FAST', Logger.levels.INFO)
@@ -32,7 +32,6 @@ class FastExpandSelector(QtWidgets.QWidget):
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(self.padding, self.padding, self.padding, self.padding)
-        spacer = 10
 
         # Set the title
         self.title = QtWidgets.QLabel()
@@ -62,7 +61,7 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.move(sg.bottomRight().x() - self.width(), sg.bottomRight().y() - self.height())
         self.setLayout(layout)
 
-    def setData(self, data):
+    def setData(self, data: Tuple[str, int]):
         """Set map and player position"""
         self.selectedMap = data[0]
         self.playerPosition = data[1]
@@ -81,8 +80,10 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Get a list of valid commanders to fast expand on map and generate a label and hook a hotkey
         labelString = ""
         for idx, commander in enumerate(commanderList):
-            labelString += "NUM" + str(9 - idx) + " - " + commander + "\r\n"
-            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["commander", commander.lower()]))
+            hotkey = f"NUM {9-idx}"
+            labelString += f"{hotkey} - {commander}\r\n"
+            callback = keyboard.add_hotkey(hotkey, self.selectionMade, args=["commander", commander.lower()])
+            self.hotkeys.append(callback)
 
         # Add the Cancel option at the bottom
         labelString += "NUM0 - None"
@@ -107,8 +108,10 @@ class FastExpandSelector(QtWidgets.QWidget):
         # Get a list of valid commanders to fast expand on map and generate a label and hook a hotkey
         labelString = ""
         for idx, race in enumerate(raceList):
-            labelString += "NUM" + str(9 - idx) + " - " + race + "\r\n"
-            self.hotkeys.append(keyboard.add_hotkey("NUM " + str(9 - idx), self.selectionMade, args=["race", race.lower()]))
+            hotkey = f"NUM {9-idx}"
+            labelString += f"{hotkey} - {race}\r\n"
+            callback = keyboard.add_hotkey(hotkey, self.selectionMade, args=["race", race.lower()])
+            self.hotkeys.append(callback)
 
         # Add the Cancel option at the bottom
         labelString += "NUM0 - None"
@@ -120,7 +123,7 @@ class FastExpandSelector(QtWidgets.QWidget):
     def showExpand(self):
         try:
             baseURL = "https://starcraft2coop.com/images/assistant/"
-            filename = self.selectedCommander + "_"
+            filename = f"{self.selectedCommander}_"
             # Set up the file name to be called from starcraft2coop.com
             if self.selectedMap == "Chain of Ascension":
                 filename += f"coa_{self.selectedRace}_{self.playerPosition}.jpg"
@@ -151,7 +154,7 @@ class FastExpandSelector(QtWidgets.QWidget):
             self.reset()
 
     @catch_exceptions(logger)
-    def selectionMade(self, action, selection):
+    def selectionMade(self, action: str, selection: Union[str, int]):
         logger.info(f"Selection made: {action} | {selection}")
         # Remove all hotkeys first
         self.clearHotkeys()
@@ -177,8 +180,10 @@ class FastExpandSelector(QtWidgets.QWidget):
         self.selectedRace = ""
         self.playerPosition = 1
 
-    @catch_exceptions(logger)
     def clearHotkeys(self):
         for hotkey in self.hotkeys:
-            keyboard.remove_hotkey(hotkey)
+            try:
+                keyboard.remove_hotkey(hotkey)
+            except Exception:
+                logger.error(traceback.format_exc())
         self.hotkeys = []

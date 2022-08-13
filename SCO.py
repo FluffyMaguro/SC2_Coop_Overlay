@@ -58,8 +58,11 @@ APPVERSION = 246
 def excepthook(exc_type: Type[BaseException], exc_value: Exception, exc_tback: TracebackType):
     """ Provides the top-most exception handling. Logs unhandled exceptions and cleanly shuts down the app."""
     # Log the exception
-    s = "".join(traceback.format_exception(exc_type, exc_value, exc_tback))
-    logger.error(f"Unhandled exception!\n{s}")
+    try:
+        s = "".join(traceback.format_exception(exc_type, exc_value, exc_tback))
+        logger.error(f"Unhandled exception!\n{s}")
+    except Exception:
+        logger.error("Failed to log error!!!")
 
     # Try to save settings
     try:
@@ -1198,7 +1201,6 @@ if __name__ == "__main__":
     except MultipleInstancesRunning:
         sys.exit()
     except Exception:
-        print("ERROR CAUCHGT!................................................")
         logger.error(traceback.format_exc())
         TabWidget.tray_icon.hide()
         MF.stop_threads()

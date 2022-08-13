@@ -11,7 +11,7 @@ clear_pycache()
 # Run nuitka
 os.system('cmd /c "python -m nuitka'
           ' --plugin-enable=pyqt5'
-          ' --plugin-enable=multiprocessing'
+          #   ' --plugin-enable=multiprocessing' #No longer needed
           ' --standalone'
           ' --windows-disable-console'
           ' --windows-icon-from-ico=src/OverlayIcon.ico'
