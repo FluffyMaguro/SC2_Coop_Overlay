@@ -3,7 +3,6 @@ import hashlib
 import json
 import os
 import string
-import sys
 import traceback
 import zipfile
 from pathlib import Path
@@ -32,6 +31,9 @@ else:
 
 def get_hash(file: str, sha: bool = False) -> Optional[str]:
     """ Returns MD5/SHA256 file hash for a file """
+    if not os.path.exists(file):
+        return None
+
     try:
         with open(file, "rb") as f:
             bytesread = f.read()

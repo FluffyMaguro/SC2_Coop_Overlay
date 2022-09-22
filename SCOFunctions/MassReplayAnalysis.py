@@ -18,16 +18,13 @@ from concurrent.futures import ProcessPoolExecutor
 import s2protocol
 
 from SCOFunctions.HelperFunctions import get_hash
-from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays,
-                                        names_fallback)
+from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import Logger, catch_exceptions
 from SCOFunctions.MReplayData import replay_data
 from SCOFunctions.ReplayAnalysis import analyse_parsed_replay
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names,
-                                          mc_units, prestige_names,
-                                          units_to_stats, weekly_mutations)
+from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats, weekly_mutations)
 
 logger = Logger('MASS', Logger.levels.INFO)
 lock = threading.Lock()
@@ -628,6 +625,7 @@ def calculate_words(ReplayData):
 
 class mass_replay_analysis:
     """ Class for mass replay analysis"""
+
     def __init__(self, ACCOUNTDIR):
 
         names, handles = find_names_and_handles(ACCOUNTDIR)
@@ -767,7 +765,7 @@ class mass_replay_analysis:
         # Submit parsing jobs for replays
         for r in replays:
             rhash = get_hash(r)
-            if not rhash in self.parsed_replays:
+            if rhash is not None and not rhash in self.parsed_replays:
                 results.append((rhash, r, pool.submit(guarded_parse_replay_file, r, parse_events=False, onlyBlizzard=True,
                                                       withoutRecoverEnabled=True)))
 
