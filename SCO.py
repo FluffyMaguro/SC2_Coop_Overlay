@@ -52,7 +52,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = Logger('SCO', Logger.levels.INFO)
 Logger.file_path = truePath("Logs.txt")
 
-APPVERSION = 246
+APPVERSION = 247
 
 
 def excepthook(exc_type: Type[BaseException], exc_value: Exception, exc_tback: TracebackType):
@@ -102,6 +102,7 @@ class MultipleInstancesRunning(Exception):
 
 
 class UI_TabWidget(object):
+
     def setupUI(self, TabWidget: MUI.CustomQTabWidget):
         TabWidget.setWindowTitle(f"StarCraft Co-op Overlay (v{str(APPVERSION)[0]}.{str(APPVERSION)[1:]})")
         TabWidget.setWindowIcon(QtGui.QIcon(innerPath('src/OverlayIcon.ico')))

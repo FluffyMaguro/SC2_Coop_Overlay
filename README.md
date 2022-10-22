@@ -1,5 +1,5 @@
 # StarCraft II Coop Overlay (SCO)
-* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_Overlay/releases/download/2.46/SC2CoopOverlay.2.46.zip)
+* [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_Overlay/releases/download/2.47/SC2CoopOverlay.2.47.zip)
 
 * Or run the script with Python 3.6+:
 
