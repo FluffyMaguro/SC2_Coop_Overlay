@@ -1,6 +1,7 @@
 import traceback
-from PyQt5 import QtWidgets, QtGui, QtCore
+
 import SCOFunctions.MUserInterface as MUI
+from PyQt5 import QtCore, QtGui, QtWidgets
 from SCOFunctions.MLogging import Logger
 from SCOFunctions.Settings import Setting_manager as SM
 
@@ -8,6 +9,7 @@ logger = Logger('GT', Logger.levels.INFO)
 
 
 class GameTab(QtWidgets.QWidget):
+
     def __init__(self, parent, TabWidget):
         super().__init__()
         self.p = parent
@@ -90,7 +92,9 @@ class GameTab(QtWidgets.QWidget):
         self.ed_games_search.setAlignment(QtCore.Qt.AlignCenter)
         self.ed_games_search.setStyleSheet("font-weight: normal")
         self.ed_games_search.setPlaceholderText("Search")
-        self.ed_games_search.setToolTip("Search for any data in a game. Separate words by spaces.")
+        self.ed_games_search.setToolTip(
+            "Search for any data in a game. Separate words by spaces.\nUse _ instead of a space if you want a specific string. For example Missile_Command."
+        )
 
         self.bt_games_search = QtWidgets.QPushButton(self.WD_RecentGamesHeading)
         self.bt_games_search.setGeometry(QtCore.QRect(910, 3, 25, 25))

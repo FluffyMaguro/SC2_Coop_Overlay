@@ -634,15 +634,20 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
             # Update ownership
             unit_dict[unitid(event)][1] = event['m_controlPlayerId']
 
-            # Malwarfare bonus objective. First save when the bonus started, then check if it was completed sooner than 245.9375
+            # Malwarfare bonus objective. First save when the bonus started
             if 'Malwarfare' in replay['map_name']:
                 _time = event['_gameloop'] / 16 - START_TIME
                 if event['m_controlPlayerId'] == 9:
                     MWBonusInitialTiming[0] = _time
                 elif event['m_controlPlayerId'] == 10:
                     MWBonusInitialTiming[1] = _time
-                elif event['m_controlPlayerId'] == 6 and (_time - MWBonusInitialTiming[0] < 245.9375 or _time - MWBonusInitialTiming[1] < 245.9375):
-                    bonus_timings.append(_time)
+                elif event['m_controlPlayerId'] == 6:
+                    # Second objective, 245.9375 means it was ignored
+                    if MWBonusInitialTiming[1] and _time - MWBonusInitialTiming[1] != 245.9375:
+                        bonus_timings.append(_time)
+                    # First objective
+                    if MWBonusInitialTiming[0] and not MWBonusInitialTiming[1] and _time - MWBonusInitialTiming[0] != 245.9375:
+                        bonus_timings.append(_time)
 
         # Update some kill stats
         if event['_event'] == 'NNet.Replay.Tracker.SUnitDiedEvent':
@@ -737,6 +742,11 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
                         if not 'tus' in custom_kill_count:
                             custom_kill_count['tus'] = {1: 0, 2: 0}
                         custom_kill_count['tus'][_killing_player] += 1
+
+                    if _killed_unit_type == "ProtossFrigate":
+                        if not 'shuttles' in custom_kill_count:
+                            custom_kill_count['shuttles'] = {1: 0, 2: 0}
+                        custom_kill_count['shuttles'][_killing_player] += 1
 
                     elif _killed_unit_type == 'MutatorPropagator':
                         if not 'propagators' in custom_kill_count:
@@ -1011,7 +1021,7 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
         custom_kill_count['tus'][2] += custom_kill_count['hfts'][2]
         del custom_kill_count['hfts']
 
-    for item in {'hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper', 'missilecommand'}:
+    for item in {'hfts', 'tus', 'propagators', 'voidrifts', 'turkey', 'voidreanimators', 'deadofnight', 'minesweeper', 'missilecommand', 'shuttles'}:
         if item in custom_kill_count:
             # Skip if it's not a Dead of Night map
             if item == 'deadofnight' and 'Dead of Night' not in replay['map_name']:
@@ -1143,7 +1153,7 @@ def parse_and_analyse_replay(filepath, main_player_handles=None):
     """ Analyses the replay and returns the analysis"""
     logger.info(f'Analysing: {filepath}')
     replay = None
-    
+
     # Load the replay
     try:
         replay = parse_replay_file(filepath)
