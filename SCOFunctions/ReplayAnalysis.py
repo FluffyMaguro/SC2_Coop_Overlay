@@ -712,7 +712,10 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
 
                 # Abathur locusts
                 if _killing_unit_type == 'Locust' and _commander == 'Abathur' and not _killing_unit_id in AbathurKillLocusts:
-                    _killing_unit_type = 'SwarmHost'
+                    if _killing_player == main_player and "SwarmHost" in unit_type_dict_main:
+                        _killing_unit_type = 'SwarmHost'
+                    if _killing_player == ally_player and "SwarmHost" in unit_type_dict_ally:
+                        _killing_unit_type = 'SwarmHost'
 
                 # Glevig's spawns
                 elif _killing_unit_type in {'DehakaZerglingLevel2', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2'
@@ -973,6 +976,10 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
             messages.append({'player': player, 'text': f"*has left the game*", 'time': user_leave_times[player]})
     messages = sorted(messages, key=lambda x: x['time'])
     replay_report_dict['parser']['messages'] = tuple(messages)
+
+    # from pprint import pprint
+    # pprint(unit_type_dict_main)
+    # pprint(unit_type_dict_ally)
 
     # Main player
     replay_report_dict['mainCommander'] = replay['players'][main_player].get('commander', '')
