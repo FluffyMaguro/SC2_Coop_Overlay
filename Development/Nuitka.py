@@ -17,13 +17,14 @@ os.system('cmd /c "python -m nuitka'
           ' --windows-icon-from-ico=src/OverlayIcon.ico'
           ' --include-data-dir=src=src'
           ' --include-data-dir=Layouts=Layouts'
-          ' --include-data-dir=venv/Lib/site-packages/s2protocol=s2protocol'
+          #   ' --include-data-dir=venv2/Lib/site-packages/s2protocol=s2protocol'
           ' --include-data-file=SCOFunctions/SC2Dictionaries/*.csv=SCOFunctions/SC2Dictionaries/'
           ' --include-data-file=SCOFunctions/SC2Dictionaries/*.txt=SCOFunctions/SC2Dictionaries/"'
           ' SCO.py')
 
 # Copy readme
 shutil.copy('Read me (Github).url', 'SCO.dist/Read me (Github).url')
+shutil.copytree('venv/Lib/site-packages/s2protocol', 'SCO.dist/s2protocol')
 
 # Copy QtWebEngineProcess.exe if it wasn't included automatically (depends on package versions)
 webengine_path_venv = "venv/Lib/site-packages/PyQt5/Qt/bin/QtWebEngineProcess.exe"

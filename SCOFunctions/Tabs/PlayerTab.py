@@ -209,7 +209,7 @@ class PlayerTab(QtWidgets.QWidget):
                     created = 0
 
                 # Create element if necessary and show
-                if not player in self.player_winrate_UI_dict:
+                if not player in self.player_winrate_UI_dict and player in self.p.winrate_data:
                     created += 1
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                         self.p.winrate_data[player],
@@ -223,7 +223,7 @@ class PlayerTab(QtWidgets.QWidget):
         for player, note in SM.settings['player_notes'].items():
             if text in note.lower() and idx < self.showing_players:
                 # Create element if necessary and show
-                if not player in self.player_winrate_UI_dict:
+                if not player in self.player_winrate_UI_dict and player in self.p.winrate_data:
                     self.player_winrate_UI_dict[player] = MUI.PlayerEntry(player,
                                                                         self.p.winrate_data[player],
                                                                         SM.settings['player_notes'].get(player, None),

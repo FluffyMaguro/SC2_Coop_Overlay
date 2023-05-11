@@ -10,11 +10,8 @@ import traceback
 
 from SCOFunctions.MLogging import Logger
 from SCOFunctions.S2Parser import s2_parse_replay
-from SCOFunctions.SC2Dictionaries import (COMasteryUpgrades, HFTS_Units,
-                                          TUS_Units, UnitAddKillsTo,
-                                          UnitCompDict, UnitNameDict,
-                                          UnitsInWaves, amon_player_ids,
-                                          prestige_upgrades)
+from SCOFunctions.SC2Dictionaries import (COMasteryUpgrades, HFTS_Units, TUS_Units, UnitAddKillsTo, UnitCompDict, UnitNameDict, UnitsInWaves,
+                                          amon_player_ids, prestige_upgrades)
 from SCOFunctions.StatsCounter import DroneIdentifier, StatsCounter
 
 do_not_count_kills = {'FuelCellPickupUnit', 'ForceField', 'Scarab'}
@@ -1068,9 +1065,10 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
 
         # Switch names, sort, etc.
         new_dict = switch_names(pdict)
-        sorted_dict = {k: v
-                       for k, v in sorted(new_dict.items(), reverse=True, key=lambda item: item[1][0])
-                       }  # Sorts by number of create (0), lost (1), kills (2), K/D (3)
+        sorted_dict = {
+            k: v
+            for k, v in sorted(new_dict.items(), reverse=True, key=lambda item: item[1][0])
+        }  # Sorts by number of create (0), lost (1), kills (2), K/D (3)
         sorted_dict = {k: v for k, v in sorted(sorted_dict.items(), reverse=True, key=lambda item: item[1][2])}
 
         # Go through new dictionary
