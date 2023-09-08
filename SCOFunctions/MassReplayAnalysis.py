@@ -656,10 +656,10 @@ class mass_replay_analysis:
                 arg_lower = arg.lower()
 
                 # Special filter for mutations
-                if 'mutation' in arg_lower or 'weekly' in arg_lower:
-                    if r.weekly:
-                        args_found += 1
-                    continue
+                # if 'mutation' in arg_lower or 'weekly' in arg_lower:
+                #     if r.weekly:
+                #         args_found += 1
+                #     continue
 
                 # Special filter for races. Check enemy race directly.
                 if arg in races:

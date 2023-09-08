@@ -1804,7 +1804,7 @@ tychus_ultimate_upgrades = {
 outlaws = {'TychusFirebat', 'TychusGhost', 'TychusHERC', 'TychusMarauder', 'TychusReaper', 'TychusSpectre', 'TychusWarhound', 'TychusMedic'}
 
 weekly_mutations = {
-    'Aggressive Recriutment': {
+    'Aggressive Recruitment': {
         'map': 'Malwarfare',
         'mutators': {'Speed Freaks', 'We Move Unseen', 'Propagators'}
     },
