@@ -1,7 +1,7 @@
 # StarCraft II Coop Overlay (SCO)
 * [**DOWNLOAD HERE**](https://github.com/FluffyMaguro/SC2_Coop_Overlay/releases/download/2.47/SC2CoopOverlay.2.47.zip)
 
-* Or run the script with Python 3.6+:
+* Or run the script with Python 3.8 - 3.11:
 
 ```
 pip install -r requirements.txt
