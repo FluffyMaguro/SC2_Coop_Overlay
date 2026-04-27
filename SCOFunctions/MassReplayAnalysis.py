@@ -21,7 +21,7 @@ from SCOFunctions.HelperFunctions import get_hash
 from SCOFunctions.MainFunctions import (find_names_and_handles, find_replays, names_fallback)
 from SCOFunctions.MFilePath import truePath
 from SCOFunctions.MLogging import Logger, catch_exceptions
-from SCOFunctions.MReplayData import replay_data
+from SCOFunctions.MReplayData import REPLAY_DATA_VERSION, replay_data
 from SCOFunctions.ReplayAnalysis import analyse_parsed_replay
 from SCOFunctions.S2Parser import s2_parse_replay
 from SCOFunctions.SC2Dictionaries import (bonus_objectives, map_names, mc_units, prestige_names, units_to_stats, weekly_mutations)
@@ -743,7 +743,7 @@ class mass_replay_analysis:
             if os.path.isfile(self.cachefile):
                 with open(self.cachefile, 'rb') as f:
                     loaded = pickle.load(f)
-                if len(loaded) > 0 and type(loaded[0]) == replay_data:
+                if all(isinstance(r, replay_data) and r.version == REPLAY_DATA_VERSION for r in loaded):
                     self.ReplayDataAll = loaded
                 elif len(loaded) > 0:
                     logger.error(f"Cache not loaded. Old data type.")
@@ -791,6 +791,7 @@ class mass_replay_analysis:
 
             if replay is not None:
                 replay['hash'] = rhash
+                replay['version'] = REPLAY_DATA_VERSION
                 self.remove_useless_keys(replay)
                 replay = replay_data(**replay)
                 if self.replay_entry_valid(replay):
@@ -883,6 +884,7 @@ class mass_replay_analysis:
             parsed_data['players'][p]['kills'] = full_data['mainkills'] if p == main else full_data['allykills']
             parsed_data['players'][p]['icons'] = full_data['mainIcons'] if p == main else full_data['allyIcons']
             parsed_data['players'][p]['units'] = full_data['mainUnits'] if p == main else full_data['allyUnits']
+        parsed_data['version'] = REPLAY_DATA_VERSION
         return replay_data(**parsed_data)
 
     @catch_exceptions(logger)

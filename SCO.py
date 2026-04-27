@@ -52,7 +52,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = Logger('SCO', Logger.levels.INFO)
 Logger.file_path = truePath("Logs.txt")
 
-APPVERSION = 247
+APPVERSION = 248
 
 
 def excepthook(exc_type: Type[BaseException], exc_value: Exception, exc_tback: TracebackType):
