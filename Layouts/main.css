@@ -474,12 +474,23 @@ body {
 #charts {
     position: absolute;
     width: 38vh;
-    top: 4.2vh;
+    height: 100vh;
+    top: 0;
     right: 50vh;
     opacity: 0.0;
     transition: opacity 2s;
+    display: flex;
+    flex-direction: column;
 }
 
-#charts canvas {
-    display: none
+#charts .chart-flex {
+    display: none;
+    height: 5vh;
+    flex-grow: 1;
+    padding: 2vh 0;
+}
+
+#charts .chart {
+    position: relative;
+    height: 100%;
 }
