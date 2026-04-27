@@ -474,7 +474,7 @@ body {
 #charts {
     position: absolute;
     width: 38vh;
-    height: 100vh;
+    height: 88vh; /* This should match the height captured by UI_TabWidget.save_screenshot */
     top: 0;
     right: 50vh;
     opacity: 0.0;
