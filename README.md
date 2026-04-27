@@ -117,16 +117,20 @@ Add this to *custom.css*
     opacity: 0;
 }
 ```
-**3. Hide certain charts**
+**3. Change shown charts**
 
-Add this to *custom.js*, and remove those that you don't want.
+Set `CC` in *custom.js*, and only list the charts you want. All available charts are listed below.
+
 ```javascript
 CC = {
     'army': null,
     'supply': null,
     'killed': null,
-    'mining': null
-  }
+    'mining': null,
+    'minerals': null,
+    'vespene': null,
+    'resources': null,
+  };
   ```
 
 **4. Custom function that runs when new replay data is filled**
