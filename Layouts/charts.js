@@ -4,7 +4,10 @@ var CC = { // All charts
   'army': null,
   'supply': null,
   'killed': null,
-  'mining': null
+  'mining': null,
+  'minerals': null,
+  'vespene': null,
+  'resources': null,
 }
 
 function generate_datasets(replay_data, type) {
@@ -146,9 +149,7 @@ function plot_chart(replay_data, x_data, type) {
     // Either create new 
     let config = generate_config(replay_data, x_data, type);
     let chart_name = type + 'Chart';
-    let element = document.getElementById(chart_name);
-    element.style.display = 'block';
-    let ctx = element.firstChild.firstChild.getContext('2d');
+    let ctx = document.querySelector(`#${chart_name} canvas`).getContext('2d');
     CC[type] = new Chart(ctx, config);
   } else {
     // Or update existing

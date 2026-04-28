@@ -117,23 +117,8 @@ Add this to *custom.css*
     opacity: 0;
 }
 ```
-**3. Change shown charts**
 
-Set `CC` in *custom.js*, and only list the charts you want. All available charts are listed below.
-
-```javascript
-CC = {
-    'army': null,
-    'supply': null,
-    'killed': null,
-    'mining': null,
-    'minerals': null,
-    'vespene': null,
-    'resources': null,
-  };
-  ```
-
-**4. Custom function that runs when new replay data is filled**
+**3. Custom function that runs when new replay data is filled**
 
 Add something like this to custom.js. The function will run when new data is added.
 
