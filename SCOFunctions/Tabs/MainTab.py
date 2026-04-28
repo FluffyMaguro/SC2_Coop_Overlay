@@ -80,11 +80,11 @@ class MainTab(QtWidgets.QWidget):
         self.LA_Monitor.setToolTip("Determines on which monitor the overlay will be shown")
 
         # Charts
-        self.CH_ShowCharts = QtWidgets.QCheckBox(self)
-        self.CH_ShowCharts.setGeometry(QtCore.QRect(250, 3 * ch_distance, 300, 17))
-        self.CH_ShowCharts.setText("Show charts")
-        self.CH_ShowCharts.setToolTip("Show charts on overlay")
-        self.CH_ShowCharts.clicked.connect(self.p.show_charts)
+        # self.CH_ShowCharts = QtWidgets.QCheckBox(self)
+        # self.CH_ShowCharts.setGeometry(QtCore.QRect(250, 3 * ch_distance, 300, 17))
+        # self.CH_ShowCharts.setText("Show charts")
+        # self.CH_ShowCharts.setToolTip("Show charts on overlay")
+        # self.CH_ShowCharts.clicked.connect(self.p.show_charts)
 
         # Dark theme
         self.CH_DarkTheme = QtWidgets.QCheckBox(self)
@@ -150,7 +150,7 @@ class MainTab(QtWidgets.QWidget):
         self.BT_MainReset.setGeometry(QtCore.QRect(785, 400, 75, 25))
         self.BT_MainReset.setText('Reset')
         self.BT_MainReset.clicked.connect(self.p.resetSettings)
-        self.BT_MainReset.setToolTip("Resets all settings on this tab apart from login for starcraft2coop.com")
+        self.BT_MainReset.setToolTip("Resets all settings on this tab")
 
         # Screenshot
         self.BT_Screenshot = QtWidgets.QPushButton(self)
@@ -292,34 +292,91 @@ class MainTab(QtWidgets.QWidget):
         self.LA_Mastery.clicked.connect(lambda: self.openColorDialog(self.LA_Mastery))
 
         # Aom
-        self.FR_Aom = QtWidgets.QFrame(self)
-        self.FR_Aom.setGeometry(QtCore.QRect(700, 170, 241, 211))
-        self.FR_Aom.setAutoFillBackground(True)
-        self.FR_Aom.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.FR_Aom.setFrameShadow(QtWidgets.QFrame.Plain)
+        # self.FR_Aom = QtWidgets.QFrame(self)
+        # self.FR_Aom.setGeometry(QtCore.QRect(700, 170, 241, 211))
+        # self.FR_Aom.setAutoFillBackground(True)
+        # self.FR_Aom.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.FR_Aom.setFrameShadow(QtWidgets.QFrame.Plain)
 
-        self.LA_AomPage = QtWidgets.QLabel(self.FR_Aom)
-        self.LA_AomPage.setGeometry(QtCore.QRect(0, 10, 241, 20))
-        self.LA_AomPage.setStyleSheet("font-weight: bold")
-        self.LA_AomPage.setAlignment(QtCore.Qt.AlignCenter)
-        self.LA_AomPage.setText("Settings for starcraft2coop.com")
+        # self.LA_AomPage = QtWidgets.QLabel(self.FR_Aom)
+        # self.LA_AomPage.setGeometry(QtCore.QRect(0, 10, 241, 20))
+        # self.LA_AomPage.setStyleSheet("font-weight: bold")
+        # self.LA_AomPage.setAlignment(QtCore.Qt.AlignCenter)
+        # self.LA_AomPage.setText("Settings for starcraft2coop.com")
 
-        self.ED_AomAccount = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomAccount.setGeometry(QtCore.QRect(62, 70, 121, 20))
-        self.ED_AomAccount.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_AomAccount.setPlaceholderText("account name")
+        # self.ED_AomAccount = QtWidgets.QLineEdit(self.FR_Aom)
+        # self.ED_AomAccount.setGeometry(QtCore.QRect(62, 70, 121, 20))
+        # self.ED_AomAccount.setAlignment(QtCore.Qt.AlignCenter)
+        # self.ED_AomAccount.setPlaceholderText("account name")
 
-        self.ED_AomSecretKey = QtWidgets.QLineEdit(self.FR_Aom)
-        self.ED_AomSecretKey.setGeometry(QtCore.QRect(62, 100, 121, 20))
-        self.ED_AomSecretKey.setAlignment(QtCore.Qt.AlignCenter)
-        self.ED_AomSecretKey.setPlaceholderText("secret key")
-        self.ED_AomSecretKey.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
+        # self.ED_AomSecretKey = QtWidgets.QLineEdit(self.FR_Aom)
+        # self.ED_AomSecretKey.setGeometry(QtCore.QRect(62, 100, 121, 20))
+        # self.ED_AomSecretKey.setAlignment(QtCore.Qt.AlignCenter)
+        # self.ED_AomSecretKey.setPlaceholderText("secret key")
+        # self.ED_AomSecretKey.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
 
-        self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
-        self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 25))
-        self.BT_AomTest.clicked.connect(self.validateAOM)
-        self.BT_AomTest.setText("Verify")
-        self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
+        # self.BT_AomTest = QtWidgets.QPushButton(self.FR_Aom)
+        # self.BT_AomTest.setGeometry(QtCore.QRect(75, 160, 85, 25))
+        # self.BT_AomTest.clicked.connect(self.validateAOM)
+        # self.BT_AomTest.setText("Verify")
+        # self.BT_AomTest.setToolTip("Test if the combination of the account name and the secret key is valid")
+
+        # Charts
+
+        def UpdateChartVisibility():
+            self.p.saveSettings()
+            MF.update_init_message()
+            MF.resend_init_message()
+
+        self.FT_Charts = QtWidgets.QFrame(self)
+        self.FT_Charts.setGeometry(QtCore.QRect(700, 170, 241, 211))
+        self.FT_Charts.setAutoFillBackground(True)
+        self.FT_Charts.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.FT_Charts.setFrameShadow(QtWidgets.QFrame.Plain)
+
+        self.LA_Charts = QtWidgets.QLabel(self.FT_Charts)
+        self.LA_Charts.setGeometry(QtCore.QRect(0, 10, 241, 20))
+        self.LA_Charts.setStyleSheet("font-weight: bold")
+        self.LA_Charts.setAlignment(QtCore.Qt.AlignCenter)
+        self.LA_Charts.setText("Overlay Charts")
+
+        ch_distance = 40
+        LEFT = 70
+
+        self.CB_ArmyValue = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_ArmyValue.setGeometry(QtCore.QRect(LEFT, ch_distance, 230, 17))
+        self.CB_ArmyValue.setText("Army value")
+        self.CB_ArmyValue.clicked.connect(UpdateChartVisibility)
+
+        self.CB_SupplyUsed = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_SupplyUsed.setGeometry(QtCore.QRect(LEFT, ch_distance + 20, 230, 17))
+        self.CB_SupplyUsed.setText("Supply used")
+        self.CB_SupplyUsed.clicked.connect(UpdateChartVisibility)
+
+        self.CB_KillCount = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_KillCount.setGeometry(QtCore.QRect(LEFT, ch_distance + 40, 230, 17))
+        self.CB_KillCount.setText("Kill count")
+        self.CB_KillCount.clicked.connect(UpdateChartVisibility)
+
+        self.CB_CollectionRate = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_CollectionRate.setGeometry(QtCore.QRect(LEFT, ch_distance + 60, 230, 17))
+        self.CB_CollectionRate.setText("Collection rate")
+        self.CB_CollectionRate.clicked.connect(UpdateChartVisibility)
+
+        self.CB_MineralsBanked = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_MineralsBanked.setGeometry(QtCore.QRect(LEFT, ch_distance + 80, 230, 17))
+        self.CB_MineralsBanked.setText("Minerals banked")
+        self.CB_MineralsBanked.clicked.connect(UpdateChartVisibility)
+
+        self.CB_VespeneBanked = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_VespeneBanked.setGeometry(QtCore.QRect(LEFT, ch_distance + 100, 230, 17))
+        self.CB_VespeneBanked.setText("Vespene banked")
+        self.CB_VespeneBanked.clicked.connect(UpdateChartVisibility)
+
+        self.CB_ResourcesBanked = QtWidgets.QCheckBox(self.FT_Charts)
+        self.CB_ResourcesBanked.setGeometry(QtCore.QRect(LEFT, ch_distance + 120, 230, 17))
+        self.CB_ResourcesBanked.setText("Resources banked")
+        self.CB_ResourcesBanked.clicked.connect(UpdateChartVisibility)
 
         # Manual parse
         self.BT_ManualParse = QtWidgets.QPushButton(self)
@@ -363,20 +420,20 @@ class MainTab(QtWidgets.QWidget):
             MF.update_init_message()
             MF.resend_init_message()
 
-    def validateAOM(self):
-        """ Validates if name/key combination is valid """
-        key = self.ED_AomSecretKey.text()
-        account = self.ED_AomAccount.text()
+    # def validateAOM(self):
+    #     """ Validates if name/key combination is valid """
+    #     key = self.ED_AomSecretKey.text()
+    #     account = self.ED_AomAccount.text()
 
-        if key != '' and account != '':
-            response = HF.validate_aom_account_key(account, key)
+    #     if key != '' and account != '':
+    #         response = HF.validate_aom_account_key(account, key)
 
-            if 'Success' in response:
-                self.p.sendInfoMessage(response, color=MColors.msg_success)
-            else:
-                self.p.sendInfoMessage(response, color=MColors.msg_failure)
-        else:
-            self.p.sendInfoMessage('Fill your account name and secret key first!')
+    #         if 'Success' in response:
+    #             self.p.sendInfoMessage(response, color=MColors.msg_success)
+    #         else:
+    #             self.p.sendInfoMessage(response, color=MColors.msg_failure)
+    #     else:
+    #         self.p.sendInfoMessage('Fill your account name and secret key first!')
 
     @catch_exceptions(logger)
     def parse_replay(self, something):

@@ -51,7 +51,7 @@ var showingWinrateStats = false;
 var last_shown_file = '';
 var do_not_use_websocket = false;
 var minimum_kills = 1; // minimum number of kills for a unit to be shown
-var show_charts = true;
+var show_charts = {};
 var show_player_total_kills = false;
 var func_on_new_data = null;
 
@@ -170,13 +170,23 @@ function playerWinrate(dat) {
     }, winrateTime * 1000)
 }
 
-
 function initColorsDuration(data) {
     setColors(data['colors'][0], data['colors'][1], data['colors'][2], data['colors'][3]);
     DURATION = data['duration'];
-    show_charts = data['show_charts']
+    show_charts = data['charts']
+    UpdateChartsVisibility();
+    console.log('Received init data. Duration: ' + DURATION + 's. Show charts: ' + JSON.stringify(show_charts, null, 2));
 }
 
+function UpdateChartsVisibility() {
+   document.getElementById('armyChart').style.display = show_charts['army'] ? 'block' : 'none';
+   document.getElementById('supplyChart').style.display = show_charts['supply'] ? 'block' : 'none';
+   document.getElementById('killedChart').style.display = show_charts['kills'] ? 'block' : 'none';
+   document.getElementById('miningChart').style.display = show_charts['collection_rate'] ? 'block' : 'none';
+   document.getElementById('mineralsChart').style.display = show_charts['minerals'] ? 'block' : 'none';
+   document.getElementById('vespeneChart').style.display = show_charts['vespene'] ? 'block' : 'none';
+   document.getElementById('resourcesChart').style.display = show_charts['resources'] ? 'block' : 'none';
+} 
 
 function setColors(P1color, P2color, P3color, MasteryColor) {
     //this function is executed by the app on page load
@@ -464,6 +474,7 @@ function showhide() {
 
 
 function showhide_charts(show) {
+    console.log('showhide_charts(' + show + ')');
     // updates visibility and future showing
     if (show) {
         if (toBeShown) document.getElementById('charts').style.opacity = '1';

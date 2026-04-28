@@ -74,6 +74,15 @@ class CSettings:
             'chat_font_scale': 1.3,
             'webflag': 'CoverWindow',
             'full_analysis_atstart': False,
+            'charts' : {
+                'army' : True,
+                'supply' : True,
+                'kills' : True,
+                'collection_rate' : True,
+                'minerals' : False,
+                'vespene' : False,
+                'resources' : False
+            },
             'twitchbot': {
                 'channel_name': '',
                 'bot_name': '',

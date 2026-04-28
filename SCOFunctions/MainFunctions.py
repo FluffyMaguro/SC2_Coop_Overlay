@@ -29,7 +29,21 @@ from SCOFunctions.Settings import Setting_manager as SM
 OverlayMessages = []  # Storage for all messages
 lock = threading.Lock()
 logger = Logger('MAIN', Logger.levels.INFO)
-initMessage = {'initEvent': True, 'colors': ['null', 'null', 'null', 'null'], 'duration': 60, 'show_charts': True}
+
+initMessage = {'initEvent': True, 
+               'colors': ['null', 'null', 'null', 'null'], 
+               'duration': 60, 
+               'charts': {
+                    'army' : True,
+                    'supply' : True,
+                    'kills' : True,
+                    'collection_rate' : True,
+                    'minerals' : False,
+                    'vespene' : False,
+                    'resources' : False
+                    }
+                }
+
 ReplayPosition = 0
 AllReplays = dict()
 player_winrate_data = dict()
@@ -54,8 +68,7 @@ def update_init_message() -> None:
     """ Through this function the main script passes all its settings here """
     initMessage['colors'] = [SM.settings['color_player1'], SM.settings['color_player2'], SM.settings['color_amon'], SM.settings['color_mastery']]
     initMessage['duration'] = SM.settings['duration']
-    initMessage['show_charts'] = SM.settings['show_charts']
-
+    initMessage['charts'] = SM.settings['charts']
 
 def sendEvent(event: Dict[str, Any], raw: bool = False) -> None:
     """ Send message to the overlay """
