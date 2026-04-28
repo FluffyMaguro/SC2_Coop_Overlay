@@ -485,7 +485,8 @@ body {
 
 #charts .chart-flex {
     display: none;
-    height: 5vh;
+    height: 10vh;
+    max-height: 25vh;
     flex-grow: 1;
     padding: 2vh 0;
 }
