@@ -474,12 +474,24 @@ body {
 #charts {
     position: absolute;
     width: 38vh;
-    top: 4.2vh;
+    height: 88vh; /* This should match the height captured by UI_TabWidget.save_screenshot */
+    top: 0;
     right: 50vh;
     opacity: 0.0;
     transition: opacity 2s;
+    display: flex;
+    flex-direction: column;
 }
 
-#charts canvas {
-    display: none
+#charts .chart-flex {
+    display: none;
+    height: 10vh;
+    max-height: 25vh;
+    flex-grow: 1;
+    padding: 2vh 0;
+}
+
+#charts .chart {
+    position: relative;
+    height: 100%;
 }

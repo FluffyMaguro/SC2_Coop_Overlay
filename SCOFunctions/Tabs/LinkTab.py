@@ -54,21 +54,21 @@ class LinkTab(QtWidgets.QWidget):
         self.discord.setText('<a href="https://discord.gg/FtGdhqD">My discord</a>')
 
         # Twitter
-        self.img_twitter = QtWidgets.QLabel(self.fr_links)
-        self.img_twitter.setGeometry(QtCore.QRect(30, 120, 41, 51))
-        self.img_twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
+        # self.img_twitter = QtWidgets.QLabel(self.fr_links)
+        # self.img_twitter.setGeometry(QtCore.QRect(30, 120, 41, 51))
+        # self.img_twitter.setPixmap(QtGui.QPixmap(innerPath("src/twitter.png")))
 
-        self.twitter = QtWidgets.QLabel(self.fr_links)
-        self.twitter.setGeometry(QtCore.QRect(80, 130, 160, 31))
-        self.twitter.setText('<a href="https://twitter.com/FluffyMaguro">@FluffyMaguro</a>')
+        # self.twitter = QtWidgets.QLabel(self.fr_links)
+        # self.twitter.setGeometry(QtCore.QRect(80, 130, 160, 31))
+        # self.twitter.setText('<a href="https://twitter.com/FluffyMaguro">@FluffyMaguro</a>')
 
         # GitHub
         self.img_github = QtWidgets.QLabel(self.fr_links)
-        self.img_github.setGeometry(QtCore.QRect(30, 175, 41, 41))
+        self.img_github.setGeometry(QtCore.QRect(30, 120, 41, 41))
         self.img_github.setPixmap(QtGui.QPixmap(innerPath("src/github.png")))
 
         self.github = QtWidgets.QLabel(self.fr_links)
-        self.github.setGeometry(QtCore.QRect(80, 175, 200, 41))
+        self.github.setGeometry(QtCore.QRect(80, 120, 200, 41))
         self.github.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.github.setText('<a href="https://github.com/FluffyMaguro/SC2_Coop_overlay">Overlay on GitHub</a>')
 
@@ -116,7 +116,7 @@ class LinkTab(QtWidgets.QWidget):
         self.paypal.setText('<a href="https://www.paypal.com/paypalme/FluffyMaguro">Donate if you feel generous</a>')
 
         # Styling
-        for item in {self.blog, self.reddit, self.twitter, self.github, self.discord, self.battlenet, self.paypal, self.coop_discord}:
+        for item in {self.blog, self.reddit, self.github, self.discord, self.battlenet, self.paypal, self.coop_discord}:
             item.setStyleSheet("font-size: 18px")
             item.setOpenExternalLinks(True)
 

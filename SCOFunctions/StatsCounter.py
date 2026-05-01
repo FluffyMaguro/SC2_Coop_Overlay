@@ -90,6 +90,8 @@ class StatsCounter:
         self.army_value = []
         self.supply = []
         self.collection_rate = []
+        self.minerals = []
+        self.vespene = []
 
     def update_mastery(self, idx: int, count: int):
         if self.enable_updates and self.masteries[idx] != count:
@@ -231,12 +233,14 @@ class StatsCounter:
                 or event['m_creatorAbilityName'].decode() != 'MorphZerglingToSplitterling'):
             self.zagara_free_banelings += 1
 
-    def add_stats(self, kills: int, supply_used: int, collection_rate: int):
+    def add_stats(self, kills: int, supply_used: int, collection_rate: int, minerals: int, vespene: int):
         """ Calculates and adds new stats"""
         self.kills.append(kills)
         self.army_value.append(self.calculate_army_value())
         self.supply.append(supply_used)
         self.collection_rate.append(self.calculate_collection_rate(collection_rate))
+        self.minerals.append(minerals)
+        self.vespene.append(vespene)
 
     def calculate_army_value(self) -> int:
         """ Sums army value for all units for the player"""
@@ -500,5 +504,7 @@ class StatsCounter:
             'killed': self.kills,
             'army': self.army_value,
             'supply': self.supply,
-            'mining': self.rolling_average(self.collection_rate)
+            'mining': self.rolling_average(self.collection_rate),
+            'minerals': self.minerals,
+            'vespene': self.vespene,
         }

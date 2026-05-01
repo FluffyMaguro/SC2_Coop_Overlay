@@ -117,19 +117,8 @@ Add this to *custom.css*
     opacity: 0;
 }
 ```
-**3. Hide certain charts**
 
-Add this to *custom.js*, and remove those that you don't want.
-```javascript
-CC = {
-    'army': null,
-    'supply': null,
-    'killed': null,
-    'mining': null
-  }
-  ```
-
-**4. Custom function that runs when new replay data is filled**
+**3. Custom function that runs when new replay data is filled**
 
 Add something like this to custom.js. The function will run when new data is added.
 

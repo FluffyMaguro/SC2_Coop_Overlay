@@ -4,9 +4,52 @@ var CC = { // All charts
   'army': null,
   'supply': null,
   'killed': null,
-  'mining': null
+  'mining': null,
+  'minerals': null,
+  'vespene': null,
+  'resources': null,
 }
 
+function generate_datasets(replay_data, type) {
+  if (type == 'resources') {
+    return [
+      {
+        data: replay_data[1]['minerals'],    
+        label: replay_data[1]['name'] + ' Minerals',    
+        borderColor: gP1Color,
+      },
+      {
+        data: replay_data[1]['vespene'],    
+        label: replay_data[1]['name'] + ' Vespene',
+        borderColor: gP1Color,
+        borderDash: [8, 8],
+      },
+      {
+        data: replay_data[2]['minerals'],    
+        label: replay_data[2]['name'] + ' Minerals',    
+        borderColor: gP2Color,    
+      },
+      {
+        data: replay_data[2]['vespene'],    
+        label: replay_data[2]['name'] + ' Vespene',
+        borderColor: gP2Color,    
+        borderDash: [8, 8],
+      },
+    ]
+  }
+  return [
+    {
+      data: replay_data[1][type],    
+      label: replay_data[1]['name'],    
+      borderColor: gP1Color,    
+    },
+    {
+      data: replay_data[2][type],    
+      label: replay_data[2]['name'],    
+      borderColor: gP2Color,    
+    },
+  ]
+}
 
 function generate_config(replay_data, x_data, type) {
   // generates config for a chart based on new data
@@ -15,21 +58,13 @@ function generate_config(replay_data, x_data, type) {
   if (type == 'supply') c_title = 'Supply used';
   if (type == 'killed') c_title = 'Kill count';
   if (type == 'mining') c_title = 'Resource collection rate';
+  if (type == 'minerals') c_title = 'Minerals';
+  if (type == 'vespene') c_title = 'Vespene';
+  if (type == 'resources') c_title = 'Resources';
 
   let data = {
     labels: x_data,
-    datasets: [
-      {
-        data: replay_data[1][type],
-        label: replay_data[1]['name'],
-        borderColor: gP1Color,
-      },
-      {
-        data: replay_data[2][type],
-        label: replay_data[2]['name'],
-        borderColor: gP2Color,
-      }
-    ]
+    datasets: generate_datasets(replay_data, type),
   };
 
   let config = {
@@ -37,6 +72,7 @@ function generate_config(replay_data, x_data, type) {
     data: data,
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       events: [], //on which events the chart reacts (none here)
       datasets: {
         line: {
@@ -102,10 +138,7 @@ function generate_config(replay_data, x_data, type) {
 
 function update_chart(chart, replay_data, x_data, type) {
   // Updates an existing chart with new data
-  chart.data.datasets[0].data = replay_data[1][type];
-  chart.data.datasets[1].data = replay_data[2][type];
-  chart.data.datasets[0].label = replay_data[1]['name'];
-  chart.data.datasets[1].label = replay_data[2]['name'];
+  chart.data.datasets = generate_datasets(replay_data, type);
   chart.data.labels = x_data;
   chart.update()
 }
@@ -116,7 +149,7 @@ function plot_chart(replay_data, x_data, type) {
     // Either create new 
     let config = generate_config(replay_data, x_data, type);
     let chart_name = type + 'Chart';
-    let ctx = document.getElementById(chart_name).getContext('2d');
+    let ctx = document.querySelector(`#${chart_name} canvas`).getContext('2d');
     CC[type] = new Chart(ctx, config);
   } else {
     // Or update existing

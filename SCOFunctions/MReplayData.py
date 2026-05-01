@@ -1,5 +1,10 @@
 from typing import NamedTuple
 
+"""APPVERSION of the last revision to `replay_data`
+
+This can be used to invalidate the pickled cache in `MassReplayAnalysis.py`.
+"""
+REPLAY_DATA_VERSION = 248
 
 class replay_data(NamedTuple):
     """ Data structure for storing information for replays in a more memory efficient way. 
@@ -21,6 +26,10 @@ class replay_data(NamedTuple):
     players: tuple
     region: str
     result: str
+    version: int
+    # NOTE: version cannot be defaulted or else pickle will reconstruct a replay_data that does
+    # not have the version field with the new default. In this case MassReplayAnalysis will not
+    # detect the cache is old.
 
     amon_units: dict = None
     bonus: tuple = None

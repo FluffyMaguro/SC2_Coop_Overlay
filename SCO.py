@@ -52,7 +52,7 @@ from SCOFunctions.Settings import Setting_manager as SM
 logger = Logger('SCO', Logger.levels.INFO)
 Logger.file_path = truePath("Logs.txt")
 
-APPVERSION = 247
+APPVERSION = 248
 
 
 def excepthook(exc_type: Type[BaseException], exc_value: Exception, exc_tback: TracebackType):
@@ -355,7 +355,7 @@ class UI_TabWidget(object):
         self.TAB_Main.CH_EnableLogging.setChecked(SM.settings['enable_logging'])
         self.TAB_Main.CH_ShowPlayerWinrates.setChecked(SM.settings['show_player_winrates'])
         self.TAB_Main.CH_ForceHideOverlay.setChecked(SM.settings['force_hide_overlay'])
-        self.TAB_Main.CH_ShowCharts.setChecked(SM.settings['show_charts'])
+        # self.TAB_Main.CH_ShowCharts.setChecked(SM.settings['show_charts'])
         self.TAB_Main.CH_DarkTheme.setChecked(SM.settings['dark_theme'])
         self.TAB_Main.CH_FastExpand.setChecked(SM.settings['fast_expand'])
         self.TAB_Main.CH_MinimizeToTray.setChecked(SM.settings['minimize_to_tray'])
@@ -366,6 +366,14 @@ class UI_TabWidget(object):
         self.TAB_Main.LA_ScreenshotLocation.setText(SM.settings['screenshot_folder'])
         self.TAB_Main.CH_ShowSession.setChecked(SM.settings['show_session'])
 
+        self.TAB_Main.CB_ArmyValue.setChecked(SM.settings['charts']['army'])
+        self.TAB_Main.CB_SupplyUsed.setChecked(SM.settings['charts']['supply'])
+        self.TAB_Main.CB_KillCount.setChecked(SM.settings['charts']['kills'])
+        self.TAB_Main.CB_CollectionRate.setChecked(SM.settings['charts']['collection_rate'])
+        self.TAB_Main.CB_MineralsBanked.setChecked(SM.settings['charts']['minerals'])
+        self.TAB_Main.CB_VespeneBanked.setChecked(SM.settings['charts']['vespene'])
+        self.TAB_Main.CB_ResourcesBanked.setChecked(SM.settings['charts']['resources'])
+
         self.TAB_Main.KEY_ShowHide.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_show/hide']))
         self.TAB_Main.KEY_Show.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_show']))
         self.TAB_Main.KEY_Hide.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_hide']))
@@ -373,8 +381,8 @@ class UI_TabWidget(object):
         self.TAB_Main.KEY_Older.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_older']))
         self.TAB_Main.KEY_Winrates.setKeySequence(QtGui.QKeySequence.fromString(SM.settings['hotkey_winrates']))
 
-        self.TAB_Main.ED_AomAccount.setText(SM.settings['aom_account'])
-        self.TAB_Main.ED_AomSecretKey.setText(SM.settings['aom_secret_key'])
+        # self.TAB_Main.ED_AomAccount.setText(SM.settings['aom_account'])
+        # self.TAB_Main.ED_AomSecretKey.setText(SM.settings['aom_secret_key'])
 
         self.TAB_Main.LA_P1.setText(f"Player 1 | {SM.settings['color_player1']}")
         self.TAB_Main.LA_P1.setStyleSheet(f"background-color: {SM.settings['color_player1']}; color: black")
@@ -410,7 +418,7 @@ class UI_TabWidget(object):
         SM.settings['enable_logging'] = self.TAB_Main.CH_EnableLogging.isChecked()
         SM.settings['show_player_winrates'] = self.TAB_Main.CH_ShowPlayerWinrates.isChecked()
         SM.settings['force_hide_overlay'] = self.TAB_Main.CH_ForceHideOverlay.isChecked()
-        SM.settings['show_charts'] = self.TAB_Main.CH_ShowCharts.isChecked()
+        # SM.settings['show_charts'] = self.TAB_Main.CH_ShowCharts.isChecked()
         SM.settings['dark_theme'] = self.TAB_Main.CH_DarkTheme.isChecked()
         SM.settings['fast_expand'] = self.TAB_Main.CH_FastExpand.isChecked()
         SM.settings['minimize_to_tray'] = self.TAB_Main.CH_MinimizeToTray.isChecked()
@@ -426,10 +434,18 @@ class UI_TabWidget(object):
         SM.settings['hotkey_older'] = self.TAB_Main.KEY_Older.get_hotkey_string()
         SM.settings['hotkey_winrates'] = self.TAB_Main.KEY_Winrates.get_hotkey_string()
 
-        SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
-        SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
+        # SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        # SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
         SM.settings['twitchbot']['auto_start'] = self.TAB_TwitchBot.ch_twitch.isChecked()
         SM.settings['twitchbot']['channel_name'] = self.TAB_TwitchBot.ED_twitch_channel_name.text()
+
+        SM.settings['charts']['army'] = self.TAB_Main.CB_ArmyValue.isChecked()
+        SM.settings['charts']['supply'] = self.TAB_Main.CB_SupplyUsed.isChecked()
+        SM.settings['charts']['kills'] = self.TAB_Main.CB_KillCount.isChecked()
+        SM.settings['charts']['collection_rate'] = self.TAB_Main.CB_CollectionRate.isChecked()
+        SM.settings['charts']['minerals'] = self.TAB_Main.CB_MineralsBanked.isChecked()
+        SM.settings['charts']['vespene'] = self.TAB_Main.CB_VespeneBanked.isChecked()
+        SM.settings['charts']['resources'] = self.TAB_Main.CB_ResourcesBanked.isChecked()
 
         SM.settings['full_analysis_atstart'] = self.TAB_Stats.CH_FA_atstart.isChecked()
         SM.settings['show_random_on_overlay'] = self.TAB_Randomizer.FR_RNG_Overlay.isChecked()
@@ -593,8 +609,8 @@ class UI_TabWidget(object):
         SM.settings = SM.default_settings.copy()
         SM.settings['account_folder'] = HF.get_account_dir(path=SM.settings['account_folder'])
         SM.settings['screenshot_folder'] = previous_settings['screenshot_folder']
-        SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
-        SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
+        # SM.settings['aom_account'] = self.TAB_Main.ED_AomAccount.text()
+        # SM.settings['aom_secret_key'] = self.TAB_Main.ED_AomSecretKey.text()
         SM.settings['player_notes'] = previous_settings['player_notes']
         SM.settings['twitchbot'] = previous_settings['twitchbot']
         self.updateUI()

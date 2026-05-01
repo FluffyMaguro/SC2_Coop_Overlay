@@ -397,13 +397,17 @@ def analyse_parsed_replay(filepath, replay, main_player_handles=None, print_kill
                 mainStatsCounter.add_stats(kills=killcounts[player],
                                            supply_used=event['m_stats']['m_scoreValueFoodUsed'] / 4096,
                                            collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
-                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])))
+                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])),
+                                           minerals=event['m_stats']['m_scoreValueMineralsCurrent'],
+                                           vespene=event['m_stats']['m_scoreValueVespeneCurrent'])
 
             elif player == ally_player:
                 allyStatsCounter.add_stats(kills=killcounts[player],
                                            supply_used=event['m_stats']['m_scoreValueFoodUsed'] / 4096,
                                            collection_rate=sum((event['m_stats']['m_scoreValueMineralsCollectionRate'],
-                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])))
+                                                                event['m_stats']['m_scoreValueVespeneCollectionRate'])),
+                                           minerals=event['m_stats']['m_scoreValueMineralsCurrent'],
+                                           vespene=event['m_stats']['m_scoreValueVespeneCurrent'])
 
         if event['_event'] == 'NNet.Replay.Tracker.SUpgradeEvent' and event['m_playerId'] in [1, 2]:
             _upg_name = event['m_upgradeTypeName'].decode()
