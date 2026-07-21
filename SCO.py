@@ -631,7 +631,7 @@ class UI_TabWidget(object):
             logger.info(f'Changing screenshot_folder to {folder}')
             self.TAB_Main.LA_ScreenshotLocation.setText(folder)
             SM.settings['screenshot_folder'] = folder
-            self.sendInfoMessage(f'Screenshot folder set succesfully! ({folder})', color=MColors.msg_success)
+            self.sendInfoMessage(f'Screenshot folder set successfully! ({folder})', color=MColors.msg_success)
 
     def findReplayFolder(self):
         """ Finds and sets account folder """
@@ -646,7 +646,7 @@ class UI_TabWidget(object):
                 logger.info(f'Changing accountdir to {folder}')
                 SM.settings['account_folder'] = folder
                 self.TAB_Main.LA_CurrentReplayFolder.setText(folder)
-                self.sendInfoMessage(f'Account folder set succesfully! ({folder})', color=MColors.msg_success)
+                self.sendInfoMessage(f'Account folder set successfully! ({folder})', color=MColors.msg_success)
                 MF.update_names_and_handles(folder, MF.AllReplays)
                 if self.CAnalysis is not None:
                     self.updating_maps = QtWidgets.QWidget()
@@ -811,7 +811,7 @@ class UI_TabWidget(object):
                     logger.info('Failed to set bank for twitch bot')
                 break
 
-        logger.info('Bank changed indirectly succesfully')
+        logger.info('Bank changed indirectly successfully')
 
     def run_twitch_bot(self):
         """Runs the twitch bot. But first checks if bot name and oauth are set. If not, tries to fallback on my bot settings. """
